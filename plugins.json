@@ -1,0 +1,18 @@
+[
+  {
+    "name": "GPU",
+    "id": "gpu-plugin",
+    "description": "Enables GPU support",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-14",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/gpu-0.0.1.jar?raw=true",
+        "sha512sum": "84A76B09D7B26B55B1FFCBD5EB5E26516277FF1197282B888C57D380282321312CAC7BFEDA4CC4C9A279B0F375B893F7FE00FF858486348CA18BC4837A4CAC26"
+      }
+    ]
+  }
+]
