@@ -16,6 +16,22 @@
     ]
   },
   {
+    "name": "Item Stats",
+    "id": "itemstats--plugin",
+    "description": "Show information about food and potion effects",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-29",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/itemstats-0.0.1.jar?raw=true",
+        "sha512sum": "D32C5B506908604A99FA0EB36A29EBDECD4E8788EA5C58E55536C5FF77E8F25C5DB5D9DB0B6C2C074DD103F1C9F2F1E94EC9F27A719CCECE0F9DC75AFFE0A51B"
+      }
+    ]
+  },
+  {
     "name": "Slayer",
     "id": "slayer-plugin",
     "description": "Enhance the slayer skill",
@@ -32,6 +48,22 @@
     ]
   },
   {
+    "name": "Status Bars",
+    "id": "statusbars-plugin",
+    "description": "Draws HP/Pray/Stamina/Spec status bars next to inventory",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/slayer-0.0.1.jar?raw=true",
+        "sha512sum": "301DAE17059DADE4A479EDE72F580EA9F284A9DC315EDF2C81E40D3452D54CB19889BC1AC12A16E186AB665910E53481D84BCFDC7FB6422814CD03D6456DFB06"
+      }
+    ]
+  },
+  {
     "name": "Stretched Mode",
     "id": "stretchedmode-plugin",
     "description": "Stretches the game in fixed and resizable modes",
@@ -44,6 +76,22 @@
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/stretchedmode-0.0.1.jar?raw=true",
         "sha512sum": "4F1E5BDD4DF53EAAAB78F9592CBECB4C856847ED65340A32A60B2F621DEEB9A15D6CC7E82F3F51985CC1F0DF793D060C4EE2CF6FB03C0365A6AA84FD006099E0"
+      }
+    ]
+  },
+  {
+    "name": "XP Globes",
+    "id": "xpglobes-plugin",
+    "description": "Show XP globes for the respective skill when gaining XP",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/xpglobes-0.0.1.jar?raw=true",
+        "sha512sum": "A71757EBE23430EAB993723E1EAE8D1E854D812D5D5E3217AB82FD7680EAD16FB0798213C82D16C929063FE172639B93AF509FCD6442F78E1CADC0C0113700F1"
       }
     ]
   },

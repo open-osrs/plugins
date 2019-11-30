@@ -59,7 +59,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Status Bars",
-	description = "Draws status bars next to players inventory showing currentValue and restore amounts",
+	description = "Draws HP/Pray/Stamina/Spec status bars next to inventory",
 	enabledByDefault = false
 )
 @Singleton
