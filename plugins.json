@@ -14,5 +14,21 @@
         "sha512sum": "13810D31400ACA7D80F5A51DB906BF493C51DE19E4778B3921203F265C270D218ECA00D930E56F588D6DE12E7DED8D6BFD8D374BD7FEB70AD75E3CE8E3ADF1C2"
       }
     ]
+  },
+  {
+    "name": "XP Tracker",
+    "id": "xptracker-plugin",
+    "description": "Enable the XP Tracker panel",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-29",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/xptracker-0.0.1.jar?raw=true",
+        "sha512sum": "602FED9AA806869B24879060731D3738DF1BC6FE412B18023C115B9E211F09BC9938AB4AD1FF7468D9D204AE7127CCD487636064ED6035A53880F255C4DCB877"
+      }
+    ]
   }
 ]

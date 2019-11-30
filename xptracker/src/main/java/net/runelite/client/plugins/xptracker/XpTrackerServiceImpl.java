@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,68 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.xptracker;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":xptracker")
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import net.runelite.api.Skill;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+@Singleton
+class XpTrackerServiceImpl implements XpTrackerService
+{
+	private final XpTrackerPlugin plugin;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@Inject
+	XpTrackerServiceImpl(XpTrackerPlugin plugin)
+	{
+		this.plugin = plugin;
+	}
+
+	@Override
+	public int getActions(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getActionsInSession();
+	}
+
+	@Override
+	public int getActionsHr(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getActionsPerHour();
+	}
+
+	@Override
+	public int getActionsLeft(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getActionsRemainingToGoal();
+	}
+
+	@Override
+	public XpActionType getActionType(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getActionType();
+	}
+
+	@Override
+	public int getXpHr(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getXpPerHour();
+	}
+
+	@Override
+	public int getStartGoalXp(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getStartGoalXp();
+	}
+
+	@Override
+	public int getEndGoalXp(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getEndGoalXp();
+	}
+
+	@Override
+	public String getTimeTillGoal(Skill skill)
+	{
+		return plugin.getSkillSnapshot(skill).getTimeTillGoal();
+	}
 }

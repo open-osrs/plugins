@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Levi <me@levischuck.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,78 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.xptracker;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":xptracker")
+import java.util.EnumSet;
+import java.util.Set;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.runelite.api.Skill;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+@RequiredArgsConstructor
+class XpPauseStateSingle
+{
+	@Getter
+	private final Skill skill;
+	private final Set<XpPauseReason> pauseReasons = EnumSet.noneOf(XpPauseReason.class);
+	@Getter
+	private long lastChangeMillis;
+	@Getter
+	private long xp;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	boolean isPaused()
+	{
+		return !pauseReasons.isEmpty();
+	}
+
+	boolean login()
+	{
+		return pauseReasons.remove(XpPauseReason.PAUSED_LOGOUT);
+	}
+
+	boolean logout()
+	{
+		return pauseReasons.add(XpPauseReason.PAUSED_LOGOUT);
+	}
+
+	boolean timeout()
+	{
+		return pauseReasons.add(XpPauseReason.PAUSED_TIMEOUT);
+	}
+
+	boolean manualPause()
+	{
+		return pauseReasons.add(XpPauseReason.PAUSE_MANUAL);
+	}
+
+	boolean xpChanged(long xp)
+	{
+		this.xp = xp;
+		this.lastChangeMillis = System.currentTimeMillis();
+		return clearAll();
+	}
+
+	boolean unpause()
+	{
+		this.lastChangeMillis = System.currentTimeMillis();
+		return clearAll();
+	}
+
+	private boolean clearAll()
+	{
+		if (pauseReasons.isEmpty())
+		{
+			return false;
+		}
+
+		pauseReasons.clear();
+		return true;
+	}
+
+	private enum XpPauseReason
+	{
+		PAUSE_MANUAL,
+		PAUSED_LOGOUT,
+		PAUSED_TIMEOUT
+	}
 }

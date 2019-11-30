@@ -15,7 +15,7 @@ subprojects {
         jcenter()
         mavenLocal()
         flatDir {
-            dirs("../OPRS-BUILD/")
+            dirs("../OPRS-BUILD/","./OPRS-BUILD/")
         }
     }
 

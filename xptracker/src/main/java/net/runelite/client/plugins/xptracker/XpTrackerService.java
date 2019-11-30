@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.xptracker;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":xptracker")
+import net.runelite.api.Skill;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+public interface XpTrackerService
+{
+	/**
+	 * Get the number of actions done
+	 */
+	int getActions(Skill skill);
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	/**
+	 * Get the number of actions per hour
+	 */
+	int getActionsHr(Skill skill);
+
+	/**
+	 * Get the number of actions remaining
+	 */
+	int getActionsLeft(Skill skill);
+
+	/**
+	 * Get the action type
+	 */
+	XpActionType getActionType(Skill skill);
+
+	/**
+	 * Get the amount of xp per hour
+	 */
+	int getXpHr(Skill skill);
+
+	/**
+	 * Get the start goal XP
+	 */
+	int getStartGoalXp(Skill skill);
+
+	/**
+	 * Get the amount of XP left until goal level
+	 */
+	int getEndGoalXp(Skill skill);
+
+	/**
+	 * Get the amount of time left until goal level
+	 */
+	String getTimeTillGoal(Skill skill);
 }
