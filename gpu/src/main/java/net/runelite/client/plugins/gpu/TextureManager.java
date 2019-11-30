@@ -40,6 +40,44 @@ class TextureManager
 
 	private static final int TEXTURE_SIZE = 128;
 
+	int initTextureArray(TextureProvider textureProvider, GL4 gl)
+	{
+		if (!allTexturesLoaded(textureProvider))
+		{
+			return -1;
+		}
+
+		Texture[] textures = textureProvider.getTextures();
+
+		int textureArrayId = GLUtil.glGenTexture(gl);
+		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
+		gl.glTexStorage3D(gl.GL_TEXTURE_2D_ARRAY, 1, gl.GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE, textures.length);
+
+		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST);
+		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST);
+
+		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE);
+
+		// Set brightness to 1.0d to upload unmodified textures to GPU
+		double save = textureProvider.getBrightness();
+		textureProvider.setBrightness(1.0d);
+
+		updateTextures(textureProvider, gl, textureArrayId);
+
+		textureProvider.setBrightness(save);
+
+		gl.glActiveTexture(gl.GL_TEXTURE1);
+		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
+		gl.glActiveTexture(gl.GL_TEXTURE0);
+
+		return textureArrayId;
+	}
+
+	void freeTextureArray(GL4 gl, int textureArrayId)
+	{
+		GLUtil.glDeleteTexture(gl, textureArrayId);
+	}
+
 	/**
 	 * Check if all textures have been loaded and cached yet.
 	 *
@@ -138,44 +176,6 @@ class TextureManager
 			pixelIdx += offset;
 		}
 		return pixels;
-	}
-
-	int initTextureArray(TextureProvider textureProvider, GL4 gl)
-	{
-		if (!allTexturesLoaded(textureProvider))
-		{
-			return -1;
-		}
-
-		Texture[] textures = textureProvider.getTextures();
-
-		int textureArrayId = GLUtil.glGenTexture(gl);
-		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
-		gl.glTexStorage3D(gl.GL_TEXTURE_2D_ARRAY, 1, gl.GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE, textures.length);
-
-		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST);
-		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST);
-
-		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE);
-
-		// Set brightness to 1.0d to upload unmodified textures to GPU
-		double save = textureProvider.getBrightness();
-		textureProvider.setBrightness(1.0d);
-
-		updateTextures(textureProvider, gl, textureArrayId);
-
-		textureProvider.setBrightness(save);
-
-		gl.glActiveTexture(gl.GL_TEXTURE1);
-		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
-		gl.glActiveTexture(gl.GL_TEXTURE0);
-
-		return textureArrayId;
-	}
-
-	void freeTextureArray(GL4 gl, int textureArrayId)
-	{
-		GLUtil.glDeleteTexture(gl, textureArrayId);
 	}
 
 	/**

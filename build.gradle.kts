@@ -14,9 +14,8 @@ subprojects {
     repositories {
         jcenter()
         mavenLocal()
-        flatDir {
-            dirs("../OPRS-BUILD/", "./OPRS-BUILD/")
-        }
+        maven(url = "https://repo.runelite.net")
+        maven(url = "https://jitpack.io")
     }
 
     apply<JavaLibraryPlugin>()

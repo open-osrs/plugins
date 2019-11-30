@@ -24,11 +24,6 @@ public class NPCPresence
 		this.fadeTimer = FADE_TIMER_START;
 	}
 
-	static NPCPresence buildPresence(NPC npc)
-	{
-		return new NPCPresence(npc.getName(), npc.getCombatLevel());
-	}
-
 	@Override
 	public String toString()
 	{
@@ -43,6 +38,11 @@ public class NPCPresence
 	void tickExistence()
 	{
 		fadeTimer--;
+	}
+
+	static NPCPresence buildPresence(NPC npc)
+	{
+		return new NPCPresence(npc.getName(), npc.getCombatLevel());
 	}
 
 }

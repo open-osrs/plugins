@@ -170,43 +170,6 @@ class TaskBox extends JPanel
 		add(container, BorderLayout.NORTH);
 	}
 
-	private static long estimateRemainingTime(TaskData taskData)
-	{
-		int kills = taskData.getElapsedKills();
-		int killsInElapsedTime = kills - 1; // b/c time only elapses after 1st slayer drop
-		if (killsInElapsedTime < 1)
-		{
-			return Long.MAX_VALUE;
-		}
-		double timePerKill = ((double) taskData.getElapsedTime()) / ((double) killsInElapsedTime);
-
-		return (long) timePerKill * taskData.getAmount();
-	}
-
-	private static String htmlLabel(long timeMillis)
-	{
-		if (timeMillis == Long.MAX_VALUE)
-		{
-			String valueStr = "N/A";
-			return String.format(HTML_LABEL_TEMPLATE, valueStr);
-		}
-		else
-		{
-			long seconds = timeMillis / MILLIS_PER_SECOND;
-			long minutes = seconds / SECONDS_PER_MINUTE;
-			seconds %= 60;
-			long hours = minutes / MINUTES_PER_HOUR;
-			minutes %= 60;
-			return String.format(HTML_TIME_LABEL_TEMPLATE, (int) hours, (int) minutes, (int) seconds);
-		}
-	}
-
-	private static String htmlLabel(int value)
-	{
-		String valueStr = QuantityFormatter.quantityToRSDecimalStack(value);
-		return String.format(HTML_LABEL_TEMPLATE, valueStr);
-	}
-
 	void update(boolean updated, boolean paused, TaskData newData)
 	{
 		SwingUtilities.invokeLater(() -> rebuildAsync(updated, paused, newData));
@@ -303,5 +266,42 @@ class TaskBox extends JPanel
 		remainingDuration.setText(htmlLabel(estimateRemainingTime(taskData)));
 
 		repaint();
+	}
+
+	private static long estimateRemainingTime(TaskData taskData)
+	{
+		int kills = taskData.getElapsedKills();
+		int killsInElapsedTime = kills - 1; // b/c time only elapses after 1st slayer drop
+		if (killsInElapsedTime < 1)
+		{
+			return Long.MAX_VALUE;
+		}
+		double timePerKill = ((double) taskData.getElapsedTime()) / ((double) killsInElapsedTime);
+
+		return (long) timePerKill * taskData.getAmount();
+	}
+
+	private static String htmlLabel(long timeMillis)
+	{
+		if (timeMillis == Long.MAX_VALUE)
+		{
+			String valueStr = "N/A";
+			return String.format(HTML_LABEL_TEMPLATE, valueStr);
+		}
+		else
+		{
+			long seconds = timeMillis / MILLIS_PER_SECOND;
+			long minutes = seconds / SECONDS_PER_MINUTE;
+			seconds %= 60;
+			long hours = minutes / MINUTES_PER_HOUR;
+			minutes %= 60;
+			return String.format(HTML_TIME_LABEL_TEMPLATE, (int) hours, (int) minutes, (int) seconds);
+		}
+	}
+
+	private static String htmlLabel(int value)
+	{
+		String valueStr = QuantityFormatter.quantityToRSDecimalStack(value);
+		return String.format(HTML_LABEL_TEMPLATE, valueStr);
 	}
 }

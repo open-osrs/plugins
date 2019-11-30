@@ -30,6 +30,7 @@ import java.util.Scanner;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+public
 class GLUtil
 {
 	private static final int ERR_LEN = 1024;
@@ -137,8 +138,8 @@ class GLUtil
 		gl.glDeleteRenderbuffers(1, buf, 0);
 	}
 
-	static void loadShaders(GL4 gl, int glProgram, int glVertexShader, int glGeometryShader, int glFragmentShader,
-							String vertexShaderStr, String geomShaderStr, String fragShaderStr) throws ShaderException
+	public static void loadShaders(GL4 gl, int glProgram, int glVertexShader, int glGeometryShader, int glFragmentShader,
+								String vertexShaderStr, String geomShaderStr, String fragShaderStr) throws ShaderException
 	{
 		compileAndAttach(gl, glProgram, glVertexShader, vertexShaderStr);
 
@@ -166,7 +167,7 @@ class GLUtil
 		}
 	}
 
-	static void loadComputeShader(GL4 gl, int glProgram, int glComputeShader, String str) throws ShaderException
+	public static void loadComputeShader(GL4 gl, int glProgram, int glComputeShader, String str) throws ShaderException
 	{
 		compileAndAttach(gl, glProgram, glComputeShader, str);
 
@@ -204,7 +205,7 @@ class GLUtil
 		}
 	}
 
-	static String inputStreamToString(InputStream in)
+	public static String inputStreamToString(InputStream in)
 	{
 		Scanner scanner = new Scanner(in).useDelimiter("\\A");
 		return scanner.next();

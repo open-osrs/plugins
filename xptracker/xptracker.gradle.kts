@@ -43,6 +43,16 @@ dependencies {
     compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
     compileOnly(Libraries.okhttp3)
+
+    testImplementation("com.openosrs:runelite-api:$rlVersion")
+    testImplementation("com.openosrs:runelite-client:$rlVersion")
+    testImplementation("com.openosrs:http-api:$rlVersion")
+
+    testImplementation(Libraries.pf4j)
+    testImplementation(Libraries.guiceTestlib)
+    testImplementation(Libraries.junit)
+    testImplementation(Libraries.mockitoCore)
+    testImplementation(Libraries.mockitoInline)
 }
 
 tasks {
@@ -53,7 +63,9 @@ tasks {
                     "Plugin-Id" to "xptracker-plugin",
                     "Plugin-Class" to "net.runelite.client.plugins.xptracker.XpTrackerPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
+                    "Plugin-Dependencies" to "",
+                    "Plugin-Description" to "Enable the XP Tracker panel",
+                    "Plugin-License" to "3-Clause BSD License"
             ))
         }
 

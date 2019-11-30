@@ -34,30 +34,17 @@ import java.util.Map;
 
 class SlayerXpDropLookup
 {
-	// floating point math equality
-	private static final double EPSILON = 1e-6;
 	private Map<String, List<Double>> xpMap;
 
-	SlayerXpDropLookup()
-	{
-		try
-		{
-			loadXpJson();
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
+	// floating point math equality
+	private static final double EPSILON = 1e-6;
 
 	private void loadXpJson() throws IOException
 	{
 		try (final InputStream xpFile = getClass().getResourceAsStream("/slayer_xp.json"))
 		{
 			Gson gson = new Gson();
-			xpMap = gson.fromJson(new InputStreamReader(xpFile), new TypeToken<Map<String, List<Double>>>()
-			{
-			}.getType());
+			xpMap = gson.fromJson(new InputStreamReader(xpFile), new TypeToken<Map<String, List<Double>>>() {}.getType());
 		}
 	}
 
@@ -102,6 +89,7 @@ class SlayerXpDropLookup
 			if (xpCombatLevel.get(i) > 0)
 			{
 				givesSlayerXp = true;
+				break;
 			}
 		}
 		if (!givesSlayerXp)
@@ -115,6 +103,7 @@ class SlayerXpDropLookup
 				&& xpCombatLevel.get(i) > 0)
 			{
 				foundCombatLevel = true;
+				break;
 			}
 		}
 		if (foundCombatLevel)
@@ -138,5 +127,17 @@ class SlayerXpDropLookup
 			}
 		}
 		return -1;
+	}
+
+	SlayerXpDropLookup()
+	{
+		try
+		{
+			loadXpJson();
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 }

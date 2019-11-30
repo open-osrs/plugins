@@ -28,6 +28,7 @@ include(":gpu")
 include(":slayer")
 include(":stretchedmode")
 include(":xptracker")
+include(":xpglobes")
 
 for (project in rootProject.children) {
     project.apply {
