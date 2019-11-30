@@ -46,11 +46,51 @@ import static net.runelite.client.plugins.gpu.GpuPlugin.SMALL_TRIANGLE_COUNT;
 @Singleton
 class SceneUploader
 {
-	int sceneId = (int) (System.currentTimeMillis() / 1000L);
 	@Inject
 	private Client client;
+
+	int sceneId = (int) (System.currentTimeMillis() / 1000L);
 	private int offset;
 	private int uvoffset;
+
+	void upload(Scene scene, GpuIntBuffer vertexbuffer, GpuFloatBuffer uvBuffer)
+	{
+		++sceneId;
+		offset = 0;
+		uvoffset = 0;
+		vertexbuffer.clear();
+		uvBuffer.clear();
+
+		for (int z = 0; z < Constants.MAX_Z; ++z)
+		{
+			for (int x = 0; x < Constants.SCENE_SIZE; ++x)
+			{
+				for (int y = 0; y < Constants.SCENE_SIZE; ++y)
+				{
+					Tile tile = scene.getTiles()[z][x][y];
+					if (tile != null)
+					{
+						reset(tile);
+					}
+				}
+			}
+		}
+
+		for (int z = 0; z < Constants.MAX_Z; ++z)
+		{
+			for (int x = 0; x < Constants.SCENE_SIZE; ++x)
+			{
+				for (int y = 0; y < Constants.SCENE_SIZE; ++y)
+				{
+					Tile tile = scene.getTiles()[z][x][y];
+					if (tile != null)
+					{
+						upload(tile, vertexbuffer, uvBuffer);
+					}
+				}
+			}
+		}
+	}
 
 	private static void reset(Tile tile)
 	{
@@ -107,136 +147,6 @@ class SceneUploader
 			if (gameObject.getEntity() instanceof Model)
 			{
 				((Model) gameObject.getEntity()).setBufferOffset(-1);
-			}
-		}
-	}
-
-	private static int upload(TileModel sceneTileModel, int tileX, int tileY, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer)
-	{
-		final int[] faceX = sceneTileModel.getFaceX();
-		final int[] faceY = sceneTileModel.getFaceY();
-		final int[] faceZ = sceneTileModel.getFaceZ();
-
-		final int[] vertexX = sceneTileModel.getVertexX();
-		final int[] vertexY = sceneTileModel.getVertexY();
-		final int[] vertexZ = sceneTileModel.getVertexZ();
-
-		final int[] triangleColorA = sceneTileModel.getTriangleColorA();
-		final int[] triangleColorB = sceneTileModel.getTriangleColorB();
-		final int[] triangleColorC = sceneTileModel.getTriangleColorC();
-
-		final int[] triangleTextures = sceneTileModel.getTriangleTextureId();
-
-		final int faceCount = faceX.length;
-
-		vertexBuffer.ensureCapacity(faceCount * 12);
-		uvBuffer.ensureCapacity(faceCount * 12);
-
-		int baseX = Perspective.LOCAL_TILE_SIZE * tileX;
-		int baseY = Perspective.LOCAL_TILE_SIZE * tileY;
-
-		int cnt = 0;
-		for (int i = 0; i < faceCount; ++i)
-		{
-			final int triangleA = faceX[i];
-			final int triangleB = faceY[i];
-			final int triangleC = faceZ[i];
-
-			final int colorA = triangleColorA[i];
-			final int colorB = triangleColorB[i];
-			final int colorC = triangleColorC[i];
-
-			if (colorA == 12345678)
-			{
-				continue;
-			}
-
-			cnt += 3;
-
-			int vertexXA = vertexX[triangleA] - baseX;
-			int vertexZA = vertexZ[triangleA] - baseY;
-
-			int vertexXB = vertexX[triangleB] - baseX;
-			int vertexZB = vertexZ[triangleB] - baseY;
-
-			int vertexXC = vertexX[triangleC] - baseX;
-			int vertexZC = vertexZ[triangleC] - baseY;
-
-			vertexBuffer.put(vertexXA, vertexY[triangleA], vertexZA, colorA);
-			vertexBuffer.put(vertexXB, vertexY[triangleB], vertexZB, colorB);
-			vertexBuffer.put(vertexXC, vertexY[triangleC], vertexZC, colorC);
-
-			if (triangleTextures != null)
-			{
-				if (triangleTextures[i] != -1)
-				{
-					float tex = triangleTextures[i] + 1f;
-					uvBuffer.put(tex, vertexXA / 128f, vertexZA / 128f);
-					uvBuffer.put(tex, vertexXB / 128f, vertexZB / 128f);
-					uvBuffer.put(tex, vertexXC / 128f, vertexZC / 128f);
-				}
-				else
-				{
-					uvBuffer.put(0, 0, 0);
-					uvBuffer.put(0, 0, 0);
-					uvBuffer.put(0, 0, 0);
-				}
-			}
-		}
-
-		return cnt;
-	}
-
-	private static int faceHeight(Model model, int face)
-	{
-		final int[] vertexY = model.getVerticesY();
-
-		final int[] trianglesX = model.getTrianglesX();
-		final int[] trianglesY = model.getTrianglesY();
-		final int[] trianglesZ = model.getTrianglesZ();
-
-		int triangleA = trianglesX[face];
-		int triangleB = trianglesY[face];
-		int triangleC = trianglesZ[face];
-
-		return (vertexY[triangleA] + vertexY[triangleB] + vertexY[triangleC]) / 3;
-	}
-
-	void upload(Scene scene, GpuIntBuffer vertexbuffer, GpuFloatBuffer uvBuffer)
-	{
-		++sceneId;
-		offset = 0;
-		uvoffset = 0;
-		vertexbuffer.clear();
-		uvBuffer.clear();
-
-		for (int z = 0; z < Constants.MAX_Z; ++z)
-		{
-			for (int x = 0; x < Constants.SCENE_SIZE; ++x)
-			{
-				for (int y = 0; y < Constants.SCENE_SIZE; ++y)
-				{
-					Tile tile = scene.getTiles()[z][x][y];
-					if (tile != null)
-					{
-						reset(tile);
-					}
-				}
-			}
-		}
-
-		for (int z = 0; z < Constants.MAX_Z; ++z)
-		{
-			for (int x = 0; x < Constants.SCENE_SIZE; ++x)
-			{
-				for (int y = 0; y < Constants.SCENE_SIZE; ++y)
-				{
-					Tile tile = scene.getTiles()[z][x][y];
-					if (tile != null)
-					{
-						upload(tile, vertexbuffer, uvBuffer);
-					}
-				}
 			}
 		}
 	}
@@ -407,6 +317,97 @@ class SceneUploader
 		}
 
 		return 6;
+	}
+
+	private static int upload(TileModel sceneTileModel, int tileX, int tileY, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer)
+	{
+		final int[] faceX = sceneTileModel.getFaceX();
+		final int[] faceY = sceneTileModel.getFaceY();
+		final int[] faceZ = sceneTileModel.getFaceZ();
+
+		final int[] vertexX = sceneTileModel.getVertexX();
+		final int[] vertexY = sceneTileModel.getVertexY();
+		final int[] vertexZ = sceneTileModel.getVertexZ();
+
+		final int[] triangleColorA = sceneTileModel.getTriangleColorA();
+		final int[] triangleColorB = sceneTileModel.getTriangleColorB();
+		final int[] triangleColorC = sceneTileModel.getTriangleColorC();
+
+		final int[] triangleTextures = sceneTileModel.getTriangleTextureId();
+
+		final int faceCount = faceX.length;
+
+		vertexBuffer.ensureCapacity(faceCount * 12);
+		uvBuffer.ensureCapacity(faceCount * 12);
+
+		int baseX = Perspective.LOCAL_TILE_SIZE * tileX;
+		int baseY = Perspective.LOCAL_TILE_SIZE * tileY;
+
+		int cnt = 0;
+		for (int i = 0; i < faceCount; ++i)
+		{
+			final int triangleA = faceX[i];
+			final int triangleB = faceY[i];
+			final int triangleC = faceZ[i];
+
+			final int colorA = triangleColorA[i];
+			final int colorB = triangleColorB[i];
+			final int colorC = triangleColorC[i];
+
+			if (colorA == 12345678)
+			{
+				continue;
+			}
+
+			cnt += 3;
+
+			int vertexXA = vertexX[triangleA] - baseX;
+			int vertexZA = vertexZ[triangleA] - baseY;
+
+			int vertexXB = vertexX[triangleB] - baseX;
+			int vertexZB = vertexZ[triangleB] - baseY;
+
+			int vertexXC = vertexX[triangleC] - baseX;
+			int vertexZC = vertexZ[triangleC] - baseY;
+
+			vertexBuffer.put(vertexXA, vertexY[triangleA], vertexZA, colorA);
+			vertexBuffer.put(vertexXB, vertexY[triangleB], vertexZB, colorB);
+			vertexBuffer.put(vertexXC, vertexY[triangleC], vertexZC, colorC);
+
+			if (triangleTextures != null)
+			{
+				if (triangleTextures[i] != -1)
+				{
+					float tex = triangleTextures[i] + 1f;
+					uvBuffer.put(tex, vertexXA / 128f, vertexZA / 128f);
+					uvBuffer.put(tex, vertexXB / 128f, vertexZB / 128f);
+					uvBuffer.put(tex, vertexXC / 128f, vertexZC / 128f);
+				}
+				else
+				{
+					uvBuffer.put(0, 0, 0);
+					uvBuffer.put(0, 0, 0);
+					uvBuffer.put(0, 0, 0);
+				}
+			}
+		}
+
+		return cnt;
+	}
+
+	private static int faceHeight(Model model, int face)
+	{
+		final int[] vertexY = model.getVerticesY();
+
+		final int[] trianglesX = model.getTrianglesX();
+		final int[] trianglesY = model.getTrianglesY();
+		final int[] trianglesZ = model.getTrianglesZ();
+
+		int triangleA = trianglesX[face];
+		int triangleB = trianglesY[face];
+		int triangleC = trianglesZ[face];
+
+		return (vertexY[triangleA] + vertexY[triangleB] + vertexY[triangleC]) / 3;
 	}
 
 	private void uploadModel(Model model, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer)

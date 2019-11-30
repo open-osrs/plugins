@@ -45,7 +45,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import joptsimple.internal.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -107,14 +106,45 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Slayer",
-	description = "Enhance the slayer skill",
+	description = "Show additional slayer task related information",
 	tags = {"combat", "notifications", "overlay", "tasks"}
 )
 @PluginDependency(XpTrackerPlugin.class)
 @Slf4j
-@Singleton
 public class SlayerPlugin extends Plugin
 {
+	//Chat messages
+	private static final Pattern CHAT_GEM_PROGRESS_MESSAGE = Pattern.compile("^(?:You're assigned to kill|You have received a new Slayer assignment from .*:) (?:[Tt]he )?(?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>[^;]+))?(?:; only | \\()(?<amount>\\d+)(?: more to go\\.|\\))$");
+	private static final String CHAT_GEM_COMPLETE_MESSAGE = "You need something new to hunt.";
+	private static final Pattern CHAT_COMPLETE_MESSAGE = Pattern.compile("(?:\\d+,)*\\d+");
+	private static final String CHAT_CANCEL_MESSAGE = "Your task has been cancelled.";
+	private static final String CHAT_CANCEL_MESSAGE_JAD = "You no longer have a slayer task as you left the fight cave.";
+	private static final String CHAT_SUPERIOR_MESSAGE = "A superior foe has appeared...";
+	private static final Pattern COMBAT_BRACELET_TASK_UPDATE_MESSAGE = Pattern.compile("^You still need to kill (\\d+) monsters to complete your current Slayer assignment");
+
+	private static final String CHAT_BRACELET_SLAUGHTER = "Your bracelet of slaughter prevents your slayer";
+	private static final String CHAT_BRACELET_EXPEDITIOUS = "Your expeditious bracelet helps you progress your";
+
+
+	//NPC messages
+	private static final Pattern NPC_ASSIGN_MESSAGE = Pattern.compile(".*(?:Your new task is to kill|You are to bring balance to)\\s*(?<amount>\\d+) (?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>.+))?\\.");
+	private static final Pattern NPC_ASSIGN_BOSS_MESSAGE = Pattern.compile("^Excellent. You're now assigned to kill (?:the )?(.*) (\\d+) times.*Your reward point tally is (.*)\\.$");
+	private static final Pattern NPC_ASSIGN_FIRST_MESSAGE = Pattern.compile("^We'll start you off hunting (.*), you'll need to kill (\\d*) of them.");
+	private static final Pattern NPC_CURRENT_MESSAGE = Pattern.compile("^You're still (?:hunting|bringing balance to) (?<name>.+)(?: (?:in|on|south of) (?:the )?(?<location>.+), with|; you have) (?<amount>\\d+) to go\\..*");
+
+	private static final int GROTESQUE_GUARDIANS_REGION = 6727;
+
+	private static final Set<Task> weaknessTasks = ImmutableSet.of(Task.LIZARDS, Task.GARGOYLES,
+		Task.GROTESQUE_GUARDIANS, Task.GROTESQUE_GUARDIANS, Task.MUTATED_ZYGOMITES, Task.ROCKSLUGS);
+
+	// Chat Command
+	private static final String TASK_COMMAND_STRING = "!task";
+	private static final Pattern TASK_STRING_VALIDATION = Pattern.compile("[^a-zA-Z0-9' -]");
+	private static final int TASK_STRING_MAX_LENGTH = 50;
+	private static final String POINTS_COMMAND_STRING = "!points";
+
+	private static final double DMM_MULTIPLIER_RATIO = 5;
+
 	// Superiors
 	@VisibleForTesting
 	static final List<String> SUPERIOR_SLAYER_MONSTERS = Arrays.asList(
@@ -141,91 +171,96 @@ public class SlayerPlugin extends Plugin
 		"greater abyssal demon",
 		"night beast",
 		"nuclear smoke devil");
-	//Chat messages
-	private static final Pattern CHAT_GEM_PROGRESS_MESSAGE = Pattern.compile("^(?:You're assigned to kill|You have received a new Slayer assignment from .*:) (?:[Tt]he )?(?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>[^;]+))?(?:; only | \\()(?<amount>\\d+)(?: more to go\\.|\\))$");
-	private static final String CHAT_GEM_COMPLETE_MESSAGE = "You need something new to hunt.";
-	private static final Pattern CHAT_COMPLETE_MESSAGE = Pattern.compile("(?:\\d+,)*\\d+");
-	private static final String CHAT_CANCEL_MESSAGE = "Your task has been cancelled.";
-	private static final String CHAT_CANCEL_MESSAGE_JAD = "You no longer have a slayer task as you left the fight cave.";
-	private static final String CHAT_SUPERIOR_MESSAGE = "A superior foe has appeared...";
-	private static final Pattern COMBAT_BRACELET_TASK_UPDATE_MESSAGE = Pattern.compile("^You still need to kill (\\d+) monsters to complete your current Slayer assignment");
-	private static final String CHAT_BRACELET_SLAUGHTER = "Your bracelet of slaughter prevents your slayer";
-	private static final String CHAT_BRACELET_EXPEDITIOUS = "Your expeditious bracelet helps you progress your";
-	//NPC messages
-	private static final Pattern NPC_ASSIGN_MESSAGE = Pattern.compile(".*(?:Your new task is to kill|You are to bring balance to)\\s*(?<amount>\\d+) (?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>.+))?\\.");
-	private static final Pattern NPC_ASSIGN_BOSS_MESSAGE = Pattern.compile("^Excellent. You're now assigned to kill (?:the )?(.*) (\\d+) times.*Your reward point tally is (.*)\\.$");
-	private static final Pattern NPC_ASSIGN_FIRST_MESSAGE = Pattern.compile("^We'll start you off hunting (.*), you'll need to kill (\\d*) of them.");
-	private static final Pattern NPC_CURRENT_MESSAGE = Pattern.compile("^You're still (?:hunting|bringing balance to) (?<name>.+)(?: (?:in|on|south of) (?:the )?(?<location>.+), with|; you have) (?<amount>\\d+) to go\\..*");
-	private static final int GROTESQUE_GUARDIANS_REGION = 6727;
-	private static final Set<Task> weaknessTasks = ImmutableSet.of(Task.LIZARDS, Task.GARGOYLES,
-		Task.GROTESQUE_GUARDIANS, Task.GROTESQUE_GUARDIANS, Task.MUTATED_ZYGOMITES, Task.ROCKSLUGS);
-	// Chat Command
-	private static final String TASK_COMMAND_STRING = "!task";
-	private static final Pattern TASK_STRING_VALIDATION = Pattern.compile("[^a-zA-Z0-9' -]");
-	private static final int TASK_STRING_MAX_LENGTH = 50;
-	private static final String POINTS_COMMAND_STRING = "!points";
-	private static final double DMM_MULTIPLIER_RATIO = 5;
-	// rising edge detection isn't enough for some reason (don't know why) so in addition to a rising edge rather than
-	// instantly allowing for another assignment we'll do a 2 tick refractory period
-	private static final int FORCED_WAIT = 2;
-	@Getter(AccessLevel.PACKAGE)
-	private final Set<NPC> highlightedTargets = new HashSet<>();
-	private final List<Integer> targetIds = new ArrayList<>();
-	private final List<NPCPresence> lingeringPresences = new ArrayList<>();
+
 	@Inject
 	private ClientToolbar clientToolbar;
+
 	@Inject
 	private SpriteManager spriteManager;
+
 	@Inject
 	private Client client;
+
 	@Inject
 	private SlayerConfig config;
+
 	@Inject
 	private OverlayManager overlayManager;
+
 	@Inject
 	private SlayerOverlay overlay;
+
 	@Inject
 	private InfoBoxManager infoBoxManager;
+
 	@Inject
 	private ItemManager itemManager;
+
 	@Inject
 	private Notifier notifier;
+
 	@Inject
 	private ClientThread clientThread;
+
 	@Inject
 	private TargetClickboxOverlay targetClickboxOverlay;
+
 	@Inject
 	private TargetWeaknessOverlay targetWeaknessOverlay;
+
 	@Inject
 	private TargetMinimapOverlay targetMinimapOverlay;
+
 	@Inject
 	private ChatMessageManager chatMessageManager;
+
 	@Inject
 	private ChatCommandManager chatCommandManager;
+
 	@Inject
 	private ScheduledExecutorService executor;
+
 	@Inject
 	private ChatClient chatClient;
+
+	@Getter(AccessLevel.PACKAGE)
+	private final Set<NPC> highlightedTargets = new HashSet<>();
+
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
 	private TaskData currentTask = new TaskData(0, 0, 0, 0, 0, 0, null, null, true);
+
 	@Getter(AccessLevel.PACKAGE)
 	private int streak;
+
 	@Getter(AccessLevel.PACKAGE)
 	private int points;
+
 	@Getter(AccessLevel.PACKAGE)
 	private Task weaknessTask = null;
+
 	private TaskCounter counter;
 	private int cachedXp = -1;
 	private int cachedPoints;
 	private Instant infoTimer;
 	private List<String> targetNames = new ArrayList<>();
+	private final List<Integer> targetIds = new ArrayList<>();
 	private boolean checkAsTokens = true;
+
+	private final List<NPCPresence> lingeringPresences = new ArrayList<>();
 	private SlayerXpDropLookup slayerXpDropLookup = null;
+
 	private SlayerTaskPanel panel;
 	private NavigationButton navButton;
 	private long lastTickMillis = 0;
 	private boolean loginTick = false;
+
+	private void clearTrackedNPCs()
+	{
+		highlightedTargets.clear();
+		lingeringPresences.clear();
+	}
+
 	private boolean showInfobox;
 	@Getter(AccessLevel.PACKAGE)
 	private boolean showItemOverlay;
@@ -257,29 +292,9 @@ public class SlayerPlugin extends Plugin
 	private int lastCertainAmount;
 
 	private boolean weaknessOverlayAttached;
-	// b/c dialog can stay up on screen for multiple ticks in a row we want to make sure we only set a task once
-	// for the dialog that appears so we need to basically do a rising edge detection that only allows for a dialog
-	// check to be performed if in the previous ticks there was a period of no dialog
-	// i.e. once a dialog has been matched dialog cannot be matched again until npc dialog goes away for a tick
-	// this will work because in order for a new slayer task to happen the player either has to go complete the assignment
-	// (and close npc dialog) or go into the rewards screen which also closes npc dialog
-	private boolean canMatchDialog = true;
-	private int forcedWait = -1;
-
-	//Utils
-	private static String capsString(String str)
-	{
-		return str.substring(0, 1).toUpperCase() + str.substring(1);
-	}
-
-	private void clearTrackedNPCs()
-	{
-		highlightedTargets.clear();
-		lingeringPresences.clear();
-	}
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		updateConfig();
 
@@ -321,7 +336,7 @@ public class SlayerPlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
 		overlayManager.remove(targetClickboxOverlay);
@@ -520,6 +535,19 @@ public class SlayerPlugin extends Plugin
 		}
 		return estimatedCount;
 	}
+
+	// b/c dialog can stay up on screen for multiple ticks in a row we want to make sure we only set a task once
+	// for the dialog that appears so we need to basically do a rising edge detection that only allows for a dialog
+	// check to be performed if in the previous ticks there was a period of no dialog
+	// i.e. once a dialog has been matched dialog cannot be matched again until npc dialog goes away for a tick
+	// this will work because in order for a new slayer task to happen the player either has to go complete the assignment
+	// (and close npc dialog) or go into the rewards screen which also closes npc dialog
+	private boolean canMatchDialog = true;
+
+	// rising edge detection isn't enough for some reason (don't know why) so in addition to a rising edge rather than
+	// instantly allowing for another assignment we'll do a 2 tick refractory period
+	private static final int FORCED_WAIT = 2;
+	private int forcedWait = -1;
 
 	@Subscribe
 	public void onGameTick(GameTick tick)
@@ -1256,6 +1284,12 @@ public class SlayerPlugin extends Plugin
 		});
 
 		return true;
+	}
+
+	//Utils
+	private static String capsString(String str)
+	{
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 
 	private void setPoints(int points)

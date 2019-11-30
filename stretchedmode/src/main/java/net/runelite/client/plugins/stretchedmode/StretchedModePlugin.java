@@ -36,12 +36,10 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import org.pf4j.Extension;
 
-@Extension
 @PluginDescriptor(
 	name = "Stretched Mode",
-	description = "Stretches the game in fixed and resizable modes",
+	description = "Stretches the game in fixed and resizable modes.",
 	tags = {"resize", "ui", "interface", "stretch", "scaling", "fixed"},
 	enabledByDefault = false
 )
@@ -81,7 +79,7 @@ public class StretchedModePlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		client.setStretchedEnabled(false);
 		client.invalidateStretching(true);

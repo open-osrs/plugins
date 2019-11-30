@@ -37,6 +37,9 @@ dependencies {
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
     compileOnly("com.openosrs:http-api:$rlVersion")
+
+    compileOnly(project(":xptracker"))
+
     compileOnly(Libraries.guice)
     compileOnly(Libraries.gson)
     compileOnly(Libraries.javax)
@@ -44,6 +47,16 @@ dependencies {
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
+
+    testImplementation("com.openosrs:runelite-api:$rlVersion")
+    testImplementation("com.openosrs:runelite-client:$rlVersion")
+    testImplementation("com.openosrs:http-api:$rlVersion")
+
+    testImplementation(Libraries.pf4j)
+    testImplementation(Libraries.guiceTestlib)
+    testImplementation(Libraries.junit)
+    testImplementation(Libraries.mockitoCore)
+    testImplementation(Libraries.mockitoInline)
 }
 
 tasks {
@@ -54,7 +67,9 @@ tasks {
                     "Plugin-Id" to "slayer-plugin",
                     "Plugin-Class" to "net.runelite.client.plugins.slayer.SlayerPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "xptracker-plugin"
+                    "Plugin-Dependencies" to "xptracker-plugin",
+                    "Plugin-Description" to "Utilizes the GPU",
+                    "Plugin-License" to "3-Clause BSD License"
             ))
         }
 

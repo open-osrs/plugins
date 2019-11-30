@@ -32,13 +32,6 @@ class GpuFloatBuffer
 {
 	private FloatBuffer buffer = allocateDirect(65536);
 
-	static FloatBuffer allocateDirect(int size)
-	{
-		return ByteBuffer.allocateDirect(size * Float.BYTES)
-			.order(ByteOrder.nativeOrder())
-			.asFloatBuffer();
-	}
-
 	void put(float texture, float u, float v)
 	{
 		buffer.put(texture).put(u).put(v).put((float) 0.0);
@@ -68,5 +61,12 @@ class GpuFloatBuffer
 	FloatBuffer getBuffer()
 	{
 		return buffer;
+	}
+
+	static FloatBuffer allocateDirect(int size)
+	{
+		return ByteBuffer.allocateDirect(size * Float.BYTES)
+			.order(ByteOrder.nativeOrder())
+			.asFloatBuffer();
 	}
 }

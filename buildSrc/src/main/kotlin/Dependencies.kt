@@ -27,9 +27,9 @@ object ProjectVersions {
     const val launcherVersion = "2.0.4"
     const val rlVersion = "1.5.42"
 
-    const val openosrsVersion = "2.1.12.0-SNAPSHOT"
+    const val openosrsVersion = "2.1.15.0"
 
-    const val rsversion = 185
+    const val rsversion = 186
     const val cacheversion = 165
 }
 
@@ -40,7 +40,7 @@ object Plugins {
     val testLogger = Pair("com.adarshr.test-logger", "2.0.0")
     val versions = Pair("com.github.ben-manes.versions", "0.27.0")
     val latestVersion = Pair("se.patrikerdes.use-latest-versions", "0.2.13")
-    val grgit = Pair("org.ajoberstar.grgit", "4.0.0-rc.1")
+    val grgit = Pair("org.ajoberstar.grgit", "4.0.0")
     val jarTest = Pair("com.github.hauner.jarTest", "1.0.1")
     val shadow = Pair("com.github.johnrengelman.shadow", "5.2.0")
 }
@@ -49,7 +49,6 @@ object Libraries {
     private object Versions {
         const val annotations = "18.0.0"
         const val antlr = "4.7.2"
-        const val apacheCommonsLang = "3.9"
         const val apacheCommonsCompress = "1.19"
         const val apacheCommonsCsv = "1.7"
         const val apacheCommonsText = "1.8"
@@ -104,7 +103,6 @@ object Libraries {
 
     const val annotations = "org.jetbrains:annotations:${Versions.annotations}"
     const val antlr = "org.antlr:antlr4-runtime:${Versions.antlr}"
-    const val apacheCommonsLang = "org.apache.commons:commons-lang3:${Versions.apacheCommonsLang}"
     const val apacheCommonsCompress = "org.apache.commons:commons-compress:${Versions.apacheCommonsCompress}"
     const val apacheCommonsCsv = "org.apache.commons:commons-csv:${Versions.apacheCommonsCsv}"
     const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.apacheCommonsText}"

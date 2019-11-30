@@ -25,7 +25,7 @@ import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.QuantityFormatter;
 
 @Singleton
-public class SlayerTaskPanel extends PluginPanel
+class SlayerTaskPanel extends PluginPanel
 {
 	private static final long MILLIS_PER_SECOND = 1000;
 	private static final long SECONDS_PER_MINUTE = 60;
@@ -44,6 +44,28 @@ public class SlayerTaskPanel extends PluginPanel
 	// TODO: set some kind of maximum for the amount of tasks to be tracked in a session
 	private static final int MAX_TASK_BOXES = 50;
 
+	// When there are no tasks, display this
+	private final PluginErrorPanel errorPanel = new PluginErrorPanel();
+
+	// Handle task boxes
+	private final JPanel tasksContainer = new JPanel();
+
+	// Handle overall slayer session data
+	private final JPanel overallPanel = new JPanel();
+	private final JLabel overallKillsLabel = new JLabel();
+	private final JLabel overallTimeLabel = new JLabel();
+	private final JLabel overallIcon = new JLabel();
+
+	// Actions
+	private final JPanel actionsContainer = new JPanel();
+	private final JLabel playBtn = new JLabel();
+	private final JLabel pauseBtn = new JLabel();
+
+	// Log tasks
+	private final List<TaskBox> tasks = new ArrayList<>();
+
+	private SlayerPlugin slayerPlugin;
+
 	static
 	{
 		final BufferedImage pauseImg = ImageUtil.getResourceStreamFromClass(SlayerPlugin.class, "pause_icon.png");
@@ -57,23 +79,6 @@ public class SlayerTaskPanel extends PluginPanel
 		PLAY_FADED = new ImageIcon(ImageUtil.alphaOffset(playImg, -180));
 		PLAY_HOVER = new ImageIcon(ImageUtil.alphaOffset(playImg, -220));
 	}
-
-	// When there are no tasks, display this
-	private final PluginErrorPanel errorPanel = new PluginErrorPanel();
-	// Handle task boxes
-	private final JPanel tasksContainer = new JPanel();
-	// Handle overall slayer session data
-	private final JPanel overallPanel = new JPanel();
-	private final JLabel overallKillsLabel = new JLabel();
-	private final JLabel overallTimeLabel = new JLabel();
-	private final JLabel overallIcon = new JLabel();
-	// Actions
-	private final JPanel actionsContainer = new JPanel();
-	private final JLabel playBtn = new JLabel();
-	private final JLabel pauseBtn = new JLabel();
-	// Log tasks
-	private final List<TaskBox> tasks = new ArrayList<>();
-	private SlayerPlugin slayerPlugin;
 
 	public SlayerTaskPanel(SlayerPlugin slayerPlugin)
 	{
@@ -109,18 +114,6 @@ public class SlayerTaskPanel extends PluginPanel
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent mouseEvent)
-			{
-				boolean paused = true;
-				TaskData currentTask = slayerPlugin.getCurrentTask();
-				if (currentTask != null)
-				{
-					paused = currentTask.isPaused();
-				}
-				playBtn.setIcon(paused ? PLAY_HOVER : PLAY);
-			}
-
-			@Override
 			public void mouseExited(MouseEvent mouseEvent)
 			{
 				boolean paused = true;
@@ -130,6 +123,18 @@ public class SlayerTaskPanel extends PluginPanel
 					paused = currentTask.isPaused();
 				}
 				playBtn.setIcon(paused ? PLAY_FADED : PLAY);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent mouseEvent)
+			{
+				boolean paused = true;
+				TaskData currentTask = slayerPlugin.getCurrentTask();
+				if (currentTask != null)
+				{
+					paused = currentTask.isPaused();
+				}
+				playBtn.setIcon(paused ? PLAY_HOVER : PLAY);
 			}
 		});
 
@@ -145,18 +150,6 @@ public class SlayerTaskPanel extends PluginPanel
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent mouseEvent)
-			{
-				boolean paused = true;
-				TaskData currentTask = slayerPlugin.getCurrentTask();
-				if (currentTask != null)
-				{
-					paused = currentTask.isPaused();
-				}
-				pauseBtn.setIcon(paused ? PAUSE : PAUSE_HOVER);
-			}
-
-			@Override
 			public void mouseExited(MouseEvent mouseEvent)
 			{
 				boolean paused = true;
@@ -166,6 +159,18 @@ public class SlayerTaskPanel extends PluginPanel
 					paused = currentTask.isPaused();
 				}
 				pauseBtn.setIcon(paused ? PAUSE : PAUSE_FADED);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent mouseEvent)
+			{
+				boolean paused = true;
+				TaskData currentTask = slayerPlugin.getCurrentTask();
+				if (currentTask != null)
+				{
+					paused = currentTask.isPaused();
+				}
+				pauseBtn.setIcon(paused ? PAUSE : PAUSE_HOVER);
 			}
 		});
 
@@ -208,38 +213,6 @@ public class SlayerTaskPanel extends PluginPanel
 		add(errorPanel);
 	}
 
-	private static boolean isEmptyTask(TaskData taskData)
-	{
-		return (taskData.getTaskName() == null || taskData.getTaskName().equals("")) && taskData.getAmount() == 0 && taskData.getInitialAmount() == 0;
-	}
-
-	private static String htmlLabel(String key, long timeMillis)
-	{
-		if (timeMillis == Long.MAX_VALUE)
-		{
-			String valueStr = "N/A";
-			return String.format(HTML_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR),
-				key, valueStr);
-		}
-		else
-		{
-			long seconds = timeMillis / MILLIS_PER_SECOND;
-			long minutes = seconds / SECONDS_PER_MINUTE;
-			seconds %= 60;
-			long hours = minutes / MINUTES_PER_HOUR;
-			minutes %= 60;
-			return String.format(HTML_TIME_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR),
-				key, (int) hours, (int) minutes, (int) seconds);
-		}
-	}
-
-	private static String htmlLabel(String key, int value)
-	{
-		String valueStr = QuantityFormatter.quantityToRSDecimalStack(value);
-		return String.format(HTML_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR),
-			key, valueStr);
-	}
-
 	void loadHeaderIcon(BufferedImage img)
 	{
 		overallIcon.setIcon(new ImageIcon(img));
@@ -263,6 +236,11 @@ public class SlayerTaskPanel extends PluginPanel
 
 		overallKillsLabel.setText(htmlLabel("Total kills: ", overallKills));
 		overallTimeLabel.setText(htmlLabel("Total time: ", overallTime));
+	}
+
+	private static boolean isEmptyTask(TaskData taskData)
+	{
+		return (taskData.getTaskName() == null || taskData.getTaskName().equals("")) && taskData.getAmount() == 0 && taskData.getInitialAmount() == 0;
 	}
 
 	private void showMainView()
@@ -365,6 +343,33 @@ public class SlayerTaskPanel extends PluginPanel
 		// update the overall stats once this task stats are updated
 		updateOverall();
 		changePauseState(paused);
+	}
+
+	private static String htmlLabel(String key, long timeMillis)
+	{
+		if (timeMillis == Long.MAX_VALUE)
+		{
+			String valueStr = "N/A";
+			return String.format(HTML_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR),
+				key, valueStr);
+		}
+		else
+		{
+			long seconds = timeMillis / MILLIS_PER_SECOND;
+			long minutes = seconds / SECONDS_PER_MINUTE;
+			seconds %= 60;
+			long hours = minutes / MINUTES_PER_HOUR;
+			minutes %= 60;
+			return String.format(HTML_TIME_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR),
+				key, (int) hours, (int) minutes, (int) seconds);
+		}
+	}
+
+	private static String htmlLabel(String key, int value)
+	{
+		String valueStr = QuantityFormatter.quantityToRSDecimalStack(value);
+		return String.format(HTML_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR),
+			key, valueStr);
 	}
 
 }

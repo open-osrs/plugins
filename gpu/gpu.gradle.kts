@@ -36,6 +36,7 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
@@ -43,14 +44,11 @@ dependencies {
     compileOnly(Libraries.pf4j)
     compileOnly(Libraries.jogampJogl)
     compileOnly(Libraries.jogampGluegen)
-    compileOnly(Libraries.jogampGluegenLinuxAmd64)
-    compileOnly(Libraries.jogampGluegenLinuxI586)
-    compileOnly(Libraries.jogampGluegenWindowsAmd64)
-    compileOnly(Libraries.jogampGluegenWindowsI586)
-    compileOnly(Libraries.jogampJoglLinuxAmd64)
-    compileOnly(Libraries.jogampJoglLinuxI586)
-    compileOnly(Libraries.jogampJoglWindowsAmd64)
-    compileOnly(Libraries.jogampJoglWindowsI586)
+
+    testImplementation(Libraries.jogampJogl)
+    testImplementation(Libraries.jogampGluegen)
+    testImplementation(Libraries.junit)
+    testImplementation(Libraries.hamcrest)
 }
 
 tasks {
@@ -61,7 +59,9 @@ tasks {
                     "Plugin-Id" to "gpu-plugin",
                     "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
+                    "Plugin-Dependencies" to "",
+                    "Plugin-Description" to "Utilizes the GPU",
+                    "Plugin-License" to "3-Clause BSD License"
             ))
         }
 
