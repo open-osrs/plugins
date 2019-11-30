@@ -60,7 +60,7 @@ tasks {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to "gpu-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPlugin",
+                    "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to ""
             ))
