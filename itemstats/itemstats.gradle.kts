@@ -1,3 +1,5 @@
+import ProjectVersions.rlVersion
+
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -23,21 +25,40 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+description = "Item Stats"
+version = "0.0.1"
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+val deps = configurations.create("deps")
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
+dependencies {
+    annotationProcessor(Libraries.lombok)
+    annotationProcessor(Libraries.pf4j)
+
+    compileOnly("com.openosrs:runelite-api:$rlVersion")
+    compileOnly("com.openosrs:runelite-client:$rlVersion")
+    compileOnly("com.openosrs:http-api:$rlVersion")
+    compileOnly(Libraries.guice)
+    compileOnly(Libraries.gson)
+    compileOnly(Libraries.javax)
+    compileOnly(Libraries.jopt)
+    compileOnly(Libraries.lombok)
+    compileOnly(Libraries.rxjava)
+    compileOnly(Libraries.pf4j)
+
+}
+
+tasks {
+    jar {
+        manifest {
+            attributes(mapOf(
+                    "Plugin-Version" to project.version,
+                    "Plugin-Id" to "itemstats-plugin",
+                    "Plugin-Class" to "net.runelite.client.plugins.itemstats.ItemStatPluginWrapper",
+                    "Plugin-Provider" to "OpenOSRS",
+                    "Plugin-Dependencies" to ""
+            ))
+        }
+
+        from(deps.map { if (it.isDirectory) it else zipTree(it) })
     }
 }

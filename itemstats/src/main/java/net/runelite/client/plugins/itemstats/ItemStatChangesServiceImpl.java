@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Jos <Malevolentdev@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.itemstats;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+@Singleton
+class ItemStatChangesServiceImpl implements ItemStatChangesService
+{
+	private final ItemStatChanges itemstatchanges;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@Inject
+	private ItemStatChangesServiceImpl(ItemStatChanges itemstatchanges)
+	{
+		this.itemstatchanges = itemstatchanges;
+	}
+
+	@Override
+	public Effect getItemStatChanges(int id)
+	{
+		return itemstatchanges.get(id);
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.itemstats;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import net.runelite.api.Client;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+public class Combo implements Effect
+{
+	private final SingleEffect[] calcs;
+	private final int numPrimaries;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	public Combo(SingleEffect[] calcs)
+	{
+		this(1, calcs);
+	}
+
+	public Combo(int numPrimaries, SingleEffect[] calcs)
+	{
+		this.numPrimaries = numPrimaries;
+		this.calcs = calcs;
+	}
+
+	@Override
+	public StatsChanges calculate(Client client)
+	{
+		StatsChanges out = new StatsChanges(calcs.length);
+		StatChange[] statChanges = out.getStatChanges();
+		for (int i = 0; i < calcs.length; i++)
+		{
+			statChanges[i] = calcs[i].effect(client);
+		}
+		Positivity positivity = Positivity.NO_CHANGE;
+		for (int i = 0; i < numPrimaries; i++)
+		{
+			if (positivity.ordinal() < statChanges[i].getPositivity().ordinal())
+			{
+				positivity = statChanges[i].getPositivity();
+			}
+		}
+		out.setPositivity(positivity);
+		return out;
+	}
+
 }

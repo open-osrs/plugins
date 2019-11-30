@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.itemstats.food;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import net.runelite.api.Client;
+import net.runelite.client.plugins.itemstats.FoodBase;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+public class Anglerfish extends FoodBase
+{
+	public Anglerfish()
+	{
+		setBoost(true);
+	}
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@Override
+	public int heals(Client client)
+	{
+		int maxHP = getStat().getMaximum(client);
+
+		int C;
+		if (maxHP <= 24)
+		{
+			C = 2;
+		}
+		else if (maxHP <= 49)
+		{
+			C = 4;
+		}
+		else if (maxHP <= 74)
+		{
+			C = 6;
+		}
+		else if (maxHP <= 92)
+		{
+			C = 8;
+		}
+		else
+		{
+			C = 13;
+		}
+		return (maxHP / 10) + C;
+	}
+
 }

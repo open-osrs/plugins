@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.itemstats;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import net.runelite.api.Client;
+import net.runelite.client.plugins.itemstats.delta.DeltaCalculator;
+import net.runelite.client.plugins.itemstats.stats.Stat;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+/**
+ * A stat boost using the real stat level. Eg, non-boosted.
+ */
+public class SimpleStatBoost extends StatBoost
+{
+	private final DeltaCalculator deltaCalculator;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	public SimpleStatBoost(Stat stat, boolean boost, DeltaCalculator deltaCalculator)
+	{
+		super(stat, boost);
+		this.deltaCalculator = deltaCalculator;
+	}
+
+	@Override
+	public int heals(Client client)
+	{
+		int max = getStat().getMaximum(client);
+		return deltaCalculator.calculateDelta(max);
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.itemstats;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import net.runelite.api.Client;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+public class RangeStatBoost extends SingleEffect
+{
+	private final StatBoost a;
+	private final StatBoost b;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	RangeStatBoost(StatBoost a, StatBoost b)
+	{
+		assert a.getStat() == b.getStat();
+
+		this.a = a;
+		this.b = b;
+	}
+
+	@Override
+	public StatChange effect(Client client)
+	{
+		final StatChange changeA = this.a.effect(client);
+		final StatChange changeB = this.b.effect(client);
+
+		final RangeStatChange r = new RangeStatChange();
+		r.setMinAbsolute(Math.min(changeA.getAbsolute(), changeB.getAbsolute()));
+		r.setAbsolute(Math.max(changeA.getAbsolute(), changeB.getAbsolute()));
+		r.setMinRelative(Math.min(changeA.getRelative(), changeB.getRelative()));
+		r.setRelative(Math.max(changeA.getRelative(), changeB.getRelative()));
+		r.setMinTheoretical(Math.min(changeA.getTheoretical(), changeB.getTheoretical()));
+		r.setTheoretical(Math.max(changeA.getTheoretical(), changeB.getTheoretical()));
+		r.setStat(changeA.getStat());
+
+		final int avg = (changeA.getPositivity().ordinal() + changeB.getPositivity().ordinal()) / 2;
+		r.setPositivity(Positivity.values()[avg]);
+
+		return r;
+	}
 }
