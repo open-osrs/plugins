@@ -64,12 +64,6 @@ import net.runelite.client.util.QuantityFormatter;
 class XpInfoBox extends JPanel
 {
 	private static final DecimalFormat TWO_DECIMAL_FORMAT = new DecimalFormat("0.00");
-
-	static
-	{
-		TWO_DECIMAL_FORMAT.setRoundingMode(RoundingMode.DOWN);
-	}
-
 	// Templates
 	private static final String HTML_TOOL_TIP_TEMPLATE =
 		"<html>%s %s done<br/>"
@@ -77,9 +71,13 @@ class XpInfoBox extends JPanel
 			+ "%s till goal lvl</html>";
 	private static final String HTML_LABEL_TEMPLATE =
 		"<html><body style='color:%s'>%s<span style='color:white'>%s</span></body></html>";
-
 	private static final String REMOVE_STATE = "Remove from canvas";
 	private static final String ADD_STATE = "Add to canvas";
+
+	static
+	{
+		TWO_DECIMAL_FORMAT.setRoundingMode(RoundingMode.DOWN);
+	}
 
 	// Instance members
 	private final JPanel panel;
@@ -110,12 +108,6 @@ class XpInfoBox extends JPanel
 	private boolean paused = false;
 
 	private Style style = Style.FULL;
-
-	private enum Style
-	{
-		FULL,
-		SIMPLE
-	}
 
 	XpInfoBox(XpTrackerPlugin xpTrackerPlugin, Client client, JPanel panel, Skill skill, SkillIconManager iconManager)
 	{
@@ -236,6 +228,12 @@ class XpInfoBox extends JPanel
 		progressBar.addMouseListener(mouseListener);
 
 		add(container, BorderLayout.NORTH);
+	}
+
+	static String htmlLabel(String key, int value)
+	{
+		String valueStr = QuantityFormatter.quantityToRSDecimalStack(value, true);
+		return String.format(HTML_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR), key, valueStr);
 	}
 
 	void setStyle(Style style)
@@ -362,9 +360,9 @@ class XpInfoBox extends JPanel
 		}
 	}
 
-	static String htmlLabel(String key, int value)
+	private enum Style
 	{
-		String valueStr = QuantityFormatter.quantityToRSDecimalStack(value, true);
-		return String.format(HTML_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR), key, valueStr);
+		FULL,
+		SIMPLE
 	}
 }

@@ -56,16 +56,16 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
+import net.runelite.api.Entity;
 import net.runelite.api.GameState;
 import net.runelite.api.Model;
 import net.runelite.api.NodeCache;
 import net.runelite.api.Perspective;
-import net.runelite.api.Entity;
 import net.runelite.api.Scene;
-import net.runelite.api.TileModel;
-import net.runelite.api.TilePaint;
 import net.runelite.api.Texture;
 import net.runelite.api.TextureProvider;
+import net.runelite.api.TileModel;
+import net.runelite.api.TilePaint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.client.callback.ClientThread;
@@ -95,83 +95,61 @@ import org.pf4j.Extension;
 @Singleton
 public class GpuPlugin extends Plugin implements DrawCallbacks
 {
-	// This is the maximum number of triangles the compute shaders support
-	private static final int MAX_TRIANGLE = 4096;
 	static final int SMALL_TRIANGLE_COUNT = 512;
-	private static final int FLAG_SCENE_BUFFER = Integer.MIN_VALUE;
 	static final int MAX_DISTANCE = 90;
 	static final int MAX_FOG_DEPTH = 100;
-
+	// This is the maximum number of triangles the compute shaders support
+	private static final int MAX_TRIANGLE = 4096;
+	private static final int FLAG_SCENE_BUFFER = Integer.MIN_VALUE;
+	private final IntBuffer uniformBuffer = GpuIntBuffer.allocateDirect(5 + 3 + 2048 * 4);
+	private final float[] textureOffsets = new float[128];
 	@Inject
 	private Client client;
-
 	@Inject
 	private ClientThread clientThread;
-
 	@Inject
 	private GpuPluginConfig config;
-
 	@Inject
 	private TextureManager textureManager;
-
 	@Inject
 	private SceneUploader sceneUploader;
-
 	@Inject
 	private DrawManager drawManager;
-
 	@Inject
 	private PluginManager pluginManager;
-
 	@Inject
 	private EventBus eventbus;
-
 	private Canvas canvas;
 	private JAWTWindow jawtWindow;
 	private GL4 gl;
 	private GLContext glContext;
 	private GLDrawable glDrawable;
-
 	private int glProgram;
 	private int glVertexShader;
 	private int glGeomShader;
 	private int glFragmentShader;
-
 	private int glComputeProgram;
 	private int glComputeShader;
-
 	private int glSmallComputeProgram;
 	private int glSmallComputeShader;
-
 	private int glUnorderedComputeProgram;
 	private int glUnorderedComputeShader;
-
 	private int vaoHandle;
-
 	private int interfaceTexture;
-
 	private int glUiProgram;
 	private int glUiVertexShader;
 	private int glUiFragmentShader;
-
 	private int vaoUiHandle;
 	private int vboUiHandle;
-
 	private int fboSceneHandle;
 	private int texSceneHandle;
 	private int rboSceneHandle;
-
 	// scene vertex buffer id
 	private int bufferId;
 	// scene uv buffer id
 	private int uvBufferId;
-
 	private int textureArrayId;
-
 	private int uniformBufferId;
-	private final IntBuffer uniformBuffer = GpuIntBuffer.allocateDirect(5 + 3 + 2048 * 4);
-	private final float[] textureOffsets = new float[128];
-
 	private GpuIntBuffer vertexBuffer;
 	private GpuFloatBuffer uvBuffer;
 
@@ -751,22 +729,340 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		gl.glUseProgram(0);
 	}
 
-	@Override
-	public void drawScene(int cameraX, int cameraY, int cameraZ, int cameraPitch, int cameraYaw, int plane)
+	private void drawUi(final int canvasHeight, final int canvasWidth)
 	{
-		centerX = client.getCenterX();
-		centerY = client.getCenterY();
-		yaw = client.getCameraYaw();
-		pitch = client.getCameraPitch();
+		final BufferProvider bufferProvider = client.getBufferProvider();
+		final int[] pixels = bufferProvider.getPixels();
+		final int width = bufferProvider.getWidth();
+		final int height = bufferProvider.getHeight();
 
-		final Scene scene = client.getScene();
-		final int drawDistance = Math.max(0, Math.min(MAX_DISTANCE, this.drawDistance));
-		scene.setDrawDistance(drawDistance);
+		gl.glEnable(gl.GL_BLEND);
+
+		vertexBuffer.clear(); // reuse vertex buffer for interface
+		vertexBuffer.ensureCapacity(pixels.length);
+
+		IntBuffer interfaceBuffer = vertexBuffer.getBuffer();
+		interfaceBuffer.put(pixels);
+		vertexBuffer.flip();
+
+		gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glBindTexture(gl.GL_TEXTURE_2D, interfaceTexture);
+
+		if (canvasWidth != lastCanvasWidth || canvasHeight != lastCanvasHeight)
+		{
+			gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, width, height, 0, gl.GL_BGRA, gl.GL_UNSIGNED_INT_8_8_8_8_REV, interfaceBuffer);
+			lastCanvasWidth = canvasWidth;
+			lastCanvasHeight = canvasHeight;
+		}
+		else
+		{
+			gl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, 0, 0, width, height, gl.GL_BGRA, gl.GL_UNSIGNED_INT_8_8_8_8_REV, interfaceBuffer);
+		}
+
+		if (client.isStretchedEnabled())
+		{
+			Dimension dim = client.getStretchedDimensions();
+			glDpiAwareViewport(0, 0, dim.width, dim.height);
+		}
+		else
+		{
+			glDpiAwareViewport(0, 0, canvasWidth, canvasHeight);
+		}
+
+		// Use the texture bound in the first pass
+		gl.glUseProgram(glUiProgram);
+		gl.glUniform1i(uniTex, 0);
+
+		// Set the sampling function used when stretching the UI.
+		// This is probably better done with sampler objects instead of texture parameters, but this is easier and likely more portable.
+		// See https://www.khronos.org/opengl/wiki/Sampler_Object for details.
+		if (client.isStretchedEnabled())
+		{
+			final int function = client.isStretchedFast() ? gl.GL_NEAREST : gl.GL_LINEAR;
+			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, function);
+			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, function);
+		}
+
+		// Texture on UI
+		gl.glBindVertexArray(vaoUiHandle);
+		gl.glDrawArrays(gl.GL_TRIANGLE_FAN, 0, 4);
+
+		// Reset
+		gl.glBindTexture(gl.GL_TEXTURE_2D, 0);
+		gl.glBindVertexArray(0);
+		gl.glUseProgram(0);
+		gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glDisable(gl.GL_BLEND);
+
+		vertexBuffer.clear();
+	}
+
+	/**
+	 * Convert the front framebuffer to an Image
+	 *
+	 * @return
+	 */
+	private Image screenshot()
+	{
+		int width = client.getCanvasWidth();
+		int height = client.getCanvasHeight();
+
+		if (client.isStretchedEnabled())
+		{
+			Dimension dim = client.getStretchedDimensions();
+			width = dim.width;
+			height = dim.height;
+		}
+
+		ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4)
+			.order(ByteOrder.nativeOrder());
+
+		gl.glReadBuffer(gl.GL_FRONT);
+		gl.glReadPixels(0, 0, width, height, GL.GL_RGBA, gl.GL_UNSIGNED_BYTE, buffer);
+
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				int r = buffer.get() & 0xff;
+				int g = buffer.get() & 0xff;
+				int b = buffer.get() & 0xff;
+				buffer.get(); // alpha
+
+				pixels[(height - y - 1) * width + x] = (r << 16) | (g << 8) | b;
+			}
+		}
+
+		return image;
+	}
+
+	private void onGameStateChanged(GameStateChanged gameStateChanged)
+	{
+		if (gameStateChanged.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
+		uploadScene();
+	}
+
+	private void uploadScene()
+	{
+		vertexBuffer.clear();
+		uvBuffer.clear();
+
+		sceneUploader.upload(client.getScene(), vertexBuffer, uvBuffer);
+
+		vertexBuffer.flip();
+		uvBuffer.flip();
+
+		IntBuffer vertexBuffer = this.vertexBuffer.getBuffer();
+		FloatBuffer uvBuffer = this.uvBuffer.getBuffer();
+
+		if (bufferId != -1)
+		{
+			GLUtil.glDeleteBuffer(gl, bufferId);
+			bufferId = -1;
+		}
+
+		if (uvBufferId != -1)
+		{
+			GLUtil.glDeleteBuffer(gl, uvBufferId);
+			uvBufferId = -1;
+		}
+
+		bufferId = glGenBuffers(gl);
+		uvBufferId = glGenBuffers(gl);
+
+		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, bufferId);
+		gl.glBufferData(gl.GL_ARRAY_BUFFER, vertexBuffer.limit() * Integer.BYTES, vertexBuffer, gl.GL_STATIC_COPY);
+
+		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, uvBufferId);
+		gl.glBufferData(gl.GL_ARRAY_BUFFER, uvBuffer.limit() * Float.BYTES, uvBuffer, gl.GL_STATIC_COPY);
+
+		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0);
+
+		vertexBuffer.clear();
+		uvBuffer.clear();
+	}
+
+	/**
+	 * Check is a model is visible and should be drawn.
+	 */
+	private boolean isNotVisible(Model model, int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int _x, int _y, int _z, long hash)
+	{
+		final int XYZMag = model.getXYZMag();
+		final int zoom = client.get3dZoom();
+		final int modelHeight = model.getModelHeight();
+
+		int Rasterizer3D_clipMidX2 = client.getRasterizer3D_clipMidX2();
+		int Rasterizer3D_clipNegativeMidX = client.getRasterizer3D_clipNegativeMidX();
+		int Rasterizer3D_clipNegativeMidY = client.getRasterizer3D_clipNegativeMidY();
+		int Rasterizer3D_clipMidY2 = client.getRasterizer3D_clipMidY2();
+
+		int var11 = yawCos * _z - yawSin * _x >> 16;
+		int var12 = pitchSin * _y + pitchCos * var11 >> 16;
+		int var13 = pitchCos * XYZMag >> 16;
+		int var14 = var12 + var13;
+		if (var14 > 50)
+		{
+			int var15 = _z * yawSin + yawCos * _x >> 16;
+			int var16 = (var15 - XYZMag) * zoom;
+			if (var16 / var14 < Rasterizer3D_clipMidX2)
+			{
+				int var17 = (var15 + XYZMag) * zoom;
+				if (var17 / var14 > Rasterizer3D_clipNegativeMidX)
+				{
+					int var18 = pitchCos * _y - var11 * pitchSin >> 16;
+					int var19 = pitchSin * XYZMag >> 16;
+					int var20 = (var18 + var19) * zoom;
+					if (var20 / var14 > Rasterizer3D_clipNegativeMidY)
+					{
+						int var21 = (pitchCos * modelHeight >> 16) + var19;
+						int var22 = (var18 - var21) * zoom;
+						return var22 / var14 >= Rasterizer3D_clipMidY2;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Draw a entity in the scene
+	 *
+	 * @param entity
+	 * @param orientation
+	 * @param pitchSin
+	 * @param pitchCos
+	 * @param yawSin
+	 * @param yawCos
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param hash
+	 */
+	@Override
+	public void draw(Entity entity, int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, long hash)
+	{
+		// Model may be in the scene buffer
+		if (entity instanceof Model && ((Model) entity).getSceneId() == sceneUploader.sceneId)
+		{
+			Model model = (Model) entity;
+
+			model.calculateBoundsCylinder();
+			model.calculateExtreme(orientation);
+
+			if (isNotVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
+			{
+				return;
+			}
+
+			client.checkClickbox(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
+
+			int tc = Math.min(MAX_TRIANGLE, model.getTrianglesCount());
+			int uvOffset = model.getUvBufferOffset();
+			boolean hasUv = model.getFaceTextures() != null;
+
+			// Speed hack: the scene uploader splits up large models with no priorities
+			// based on face height, and then we sort each smaller set of faces
+			if (tc > SMALL_TRIANGLE_COUNT && model.getFaceRenderPriorities() == null)
+			{
+				int left = tc;
+				int off = 0;
+				while (left > 0)
+				{
+					tc = Math.min(SMALL_TRIANGLE_COUNT, left);
+
+					GpuIntBuffer b = bufferForTriangles(tc);
+					b.ensureCapacity(8);
+					IntBuffer buffer = b.getBuffer();
+					buffer.put(model.getBufferOffset() + off);
+					buffer.put(hasUv ? uvOffset + off : -1);
+					buffer.put(tc);
+					buffer.put(targetBufferOffset);
+					buffer.put(FLAG_SCENE_BUFFER | (model.getRadius() << 12) | orientation);
+					buffer.put(x + client.getCameraX2()).put(y + client.getCameraY2()).put(z + client.getCameraZ2());
+
+					targetBufferOffset += tc * 3;
+
+					off += tc * 3;
+					left -= tc;
+				}
+				return;
+			}
+
+			GpuIntBuffer b = bufferForTriangles(tc);
+
+			b.ensureCapacity(8);
+			IntBuffer buffer = b.getBuffer();
+			buffer.put(model.getBufferOffset());
+			buffer.put(uvOffset);
+			buffer.put(tc);
+			buffer.put(targetBufferOffset);
+			buffer.put(FLAG_SCENE_BUFFER | (model.getRadius() << 12) | orientation);
+			buffer.put(x + client.getCameraX2()).put(y + client.getCameraY2()).put(z + client.getCameraZ2());
+
+			targetBufferOffset += tc * 3;
+		}
+		else
+		{
+			// Temporary model (animated or otherwise not a static Model on the scene)
+			Model model = entity instanceof Model ? (Model) entity : entity.getModel();
+			if (model != null)
+			{
+				// Apply height to entity from the model
+				model.setModelHeight(model.getModelHeight());
+
+				model.calculateBoundsCylinder();
+				model.calculateExtreme(orientation);
+
+				if (isNotVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
+				{
+					return;
+				}
+
+				client.checkClickbox(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
+
+				boolean hasUv = model.getFaceTextures() != null;
+
+				int faces = Math.min(MAX_TRIANGLE, model.getTrianglesCount());
+				vertexBuffer.ensureCapacity(12 * faces);
+				uvBuffer.ensureCapacity(12 * faces);
+				int len = 0;
+				for (int i = 0; i < faces; ++i)
+				{
+					len += sceneUploader.pushFace(model, i, vertexBuffer, uvBuffer);
+				}
+
+				GpuIntBuffer b = bufferForTriangles(faces);
+
+				b.ensureCapacity(8);
+				IntBuffer buffer = b.getBuffer();
+				buffer.put(tempOffset);
+				buffer.put(hasUv ? tempUvOffset : -1);
+				buffer.put(len / 3);
+				buffer.put(targetBufferOffset);
+				buffer.put((model.getRadius() << 12) | orientation);
+				buffer.put(x + client.getCameraX2()).put(y + client.getCameraY2()).put(z + client.getCameraZ2());
+
+				tempOffset += len;
+				if (hasUv)
+				{
+					tempUvOffset += len;
+				}
+
+				targetBufferOffset += len;
+			}
+		}
 	}
 
 	public void drawScenePaint(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z,
-							TilePaint paint, int tileZ, int tileX, int tileY,
-							int zoom, int centerX, int centerY)
+							   TilePaint paint, int tileZ, int tileX, int tileY,
+							   int zoom, int centerX, int centerY)
 	{
 		if (paint.getBufferLen() > 0)
 		{
@@ -791,8 +1087,8 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	}
 
 	public void drawSceneModel(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z,
-							TileModel model, int tileZ, int tileX, int tileY,
-							int zoom, int centerX, int centerY)
+							   TileModel model, int tileZ, int tileX, int tileY,
+							   int zoom, int centerX, int centerY)
 	{
 		if (model.getBufferLen() > 0)
 		{
@@ -1196,346 +1492,29 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			glDrawable.swapBuffers();
 		}
 		catch (GLException ignored)
-		{ }
+		{
+		}
 
 		drawManager.processDrawComplete(this::screenshot);
 	}
 
-	private void drawUi(final int canvasHeight, final int canvasWidth)
+	@Override
+	public void drawScene(int cameraX, int cameraY, int cameraZ, int cameraPitch, int cameraYaw, int plane)
 	{
-		final BufferProvider bufferProvider = client.getBufferProvider();
-		final int[] pixels = bufferProvider.getPixels();
-		final int width = bufferProvider.getWidth();
-		final int height = bufferProvider.getHeight();
+		centerX = client.getCenterX();
+		centerY = client.getCenterY();
+		yaw = client.getCameraYaw();
+		pitch = client.getCameraPitch();
 
-		gl.glEnable(gl.GL_BLEND);
-
-		vertexBuffer.clear(); // reuse vertex buffer for interface
-		vertexBuffer.ensureCapacity(pixels.length);
-
-		IntBuffer interfaceBuffer = vertexBuffer.getBuffer();
-		interfaceBuffer.put(pixels);
-		vertexBuffer.flip();
-
-		gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glBindTexture(gl.GL_TEXTURE_2D, interfaceTexture);
-
-		if (canvasWidth != lastCanvasWidth || canvasHeight != lastCanvasHeight)
-		{
-			gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, width, height, 0, gl.GL_BGRA, gl.GL_UNSIGNED_INT_8_8_8_8_REV, interfaceBuffer);
-			lastCanvasWidth = canvasWidth;
-			lastCanvasHeight = canvasHeight;
-		}
-		else
-		{
-			gl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, 0, 0, width, height, gl.GL_BGRA, gl.GL_UNSIGNED_INT_8_8_8_8_REV, interfaceBuffer);
-		}
-
-		if (client.isStretchedEnabled())
-		{
-			Dimension dim = client.getStretchedDimensions();
-			glDpiAwareViewport(0, 0, dim.width, dim.height);
-		}
-		else
-		{
-			glDpiAwareViewport(0, 0, canvasWidth, canvasHeight);
-		}
-
-		// Use the texture bound in the first pass
-		gl.glUseProgram(glUiProgram);
-		gl.glUniform1i(uniTex, 0);
-
-		// Set the sampling function used when stretching the UI.
-		// This is probably better done with sampler objects instead of texture parameters, but this is easier and likely more portable.
-		// See https://www.khronos.org/opengl/wiki/Sampler_Object for details.
-		if (client.isStretchedEnabled())
-		{
-			final int function = client.isStretchedFast() ? gl.GL_NEAREST : gl.GL_LINEAR;
-			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, function);
-			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, function);
-		}
-
-		// Texture on UI
-		gl.glBindVertexArray(vaoUiHandle);
-		gl.glDrawArrays(gl.GL_TRIANGLE_FAN, 0, 4);
-
-		// Reset
-		gl.glBindTexture(gl.GL_TEXTURE_2D, 0);
-		gl.glBindVertexArray(0);
-		gl.glUseProgram(0);
-		gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glDisable(gl.GL_BLEND);
-
-		vertexBuffer.clear();
-	}
-
-	/**
-	 * Convert the front framebuffer to an Image
-	 *
-	 * @return
-	 */
-	private Image screenshot()
-	{
-		int width = client.getCanvasWidth();
-		int height = client.getCanvasHeight();
-
-		if (client.isStretchedEnabled())
-		{
-			Dimension dim = client.getStretchedDimensions();
-			width = dim.width;
-			height = dim.height;
-		}
-
-		ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4)
-			.order(ByteOrder.nativeOrder());
-
-		gl.glReadBuffer(gl.GL_FRONT);
-		gl.glReadPixels(0, 0, width, height, GL.GL_RGBA, gl.GL_UNSIGNED_BYTE, buffer);
-
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-
-		for (int y = 0; y < height; ++y)
-		{
-			for (int x = 0; x < width; ++x)
-			{
-				int r = buffer.get() & 0xff;
-				int g = buffer.get() & 0xff;
-				int b = buffer.get() & 0xff;
-				buffer.get(); // alpha
-
-				pixels[(height - y - 1) * width + x] = (r << 16) | (g << 8) | b;
-			}
-		}
-
-		return image;
+		final Scene scene = client.getScene();
+		final int drawDistance = Math.max(0, Math.min(MAX_DISTANCE, this.drawDistance));
+		scene.setDrawDistance(drawDistance);
 	}
 
 	@Override
 	public void animate(Texture texture, int diff)
 	{
 		textureManager.animate(texture, diff);
-	}
-
-	private void onGameStateChanged(GameStateChanged gameStateChanged)
-	{
-		if (gameStateChanged.getGameState() != GameState.LOGGED_IN)
-		{
-			return;
-		}
-
-		uploadScene();
-	}
-
-	private void uploadScene()
-	{
-		vertexBuffer.clear();
-		uvBuffer.clear();
-
-		sceneUploader.upload(client.getScene(), vertexBuffer, uvBuffer);
-
-		vertexBuffer.flip();
-		uvBuffer.flip();
-
-		IntBuffer vertexBuffer = this.vertexBuffer.getBuffer();
-		FloatBuffer uvBuffer = this.uvBuffer.getBuffer();
-
-		if (bufferId != -1)
-		{
-			GLUtil.glDeleteBuffer(gl, bufferId);
-			bufferId = -1;
-		}
-
-		if (uvBufferId != -1)
-		{
-			GLUtil.glDeleteBuffer(gl, uvBufferId);
-			uvBufferId = -1;
-		}
-
-		bufferId = glGenBuffers(gl);
-		uvBufferId = glGenBuffers(gl);
-
-		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, bufferId);
-		gl.glBufferData(gl.GL_ARRAY_BUFFER, vertexBuffer.limit() * Integer.BYTES, vertexBuffer, gl.GL_STATIC_COPY);
-
-		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, uvBufferId);
-		gl.glBufferData(gl.GL_ARRAY_BUFFER, uvBuffer.limit() * Float.BYTES, uvBuffer, gl.GL_STATIC_COPY);
-
-		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0);
-
-		vertexBuffer.clear();
-		uvBuffer.clear();
-	}
-
-	/**
-	 * Check is a model is visible and should be drawn.
-	 */
-	private boolean isNotVisible(Model model, int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int _x, int _y, int _z, long hash)
-	{
-		final int XYZMag = model.getXYZMag();
-		final int zoom = client.get3dZoom();
-		final int modelHeight = model.getModelHeight();
-
-		int Rasterizer3D_clipMidX2 = client.getRasterizer3D_clipMidX2();
-		int Rasterizer3D_clipNegativeMidX = client.getRasterizer3D_clipNegativeMidX();
-		int Rasterizer3D_clipNegativeMidY = client.getRasterizer3D_clipNegativeMidY();
-		int Rasterizer3D_clipMidY2 = client.getRasterizer3D_clipMidY2();
-
-		int var11 = yawCos * _z - yawSin * _x >> 16;
-		int var12 = pitchSin * _y + pitchCos * var11 >> 16;
-		int var13 = pitchCos * XYZMag >> 16;
-		int var14 = var12 + var13;
-		if (var14 > 50)
-		{
-			int var15 = _z * yawSin + yawCos * _x >> 16;
-			int var16 = (var15 - XYZMag) * zoom;
-			if (var16 / var14 < Rasterizer3D_clipMidX2)
-			{
-				int var17 = (var15 + XYZMag) * zoom;
-				if (var17 / var14 > Rasterizer3D_clipNegativeMidX)
-				{
-					int var18 = pitchCos * _y - var11 * pitchSin >> 16;
-					int var19 = pitchSin * XYZMag >> 16;
-					int var20 = (var18 + var19) * zoom;
-					if (var20 / var14 > Rasterizer3D_clipNegativeMidY)
-					{
-						int var21 = (pitchCos * modelHeight >> 16) + var19;
-						int var22 = (var18 - var21) * zoom;
-						return var22 / var14 >= Rasterizer3D_clipMidY2;
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Draw a entity in the scene
-	 *
-	 * @param entity
-	 * @param orientation
-	 * @param pitchSin
-	 * @param pitchCos
-	 * @param yawSin
-	 * @param yawCos
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param hash
-	 */
-	@Override
-	public void draw(Entity entity, int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, long hash)
-	{
-		// Model may be in the scene buffer
-		if (entity instanceof Model && ((Model) entity).getSceneId() == sceneUploader.sceneId)
-		{
-			Model model = (Model) entity;
-
-			model.calculateBoundsCylinder();
-			model.calculateExtreme(orientation);
-
-			if (isNotVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
-			{
-				return;
-			}
-
-			client.checkClickbox(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
-
-			int tc = Math.min(MAX_TRIANGLE, model.getTrianglesCount());
-			int uvOffset = model.getUvBufferOffset();
-			boolean hasUv = model.getFaceTextures() != null;
-
-			// Speed hack: the scene uploader splits up large models with no priorities
-			// based on face height, and then we sort each smaller set of faces
-			if (tc > SMALL_TRIANGLE_COUNT && model.getFaceRenderPriorities() == null)
-			{
-				int left = tc;
-				int off = 0;
-				while (left > 0)
-				{
-					tc = Math.min(SMALL_TRIANGLE_COUNT, left);
-
-					GpuIntBuffer b = bufferForTriangles(tc);
-					b.ensureCapacity(8);
-					IntBuffer buffer = b.getBuffer();
-					buffer.put(model.getBufferOffset() + off);
-					buffer.put(hasUv ? uvOffset + off : -1);
-					buffer.put(tc);
-					buffer.put(targetBufferOffset);
-					buffer.put(FLAG_SCENE_BUFFER | (model.getRadius() << 12) | orientation);
-					buffer.put(x + client.getCameraX2()).put(y + client.getCameraY2()).put(z + client.getCameraZ2());
-
-					targetBufferOffset += tc * 3;
-
-					off += tc * 3;
-					left -= tc;
-				}
-				return;
-			}
-
-			GpuIntBuffer b = bufferForTriangles(tc);
-
-			b.ensureCapacity(8);
-			IntBuffer buffer = b.getBuffer();
-			buffer.put(model.getBufferOffset());
-			buffer.put(uvOffset);
-			buffer.put(tc);
-			buffer.put(targetBufferOffset);
-			buffer.put(FLAG_SCENE_BUFFER | (model.getRadius() << 12) | orientation);
-			buffer.put(x + client.getCameraX2()).put(y + client.getCameraY2()).put(z + client.getCameraZ2());
-
-			targetBufferOffset += tc * 3;
-		}
-		else
-		{
-			// Temporary model (animated or otherwise not a static Model on the scene)
-			Model model = entity instanceof Model ? (Model) entity : entity.getModel();
-			if (model != null)
-			{
-				// Apply height to entity from the model
-				model.setModelHeight(model.getModelHeight());
-
-				model.calculateBoundsCylinder();
-				model.calculateExtreme(orientation);
-
-				if (isNotVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
-				{
-					return;
-				}
-
-				client.checkClickbox(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
-
-				boolean hasUv = model.getFaceTextures() != null;
-
-				int faces = Math.min(MAX_TRIANGLE, model.getTrianglesCount());
-				vertexBuffer.ensureCapacity(12 * faces);
-				uvBuffer.ensureCapacity(12 * faces);
-				int len = 0;
-				for (int i = 0; i < faces; ++i)
-				{
-					len += sceneUploader.pushFace(model, i, vertexBuffer, uvBuffer);
-				}
-
-				GpuIntBuffer b = bufferForTriangles(faces);
-
-				b.ensureCapacity(8);
-				IntBuffer buffer = b.getBuffer();
-				buffer.put(tempOffset);
-				buffer.put(hasUv ? tempUvOffset : -1);
-				buffer.put(len / 3);
-				buffer.put(targetBufferOffset);
-				buffer.put((model.getRadius() << 12) | orientation);
-				buffer.put(x + client.getCameraX2()).put(y + client.getCameraY2()).put(z + client.getCameraZ2());
-
-				tempOffset += len;
-				if (hasUv)
-				{
-					tempUvOffset += len;
-				}
-
-				targetBufferOffset += len;
-			}
-		}
 	}
 
 	/**

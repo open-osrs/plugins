@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "XP Tracker"
+description = "Slayer"
 version = "0.0.1"
 
 val deps = configurations.create("deps")
@@ -38,11 +38,12 @@ dependencies {
     compileOnly("com.openosrs:runelite-client:$rlVersion")
     compileOnly("com.openosrs:http-api:$rlVersion")
     compileOnly(Libraries.guice)
+    compileOnly(Libraries.gson)
     compileOnly(Libraries.javax)
+    compileOnly(Libraries.jopt)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.okhttp3)
 }
 
 tasks {
@@ -50,10 +51,10 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "xptracker-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.xptracker.XpTrackerPluginWrapper",
+                    "Plugin-Id" to "slayer-plugin",
+                    "Plugin-Class" to "net.runelite.client.plugins.slayer.SlayerPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
+                    "Plugin-Dependencies" to "xptracker-plugin"
             ))
         }
 

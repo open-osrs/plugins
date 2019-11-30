@@ -32,22 +32,6 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("xpTracker")
 public interface XpTrackerConfig extends Config
 {
-	@AllArgsConstructor
-	enum OnScreenDisplayMode
-	{
-		XP_GAINED,
-		XP_LEFT,
-		ACTIONS_DONE,
-		ACTIONS_LEFT
-	}
-
-	@AllArgsConstructor
-	enum OnScreenDisplayModeBottom
-	{
-		XP_HOUR,
-		ACTIONS_HOUR,
-	}
-
 	@ConfigItem(
 		position = 0,
 		keyName = "hideMaxed",
@@ -123,5 +107,21 @@ public interface XpTrackerConfig extends Config
 	default OnScreenDisplayModeBottom onScreenDisplayModeBottom()
 	{
 		return OnScreenDisplayModeBottom.XP_HOUR;
+	}
+
+	@AllArgsConstructor
+	enum OnScreenDisplayMode
+	{
+		XP_GAINED,
+		XP_LEFT,
+		ACTIONS_DONE,
+		ACTIONS_LEFT
+	}
+
+	@AllArgsConstructor
+	enum OnScreenDisplayModeBottom
+	{
+		XP_HOUR,
+		ACTIONS_HOUR,
 	}
 }

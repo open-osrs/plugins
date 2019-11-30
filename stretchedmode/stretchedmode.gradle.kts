@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "XP Tracker"
+description = "Stretched Mode"
 version = "0.0.1"
 
 val deps = configurations.create("deps")
@@ -36,13 +36,11 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.okhttp3)
 }
 
 tasks {
@@ -50,8 +48,8 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "xptracker-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.xptracker.XpTrackerPluginWrapper",
+                    "Plugin-Id" to "stretchedmode-plugin",
+                    "Plugin-Class" to "net.runelite.client.plugins.stretchedmode.StretchedModePluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to ""
             ))

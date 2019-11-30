@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +22,19 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.stretchedmode;
 
-description = "XP Tracker"
-version = "0.0.1"
+import org.pf4j.Plugin;
+import org.pf4j.PluginWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-val deps = configurations.create("deps")
+public class StretchedModePluginWrapper extends Plugin
+{
+	private static final Logger logger = LoggerFactory.getLogger(net.runelite.client.plugins.stretchedmode.StretchedModePluginWrapper.class);
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.okhttp3)
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to "xptracker-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.xptracker.XpTrackerPluginWrapper",
-                    "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
-            ))
-        }
-
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
-    }
+	public StretchedModePluginWrapper(PluginWrapper wrapper)
+	{
+		super(wrapper);
+	}
 }

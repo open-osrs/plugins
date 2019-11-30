@@ -9,9 +9,41 @@
       {
         "version": "0.0.1",
         "requires": "0.0.2",
-        "date": "2019-11-14",
+        "date": "2019-11-29",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/gpu-0.0.1.jar?raw=true",
         "sha512sum": "13810D31400ACA7D80F5A51DB906BF493C51DE19E4778B3921203F265C270D218ECA00D930E56F588D6DE12E7DED8D6BFD8D374BD7FEB70AD75E3CE8E3ADF1C2"
+      }
+    ]
+  },
+  {
+    "name": "Slayer",
+    "id": "slayer-plugin",
+    "description": "Enhance the slayer skill",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/slayer-0.0.1.jar?raw=true",
+        "sha512sum": "3245B4AF5E4EFB534DF9B42FD9ED0F34B3369B962EA07DF2D3863BAFA45FBFEBA6720ACF68FE89414E48EC11BD9A9FC1CA2C58287F0A9B020A1C8E56F6C9DBAD"
+      }
+    ]
+  },
+  {
+    "name": "Stretched Mode",
+    "id": "stretchedmode-plugin",
+    "description": "Stretches the game in fixed and resizable modes",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/stretchedmode-0.0.1.jar?raw=true",
+        "sha512sum": "4F1E5BDD4DF53EAAAB78F9592CBECB4C856847ED65340A32A60B2F621DEEB9A15D6CC7E82F3F51985CC1F0DF793D060C4EE2CF6FB03C0365A6AA84FD006099E0"
       }
     ]
   },

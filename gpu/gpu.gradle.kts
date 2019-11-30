@@ -1,5 +1,4 @@
 import ProjectVersions.rlVersion
-import org.gradle.internal.component.external.model.ComponentVariant
 
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>

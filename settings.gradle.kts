@@ -25,6 +25,8 @@
 
 rootProject.name = "OpenOSRS Plugins"
 include(":gpu")
+include(":slayer")
+include(":stretchedmode")
 include(":xptracker")
 
 for (project in rootProject.children) {

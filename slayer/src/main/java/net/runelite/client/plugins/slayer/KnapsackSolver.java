@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Davis Cook <daviscook447@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +22,59 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.slayer;
 
-description = "XP Tracker"
-version = "0.0.1"
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Singleton;
 
-val deps = configurations.create("deps")
+@Singleton
+class KnapsackSolver
+{
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+	private List<Integer> reconstructItemsInSack(int[][] sackMatrix, List<Integer> items, int i, int w)
+	{
+		if (i == 0)
+		{
+			return new ArrayList<>();
+		}
+		if (sackMatrix[i][w] > sackMatrix[i - 1][w])
+		{
+			List<Integer> list = reconstructItemsInSack(sackMatrix, items,
+				i - 1, w - items.get(i - 1));
+			list.add(items.get(i - 1));
+			return list;
+		}
+		else
+		{
+			return reconstructItemsInSack(sackMatrix, items, i - 1, w);
+		}
+	}
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.okhttp3)
-}
+	int howMuchFitsInSack(List<Integer> items, int maxWeight)
+	{
+		int itemCount = items.size();
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to "xptracker-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.xptracker.XpTrackerPluginWrapper",
-                    "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
-            ))
-        }
+		int[][] sackMatrix = new int[itemCount + 1][maxWeight + 1];
+		for (int i = 1; i <= itemCount; i++)
+		{
+			for (int j = 0; j <= maxWeight; j++)
+			{
+				if (items.get(i - 1) > j)
+				{
+					sackMatrix[i][j] = sackMatrix[i - 1][j];
+				}
+				else
+				{
+					sackMatrix[i][j] = Math.max(
+						sackMatrix[i - 1][j],
+						sackMatrix[i - 1][j - items.get(i - 1)] + items.get(i - 1)
+					);
+				}
+			}
+		}
 
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
-    }
+		return reconstructItemsInSack(sackMatrix, items, itemCount, maxWeight).size();
+	}
+
 }
