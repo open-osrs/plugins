@@ -64,6 +64,22 @@
     ]
   },
   {
+    "name": "Attack Styles",
+    "id": "attackstyles-plugin",
+    "description": "Show your current attack style as an overlay",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/attackstyles-0.0.1.jar?raw=true",
+        "sha512sum": "F1B71E328BD300C957E6E4271162DC0ACED0807F2F41DE5BF66867BD63E3EF1D8E3A2CB6DE500C563D3844C5703ADE3FFC59A7E2F8964FFC4734ADA7E2F45DF5"
+      }
+    ]
+  },
+  {
     "name": "Custom Cursor",
     "id": "customcursor-plugin",
     "description": "Replaces your mouse cursor image",
@@ -75,7 +91,7 @@
         "requires": "0.0.2",
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/customcursor-0.0.1.jar?raw=true",
-        "sha512sum": "40A4A023EDBDA621A77F2045D9D44EFCD9E9EC95ABBCE8A27EF155BCD37630FD3810F03D36C71B18A6F3EA244D908DFF6F52956D358D86E9A8C73614AA12F85C"
+        "sha512sum": "F887E51A9E11AE397CB77F8E034187A9B4A447B7A40D199241C8C8EE538116487C87643332B52CF30D6090787F729ADF7B72A3C2488054A07A856AD376896202"
       }
     ]
   },

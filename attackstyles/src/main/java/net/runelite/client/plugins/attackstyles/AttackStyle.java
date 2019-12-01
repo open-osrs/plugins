@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2017, honeyhoney <https://github.com/honeyhoney>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.attackstyles;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":agility")
-include(":ammo")
-include(":animsmoothing")
-include(":antidrag")
-include(":attackstyles")
-include(":customcursor")
-include(":diaryrequirements")
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import net.runelite.api.Skill;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+public enum AttackStyle
+{
+	ACCURATE("Accurate", Skill.ATTACK),
+	AGGRESSIVE("Aggressive", Skill.STRENGTH),
+	DEFENSIVE("Defensive", Skill.DEFENCE),
+	CONTROLLED("Controlled", Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE),
+	RANGING("Ranging", Skill.RANGED),
+	LONGRANGE("Longrange", Skill.RANGED, Skill.DEFENCE),
+	CASTING("Casting", Skill.MAGIC),
+	DEFENSIVE_CASTING("Defensive Casting", Skill.MAGIC, Skill.DEFENCE),
+	OTHER("Other");
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	private final String name;
+	private final Skill[] skills;
+
+	AttackStyle(String name, Skill... skills)
+	{
+		this.name = name;
+		this.skills = skills;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public Skill[] getSkills()
+	{
+		return skills;
+	}
 }
