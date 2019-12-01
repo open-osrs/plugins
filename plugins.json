@@ -27,7 +27,23 @@
         "requires": "0.0.2",
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/ammo-0.0.1.jar?raw=true",
-        "sha512sum": "B7FAF406A2D68767BA91DCC54DD0A58A49FB483B4C6282458832ED3548463B5BB613020721394E601C00515E96B3BD42CB16D2A04026948ED40F3921C6B979E2"
+        "sha512sum": "5B22686C70AC1B4C19223E67E35A3BB1CCA8E9704A25C51510AEFB49EB262FCD5B49D5689170C6EE13599AE1F9A9BCACE7B966D0895BD5745924645811366629"
+      }
+    ]
+  },
+  {
+    "name": "Anim Smoothing",
+    "id": "animsmoothing-plugin",
+    "description": "Makes animations appear smoother",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/animsmoothing-0.0.1.jar?raw=true",
+        "sha512sum": "966FD3AEC9E45EDA9A3EA7E4DA5CE0B5B70D94F453999D056D462298DC55C6B34D748304D66E6370458AC786992BFFCDA82EF70E506EFFD0B82A859CCA317BD7"
       }
     ]
   },
@@ -43,7 +59,7 @@
         "requires": "0.0.2",
         "date": "2019-11-29",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/diaryrequirements-0.0.1.jar?raw=true",
-        "sha512sum": "8A792E18C822BB95DC78BC710927DA3D82A468D97A469EE2EE0F474BCA3B71A64BADFC4DD1EAFBFE675853A39F35DBD91F74960AC01A547B474068627C4019F5"
+        "sha512sum": "D231959A395509D50900C65F7CAD8CAA301987D270FE47B27D8E34CC6563761F76523A2DA5D8FD02D2E61C1C19919C64FA1DF3DA77B29ADE8E29001CD72FB051"
       }
     ]
   },

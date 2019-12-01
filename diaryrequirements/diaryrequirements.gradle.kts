@@ -53,7 +53,7 @@ tasks {
                     "Plugin-Class" to "net.runelite.client.plugins.diaryrequirements.DiaryRequirementsPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Utilizes the GPU",
+                    "Plugin-Description" to "Display level requirements in Achievement Diary interface",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }

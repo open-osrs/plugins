@@ -60,7 +60,7 @@ tasks {
                     "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Utilizes the GPU",
+                    "Plugin-Description" to "Shows the current ammo the player has equipped",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }

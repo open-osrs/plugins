@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,26 +22,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.animsmoothing;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":agility")
-include(":ammo")
-include(":animsmoothing")
-include(":diaryrequirements")
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+@ConfigGroup(AnimationSmoothingPlugin.CONFIG_GROUP)
+public interface AnimationSmoothingConfig extends Config
+{
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@ConfigItem(
+		keyName = "smoothPlayerAnimations",
+		name = "Smooth Player Animations",
+		description = "Configures whether the player animations are smooth or not",
+		position = 1
+	)
+	default boolean smoothPlayerAnimations()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "smoothNpcAnimations",
+		name = "Smooth NPC Animations",
+		description = "Configures whether the npc animations are smooth or not",
+		position = 2
+	)
+	default boolean smoothNpcAnimations()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "smoothObjectAnimations",
+		name = "Smooth Object Animations",
+		description = "Configures whether the object animations are smooth or not",
+		position = 3
+	)
+	default boolean smoothObjectAnimations()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "smoothWidgetAnimations",
+		name = "Smooth Widget Animations",
+		description = "Configures whether the widget animations are smooth or not",
+		position = 4
+	)
+	default boolean smoothWidgetAnimations()
+	{
+		return true;
+	}
 }
