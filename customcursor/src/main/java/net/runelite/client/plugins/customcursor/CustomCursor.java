@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Kruithne <kruithne@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,28 +22,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.customcursor;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":agility")
-include(":ammo")
-include(":animsmoothing")
-include(":antidrag")
-include(":customcursor")
-include(":diaryrequirements")
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import java.awt.image.BufferedImage;
+import lombok.AccessLevel;
+import lombok.Getter;
+import net.runelite.client.util.ImageUtil;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+public enum CustomCursor
+{
+	RS3_GOLD("RS3 Gold", "cursor-rs3-gold.png"),
+	RS3_SILVER("RS3 Silver", "cursor-rs3-silver.png"),
+	DRAGON_DAGGER("Dragon Dagger", "cursor-dragon-dagger.png"),
+	DRAGON_DAGGER_POISON("Dragon Dagger (p)", "cursor-dragon-dagger-p.png"),
+	TROUT("Trout", "cursor-trout.png"),
+	DRAGON_SCIMITAR("Dragon Scimitar", "cursor-dragon-scimitar.png"),
+	ARMADYL_GODSWORD("Armadyl Godsword", "cursor-armadyl-godsword.png"),
+	BANDOS_GODSWORD("Bandos Godsword", "cursor-bandos-godsword.png"),
+	MOUSE("Mouse", "cursor-mouse.png"),
+	SARADOMIN_GODSWORD("Saradomin Godsword", "cursor-saradomin-godsword.png"),
+	ZAMORAK_GODSWORD("Zamorak Godsword", "cursor-zamorak-godsword.png"),
+	SKILL_SPECS("Skill Specs", "cursor-skill-specs.png");
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	private final String name;
+	@Getter(AccessLevel.PUBLIC)
+	private final BufferedImage cursorImage;
+
+	CustomCursor(final String name, final String icon)
+	{
+		this.name = name;
+		this.cursorImage = ImageUtil.getResourceStreamFromClass(CustomCursorPlugin.class, icon);
+	}
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

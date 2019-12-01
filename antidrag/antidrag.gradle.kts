@@ -36,6 +36,7 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+    compileOnly(project(":customcursor"))
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
@@ -56,11 +57,11 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "ammo-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPluginWrapper",
+                    "Plugin-Id" to "antidrag-plugin",
+                    "Plugin-Class" to "net.runelite.client.plugins.antidrag.AntiDragPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Shows the current ammo the player has equipped",
+                    "Plugin-Dependencies" to "customcursor-plugin",
+                    "Plugin-Description" to "Prevent dragging an item for a specified delay",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }

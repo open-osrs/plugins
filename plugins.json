@@ -27,7 +27,7 @@
         "requires": "0.0.2",
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/ammo-0.0.1.jar?raw=true",
-        "sha512sum": "5B22686C70AC1B4C19223E67E35A3BB1CCA8E9704A25C51510AEFB49EB262FCD5B49D5689170C6EE13599AE1F9A9BCACE7B966D0895BD5745924645811366629"
+        "sha512sum": "FD4E939D9DED302E2E3CD2D62AA4DC83647975729847E0DD45BE998E01014913A2A08AC44A306F6DB3608156FBAA06EE64906D568B72456AAE415A61A45BD93E"
       }
     ]
   },
@@ -44,6 +44,38 @@
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/animsmoothing-0.0.1.jar?raw=true",
         "sha512sum": "966FD3AEC9E45EDA9A3EA7E4DA5CE0B5B70D94F453999D056D462298DC55C6B34D748304D66E6370458AC786992BFFCDA82EF70E506EFFD0B82A859CCA317BD7"
+      }
+    ]
+  },
+  {
+    "name": "Anti Drag",
+    "id": "antidrag-plugin",
+    "description": "Prevent dragging an item for a specified delay",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/antidrag-0.0.1.jar?raw=true",
+        "sha512sum": "03059C248D4E8ED74866ED7A62324E30428D0EDAF274D72847B0F086E4D94F68F0016572A53B9D88A99F5663194FB9831A7CE9D93C42A2EA083B6F3BD070C764"
+      }
+    ]
+  },
+  {
+    "name": "Custom Cursor",
+    "id": "customcursor-plugin",
+    "description": "Replaces your mouse cursor image",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/customcursor-0.0.1.jar?raw=true",
+        "sha512sum": "F887E51A9E11AE397CB77F8E034187A9B4A447B7A40D199241C8C8EE538116487C87643332B52CF30D6090787F729ADF7B72A3C2488054A07A856AD376896202"
       }
     ]
   },

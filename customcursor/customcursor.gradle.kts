@@ -42,13 +42,6 @@ dependencies {
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.jogampJogl)
-    compileOnly(Libraries.jogampGluegen)
-
-    testImplementation(Libraries.jogampJogl)
-    testImplementation(Libraries.jogampGluegen)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.hamcrest)
 }
 
 tasks {
@@ -56,11 +49,11 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "ammo-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPluginWrapper",
+                    "Plugin-Id" to "customcursor-plugin",
+                    "Plugin-Class" to "net.runelite.client.plugins.customcursor.CustomCursorPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Shows the current ammo the player has equipped",
+                    "Plugin-Description" to "Replaces your mouse cursor image",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }
