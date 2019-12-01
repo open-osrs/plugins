@@ -1,5 +1,21 @@
 [
   {
+    "name": "Agility",
+    "id": "agility-plugin",
+    "description": "Show helpful information about agility courses and obstacles",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-29",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/agility-0.0.1.jar?raw=true",
+        "sha512sum": "E20A239BF7AC7C70181079AEDE8B3B81267977B8075AB560973AE8D75D7B9AA632592CA4562A76EA43C4107F97BC7C4343E477D8792F9E2C70209BBEC7C2F91A"
+      }
+    ]
+  },
+  {
     "name": "GPU",
     "id": "gpu-plugin",
     "description": "Enables GPU support",
