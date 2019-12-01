@@ -57,7 +57,7 @@ tasks {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to "ammo-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPluginWrapper",
+                    "Plugin-Class" to "net.runelite.client.plugins.ammo.AmmoPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
                     "Plugin-Description" to "Shows the current ammo the player has equipped",
