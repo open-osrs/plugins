@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,41 +22,16 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.itemstats;
 
-description = "Item Stats"
-version = "0.0.1"
+import org.junit.Test;
 
-val deps = configurations.create("deps")
+public class ItemStatChangesTest
+{
+	@Test
+	public void testInit()
+	{
+		new ItemStatChanges();
+	}
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
-    compileOnly(Libraries.pf4j)
-
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-    testImplementation(Libraries.junit)
-
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to "itemstats-plugin",
-                    "Plugin-Class" to "net.runelite.client.plugins.itemstats.ItemStatPluginWrapper",
-                    "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
-            ))
-        }
-
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
-    }
 }
