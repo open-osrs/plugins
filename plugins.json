@@ -1,21 +1,5 @@
 [
   {
-    "name": "Diary Requirements",
-    "id": "diaryrequirements-plugin",
-    "description": "Display level requirements in Achievement Diary interface",
-    "provider": "OpenOSRS",
-    "projectUrl": "https://discord.gg/OpenOSRS",
-    "releases": [
-      {
-        "version": "0.0.1",
-        "requires": "0.0.2",
-        "date": "2019-11-29",
-        "url": "https://github.com/open-osrs/plugins/blob/master/release/diaryrequirements-0.0.1.jar?raw=true",
-        "sha512sum": "8A792E18C822BB95DC78BC710927DA3D82A468D97A469EE2EE0F474BCA3B71A64BADFC4DD1EAFBFE675853A39F35DBD91F74960AC01A547B474068627C4019F5"
-      }
-    ]
-  },
-  {
     "name": "Agility",
     "id": "agility-plugin",
     "description": "Show helpful information about agility courses and obstacles",
@@ -28,6 +12,38 @@
         "date": "2019-11-29",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/agility-0.0.1.jar?raw=true",
         "sha512sum": "E20A239BF7AC7C70181079AEDE8B3B81267977B8075AB560973AE8D75D7B9AA632592CA4562A76EA43C4107F97BC7C4343E477D8792F9E2C70209BBEC7C2F91A"
+      }
+    ]
+  },
+  {
+    "name": "Ammo",
+    "id": "ammo-plugin",
+    "description": "Shows the current ammo the player has equipped",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-30",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/ammo-0.0.1.jar?raw=true",
+        "sha512sum": "B7FAF406A2D68767BA91DCC54DD0A58A49FB483B4C6282458832ED3548463B5BB613020721394E601C00515E96B3BD42CB16D2A04026948ED40F3921C6B979E2"
+      }
+    ]
+  },
+  {
+    "name": "Diary Requirements",
+    "id": "diaryrequirements-plugin",
+    "description": "Display level requirements in Achievement Diary interface",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-29",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/diaryrequirements-0.0.1.jar?raw=true",
+        "sha512sum": "8A792E18C822BB95DC78BC710927DA3D82A468D97A469EE2EE0F474BCA3B71A64BADFC4DD1EAFBFE675853A39F35DBD91F74960AC01A547B474068627C4019F5"
       }
     ]
   },
