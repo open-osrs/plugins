@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.diaryrequirements;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":agility")
-include(":diaryrequirements")
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+public class OrRequirement implements net.runelite.client.plugins.diaryrequirements.Requirement
+{
+	@Getter(AccessLevel.PACKAGE)
+	private final List<net.runelite.client.plugins.diaryrequirements.Requirement> requirements;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	public OrRequirement(Requirement... reqs)
+	{
+		this.requirements = ImmutableList.copyOf(reqs);
+	}
+
+	@Override
+	public String toString()
+	{
+		return Joiner.on(" or ").join(requirements);
+	}
 }

@@ -1,5 +1,21 @@
 [
   {
+    "name": "Diary Requirements",
+    "id": "diaryrequirements-plugin",
+    "description": "Display level requirements in Achievement Diary interface",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-29",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/diaryrequirements-0.0.1.jar?raw=true",
+        "sha512sum": "8A792E18C822BB95DC78BC710927DA3D82A468D97A469EE2EE0F474BCA3B71A64BADFC4DD1EAFBFE675853A39F35DBD91F74960AC01A547B474068627C4019F5"
+      }
+    ]
+  },
+  {
     "name": "Agility",
     "id": "agility-plugin",
     "description": "Show helpful information about agility courses and obstacles",

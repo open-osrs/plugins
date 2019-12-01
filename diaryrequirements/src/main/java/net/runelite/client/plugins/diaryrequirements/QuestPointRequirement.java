@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.diaryrequirements;
 
-rootProject.name = "OpenOSRS Plugins"
-include(":agility")
-include(":diaryrequirements")
-include(":gpu")
-include(":itemstats")
-include(":slayer")
-include(":statusbars")
-include(":stretchedmode")
-include(":xptracker")
-include(":xpglobes")
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+@RequiredArgsConstructor
+@Getter(AccessLevel.PACKAGE)
+public class QuestPointRequirement implements Requirement
+{
+	private final int qp;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@Override
+	public String toString()
+	{
+		return qp + " " + "Quest points";
+	}
 }
