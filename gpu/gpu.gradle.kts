@@ -40,7 +40,6 @@ dependencies {
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
     compileOnly(Libraries.jogampJogl)
     compileOnly(Libraries.jogampGluegen)
@@ -56,7 +55,7 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "gpu-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.gpu.GpuPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",

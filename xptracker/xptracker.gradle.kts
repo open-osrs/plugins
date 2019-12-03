@@ -37,10 +37,9 @@ dependencies {
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
     compileOnly("com.openosrs:http-api:$rlVersion")
+
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
     compileOnly(Libraries.okhttp3)
 
@@ -60,7 +59,7 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "xptracker-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.xptracker.XpTrackerPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",

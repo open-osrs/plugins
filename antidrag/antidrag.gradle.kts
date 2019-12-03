@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "GPU"
+description = "Antidrag"
 version = "0.0.1"
 
 val deps = configurations.create("deps")
@@ -36,20 +36,13 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+
     compileOnly(project(":customcursor"))
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.jogampJogl)
-    compileOnly(Libraries.jogampGluegen)
-
-    testImplementation(Libraries.jogampJogl)
-    testImplementation(Libraries.jogampGluegen)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.hamcrest)
 }
 
 tasks {
@@ -57,10 +50,10 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "antidrag-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.antidrag.AntiDragPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "customcursor-plugin",
+                    "Plugin-Dependencies" to nameToId("customcursor"),
                     "Plugin-Description" to "Prevent dragging an item for a specified delay",
                     "Plugin-License" to "3-Clause BSD License"
             ))

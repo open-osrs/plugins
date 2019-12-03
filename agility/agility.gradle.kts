@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "GPU"
+description = "Agility"
 version = "0.0.1"
 
 val deps = configurations.create("deps")
@@ -49,11 +49,11 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "agility-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.agility.AgilityPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Utilizes the GPU",
+                    "Plugin-Description" to "Show helpful information about agility courses and obstacles",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }

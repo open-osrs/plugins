@@ -49,6 +49,7 @@ object Libraries {
     private object Versions {
         const val annotations = "18.0.0"
         const val antlr = "4.7.2"
+        const val apacheCommonsLang = "3.9"
         const val apacheCommonsCompress = "1.19"
         const val apacheCommonsCsv = "1.7"
         const val apacheCommonsText = "1.8"
@@ -103,6 +104,7 @@ object Libraries {
 
     const val annotations = "org.jetbrains:annotations:${Versions.annotations}"
     const val antlr = "org.antlr:antlr4-runtime:${Versions.antlr}"
+    const val apacheCommonsLang = "org.apache.commons:commons-lang3:${Versions.apacheCommonsLang}"
     const val apacheCommonsCompress = "org.apache.commons:commons-compress:${Versions.apacheCommonsCompress}"
     const val apacheCommonsCsv = "org.apache.commons:commons-csv:${Versions.apacheCommonsCsv}"
     const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.apacheCommonsText}"

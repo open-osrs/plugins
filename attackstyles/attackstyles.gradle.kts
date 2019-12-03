@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "GPU"
+description = "Attack styles"
 version = "0.0.1"
 
 val deps = configurations.create("deps")
@@ -40,7 +40,6 @@ dependencies {
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 
     testImplementation("com.openosrs:runelite-api:$rlVersion")
@@ -57,7 +56,7 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "attackstyles-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.attackstyles.AttackStylesPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",

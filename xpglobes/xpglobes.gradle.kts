@@ -41,9 +41,7 @@ dependencies {
     compileOnly(project(":xptracker"))
 
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 }
 
@@ -52,10 +50,10 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "xpglobes-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.xpglobes.XpGlobesPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "xptracker-plugin",
+                    "Plugin-Dependencies" to nameToId("xptracker"),
                     "Plugin-Description" to "Show XP globes for the respective skill when gaining XP",
                     "Plugin-License" to "3-Clause BSD License"
             ))

@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "GPU"
+description = "Animation Smoothing"
 version = "0.0.1"
 
 val deps = configurations.create("deps")
@@ -40,7 +40,6 @@ dependencies {
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 }
 
@@ -49,11 +48,11 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "animsmoothing-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.animsmoothing.AnimationSmoothingPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Makes animations appear smoother",
+                    "Plugin-Description" to "Show smoother player, NPC and object animations",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }

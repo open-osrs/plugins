@@ -36,13 +36,12 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+
     compileOnly(project(":itemstats"))
+
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.gson)
     compileOnly(Libraries.javax)
-    compileOnly(Libraries.jopt)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 }
 
@@ -51,10 +50,12 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to "statusbars-plugin",
+                    "Plugin-Id" to nameToId(project.name),
                     "Plugin-Class" to "net.runelite.client.plugins.statusbars.StatusBarsPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "itemstats-plugin"
+                    "Plugin-Dependencies" to nameToId("itemstats"),
+                    "Plugin-Description" to "Draws HP/Pray/Stamina/Spec status bars next to inventory",
+                    "Plugin-License" to "3-Clause BSD License"
             ))
         }
 
