@@ -40,7 +40,6 @@ dependencies {
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 }
 
@@ -53,7 +52,7 @@ tasks {
                     "Plugin-Class" to "net.runelite.client.plugins.animsmoothing.AnimationSmoothingPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Makes animations appear smoother",
+                    "Plugin-Description" to "Show smoother player, NPC and object animations",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }

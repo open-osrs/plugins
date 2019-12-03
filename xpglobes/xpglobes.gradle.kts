@@ -41,9 +41,7 @@ dependencies {
     compileOnly(project(":xptracker"))
 
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 }
 

@@ -40,15 +40,7 @@ dependencies {
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.jogampJogl)
-    compileOnly(Libraries.jogampGluegen)
-
-    testImplementation(Libraries.jogampJogl)
-    testImplementation(Libraries.jogampGluegen)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.hamcrest)
 }
 
 tasks {

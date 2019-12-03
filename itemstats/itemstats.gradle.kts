@@ -37,9 +37,9 @@ dependencies {
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
     compileOnly("com.openosrs:http-api:$rlVersion")
+
     compileOnly(Libraries.guice)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 
     testImplementation("com.openosrs:runelite-client:$rlVersion")
@@ -55,7 +55,9 @@ tasks {
                     "Plugin-Id" to "itemstats-plugin",
                     "Plugin-Class" to "net.runelite.client.plugins.itemstats.ItemStatPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
+                    "Plugin-Dependencies" to "",
+                    "Plugin-Description" to "Show information about food and potion effects",
+                    "Plugin-License" to "3-Clause BSD License"
             ))
         }
 

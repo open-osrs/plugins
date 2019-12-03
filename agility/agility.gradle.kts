@@ -53,7 +53,7 @@ tasks {
                     "Plugin-Class" to "net.runelite.client.plugins.agility.AgilityPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Utilizes the GPU",
+                    "Plugin-Description" to "Show helpful information about agility courses and obstacles",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }

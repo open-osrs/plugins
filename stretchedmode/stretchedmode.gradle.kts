@@ -36,10 +36,10 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
-    compileOnly(Libraries.rxjava)
     compileOnly(Libraries.pf4j)
 }
 
@@ -51,7 +51,9 @@ tasks {
                     "Plugin-Id" to "stretchedmode-plugin",
                     "Plugin-Class" to "net.runelite.client.plugins.stretchedmode.StretchedModePluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to ""
+                    "Plugin-Dependencies" to "",
+                    "Plugin-Description" to "Stretches the game in fixed and resizable modes.",
+                    "Plugin-License" to "3-Clause BSD License"
             ))
         }
 

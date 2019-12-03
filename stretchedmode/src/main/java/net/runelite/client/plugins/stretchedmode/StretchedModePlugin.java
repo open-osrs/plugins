@@ -36,7 +36,9 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Stretched Mode",
 	description = "Stretches the game in fixed and resizable modes.",
