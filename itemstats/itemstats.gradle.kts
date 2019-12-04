@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "Item Stats"
 version = "0.0.1"
 
-val deps = configurations.create("deps")
+project.extra["PluginName"] = "Item Stats"
+project.extra["PluginDescription"] = "Show information about food and potion effects"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -53,14 +53,11 @@ tasks {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.name),
-                    "Plugin-Class" to "net.runelite.client.plugins.itemstats.ItemStatPluginWrapper",
                     "Plugin-Provider" to "OpenOSRS",
                     "Plugin-Dependencies" to "",
                     "Plugin-Description" to "Show information about food and potion effects",
                     "Plugin-License" to "3-Clause BSD License"
             ))
         }
-
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
     }
 }

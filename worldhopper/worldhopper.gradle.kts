@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "World Hopper"
 version = "0.0.1"
 
-val deps = configurations.create("deps")
+project.extra["PluginName"] = "World Hopper"
+project.extra["PluginDescription"] = "Allows you to quickly hop worlds"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -50,15 +50,11 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.name),
-                    "Plugin-Class" to "net.runelite.client.plugins.worldhopper.WorldHopperPluginWrapper",
-                    "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Allows you to quickly hop worlds",
-                    "Plugin-License" to "3-Clause BSD License"
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
             ))
         }
-
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
     }
 }

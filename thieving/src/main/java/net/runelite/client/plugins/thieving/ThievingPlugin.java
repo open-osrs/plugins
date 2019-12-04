@@ -59,8 +59,7 @@ import org.pf4j.Extension;
 	name = "Thieving",
 	description = "Show thieving overlay",
 	tags = {"overlay", "skilling", "thieving", "pickpocketing"},
-	type = PluginType.SKILLING,
-	enabledByDefault = false
+	type = PluginType.SKILLING
 )
 @Singleton
 @PluginDependency(XpTrackerPlugin.class)

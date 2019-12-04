@@ -76,6 +76,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
 import net.runelite.client.plugins.PluginManager;
+import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.gpu.GLUtil.*;
 import net.runelite.client.plugins.gpu.config.AnisotropicFilteringMode;
 import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
@@ -88,8 +89,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "GPU",
 	description = "Utilizes the GPU",
-	enabledByDefault = false,
-	tags = {"fog", "draw distance"}
+	tags = {"fog", "draw distance"},
+	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
 @Singleton

@@ -63,6 +63,7 @@ import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 
 @Extension
@@ -70,7 +71,7 @@ import org.pf4j.Extension;
 	name = "Virtual Levels",
 	description = "Shows virtual levels (beyond 99) and virtual skill total on the skills tab.",
 	tags = {"skill", "total", "max"},
-	enabledByDefault = false
+	type = PluginType.UTILITY
 )
 @Singleton
 public class VirtualLevelsPlugin extends Plugin implements KeyListener

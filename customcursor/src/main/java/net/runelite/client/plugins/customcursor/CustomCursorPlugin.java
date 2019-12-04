@@ -40,6 +40,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientUI;
 import org.pf4j.Extension;
 
@@ -48,7 +49,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Custom Cursor",
 	description = "Replaces your mouse cursor image",
-	enabledByDefault = false
+	type = PluginType.MISCELLANEOUS
 )
 @Singleton
 public class CustomCursorPlugin extends Plugin

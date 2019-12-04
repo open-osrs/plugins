@@ -11,6 +11,10 @@ plugins {
 subprojects {
     group = "com.openosrs.externals"
 
+    project.extra["PluginProvider"] = "OpenOSRS"
+    project.extra["ProjectUrl"] = "https://discord.gg/OpenOSRS"
+    project.extra["PluginLicense"] = "3-Clause BSD License"
+
     repositories {
         jcenter()
         mavenLocal()

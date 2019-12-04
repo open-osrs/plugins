@@ -71,6 +71,7 @@ import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
@@ -81,7 +82,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Fishing",
 	description = "Show fishing stats and mark fishing spots",
-	tags = {"overlay", "skilling"}
+	tags = {"overlay", "skilling"},
+	type = PluginType.SKILLING
 )
 @PluginDependency(XpTrackerPlugin.class)
 @Singleton

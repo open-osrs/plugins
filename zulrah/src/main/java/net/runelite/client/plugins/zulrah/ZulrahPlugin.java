@@ -65,11 +65,10 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Zulrah Helper",
+	name = "Zulrah",
 	description = "Shows tiles on where to stand during the phases and what prayer to use.",
 	tags = {"zulrah", "boss", "helper"},
-	type = PluginType.PVM,
-	enabledByDefault = false
+	type = PluginType.PVM
 )
 @Slf4j
 @Singleton

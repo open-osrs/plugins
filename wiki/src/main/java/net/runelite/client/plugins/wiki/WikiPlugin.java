@@ -56,6 +56,7 @@ import net.runelite.client.game.SpriteManager;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.util.LinkBrowser;
 import okhttp3.HttpUrl;
 import org.pf4j.Extension;
@@ -64,7 +65,8 @@ import org.pf4j.Extension;
 @Slf4j
 @PluginDescriptor(
 	name = "Wiki",
-	description = "Adds a Wiki button that takes you to the OSRS Wiki"
+	description = "Adds a Wiki button that takes you to the OSRS Wiki",
+	type = PluginType.MISCELLANEOUS
 )
 @Singleton
 public class WikiPlugin extends Plugin

@@ -45,6 +45,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.AgilityShortcut;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
@@ -53,7 +54,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "World Map",
 	description = "Enhance the world map to display additional information",
-	tags = {"agility", "fairy", "farming", "rings", "teleports"}
+	tags = {"agility", "fairy", "farming", "rings", "teleports"},
+	type = PluginType.UTILITY
 )
 public class WorldMapPlugin extends Plugin
 {

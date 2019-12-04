@@ -52,8 +52,7 @@ import org.pf4j.Extension;
 	name = "Anti Drag",
 	description = "Prevent dragging an item for a specified delay",
 	tags = {"antidrag", "delay", "inventory", "items"},
-	type = PluginType.UTILITY,
-	enabledByDefault = false
+	type = PluginType.UTILITY
 )
 @PluginDependency(CustomCursorPlugin.class)
 @Singleton

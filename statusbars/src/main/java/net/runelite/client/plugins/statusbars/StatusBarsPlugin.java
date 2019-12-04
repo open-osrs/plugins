@@ -46,6 +46,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.itemstats.ItemStatPlugin;
 import net.runelite.client.plugins.statusbars.config.BarMode;
 import net.runelite.client.plugins.statusbars.renderer.BarRenderer;
@@ -60,7 +61,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Status Bars",
 	description = "Draws HP/Pray/Stamina/Spec status bars next to inventory",
-	enabledByDefault = false
+	type = PluginType.UTILITY
 )
 @Singleton
 @PluginDependency(ItemStatPlugin.class)
