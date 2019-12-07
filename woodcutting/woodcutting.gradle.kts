@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "Woodcutting"
 version = "0.0.1"
 
-val deps = configurations.create("deps")
+project.extra["PluginName"] = "Woodcutting"
+project.extra["PluginDescription"] = "Show woodcutting statistics and/or bird nest notifications"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -63,15 +63,12 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.name),
-                    "Plugin-Class" to "net.runelite.client.plugins.woodcutting.WoodcuttingPluginWrapper",
-                    "Plugin-Provider" to "OpenOSRS",
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Dependencies" to nameToId("xptracker"),
-                    "Plugin-Description" to "Show woodcutting statistics and/or bird nest notifications",
-                    "Plugin-License" to "3-Clause BSD License"
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
             ))
         }
-
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
     }
 }

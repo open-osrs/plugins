@@ -78,6 +78,7 @@ import net.runelite.client.game.WorldService;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -95,7 +96,8 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "World Hopper",
-	description = "Allows you to quickly hop worlds"
+	description = "Allows you to quickly hop worlds",
+	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
 @Singleton
@@ -165,6 +167,7 @@ public class WorldHopperPlugin extends Plugin
 	private SubscriptionFilterMode subscriptionFilter;
 	private boolean menuOption;
 	private boolean removePVPWorld;
+	private boolean removeBHWorld;
 	@Getter(AccessLevel.PACKAGE)
 	private boolean displayPing;
 
@@ -397,9 +400,10 @@ public class WorldHopperPlugin extends Plugin
 			World currentWorld = worldResult.findWorld(client.getWorld());
 			World targetWorld = worldResult.findWorld(player.getWorld());
 			if ((targetWorld == null || currentWorld == null)
-				|| (this.removePVPWorld && !currentWorld.getTypes().contains(WorldType.PVP) && targetWorld.getTypes().contains(WorldType.PVP)))
+				|| (this.removePVPWorld && !currentWorld.getTypes().contains(WorldType.PVP) && targetWorld.getTypes().contains(WorldType.PVP))
+				|| (this.removeBHWorld  && !currentWorld.getTypes().contains(WorldType.BOUNTY) && targetWorld.getTypes().contains(WorldType.BOUNTY)))
 			{
-				// Disable Hop-to a PVP world from a regular world
+				// Disable Hop-to a PVP world & BH world from a regular world
 				return;
 			}
 
@@ -530,9 +534,9 @@ public class WorldHopperPlugin extends Plugin
 		{
 			currentWorldTypes.remove(WorldType.PVP);
 			currentWorldTypes.remove(WorldType.HIGH_RISK);
+			currentWorldTypes.remove(WorldType.BOUNTY);
 		}
 		// Don't regard these worlds as a type that must be hopped between
-		currentWorldTypes.remove(WorldType.BOUNTY);
 		currentWorldTypes.remove(WorldType.SKILL_TOTAL);
 		currentWorldTypes.remove(WorldType.LAST_MAN_STANDING);
 
@@ -797,6 +801,7 @@ public class WorldHopperPlugin extends Plugin
 		this.displayPing = config.displayPing();
 		this.menuOption = config.menuOption();
 		this.removePVPWorld = config.removePVPWorld();
+		this.removeBHWorld = config.removeBHWorld();
 	}
 
 	/**

@@ -43,11 +43,10 @@ import org.pf4j.Extension;
 @Slf4j
 @Extension
 @PluginDescriptor(
-	name = "Wild Locations",
+	name = "Wilderness Locations",
 	description = "Indicates the players current location in the wild",
 	tags = {"Wildy", "Wilderness Location", "location", "loc", "pvp", "pklite"},
-	type = PluginType.PVP,
-	enabledByDefault = false
+	type = PluginType.PVP
 )
 @Singleton
 public class WildernessLocationsPlugin extends Plugin

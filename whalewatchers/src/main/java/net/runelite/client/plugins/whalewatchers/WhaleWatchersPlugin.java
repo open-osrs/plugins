@@ -55,14 +55,13 @@ import org.pf4j.Extension;
 	name = "Whale Watchers",
 	description = "A Plugin to save help whales in the wild",
 	tags = {"whale watchers", "whale", "protect item", "warning", "pklite", "pneck"},
-	type = PluginType.PVP,
-	enabledByDefault = false
+	type = PluginType.PVP
 )
 
 @Singleton
 public class WhaleWatchersPlugin extends Plugin
 {
-	private static final String BROKEN_PNECK_MESSAGE = "Your phoenix necklace heals you, but is destroyed in the process.";
+	private static final String BROKEN_PNECK_MESSAGE = "<col=ef1020>Your phoenix necklace heals you, but is destroyed in the process.</col>";
 	boolean protectItemOverlay = false;
 	int damageDone = 0;
 	int damageTaken = 0;

@@ -47,11 +47,10 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "War calling indicators",
+	name = "War Calling Indicators",
 	description = "War War War.",
 	tags = {"skill", "total", "max", "PVP"},
-	type = PluginType.PVP,
-	enabledByDefault = false
+	type = PluginType.PVP
 )
 @Singleton
 public class WarIndicatorPlugin extends Plugin

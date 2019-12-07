@@ -109,7 +109,7 @@ import org.pf4j.Extension;
 	name = "Barbarian Assault",
 	description = "Custom barbarian assault plugin, use along with BA Tools",
 	tags = {"minigame", "overlay", "timer"},
-	type = PluginType.PVM // don't remove this, added this because our barbarian assault plugin is big time modified
+	type = PluginType.MINIGAME
 )
 @PluginDependency(AttackStylesPlugin.class)
 @Singleton

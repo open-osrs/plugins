@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "World Map"
 version = "0.0.1"
 
-val deps = configurations.create("deps")
+project.extra["PluginName"] = "World Map"
+project.extra["PluginDescription"] = "Enhance the world map to display additional information"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -56,15 +56,11 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.name),
-                    "Plugin-Class" to "net.runelite.client.plugins.worldmap.WorldMapPluginWrapper",
-                    "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Enhance the world map to display additional information",
-                    "Plugin-License" to "3-Clause BSD License"
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
             ))
         }
-
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
     }
 }

@@ -24,5 +24,5 @@
  */
 
 fun nameToId(name: String): String {
-    return name.replace(" ", "").toLowerCase() + "-plugin"
+    return name.replace("[^A-Za-z]".toRegex(), "").toLowerCase() + "-plugin"
 }

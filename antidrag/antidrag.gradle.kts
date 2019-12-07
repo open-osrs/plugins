@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-description = "Antidrag"
 version = "0.0.1"
 
-val deps = configurations.create("deps")
+project.extra["PluginName"] = "Anti Drag"
+project.extra["PluginDescription"] = "Prevent dragging an item for a specified delay"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -50,15 +50,12 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.name),
-                    "Plugin-Class" to "net.runelite.client.plugins.antidrag.AntiDragPluginWrapper",
-                    "Plugin-Provider" to "OpenOSRS",
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Dependencies" to nameToId("customcursor"),
-                    "Plugin-Description" to "Prevent dragging an item for a specified delay",
-                    "Plugin-License" to "3-Clause BSD License"
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
             ))
         }
-
-        from(deps.map { if (it.isDirectory) it else zipTree(it) })
     }
 }

@@ -91,6 +91,7 @@ import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
@@ -107,7 +108,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Slayer",
 	description = "Show additional slayer task related information",
-	tags = {"combat", "notifications", "overlay", "tasks"}
+	tags = {"combat", "notifications", "overlay", "tasks"},
+	type = PluginType.SKILLING
 )
 @PluginDependency(XpTrackerPlugin.class)
 @Slf4j

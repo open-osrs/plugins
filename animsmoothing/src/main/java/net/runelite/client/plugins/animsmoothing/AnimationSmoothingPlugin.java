@@ -33,6 +33,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 
 @Extension
@@ -40,7 +41,7 @@ import org.pf4j.Extension;
 	name = "Animation Smoothing",
 	description = "Makes animations appear smoother",
 	tags = {"npcs", "objects", "players"},
-	enabledByDefault = false
+	type = PluginType.MISCELLANEOUS
 )
 @Singleton
 public class AnimationSmoothingPlugin extends Plugin

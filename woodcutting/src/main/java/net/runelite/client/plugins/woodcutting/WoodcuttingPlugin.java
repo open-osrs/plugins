@@ -57,6 +57,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
@@ -67,7 +68,7 @@ import org.pf4j.Extension;
 	name = "Woodcutting",
 	description = "Show woodcutting statistics and/or bird nest notifications",
 	tags = {"birds", "nest", "notifications", "overlay", "skilling", "wc"},
-	enabledByDefault = false
+	type = PluginType.SKILLING
 )
 @PluginDependency(XpTrackerPlugin.class)
 @Slf4j
