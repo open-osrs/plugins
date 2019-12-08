@@ -27,8 +27,8 @@ import ProjectVersions.rlVersion
 
 version = "0.0.1"
 
-project.extra["PluginName"] = "Grotesque Guardians"
-project.extra["PluginDescription"] = "Show various helpful utitiles during the Grotesque Gaurdians (Gargoyles) fight"
+project.extra["PluginName"] = "Camera"
+project.extra["PluginDescription"] = "Expands zoom limit, provides vertical camera, and remaps mouse input keys"
 
 dependencies {
     annotationProcessor(Libraries.lombok)

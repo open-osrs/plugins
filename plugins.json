@@ -1,5 +1,21 @@
 [
   {
+    "name": "Achievement Diary",
+    "id": "achievementdiary-plugin",
+    "description": "Display level requirements in Achievement Diary interface",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-11-29",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/achievementdiary-0.0.1.jar?raw=true",
+        "sha512sum": "CBABFBEB44782CFF25DA1846611374C13136743BC15A4E5582399BF2DEFAB41181A6F17C7CC186ED14B95B309FABAEE90345EF75FA966B34BC2E88BF242DD202"
+      }
+    ]
+  },
+  {
     "name": "Agility",
     "id": "agility-plugin",
     "description": "Show helpful information about agility courses and obstacles",
@@ -11,7 +27,7 @@
         "requires": "0.0.2",
         "date": "2019-11-29",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/agility-0.0.1.jar?raw=true",
-        "sha512sum": "E20A239BF7AC7C70181079AEDE8B3B81267977B8075AB560973AE8D75D7B9AA632592CA4562A76EA43C4107F97BC7C4343E477D8792F9E2C70209BBEC7C2F91A"
+        "sha512sum": "D101CFD1DC4529D1CA8C327788AD630B5138D8DACC5032B38B577A5B40BCF1F497BB24DCEB28902F3C64E72D38358F596C3C9A5934BE35EDD4127C6379A3620F"
       }
     ]
   },
@@ -27,7 +43,7 @@
         "requires": "0.0.2",
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/ammo-0.0.1.jar?raw=true",
-        "sha512sum": "5EBE244718E1CDE98EB09A702676B422B57143E1331154EEE9531670FFF9D692243E5D2EF703B6CA4A59BF32B570F9D944752E557B22A99549D4638B04DD3499"
+        "sha512sum": "6871BFB28B04E95E0DCC30D323C5169820DA54E53198524FA48D5878C3F12106A647E48ADC88E742353169F510FCEE7184D91B48E9AAA5B571472CEFA34914AC"
       }
     ]
   },
@@ -43,7 +59,7 @@
         "requires": "0.0.2",
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/animsmoothing-0.0.1.jar?raw=true",
-        "sha512sum": "966FD3AEC9E45EDA9A3EA7E4DA5CE0B5B70D94F453999D056D462298DC55C6B34D748304D66E6370458AC786992BFFCDA82EF70E506EFFD0B82A859CCA317BD7"
+        "sha512sum": "2487CDA7D122C5599708D59CD7CFEB0910364DA6D4A998A5302CEC3F0CCD272DE9C41243233EF7958852C9EF9912284599F9B767CAE94824DA3D0A8974241573"
       }
     ]
   },
@@ -59,7 +75,7 @@
         "requires": "0.0.2",
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/antidrag-0.0.1.jar?raw=true",
-        "sha512sum": "03059C248D4E8ED74866ED7A62324E30428D0EDAF274D72847B0F086E4D94F68F0016572A53B9D88A99F5663194FB9831A7CE9D93C42A2EA083B6F3BD070C764"
+        "sha512sum": "7EE0D3ADFD1FB002E70B431462487DBAB822BC4750DB020020569199403DAAF545840213AD3E718C9A051A4FDE452A11D61661297C0BA2EDBCCB2A75EBA8E45F"
       }
     ]
   },
@@ -75,7 +91,311 @@
         "requires": "0.0.2",
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/attackstyles-0.0.1.jar?raw=true",
-        "sha512sum": "F1B71E328BD300C957E6E4271162DC0ACED0807F2F41DE5BF66867BD63E3EF1D8E3A2CB6DE500C563D3844C5703ADE3FFC59A7E2F8964FFC4734ADA7E2F45DF5"
+        "sha512sum": "27AA7278A3F6FEE2D9F9A8750D7209DA3D1031BD074CB0A8C8EA6020FA2CAD5ED0B57006C858BF5F0BB9B45DA4E8AB321CBB6DA65F78A74B54C9F14F1233121A"
+      }
+    ]
+  },
+  {
+    "name": "Bank",
+    "id": "bank-plugin",
+    "description": "Modifications to the banking interface",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/bank-0.0.1.jar?raw=true",
+        "sha512sum": "C63BE1D34040D16C41AFF45D5EE077A6C3DBF31A3AE8B5940E4A093E34EBC607318C1A655AAF239FE35739FD0612AFB4628553298B899401964A75797568E30B"
+      }
+    ]
+  },
+  {
+    "name": "Bank Tags",
+    "id": "banktags-plugin",
+    "description": "Enable tagging of bank items and searching of bank tags",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/banktags-0.0.1.jar?raw=true",
+        "sha512sum": "55BE7532791E9CFA20BE6B3AE52B07408EADB5F99306E0DD6A7C0A73203F00BED421DFE657028BF8BC7C8873B02B77A728D9A1261C5C229454127E259F8EA339"
+      }
+    ]
+  },
+  {
+    "name": "Ban List",
+    "id": "banlist-plugin",
+    "description": "Displays warning in chat when you join a clan chat/new member join your clan chat and he is in a WDR/RuneWatch/Manual List",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/banktags-0.0.1.jar?raw=true",
+        "sha512sum": "55BE7532791E9CFA20BE6B3AE52B07408EADB5F99306E0DD6A7C0A73203F00BED421DFE657028BF8BC7C8873B02B77A728D9A1261C5C229454127E259F8EA339"
+      }
+    ]
+  },
+  {
+    "name": "Barbarian Assault",
+    "id": "barbarianassault-plugin",
+    "description": "Custom barbarian assault plugin, use along with BA Tools",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/barbarianassault-0.0.1.jar?raw=true",
+        "sha512sum": "4DCAAF5A1A9B2CA14B1D34E95959AB59E5A61D616C255AB4C07EFFA6FF33D69EC57115841843FD77B1D1D28CFF2360434C90002C7E0C4B2753899A530F8D6592"
+      }
+    ]
+  },
+  {
+    "name": "Barrows",
+    "id": "barrows-plugin",
+    "description": "Show helpful information for the Barrows minigame",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/barrows-0.0.1.jar?raw=true",
+        "sha512sum": "A1D4B77B6660147A3E4D64B2C75181F1B36FA69BE6AAF5010315162208B30A7B408D232E823A41E4773F43FE3FB7CF3302F5D0FB329C00F3C495D423D15914DC"
+      }
+    ]
+  },
+  {
+    "name": "Blast Furnace",
+    "id": "blastfurnace-plugin",
+    "description": "Show helpful information for the Blast Furnace minigame",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/blastfurnace-0.0.1.jar?raw=true",
+        "sha512sum": "3DEF550A7FD06EDC32249D61FA3730050C65056D74D4754579ABB208EC1CFC80143F0F6DED97DCCAA2CC401C0A80871BF7DD7C28647192399A6F17BE6216AF03"
+      }
+    ]
+  },
+  {
+    "name": "Blast Mine",
+    "id": "blastmine-plugin",
+    "description": "Show helpful information for the Blast Mine minigame",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/blastmine-0.0.1.jar?raw=true",
+        "sha512sum": "A411BDF82136A4E25FBE19B9C051307F3A0E3D3479A9539F9F89F04FD4BF01EF17364D88BD07604F14C6EBC7DB05022A395EF76AE619EBDF4B15CF98A2376463"
+      }
+    ]
+  },
+  {
+    "name": "Boosts",
+    "id": "boosts-plugin",
+    "description": "Show combat and/or skill boost information",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/boosts-0.0.1.jar?raw=true",
+        "sha512sum": "DF31F2375060AE661F89A517BD4E23367B1244AD2CCC9DFBE909EF368E8EF2BD7C13B515ED1D946529E7DBF68094FB6E930CF2ED39F402F8424E7957911DB26E"
+      }
+    ]
+  },
+  {
+    "name": "Boss Timers",
+    "id": "bosstimers-plugin",
+    "description": "Show boss spawn timer overlays",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/bosstimer-0.0.1.jar?raw=true",
+        "sha512sum": "FB8F213FBB16940DA9816A1631F95864FCC15067C75864CE3A24880919F4DDAD7FC9126CB4708B433B2DD17990C0D981AE29BF9CD331F5CB6401149DF3427AFE"
+      }
+    ]
+  },
+  {
+    "name": "Boss Time Tracker",
+    "id": "bosstimetracker-plugin",
+    "description": "Display elapsed time in the Fight Caves and Inferno",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/bosstimetracker-0.0.1.jar?raw=true",
+        "sha512sum": "6F5B4FB79E13CFE6578A453BB304B62F2615ACA49AA1C0431F26E4F6049557CED830DD07B4C1A610C1CAB63A63363C86951D534C6C06B0C251E7BAD6F03E742A"
+      }
+    ]
+  },
+  {
+    "name": "Bronze Man Mode",
+    "id": "bronzemanmode-plugin",
+    "description": "Restrict yourself as an Iron Meme with GE use for items you have unlocked",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/bronzemanmode-0.0.1.jar?raw=true",
+        "sha512sum": "C6367508D7C2570A91DD60E540912A476BF88F4D36F037B94D354ABF74779380B7ABA50F267442CFCBBA984B7005B33E9ABB18A4B8F0192111B9AEB2C13600B1"
+      }
+    ]
+  },
+  {
+    "name": "Camera",
+    "id": "camera-plugin",
+    "description": "Expands zoom limit, provides vertical camera, and remaps mouse input keys",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/camera-0.0.1.jar?raw=true",
+        "sha512sum": "A5B26A65B95F310EC07EB0A94A032E750BBC38E417DA0D7610A15D8E6F3F9089F36CD24CEFAD8415DACBC58DFBE9A7388CB2B3FF722D06271D2D73C8961B955F"
+      }
+    ]
+  },
+  {
+    "name": "Cannon",
+    "id": "cannon-plugin",
+    "description": "Show information about cannon placement and/or amount of cannonballs",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/cannon-0.0.1.jar?raw=true",
+        "sha512sum": "23AA3B7E0775AA77981D0803CFD9D51BFF2A134537F9C912B272076CAA3E728BF5F77AC64572C79DAF32F5A9434958E157F2CEF17700277EFBBF896EA9518C05"
+      }
+    ]
+  },
+  {
+    "name": "Chat Commands",
+    "id": "chatcommands-plugin",
+    "description": "Enable chat commands",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/chatcommands-0.0.1.jar?raw=true",
+        "sha512sum": "C44860B8470CDE43BEB3DF2902466399232EA03332DD3B34D89F4CB6AC26604CEE01D3A07FC95FEECD15B3B32BBF8665ACDE28000F74A399E3484DFA93C0BFD0"
+      }
+    ]
+  },
+  {
+    "name": "Chat Filter",
+    "id": "chatfilter-plugin",
+    "description": "Censor user configurable words or patterns from chat",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/chatfilter-0.0.1.jar?raw=true",
+        "sha512sum": "F13537F077ABB228730E1945AE22122F3F182CDF470D26956E1C06F269C3F0374649A99A4EC969DCAFDB733A611DA37BAE8DB6D98B89D6C1278983497A437A6A"
+      }
+    ]
+  },
+  {
+    "name": "Chat History",
+    "id": "chathistory-plugin",
+    "description": "Retain your chat history when logging in/out or world hopping",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/chathistory-0.0.1.jar?raw=true",
+        "sha512sum": "4BA00C968FAD93E99C304BC57645273BCA8D798BF33C69B32583BE718B434BA8A3EE964F0C907EDC3025F7A399AB8F24367C310BB9456D35F78E0FF953ADC4FE"
+      }
+    ]
+  },
+  {
+    "name": "Chat Notifications",
+    "id": "chatnotifications-plugin",
+    "description": "Highlight and notify you of chat messages",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/chatnotifications-0.0.1.jar?raw=true",
+        "sha512sum": "D3F8CC94BD12B1B48A377C909327768745337720BB12EC5A11F0C36786D1440DEA4BB57DCB0771314BD1592F74D8666FE1D16A269CF219FCA352ED86E7699346"
+      }
+    ]
+  },
+  {
+    "name": "Chat Translation",
+    "id": "chattranslation-plugin",
+    "description": "Translates messages from one Language to another",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/chattranslation-0.0.1.jar?raw=true",
+        "sha512sum": "0FA43A736AE155A567A95EF2172F9874341340C0DCD52AEF05E6DAE3C727E15DB5D7978BDD31714E4024D977A80475F60560FB6CD258D295A9AC3E5EA7AB4C9A"
+      }
+    ]
+  },
+  {
+    "name": "Clan Chat",
+    "id": "clanchat-plugin",
+    "description": "Add rank icons to users talking in clan chat",
+    "provider": "OpenOSRS",
+    "projectUrl": "https://discord.gg/OpenOSRS",
+    "releases": [
+      {
+        "version": "0.0.1",
+        "requires": "0.0.2",
+        "date": "2019-12-08",
+        "url": "https://github.com/open-osrs/plugins/blob/master/release/clanchat-0.0.1.jar?raw=true",
+        "sha512sum": "B122891E7FB7C13DBDDAE8AADEDF8911953FA170ADD77D64038E6DE5E440874FE121AC951328F7B4C86B7195A36B30BF44A83E749EE3F8EAF382639D89D08F33"
       }
     ]
   },
@@ -92,22 +412,6 @@
         "date": "2019-11-30",
         "url": "https://github.com/open-osrs/plugins/blob/master/release/customcursor-0.0.1.jar?raw=true",
         "sha512sum": "F887E51A9E11AE397CB77F8E034187A9B4A447B7A40D199241C8C8EE538116487C87643332B52CF30D6090787F729ADF7B72A3C2488054A07A856AD376896202"
-      }
-    ]
-  },
-  {
-    "name": "Diary Requirements",
-    "id": "diaryrequirements-plugin",
-    "description": "Display level requirements in Achievement Diary interface",
-    "provider": "OpenOSRS",
-    "projectUrl": "https://discord.gg/OpenOSRS",
-    "releases": [
-      {
-        "version": "0.0.1",
-        "requires": "0.0.2",
-        "date": "2019-11-29",
-        "url": "https://github.com/open-osrs/plugins/blob/master/release/diaryrequirements-0.0.1.jar?raw=true",
-        "sha512sum": "D231959A395509D50900C65F7CAD8CAA301987D270FE47B27D8E34CC6563761F76523A2DA5D8FD02D2E61C1C19919C64FA1DF3DA77B29ADE8E29001CD72FB051"
       }
     ]
   },
