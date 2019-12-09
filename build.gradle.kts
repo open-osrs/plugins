@@ -22,7 +22,7 @@ subprojects {
         maven(url = "https://jitpack.io")
     }
 
-    apply<JavaLibraryPlugin>()
+    apply<JavaPlugin>()
     apply(plugin = "checkstyle")
 
     checkstyle {
