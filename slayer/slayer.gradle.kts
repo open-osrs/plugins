@@ -28,7 +28,7 @@ import ProjectVersions.rlVersion
 version = "0.0.1"
 
 project.extra["PluginName"] = "Slayer"
-project.extra["PluginDescription"] = "Utilizes the GPU"
+project.extra["PluginDescription"] = "Show additional slayer task related information"
 
 dependencies {
     annotationProcessor(Libraries.lombok)

@@ -8,6 +8,8 @@ plugins {
     checkstyle
 }
 
+apply<BootstrapPlugin>()
+
 subprojects {
     group = "com.openosrs.externals"
 
