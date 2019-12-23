@@ -34,6 +34,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.inject.Provides;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -136,6 +137,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static final Set<MenuOpcode> NPC_MENU_TYPES = ImmutableSet.of(
 		MenuOpcode.NPC_FIRST_OPTION, MenuOpcode.NPC_SECOND_OPTION, MenuOpcode.NPC_THIRD_OPTION,
 		MenuOpcode.NPC_FOURTH_OPTION, MenuOpcode.NPC_FIFTH_OPTION, MenuOpcode.EXAMINE_NPC
+	);
+	private static final List<String> jewelleryBox = Arrays.asList(
+		"duel arena", "castle wars", "clan wars", "burthorpe", "barbarian outpost", "corporeal beast",
+		"tears of guthix", "wintertodt camp", "warriors' guild", "champions' guild", "monastery", "ranging guild",
+		"fishing guild", "mining guild", "crafting guild", "cooking guild", "woodcutting guild", "farming guild",
+		"miscellania", "grand exchange", "falador park", "dondakan's rock", "edgeville", "karamja",
+		"draynor village", "al kharid"
 	);
 	private static final Splitter NEWLINE_SPLITTER = Splitter
 		.on("\n")
@@ -290,6 +298,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private boolean swapTrade;
 	private boolean swapTravel;
 	private boolean swapWildernessLever;
+	private boolean swapJewelleryBox;
 
 	@Provides
 	MenuEntrySwapperConfig provideConfig(ConfigManager configManager)
@@ -611,7 +620,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 						}
 						else
 						{
-							menuManager.removeSwaps(target);
+							menuManager.removeSwap("loot", target, "use");
 						}
 					}
 					break;
@@ -628,7 +637,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 						}
 						else
 						{
-							menuManager.removeSwaps(target);
+							menuManager.removeSwap("loot", target, "use");
 						}
 					}
 					break;
@@ -645,7 +654,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 						}
 						else
 						{
-							menuManager.removeSwaps(target);
+							menuManager.removeSwap("loot", target, "use");
 						}
 					}
 					break;
@@ -664,7 +673,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 						}
 						else
 						{
-							menuManager.removeSwaps(target);
+							menuManager.removeSwap("loot", target, "use");
 						}
 					}
 					break;
@@ -682,7 +691,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 						}
 						else
 						{
-							menuManager.removeSwaps(target);
+							menuManager.removeSwap("loot", target, "use");
 						}
 					}
 					break;
@@ -1180,6 +1189,14 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			menuManager.addPriorityEntry(new GrimyHerbComparableEntry(this.swapGrimyHerbMode, client));
 		}
+
+		if (this.swapJewelleryBox)
+		{
+			for (String jewellerybox : jewelleryBox)
+			{
+				menuManager.addPriorityEntry(jewellerybox);
+			}
+		}
 	}
 
 	private void removeSwaps()
@@ -1302,6 +1319,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(this.questCapeMode.toString(), "quest point cape");
 		menuManager.removePriorityEntry(this.swapHouseAdMode.getEntry());
 		menuManager.removeSwap("Bury", "bone", "Use");
+
+		for (String jewellerybox : jewelleryBox)
+		{
+			menuManager.removePriorityEntry(jewellerybox);
+		}
 
 		switch (this.swapFairyRingMode)
 		{
@@ -1664,6 +1686,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		this.swapWildernessLever = config.swapWildernessLever();
 		this.swapHouseAd = config.swapHouseAd();
 		this.swapHouseAdMode = config.swapHouseAdMode();
+		this.swapJewelleryBox = config.swapJewelleryBox();
 	}
 
 	private void addBuySellEntries()
