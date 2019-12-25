@@ -62,12 +62,6 @@ jobs:
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
 
-      - name: Checking plugins code conventions (Test)
-        run: ./gradlew checkstyleTest --console=plain
-
-      - name: Checking plugins code conventions (Main)
-        run: ./gradlew checkstyleMain --console=plain
-
       - name: Building plugins
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
 
