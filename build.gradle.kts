@@ -9,6 +9,7 @@ plugins {
 }
 
 apply<BootstrapPlugin>()
+apply<VersionPlugin>()
 
 subprojects {
     group = "com.openosrs.externals"

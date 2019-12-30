@@ -65,9 +65,6 @@ jobs:
       - name: Building plugins
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
 
-      - name: Testing plugins
-        run: ./gradlew test --stacktrace --console=plain
-
   test:
     runs-on: ubuntu-latest
     name: Test
@@ -215,9 +212,59 @@ jobs:
       - name: Checking plugins code conventions (Test)
         run: ./gradlew checkstyleTest --console=plain
 
+  bump:
+    name: Bump version numbers
+    needs: [build, test, checkstyleMain, checkstyleTest]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extract actor repo
+        shell: bash
+        run: echo "##[set-output name=repo;]$(echo $(jq --raw-output .pull_request.head.repo.full_name "$GITHUB_EVENT_PATH"))"
+        id: extract_actor_repo
+
+      - name: Extract actor repo branch
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo $(jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH"))"
+        id: extract_actor_repo_branch
+
+      - id: changedFiles
+        name: Changed files exporter
+        uses: futuratrepadeira/changed-files@v3.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@master
+        with:
+          java-version: 11
+
+      - uses: actions/checkout@v1
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Bump version numbers
+        run: ./gradlew bumpVersion --newFiles="${{ steps.changedFiles.outputs.files_created }}" --changedFiles="${{ steps.changedFiles.outputs.files_updated }}" --console=plain
+
+      - name: Commit changed files
+        run: |
+          git add \*.kts
+          git diff-index --quiet HEAD \
+          || git -c user.name="GitHub" -c user.email="noreply@github.com" commit \
+            --author="github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>" \
+            -m "Bump version(s)"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ steps.extract_actor_repo.outputs.repo }}
+          branch: ${{ steps.extract_actor_repo_branch.outputs.branch }}
+
   approve:
     name: Approve
-    needs: [build, test, checkstyleMain, checkstyleTest]
+    needs: [build, test, checkstyleMain, checkstyleTest, bump]
     runs-on: ubuntu-latest
 
     steps:

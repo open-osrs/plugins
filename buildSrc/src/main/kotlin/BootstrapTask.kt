@@ -16,9 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 open class BootstrapTask : DefaultTask() {
-
     private fun formatDate(date: Date?) = with(date ?: Date()) {
         SimpleDateFormat("yyyy-MM-dd").format(this)
     }
@@ -95,6 +93,5 @@ open class BootstrapTask : DefaultTask() {
                 out.println(plugins.toString())
             }
         }
-
     }
 }
