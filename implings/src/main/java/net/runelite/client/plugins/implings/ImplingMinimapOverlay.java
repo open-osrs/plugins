@@ -41,13 +41,16 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 public class ImplingMinimapOverlay extends Overlay
 {
 	private final ImplingsPlugin plugin;
+	private final ImplingsConfig config;
 
 	@Inject
-	private ImplingMinimapOverlay(final ImplingsPlugin plugin)
+	private ImplingMinimapOverlay(final ImplingsPlugin plugin, final ImplingsConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
+
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -70,7 +73,7 @@ public class ImplingMinimapOverlay extends Overlay
 
 			OverlayUtil.renderMinimapLocation(graphics, impLocation, color);
 
-			if (plugin.isShowName())
+			if (config.showName())
 			{
 				Point textLocation = new Point(impLocation.getX() + 1, impLocation.getY());
 				OverlayUtil.renderTextLocation(graphics, textLocation, imp.getName(), color);

@@ -32,7 +32,6 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Queue;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
@@ -63,7 +62,6 @@ import org.pf4j.Extension;
 	tags = {"chat", "history", "retain", "cycle", "pm"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class ChatHistoryPlugin extends Plugin implements KeyListener
 {
 	private static final String WELCOME_MESSAGE = "Welcome to Old School RuneScape";

@@ -50,29 +50,31 @@ class AboveWidgetsOverlay extends Overlay
 	private static final int OFFSET_Y_TEXT_QUANTITY = 10;
 
 	private final Client client;
-	private final BarbarianAssaultPlugin game;
+	private final BarbarianAssaultPlugin plugin;
+	private final BarbarianAssaultConfig config;
 
 	@Inject
-	private AboveWidgetsOverlay(final Client client, final BarbarianAssaultPlugin game)
+	private AboveWidgetsOverlay(final Client client, final BarbarianAssaultPlugin plugin, final BarbarianAssaultConfig config)
 	{
-		super(game);
+		super(plugin);
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
-		this.game = game;
+		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!game.isInGame() || game.getRole() == null || game.isUsingGloryHorn())
+		if (!plugin.isInGame() || plugin.getRole() == null || plugin.isUsingGloryHorn())
 		{
 			return null;
 		}
 
-		Role role = game.getRole();
+		Role role = plugin.getRole();
 
-		if (game.isShowTimer())
+		if (config.showTimer())
 		{
 			renderTimer(graphics, role);
 		}
@@ -80,23 +82,23 @@ class AboveWidgetsOverlay extends Overlay
 		switch (role)
 		{
 			case ATTACKER:
-				if (game.isHighlightArrows())
+				if (config.highlightArrows())
 				{
-					renderInventoryHighlights(graphics, game.getRole().getListenItem(game.getLastListenText()), game.getHighlightArrowColor());
+					renderInventoryHighlights(graphics, plugin.getRole().getListenItem(plugin.getLastListenText()), config.highlightArrowColor());
 				}
 				break;
 
 			case DEFENDER:
-				if (game.isHighlightBait())
+				if (config.highlightBait())
 				{
-					renderInventoryHighlights(graphics, game.getRole().getListenItem(game.getLastListenText()), game.getHighlightBaitColor());
+					renderInventoryHighlights(graphics, plugin.getRole().getListenItem(plugin.getLastListenText()), config.highlightBaitColor());
 				}
 				break;
 
 			case HEALER:
-				if (game.isHighlightPoison())
+				if (config.highlightPoison())
 				{
-					renderInventoryHighlights(graphics, game.getRole().getListenItem(game.getLastListenText()), game.getHighlightPoisonColor());
+					renderInventoryHighlights(graphics, plugin.getRole().getListenItem(plugin.getLastListenText()), config.highlightPoisonColor());
 				}
 		}
 		return null;
@@ -112,13 +114,13 @@ class AboveWidgetsOverlay extends Overlay
 			return;
 		}
 
-		if (role == Role.COLLECTOR && game.isShowEggCountOverlay() && game.getWave() != null)
+		if (role == Role.COLLECTOR && config.showEggCountOverlay() && plugin.getWave() != null)
 		{
-			roleText.setText("(" + game.getWave().getCollectedEggCount() + ") " + formatClock());
+			roleText.setText("(" + plugin.getWave().getCollectedEggCount() + ") " + formatClock());
 		}
-		else if (role == Role.HEALER && game.isShowHpCountOverlay() && game.getWave() != null)
+		else if (role == Role.HEALER && config.showHpCountOverlay() && plugin.getWave() != null)
 		{
-			roleText.setText("(" + game.getWave().getHpHealed() + ") " + formatClock());
+			roleText.setText("(" + plugin.getWave().getHpHealed() + ") " + formatClock());
 		}
 		else
 		{
@@ -126,7 +128,7 @@ class AboveWidgetsOverlay extends Overlay
 		}
 
 		Rectangle spriteBounds = roleSprite.getBounds();
-		graphics.drawImage(game.getClockImage(), spriteBounds.x, spriteBounds.y, null);
+		graphics.drawImage(plugin.getClockImage(), spriteBounds.x, spriteBounds.y, null);
 		roleSprite.setHidden(true);
 	}
 
@@ -159,13 +161,13 @@ class AboveWidgetsOverlay extends Overlay
 
 	private String formatClock()
 	{
-		if (game.getCallTimer() == null)
+		if (plugin.getCallTimer() == null)
 		{
 			return "- - -";
 		}
 		else
 		{
-			long timeLeft = game.getTimeToChange();
+			long timeLeft = plugin.getTimeToChange();
 			if (timeLeft < 0)
 			{
 				return "00:00";

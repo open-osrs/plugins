@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Actor;
@@ -43,12 +42,11 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Vet'ion",
+	name = "Vetion Helper",
 	description = "Tracks Vet'ion's special attacks",
 	tags = {"bosses", "combat", "pve", "overlay"},
 	type = PluginType.PVM
 )
-@Singleton
 public class VetionPlugin extends Plugin
 {
 

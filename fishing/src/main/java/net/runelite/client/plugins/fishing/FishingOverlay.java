@@ -52,17 +52,19 @@ class FishingOverlay extends Overlay
 
 	private final Client client;
 	private final FishingPlugin plugin;
+	private final FishingConfig config;
 	private final XpTrackerService xpTrackerService;
 
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	public FishingOverlay(final Client client, final FishingPlugin plugin, final XpTrackerService xpTrackerService)
+	public FishingOverlay(final Client client, final FishingPlugin plugin, final FishingConfig config, final XpTrackerService xpTrackerService)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.xpTrackerService = xpTrackerService;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Fishing overlay"));
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY, FISHING_RESET, "Fishing overlay"));
@@ -71,7 +73,7 @@ class FishingOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isShowFishingStats() || plugin.getSession().getLastFishCaught() == null)
+		if (!config.showFishingStats() || plugin.getSession().getLastFishCaught() == null)
 		{
 			return null;
 		}

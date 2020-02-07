@@ -36,12 +36,14 @@ public class WhaleWatchersProtOverlay extends Overlay
 
 	private final Client client;
 	private final WhaleWatchersPlugin plugin;
+	private final WhaleWatchersConfig config;
 
 	@Inject
-	public WhaleWatchersProtOverlay(final Client client, final WhaleWatchersPlugin plugin)
+	public WhaleWatchersProtOverlay(final Client client, final WhaleWatchersPlugin plugin, final WhaleWatchersConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		setPriority(OverlayPriority.HIGH);
 		setPosition(OverlayPosition.DYNAMIC);
@@ -50,13 +52,13 @@ public class WhaleWatchersProtOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.protectItemOverlay && plugin.isProtectItemWarning())
+		if (plugin.protectItemOverlay && config.protectItemWarning())
 		{
 			Rectangle rectangle = new Rectangle();
 			rectangle.setBounds(client.getCanvas().getBounds());
 			rectangle.setLocation(client.getCanvas().getLocation());
 			Stroke oldStroke = graphics.getStroke();
-			if (plugin.isLessObnoxiousProtWarning())
+			if (config.lessObnoxiousProtWarning())
 			{
 				graphics.setStroke(new BasicStroke(3));
 			}
@@ -66,7 +68,7 @@ public class WhaleWatchersProtOverlay extends Overlay
 			}
 			graphics.setColor(Color.RED);
 			graphics.draw(rectangle);
-			if (!plugin.isLessObnoxiousProtWarning())
+			if (!config.lessObnoxiousProtWarning())
 			{
 				Font font = FontManager.getRunescapeBoldFont().deriveFont(Font.BOLD, 72);
 				graphics.setFont(font);

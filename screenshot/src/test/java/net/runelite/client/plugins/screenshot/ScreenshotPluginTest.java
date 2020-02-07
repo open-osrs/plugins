@@ -106,10 +106,9 @@ public class ScreenshotPluginTest
 	public void before()
 	{
 		Guice.createInjector(BoundFieldModule.of(this)).injectMembers(this);
-		screenshotPlugin.setScreenshotRewards(true);
-		screenshotPlugin.setScreenshotLevels(true);
-		screenshotPlugin.setScreenshotValuableDrop(true);
-		screenshotPlugin.setScreenshotUntradeableDrop(true);
+		when(screenshotConfig.screenshotLevels()).thenReturn(true);
+		when(screenshotConfig.screenshotValuableDrop()).thenReturn(true);
+		when(screenshotConfig.screenshotUntradeableDrop()).thenReturn(true);
 	}
 
 	@Test
@@ -149,7 +148,6 @@ public class ScreenshotPluginTest
 		assertEquals(73, screenshotPlugin.gettheatreOfBloodNumber());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testValuableDrop()
 	{
@@ -159,7 +157,6 @@ public class ScreenshotPluginTest
 		verify(drawManager).requestNextFrameListener(any(Consumer.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testUntradeableDrop()
 	{
@@ -169,7 +166,6 @@ public class ScreenshotPluginTest
 		verify(drawManager).requestNextFrameListener(any(Consumer.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testHitpointsLevel99()
 	{
@@ -190,7 +186,6 @@ public class ScreenshotPluginTest
 		verify(drawManager).requestNextFrameListener(any(Consumer.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testFiremakingLevel9()
 	{
@@ -211,7 +206,6 @@ public class ScreenshotPluginTest
 		verify(drawManager).requestNextFrameListener(any(Consumer.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testAttackLevel70()
 	{
@@ -232,7 +226,6 @@ public class ScreenshotPluginTest
 		verify(drawManager).requestNextFrameListener(any(Consumer.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testHunterLevel2()
 	{

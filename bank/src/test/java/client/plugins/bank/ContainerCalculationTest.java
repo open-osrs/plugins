@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.bank;
+package client.plugins.bank;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
@@ -34,6 +34,8 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.bank.ContainerCalculation;
+import net.runelite.client.plugins.bank.ContainerPrices;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;

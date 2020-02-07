@@ -29,10 +29,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.text.NumberFormat;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -61,10 +59,8 @@ import org.pf4j.Extension;
 	name = "Kingdom of Miscellania",
 	description = "Show various informations about your Kingdom of Miscellania",
 	tags = {"favor", "favour", "managing", "overlay", "indication", "notification"},
-	type = PluginType.MINIGAME
+	type = PluginType.UTILITY
 )
-@Slf4j
-@Singleton
 public class KingdomPlugin extends Plugin
 {
 	private static final ImmutableSet<Integer> KINGDOM_REGION = ImmutableSet.of(10044, 10300);
@@ -91,20 +87,11 @@ public class KingdomPlugin extends Plugin
 	private int favor = 0, coffer = 0;
 
 	private KingdomCounter counter;
-	private boolean showInfoboxAnywhere;
-	private int notifyFavorThreshold;
-	private int notifyCofferThreshold;
 
 	@Provides
 	KingdomConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(KingdomConfig.class);
-	}
-
-	@Override
-	protected void startUp()
-	{
-		updateConfig();
 	}
 
 	@Override
@@ -144,13 +131,12 @@ public class KingdomPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
 		processInfobox();
 	}
 
 	private void processInfobox()
 	{
-		if (client.getGameState() == GameState.LOGGED_IN && hasCompletedQuest() && (isInKingdom() || this.showInfoboxAnywhere))
+		if (client.getGameState() == GameState.LOGGED_IN && hasCompletedQuest() && (isInKingdom() || config.showInfoboxAnywhere()))
 		{
 			addKingdomInfobox();
 		}
@@ -208,17 +194,17 @@ public class KingdomPlugin extends Plugin
 
 	private void notifyFavor()
 	{
-		if (hasCompletedQuest() && getFavorPercent(favor) < this.notifyFavorThreshold)
+		if (hasCompletedQuest() && getFavorPercent(favor) < config.notifyFavorThreshold())
 		{
-			sendChatMessage("Your favor with your kingdom is below " + this.notifyFavorThreshold + "%.");
+			sendChatMessage("Your favor with your kingdom is below " + config.notifyFavorThreshold() + "%.");
 		}
 	}
 
 	private void notifyCoffer()
 	{
-		if (hasCompletedQuest() && coffer < this.notifyCofferThreshold)
+		if (hasCompletedQuest() && coffer < config.notifyCofferThreshold())
 		{
-			sendChatMessage("Your kingdom's coffer has less than " + NumberFormat.getIntegerInstance().format(this.notifyCofferThreshold) + " coins in it.");
+			sendChatMessage("Your kingdom's coffer has less than " + NumberFormat.getIntegerInstance().format(config.notifyCofferThreshold()) + " coins in it.");
 		}
 	}
 
@@ -234,12 +220,5 @@ public class KingdomPlugin extends Plugin
 				.type(ChatMessageType.CONSOLE)
 				.runeLiteFormattedMessage(message)
 				.build());
-	}
-
-	private void updateConfig()
-	{
-		this.showInfoboxAnywhere = config.showInfoboxAnywhere();
-		this.notifyFavorThreshold = config.notifyFavorThreshold();
-		this.notifyCofferThreshold = config.notifyCofferThreshold();
 	}
 }

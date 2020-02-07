@@ -78,7 +78,7 @@ import org.pf4j.Extension;
 	name = "Music",
 	description = "Adds search and filter for the music list, and additional volume control",
 	tags = {"sound", "volume"},
-	type = PluginType.UTILITY
+	type = PluginType.MISCELLANEOUS
 )
 public class MusicPlugin extends Plugin
 {
@@ -110,7 +110,6 @@ public class MusicPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		clientThread.invoke(() ->
 		{
 			addMusicButtons();

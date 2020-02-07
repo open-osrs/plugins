@@ -29,16 +29,14 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.client.util.PvPUtil;
 
-@Singleton
 public class PlayerIndicatorsService
 {
 	private final Client client;
-	private final PlayerIndicatorsPlugin plugin;
+	private final PlayerIndicatorsConfig config;
 
 	private final Predicate<Player> self;
 	private final Predicate<Player> friend;
@@ -50,10 +48,10 @@ public class PlayerIndicatorsService
 	private final Predicate<Player> callerTarget;
 
 	@Inject
-	private PlayerIndicatorsService(final Client client, final PlayerIndicatorsPlugin plugin)
+	private PlayerIndicatorsService(final Client client, final PlayerIndicatorsPlugin plugin, final PlayerIndicatorsConfig config)
 	{
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 
 		self = (player) -> (client.getLocalPlayer().equals(player)
 			&& plugin.getLocationHashMap().containsKey(PlayerRelation.SELF));
@@ -139,8 +137,8 @@ public class PlayerIndicatorsService
 
 	private boolean highlight()
 	{
-		return plugin.isHighlightOwnPlayer() || plugin.isHighlightClan()
-			|| plugin.isHighlightFriends() || plugin.isHighlightOther() || plugin.isHighlightTargets()
-			|| plugin.isHighlightCallers() || plugin.isHighlightTeam() || plugin.isHighlightCallerTargets();
+		return config.highlightOwnPlayer() || config.highlightClan()
+			|| config.highlightFriends() || config.highlightOtherPlayers() || config.highlightTargets()
+			|| config.highlightCallers() || config.highlightTeamMembers() || config.callersTargets();
 	}
 }

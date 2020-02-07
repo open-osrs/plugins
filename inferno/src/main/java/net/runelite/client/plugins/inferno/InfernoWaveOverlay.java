@@ -18,6 +18,7 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 public class InfernoWaveOverlay extends Overlay
 {
 	private final InfernoPlugin plugin;
+	private final InfernoConfig config;
 	private final PanelComponent panelComponent;
 
 	@Setter(AccessLevel.PACKAGE)
@@ -30,12 +31,13 @@ public class InfernoWaveOverlay extends Overlay
 	private InfernoWaveDisplayMode displayMode;
 
 	@Inject
-	InfernoWaveOverlay(final InfernoPlugin plugin)
+	InfernoWaveOverlay(final InfernoPlugin plugin, final InfernoConfig config)
 	{
 		this.panelComponent = new PanelComponent();
 		this.setPosition(OverlayPosition.TOP_RIGHT);
 		this.setPriority(OverlayPriority.HIGH);
 		this.plugin = plugin;
+		this.config = config;
 
 		panelComponent.setPreferredSize(new Dimension(160, 0));
 	}
@@ -48,7 +50,7 @@ public class InfernoWaveOverlay extends Overlay
 			displayMode == InfernoWaveDisplayMode.BOTH)
 		{
 			addWaveComponent(
-				plugin,
+				config,
 				panelComponent,
 				"Current Wave (Wave " + plugin.getCurrentWaveNumber() + ")",
 				plugin.getCurrentWaveNumber(),
@@ -61,7 +63,7 @@ public class InfernoWaveOverlay extends Overlay
 			displayMode == InfernoWaveDisplayMode.BOTH)
 		{
 			addWaveComponent(
-				plugin,
+				config,
 				panelComponent,
 				"Next Wave (Wave " + plugin.getNextWaveNumber() + ")",
 				plugin.getNextWaveNumber(),

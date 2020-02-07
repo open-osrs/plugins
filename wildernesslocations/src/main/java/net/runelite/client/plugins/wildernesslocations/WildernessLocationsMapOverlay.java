@@ -31,21 +31,23 @@ public class WildernessLocationsMapOverlay extends Overlay
 {
 	private final Client client;
 	private final WildernessLocationsPlugin plugin;
+	private final WildernessLocationsConfig config;
 
 	@Inject
-	private WildernessLocationsMapOverlay(Client client, WildernessLocationsPlugin plugin)
+	private WildernessLocationsMapOverlay(Client client, WildernessLocationsPlugin plugin, WildernessLocationsConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.HIGH);
 		setLayer(OverlayLayer.ABOVE_MAP);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isWorldMapOverlay())
+		if (!(config.worldMapOverlay() || config.outlineLocations()))
 		{
 			return null;
 		}
@@ -96,23 +98,23 @@ public class WildernessLocationsMapOverlay extends Overlay
 			if (worldLocation.equals(WorldLocation.ICE_GATE) || worldLocation.equals(WorldLocation.ICE_ROCK))
 			{
 				graphics.setColor(Color.BLACK);
-				if (plugin.isWorldMapNames())
+				if (config.worldMapOverlay())
 				{
 					graphics.drawString(worldLocation.getName(), point.getX(), point1.getY());
 				}
-				if (plugin.isOutlineLocations())
+				if (config.outlineLocations())
 				{
 					graphics.draw(rectangle);
 				}
 			}
 			else
 			{
-				graphics.setColor(plugin.getMapOverlayColor());
-				if (plugin.isWorldMapNames())
+				graphics.setColor(config.mapOverlayColor());
+				if (config.worldMapOverlay())
 				{
 					graphics.drawString(worldLocation.getName(), point.getX(), point.getY());
 				}
-				if (plugin.isOutlineLocations())
+				if (config.outlineLocations())
 				{
 					graphics.draw(rectangle);
 				}

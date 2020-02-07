@@ -28,7 +28,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.InventoryID;
@@ -48,7 +47,6 @@ import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.QuantityFormatter;
 
-@Singleton
 class ItemPricesOverlay extends Overlay
 {
 	private static final int INVENTORY_ITEM_WIDGETID = WidgetInfo.INVENTORY.getPackedId();
@@ -57,7 +55,7 @@ class ItemPricesOverlay extends Overlay
 	private static final int EXPLORERS_RING_ITEM_WIDGETID = WidgetInfo.EXPLORERS_RING_ALCH_INVENTORY.getPackedId();
 
 	private final Client client;
-	private final ItemPricesPlugin plugin;
+	private final ItemPricesConfig config;
 	private final TooltipManager tooltipManager;
 	private final StringBuilder itemStringBuilder = new StringBuilder();
 
@@ -65,11 +63,11 @@ class ItemPricesOverlay extends Overlay
 	ItemManager itemManager;
 
 	@Inject
-	ItemPricesOverlay(final Client client, final ItemPricesPlugin plugin, final TooltipManager tooltipManager)
+	ItemPricesOverlay(final Client client, final ItemPricesConfig config, final TooltipManager tooltipManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 		this.tooltipManager = tooltipManager;
 	}
 
@@ -98,11 +96,11 @@ class ItemPricesOverlay extends Overlay
 		switch (action)
 		{
 			case ITEM_USE_ON_WIDGET:
-				if (!plugin.isShowWhileAlching() || !menuEntry.getOption().equals("Cast") || !menuEntry.getTarget().contains("High Level Alchemy"))
+				if (!config.showWhileAlching() || !menuEntry.getOption().equals("Cast") || !menuEntry.getTarget().contains("High Level Alchemy"))
 				{
 					break;
 				}
-			case WIDGET_DEFAULT:
+			case CC_OP:
 			case ITEM_USE:
 			case ITEM_FIRST_OPTION:
 			case ITEM_SECOND_OPTION:
@@ -113,12 +111,12 @@ class ItemPricesOverlay extends Overlay
 				switch (groupId)
 				{
 					case WidgetID.EXPLORERS_RING_ALCH_GROUP_ID:
-						if (!plugin.isShowWhileAlching())
+						if (!config.showWhileAlching())
 						{
 							return null;
 						}
 					case WidgetID.INVENTORY_GROUP_ID:
-						if (plugin.isHideInventory())
+						if (config.hideInventory())
 						{
 							return null;
 						}
@@ -141,7 +139,7 @@ class ItemPricesOverlay extends Overlay
 	private String makeValueTooltip(MenuEntry menuEntry)
 	{
 		// Disabling both disables all value tooltips
-		if (!plugin.isShowGEPrice() && !plugin.isShowHAValue())
+		if (!config.showGEPrice() && !config.showHAValue())
 		{
 			return null;
 		}
@@ -210,15 +208,15 @@ class ItemPricesOverlay extends Overlay
 		int haProfit = 0;
 		final int itemHaPrice = Math.round(itemDef.getPrice() * Constants.HIGH_ALCHEMY_MULTIPLIER);
 
-		if (plugin.isShowGEPrice())
+		if (config.showGEPrice())
 		{
 			gePrice = itemManager.getItemPrice(id);
 		}
-		if (plugin.isShowHAValue())
+		if (config.showHAValue())
 		{
 			haPrice = itemManager.getAlchValue(id);
 		}
-		if (gePrice > 0 && itemHaPrice > 0 && plugin.isShowAlchProfit())
+		if (gePrice > 0 && itemHaPrice > 0 && config.showAlchProfit())
 		{
 			haProfit = calculateHAProfit(itemHaPrice, gePrice);
 		}
@@ -236,9 +234,9 @@ class ItemPricesOverlay extends Overlay
 		if (gePrice > 0)
 		{
 			itemStringBuilder.append("EX: ")
-				.append(QuantityFormatter.quantityToStackSize(gePrice * qty))
+				.append(QuantityFormatter.quantityToStackSize((long) gePrice * qty))
 				.append(" gp");
-			if (plugin.isShowEA() && qty > 1)
+			if (config.showEA() && qty > 1)
 			{
 				itemStringBuilder.append(" (")
 					.append(QuantityFormatter.quantityToStackSize(gePrice))
@@ -253,9 +251,9 @@ class ItemPricesOverlay extends Overlay
 			}
 
 			itemStringBuilder.append("HA: ")
-				.append(QuantityFormatter.quantityToStackSize(haValue * qty))
+				.append(QuantityFormatter.quantityToStackSize((long) haValue * qty))
 				.append(" gp");
-			if (plugin.isShowEA() && qty > 1)
+			if (config.showEA() && qty > 1)
 			{
 				itemStringBuilder.append(" (")
 					.append(QuantityFormatter.quantityToStackSize(haValue))
@@ -269,9 +267,9 @@ class ItemPricesOverlay extends Overlay
 
 			itemStringBuilder.append("</br>");
 			itemStringBuilder.append("HA Profit: ")
-				.append(ColorUtil.wrapWithColorTag(String.valueOf(haProfit * qty), haColor))
+				.append(ColorUtil.wrapWithColorTag(String.valueOf((long) haProfit * qty), haColor))
 				.append(" gp");
-			if (plugin.isShowEA() && qty > 1)
+			if (config.showEA() && qty > 1)
 			{
 				itemStringBuilder.append(" (")
 					.append(ColorUtil.wrapWithColorTag(String.valueOf(haProfit), haColor))

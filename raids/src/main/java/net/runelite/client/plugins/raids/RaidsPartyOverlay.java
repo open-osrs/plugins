@@ -52,8 +52,10 @@ public class RaidsPartyOverlay extends Overlay
 	static final String PARTY_OVERLAY_REFRESH = "Refresh party";
 	private final PanelComponent panelComponent = new PanelComponent();
 	private final PanelComponent panel = new PanelComponent();
+
 	@Inject
 	private Client client;
+
 	@Inject
 	private RaidsPlugin plugin;
 

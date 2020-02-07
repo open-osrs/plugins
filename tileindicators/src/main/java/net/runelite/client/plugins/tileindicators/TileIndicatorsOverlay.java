@@ -29,7 +29,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
@@ -40,17 +39,16 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
 public class TileIndicatorsOverlay extends Overlay
 {
 	private final Client client;
-	private final TileIndicatorsPlugin plugin;
+	private final TileIndicatorsConfig config;
 
 	@Inject
-	private TileIndicatorsOverlay(final Client client, final TileIndicatorsPlugin plugin)
+	private TileIndicatorsOverlay(final Client client, final TileIndicatorsConfig config)
 	{
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		setPriority(OverlayPriority.MED);
@@ -59,33 +57,33 @@ public class TileIndicatorsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isHighlightHoveredTile() &&
+		if (config.highlightHoveredTile() &&
 			// If we have tile "selected" render it
 			client.getSelectedSceneTile() != null)
 		{
-			if (plugin.isThinHoveredTile())
+			if (config.thinHoveredTile())
 			{
-				renderTileThin(graphics, client.getSelectedSceneTile().getLocalLocation(), plugin.getHighlightHoveredColor());
+				renderTileThin(graphics, client.getSelectedSceneTile().getLocalLocation(), config.highlightHoveredColor());
 			}
 			else
 			{
-				renderTile(graphics, client.getSelectedSceneTile().getLocalLocation(), plugin.getHighlightHoveredColor());
+				renderTile(graphics, client.getSelectedSceneTile().getLocalLocation(), config.highlightHoveredColor());
 			}
 		}
 
-		if (plugin.isHighlightDestinationTile())
+		if (config.highlightDestinationTile())
 		{
-			if (plugin.isThinDestinationTile())
+			if (config.thinDestinationTile())
 			{
-				renderTileThin(graphics, client.getLocalDestinationLocation(), plugin.getHighlightDestinationColor());
+				renderTileThin(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor());
 			}
 			else
 			{
-				renderTile(graphics, client.getLocalDestinationLocation(), plugin.getHighlightDestinationColor());
+				renderTile(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor());
 			}
 		}
 
-		if (plugin.isHighlightCurrentTile())
+		if (config.highlightCurrentTile())
 		{
 			final WorldPoint playerPos = client.getLocalPlayer().getWorldLocation();
 			if (playerPos == null)
@@ -99,13 +97,13 @@ public class TileIndicatorsOverlay extends Overlay
 				return null;
 			}
 
-			if (plugin.isThinCurrentTile())
+			if (config.thinCurrentTile())
 			{
-				renderTileThin(graphics, playerPosLocal, plugin.getHighlightCurrentColor());
+				renderTileThin(graphics, playerPosLocal, config.highlightCurrentColor());
 			}
 			else
 			{
-				renderTile(graphics, playerPosLocal, plugin.getHighlightCurrentColor());
+				renderTile(graphics, playerPosLocal, config.highlightCurrentColor());
 			}
 		}
 

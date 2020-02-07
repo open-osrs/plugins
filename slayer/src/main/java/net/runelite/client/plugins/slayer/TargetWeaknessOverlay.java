@@ -28,7 +28,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.Perspective;
@@ -41,19 +40,20 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
 class TargetWeaknessOverlay extends Overlay
 {
 	private final Client client;
 	private final SlayerPlugin plugin;
+	private final SlayerConfig config;
 	private final ItemManager itemManager;
 	private final NPCManager npcManager;
 
 	@Inject
-	private TargetWeaknessOverlay(final Client client, final SlayerPlugin plugin, final ItemManager itemManager, final NPCManager npcManager)
+	private TargetWeaknessOverlay(final Client client, final SlayerPlugin plugin, final SlayerConfig config, final ItemManager itemManager, final NPCManager npcManager)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.itemManager = itemManager;
 		this.npcManager = npcManager;
 		setPosition(OverlayPosition.DYNAMIC);
@@ -63,7 +63,7 @@ class TargetWeaknessOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isWeaknessPrompt())
+		if (!config.weaknessPrompt())
 		{
 			return null;
 		}

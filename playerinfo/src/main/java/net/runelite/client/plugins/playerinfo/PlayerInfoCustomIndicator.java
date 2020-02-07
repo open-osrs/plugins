@@ -50,14 +50,14 @@ public class PlayerInfoCustomIndicator extends InfoBox
 		private final String description;
 	}
 
-	private final PlayerInfoPlugin plugin;
+	private final PlayerInfoConfig config;
 	private final Client client;
 	private final IndicatorType type;
 
-	PlayerInfoCustomIndicator(final BufferedImage image, final PlayerInfoPlugin plugin, final Client client, final IndicatorType type)
+	PlayerInfoCustomIndicator(final BufferedImage image, final PlayerInfoPlugin plugin, final PlayerInfoConfig config, final Client client, final IndicatorType type)
 	{
 		super(image, plugin);
-		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
 		this.type = type;
 
@@ -108,15 +108,15 @@ public class PlayerInfoCustomIndicator extends InfoBox
 
 		if (currLvl > 1.0)
 		{
-			return plugin.getColorHigh();
+			return config.colorHigh();
 		}
 		else if (currLvl > 0.5)
 		{
-			return ColorUtil.colorLerp(plugin.getColorMed(), plugin.getColorHigh(), (currLvl * 2) - 1.0F);
+			return ColorUtil.colorLerp(config.colorMed(), config.colorHigh(), (currLvl * 2) - 1.0F);
 		}
 		else
 		{
-			return ColorUtil.colorLerp(plugin.getColorLow(), plugin.getColorMed(), (currLvl * 2));
+			return ColorUtil.colorLerp(config.colorLow(), config.colorMed(), (currLvl * 2));
 		}
 	}
 
@@ -126,15 +126,15 @@ public class PlayerInfoCustomIndicator extends InfoBox
 		switch (type)
 		{
 			case HEALTH:
-				return plugin.isEnableHealth();
+				return config.enableHealth();
 			case PRAYER:
-				return plugin.isEnablePrayer();
+				return config.enablePrayer();
 			case ENERGY:
-				return plugin.isEnableEnergy();
+				return config.enableEnergy();
 			case SPECIAL:
-				return plugin.isEnableSpec();
+				return config.enableSpec();
 			case WORLD:
-				return plugin.isEnableWorld();
+				return config.enableWorld();
 		}
 
 		return false;

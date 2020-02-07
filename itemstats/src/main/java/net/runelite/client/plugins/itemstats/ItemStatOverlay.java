@@ -57,22 +57,22 @@ public class ItemStatOverlay extends Overlay
 	private final ItemManager itemManager;
 	private final TooltipManager tooltipManager;
 	private final ItemStatChanges statChanges;
-	private final ItemStatPlugin plugin;
+	private final ItemStatConfig config;
 
 	@Inject
-	ItemStatOverlay(Client client, ItemStatPlugin plugin, ItemManager itemManager, TooltipManager tooltipManager, ItemStatChanges itemStatChanges)
+	ItemStatOverlay(Client client, ItemStatConfig config, ItemManager itemManager, TooltipManager tooltipManager, ItemStatChanges itemStatChanges)
 	{
 		this.client = client;
 		this.itemManager = itemManager;
 		this.tooltipManager = tooltipManager;
 		this.statChanges = itemStatChanges;
-		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (client.isMenuOpen() || (!plugin.isRelative() && !plugin.isAbsolute() && !plugin.isTheoretical()))
+		if (client.isMenuOpen() || (!config.relative() && !config.absolute() && !config.theoretical()))
 		{
 			return null;
 		}
@@ -116,7 +116,7 @@ public class ItemStatOverlay extends Overlay
 			}
 		}
 
-		if (plugin.isConsumableStats())
+		if (config.consumableStats())
 		{
 			final Effect change = statChanges.get(itemId);
 			if (change != null)
@@ -138,7 +138,7 @@ public class ItemStatOverlay extends Overlay
 			}
 		}
 
-		if (plugin.isEquipmentStats())
+		if (config.equipmentStats())
 		{
 			final ItemStats stats = itemManager.getItemStats(itemId, false);
 
@@ -162,8 +162,8 @@ public class ItemStatOverlay extends Overlay
 		final boolean inverse,
 		final boolean showPercent)
 	{
-		final Color plus = Positivity.getColor(plugin, Positivity.BETTER_UNCAPPED);
-		final Color minus = Positivity.getColor(plugin, Positivity.WORSE);
+		final Color plus = Positivity.getColor(config, Positivity.BETTER_UNCAPPED);
+		final Color minus = Positivity.getColor(config, Positivity.WORSE);
 
 		if (value == 0)
 		{
@@ -190,7 +190,7 @@ public class ItemStatOverlay extends Overlay
 	private String buildStatBonusString(ItemStats s)
 	{
 		final StringBuilder b = new StringBuilder();
-		if (plugin.isShowWeight())
+		if (config.showWeight())
 		{
 			b.append(getChangeString("Weight", s.getWeight(), true, false));
 		}
@@ -258,32 +258,32 @@ public class ItemStatOverlay extends Overlay
 	private String buildStatChangeString(StatChange c)
 	{
 		StringBuilder b = new StringBuilder();
-		b.append(ColorUtil.colorTag(Positivity.getColor(plugin, c.getPositivity())));
+		b.append(ColorUtil.colorTag(Positivity.getColor(config, c.getPositivity())));
 
-		if (plugin.isRelative())
+		if (config.relative())
 		{
 			b.append(c.getFormattedRelative());
 		}
 
-		if (plugin.isTheoretical())
+		if (config.theoretical())
 		{
-			if (plugin.isRelative())
+			if (config.relative())
 			{
 				b.append("/");
 			}
 			b.append(c.getFormattedTheoretical());
 		}
 
-		if (plugin.isAbsolute() && (plugin.isRelative() || plugin.isTheoretical()))
+		if (config.absolute() && (config.relative() || config.theoretical()))
 		{
 			b.append(" (");
 		}
-		if (plugin.isAbsolute())
+		if (config.absolute())
 		{
 			b.append(c.getAbsolute());
 		}
 
-		if (plugin.isAbsolute() && (plugin.isRelative() || plugin.isTheoretical()))
+		if (config.absolute() && (config.relative() || config.theoretical()))
 		{
 			b.append(")");
 		}

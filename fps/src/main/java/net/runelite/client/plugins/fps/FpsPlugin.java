@@ -26,7 +26,6 @@ package net.runelite.client.plugins.fps;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import net.runelite.api.events.FocusChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -55,7 +54,6 @@ import org.pf4j.Extension;
 	tags = {"frames", "framerate", "limit", "overlay"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class FpsPlugin extends Plugin
 {
 	static final String CONFIG_GROUP_KEY = "fpscontrol";

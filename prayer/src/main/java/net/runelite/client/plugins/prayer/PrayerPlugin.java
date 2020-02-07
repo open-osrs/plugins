@@ -29,7 +29,6 @@ import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -60,7 +59,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "flicking", "overlay"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class PrayerPlugin extends Plugin
 {
 	private final PrayerCounter[] prayerCounter = new PrayerCounter[PrayerType.values().length];
@@ -97,23 +95,6 @@ public class PrayerPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
-	@Getter(AccessLevel.PACKAGE)
-	private PrayerFlickLocation prayerFlickLocation;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean prayerFlickAlwaysOn;
-	private boolean prayerIndicator;
-	private boolean prayerIndicatorOverheads;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPrayerDoseIndicator;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPrayerStatistics;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPrayerBar;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean hideIfNotPraying;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean hideIfOutOfCombat;
-
 	@Provides
 	PrayerConfig provideConfig(ConfigManager configManager)
 	{
@@ -123,8 +104,6 @@ public class PrayerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(flickOverlay);
 		overlayManager.add(doseOverlay);
 		overlayManager.add(barOverlay);
@@ -144,12 +123,11 @@ public class PrayerPlugin extends Plugin
 	{
 		if (event.getGroup().equals("prayer"))
 		{
-			updateConfig();
-			if (!this.prayerIndicator)
+			if (!config.prayerIndicator())
 			{
 				removeIndicators();
 			}
-			else if (!this.prayerIndicatorOverheads)
+			else if (!config.prayerIndicatorOverheads())
 			{
 				removeOverheadsIndicators();
 			}
@@ -187,22 +165,22 @@ public class PrayerPlugin extends Plugin
 	{
 		prayersActive = isAnyPrayerActive();
 
-		if (!this.prayerFlickLocation.equals(PrayerFlickLocation.NONE))
+		if (!config.prayerFlickLocation().equals(PrayerFlickLocation.NONE))
 		{
 			startOfLastTick = Instant.now();
 		}
 
-		if (this.showPrayerDoseIndicator)
+		if (config.showPrayerDoseIndicator())
 		{
 			doseOverlay.onTick();
 		}
 
-		if (this.showPrayerBar)
+		if (config.showPrayerBar())
 		{
 			barOverlay.onTick();
 		}
 
-		if (!this.prayerIndicator)
+		if (!config.prayerIndicator())
 		{
 			return;
 		}
@@ -214,7 +192,7 @@ public class PrayerPlugin extends Plugin
 
 			if (client.isPrayerActive(prayer))
 			{
-				if (prayerType.isOverhead() && !this.prayerIndicatorOverheads)
+				if (prayerType.isOverhead() && !config.prayerIndicatorOverheads())
 				{
 					continue;
 				}
@@ -329,18 +307,5 @@ public class PrayerPlugin extends Plugin
 	{
 		infoBoxManager.removeIf(entry -> entry instanceof PrayerCounter
 			&& ((PrayerCounter) entry).getPrayerType().isOverhead());
-	}
-
-	private void updateConfig()
-	{
-		this.prayerFlickLocation = config.prayerFlickLocation();
-		this.prayerFlickAlwaysOn = config.prayerFlickAlwaysOn();
-		this.prayerIndicator = config.prayerIndicator();
-		this.prayerIndicatorOverheads = config.prayerIndicatorOverheads();
-		this.showPrayerDoseIndicator = config.showPrayerDoseIndicator();
-		this.showPrayerStatistics = config.showPrayerStatistics();
-		this.showPrayerBar = config.showPrayerBar();
-		this.hideIfNotPraying = config.hideIfNotPraying();
-		this.hideIfOutOfCombat = config.hideIfOutOfCombat();
 	}
 }

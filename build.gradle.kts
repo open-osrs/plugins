@@ -9,6 +9,7 @@ plugins {
 }
 
 apply<BootstrapPlugin>()
+apply<VersionPlugin>()
 
 subprojects {
     group = "com.openosrs.externals"
@@ -62,6 +63,10 @@ subprojects {
 
         withType<Checkstyle> {
             group = "verification"
+
+            exclude("**/ScriptVarType.java")
+            exclude("**/LayoutSolver.java")
+            exclude("**/RoomType.java")
         }
     }
 }

@@ -40,7 +40,8 @@ import net.runelite.client.menus.MenuManager;
 class BarbarianAssaultMenu
 {
 	private final MenuManager menuManager;
-	private final BarbarianAssaultPlugin game;
+	private final BarbarianAssaultPlugin plugin;
+	private final BarbarianAssaultConfig config;
 	private final List<AbstractComparableEntry> tracker = new ArrayList<>();
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
@@ -50,15 +51,16 @@ class BarbarianAssaultMenu
 	private boolean rebuildForced = false;
 
 	@Inject
-	BarbarianAssaultMenu(final MenuManager menuManager, final BarbarianAssaultPlugin game)
+	BarbarianAssaultMenu(final MenuManager menuManager, final BarbarianAssaultPlugin plugin, final BarbarianAssaultConfig config)
 	{
 		this.menuManager = menuManager;
-		this.game = game;
+		this.plugin = plugin;
+		this.config = config;
 	}
 
 	private boolean isHornOptionHidden(String option)
 	{
-		if (game.isInGame() && game.getRole() != null && game.getRole().getTell(game.getLastCallText()).equalsIgnoreCase(option))
+		if (plugin.isInGame() && plugin.getRole() != null && plugin.getRole().getTell(plugin.getLastCallText()).equalsIgnoreCase(option))
 		{
 			// This will force the menu to be rebuilt after the correct tell is found
 			// medic will be added to the menu if it wasn't there before
@@ -101,24 +103,24 @@ class BarbarianAssaultMenu
 				case TELL_BLUE_ATTACKER_HORN:
 				case TELL_GREEN_ATTACKER_HORN:
 				case TELL_RED_ATTACKER_HORN:
-					return ((role == Role.ATTACKER && isHornOptionHidden(entry.getOption())) || role == null) && game.isRemoveIncorrectCalls();
+					return ((role == Role.ATTACKER && isHornOptionHidden(entry.getOption())) || role == null) && config.removeIncorrectCalls();
 
 				case ATTACK_PENANCE_FIGHTER:
 				case ATTACK_PENANCE_RANGER:
 				case GET_SPIKES_PETRIFIED_MUSHROOM:
 				case TAKE_ATTACKER_ITEM_MACHINE:
-					return (role != Role.ATTACKER && role != null) && game.isRemoveUnusedMenus();
+					return (role != Role.ATTACKER && role != null) && config.removeUnusedMenus();
 
 
 				// Defender role Options
 				case TELL_MEAT_DEFENDER_HORN:
 				case TELL_TOFU_DEFENDER_HORN:
 				case TELL_WORMS_DEFENDER_HORN:
-					return ((role == Role.DEFENDER && isHornOptionHidden(entry.getOption())) || role == null) && game.isRemoveIncorrectCalls();
+					return ((role == Role.DEFENDER && isHornOptionHidden(entry.getOption())) || role == null) && config.removeIncorrectCalls();
 
 				case BLOCK_PENANCE_CAVE:
-					return ((role != Role.DEFENDER && role != null) && game.isRemoveUnusedMenus())
-						|| (role == Role.DEFENDER && game.isRemovePenanceCave());
+					return ((role != Role.DEFENDER && role != null) && config.removeUnusedMenus())
+						|| (role == Role.DEFENDER && config.removePenanceCave());
 
 				case DUNK_LAVA_CRATER:
 				case FIX:
@@ -126,7 +128,7 @@ class BarbarianAssaultMenu
 				case TAKE_DEFENDER_ITEM_MACHINE:
 				case TAKE_HAMMER:
 				case TAKE_LOGS:
-					return (role != Role.DEFENDER && role != null) && game.isRemoveUnusedMenus();
+					return (role != Role.DEFENDER && role != null) && config.removeUnusedMenus();
 
 
 				// Collector role options
@@ -134,7 +136,7 @@ class BarbarianAssaultMenu
 				case TELL_AGGRESSIVE_COLLECTOR_HORN:
 				case TELL_CONTROLLED_COLLECTOR_HORN:
 				case TELL_DEFENSIVE_COLLECTOR_HORN:
-					return ((role == Role.COLLECTOR && isHornOptionHidden(entry.getOption())) || role == null) && game.isRemoveIncorrectCalls();
+					return ((role == Role.COLLECTOR && isHornOptionHidden(entry.getOption())) || role == null) && config.removeIncorrectCalls();
 
 				case CONVERT_COLLECTOR_CONVERTER:
 				case LOAD_EGG_HOPPER:
@@ -142,40 +144,40 @@ class BarbarianAssaultMenu
 				case TAKE_GREEN_EGG:
 				case TAKE_RED_EGG:
 				case TAKE_YELLOW_EGG:
-					return (role != Role.COLLECTOR && role != null) && game.isRemoveUnusedMenus();
+					return (role != Role.COLLECTOR && role != null) && config.removeUnusedMenus();
 
 
 				// Healer role options
 				case TELL_CRACKERS_HEALER_HORN:
 				case TELL_TOFU_HEALER_HORN:
 				case TELL_WORMS_HEALER_HORN:
-					return ((role == Role.HEALER && isHornOptionHidden(entry.getOption())) || role == null) && game.isRemoveIncorrectCalls();
+					return ((role == Role.HEALER && isHornOptionHidden(entry.getOption())) || role == null) && config.removeIncorrectCalls();
 
 				case DUNK_POISON_CRATER:
 				case STOCK_UP_HEALER_ITEM_MACHINE:
 				case TAKE_HEALER_ITEM_MACHINE:
 				case TAKE_FROM_HEALER_SPRING:
 				case DRINK_FROM_HEALER_SPRING:
-					return (role != Role.HEALER && role != null) && game.isRemoveUnusedMenus();
+					return (role != Role.HEALER && role != null) && config.removeUnusedMenus();
 
 				case USE_VIAL_GROUND:
 				case USE_VIAL_ITEM:
 				case USE_VIAL_NPC:
 				case USE_VIAL_WIDGET:
-					return role == Role.HEALER && game.isRemoveUnusedMenus();
+					return role == Role.HEALER && config.removeUnusedMenus();
 
 
 				// Any role options
 				case DROP_HORN:
 				case EXAMINE_HORN:
 				case USE_HORN:
-					return game.isRemoveIncorrectCalls();
+					return config.removeIncorrectCalls();
 
 				case MEDIC_HORN:
-					return game.isRemoveIncorrectCalls() && !hornUpdated;
+					return config.removeIncorrectCalls() && !hornUpdated;
 
 				default:
-					return role != null && game.isRemoveUnusedMenus();
+					return role != null && config.removeUnusedMenus();
 			}
 		});
 
@@ -190,15 +192,15 @@ class BarbarianAssaultMenu
 
 	void enableSwaps()
 	{
-		if (game.isSwapLadder())
+		if (config.swapLadder())
 		{
 			menuManager.addSwap("climb-down", "ladder", "quick-start", "ladder");
 		}
-		if (game.isSwapCollectorBag())
+		if (config.swapCollectorBag())
 		{
 			menuManager.addSwap("look-in", "collection bag", "empty", "collection bag");
 		}
-		if (game.isSwapDestroyEggs())
+		if (config.swapDestroyEggs())
 		{
 			menuManager.addSwap("use", "blue egg", "destroy", "blue egg");
 			menuManager.addSwap("use", "green egg", "destroy", "green egg");
@@ -208,17 +210,17 @@ class BarbarianAssaultMenu
 
 	void disableSwaps(boolean force)
 	{
-		if (!game.isSwapLadder() || force)
+		if (!config.swapLadder() || force)
 		{
 			menuManager.removeSwap("climb-down", "ladder", "quick-start", "ladder");
 		}
 
-		if (!game.isSwapCollectorBag() || force)
+		if (!config.swapCollectorBag() || force)
 		{
 			menuManager.removeSwap("look-in", "collection bag", "empty", "collection bag");
 		}
 
-		if (!game.isSwapDestroyEggs() || force)
+		if (!config.swapDestroyEggs() || force)
 		{
 			menuManager.removeSwap("use", "blue egg", "destroy", "blue egg");
 			menuManager.removeSwap("use", "green egg", "destroy", "green egg");

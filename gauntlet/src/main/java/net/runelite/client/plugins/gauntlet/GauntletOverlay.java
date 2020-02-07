@@ -64,20 +64,22 @@ public class GauntletOverlay extends Overlay
 	private OverlayManager overlayManager;
 
 	@Inject
-	private GauntletCounter GauntletCounter;
+	private net.runelite.client.plugins.gauntlet.GauntletCounter GauntletCounter;
 
 	private static final Color FLASH_COLOR = new Color(255, 0, 0, 70);
 	private static final int MAX_DISTANCE = 2400;
 	private final Client client;
 	private final GauntletPlugin plugin;
+	private final GauntletConfig config;
 	private final ModelOutlineRenderer outlineRenderer;
 	private int timeout;
 
 	@Inject
-	private GauntletOverlay(Client client, GauntletPlugin plugin, ModelOutlineRenderer outlineRenderer)
+	private GauntletOverlay(Client client, GauntletPlugin plugin, GauntletConfig config, ModelOutlineRenderer outlineRenderer)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.outlineRenderer = outlineRenderer;
 
 		setPosition(OverlayPosition.DYNAMIC);
@@ -102,7 +104,7 @@ public class GauntletOverlay extends Overlay
 			Set<Missiles> projectiles = plugin.getProjectiles();
 			projectiles.forEach(projectile ->
 			{
-				BufferedImage icon = resizeImage(projectile.getImage(), plugin.getProjectileIconSize(), plugin.getProjectileIconSize());
+				BufferedImage icon = resizeImage(projectile.getImage(), config.projectileIconSize(), config.projectileIconSize());
 				Color color = projectile.getColor();
 
 				Polygon polygon = boundProjectile(projectile.getProjectile());
@@ -119,21 +121,21 @@ public class GauntletOverlay extends Overlay
 						return;
 					}
 
-					if (plugin.isUniqueAttackVisual())
+					if (config.uniqueAttackVisual())
 					{
 						graphics.drawImage(icon, loc.getX(), loc.getY(), null);
 					}
 				}
 				else
 				{
-					if (plugin.isAttackVisualOutline())
+					if (config.attackVisualOutline())
 					{
 						graphics.setColor(color);
 						graphics.draw(polygon);
 						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
 						graphics.fill(polygon);
 					}
-					if (plugin.isUniqueAttackVisual())
+					if (config.uniqueAttackVisual())
 					{
 						Rectangle bounds = polygon.getBounds();
 						int x = (int) bounds.getCenterX() - (icon.getWidth() / 2);
@@ -146,7 +148,7 @@ public class GauntletOverlay extends Overlay
 
 			plugin.getTornadoes().forEach(tornado ->
 			{
-				if (plugin.isOverlayTornadoes())
+				if (config.overlayTornadoes())
 				{
 					if (tornado.getTimeLeft() <= 0)
 					{
@@ -186,7 +188,7 @@ public class GauntletOverlay extends Overlay
 				final NPC boss = hunllef.getNpc();
 				final LocalPoint point = boss.getLocalLocation();
 
-				if (plugin.isFlash() && plugin.isFlashOnWrongAttack())
+				if (plugin.isFlash() && config.flashOnWrongAttack())
 				{
 					final Color flash = graphics.getColor();
 					graphics.setColor(FLASH_COLOR);
@@ -200,7 +202,7 @@ public class GauntletOverlay extends Overlay
 					}
 				}
 
-				if (plugin.isOverlayBoss())
+				if (config.overlayBoss())
 				{
 					Shape polygon = boss.getConvexHull();
 
@@ -216,17 +218,17 @@ public class GauntletOverlay extends Overlay
 					}
 				}
 
-				if (plugin.isOverlayBossPrayer())
+				if (config.overlayBossPrayer())
 				{
 					BufferedImage attackIcon = null;
 
 					switch (phase)
 					{
 						case MAGIC:
-							attackIcon = resizeImage(hunllef.getMage(), plugin.getProjectileIconSize(), plugin.getProjectileIconSize());
+							attackIcon = resizeImage(hunllef.getMage(), config.projectileIconSize(), config.projectileIconSize());
 							break;
 						case RANGE:
-							attackIcon = resizeImage(hunllef.getRange(), plugin.getProjectileIconSize(), plugin.getProjectileIconSize());
+							attackIcon = resizeImage(hunllef.getRange(), config.projectileIconSize(), config.projectileIconSize());
 							break;
 						default:
 							break;
@@ -247,7 +249,7 @@ public class GauntletOverlay extends Overlay
 					graphics.drawImage(attackIcon, imageLoc.getX(), imageLoc.getY(), null);
 				}
 
-				if (plugin.isHighlightWidget())
+				if (config.highlightWidget())
 				{
 					if (phase.getPrayer() == null)
 					{
@@ -263,7 +265,7 @@ public class GauntletOverlay extends Overlay
 					}
 				}
 
-				if (plugin.getCountAttacks() == ONBOSS || plugin.getCountAttacks() == BOTH)
+				if (config.countAttacks() == ONBOSS || config.countAttacks() == BOTH)
 				{
 					String textOverlay;
 
@@ -323,15 +325,15 @@ public class GauntletOverlay extends Overlay
 						return;
 					}
 					// This section will highlight the resource with color.
-					if (plugin.isHighlightResources())
+					if (config.highlightResources())
 					{
-						outlineRenderer.drawOutline(object.getGameObject(), 2, plugin.getHighlightResourcesColor());
+						outlineRenderer.drawOutline(object.getGameObject(), 2, config.highlightResourcesColor());
 					}
 
 					// This section will overlay the resource with an icon.
-					if (plugin.isHighlightResourcesIcons())
+					if (config.highlightResourcesIcons())
 					{
-						BufferedImage icon = resizeImage(object.getImage(), plugin.getResourceIconSize(), plugin.getResourceIconSize());
+						BufferedImage icon = resizeImage(object.getImage(), config.resourceIconSize(), config.resourceIconSize());
 						Rectangle bounds = polygon.getBounds();
 						int startX = (int) bounds.getCenterX() - (icon.getWidth() / 2);
 						int startY = (int) bounds.getCenterY() - (icon.getHeight() / 2);

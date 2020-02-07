@@ -48,7 +48,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.function.Function;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import jogamp.nativewindow.SurfaceScaleUtils;
 import jogamp.nativewindow.jawt.x11.X11JAWTWindow;
 import jogamp.newt.awt.NewtFactoryAWT;
@@ -71,7 +70,6 @@ import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
@@ -80,6 +78,7 @@ import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.gpu.GLUtil.*;
 import net.runelite.client.plugins.gpu.config.AnisotropicFilteringMode;
 import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
+import net.runelite.client.plugins.gpu.config.UIScalingMode;
 import net.runelite.client.plugins.gpu.template.Template;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.OSType;
@@ -93,7 +92,6 @@ import org.pf4j.Extension;
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
-@Singleton
 public class GpuPlugin extends Plugin implements DrawCallbacks
 {
 	// This is the maximum number of triangles the compute shaders support
@@ -228,46 +226,20 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	private int uniProjectionMatrix;
 	private int uniBrightness;
 	private int uniTex;
+	private int uniTexSamplingMode;
+	private int uniTexSourceDimensions;
+	private int uniTexTargetDimensions;
 	private int uniTextures;
 	private int uniTextureOffsets;
 	private int uniBlockSmall;
 	private int uniBlockLarge;
 	private int uniBlockMain;
 	private int uniSmoothBanding;
-
-	private int drawDistance;
-	private boolean smoothBanding;
-	private AntiAliasingMode antiAliasingMode;
-	private AnisotropicFilteringMode anisotropicFilteringMode;
-	private int fogDepth;
-	private int fogCircularity;
-	private int fogDensity;
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("gpu"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.drawDistance = config.drawDistance();
-		this.smoothBanding = config.smoothBanding();
-		this.antiAliasingMode = config.antiAliasingMode();
-		this.anisotropicFilteringMode = config.anisotropicFilteringMode();
-		this.fogDepth = config.fogDepth();
-		this.fogCircularity = config.fogCircularity();
-		this.fogDensity = config.fogDensity();
-	}
+	private int uniAmbientLighting;
 
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		clientThread.invoke(() ->
 		{
 			try
@@ -520,10 +492,14 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		glUiProgram = gl.glCreateProgram();
 		glUiVertexShader = gl.glCreateShader(gl.GL_VERTEX_SHADER);
 		glUiFragmentShader = gl.glCreateShader(gl.GL_FRAGMENT_SHADER);
+		template = new Template(resourceLoader);
+		vertSource = template.process(resourceLoader.apply("vertui.glsl"));
+		template = new Template(resourceLoader);
+		fragSource = template.process(resourceLoader.apply("fragui.glsl"));
 		GLUtil.loadShaders(gl, glUiProgram, glUiVertexShader, -1, glUiFragmentShader,
-			inputStreamToString(getClass().getResourceAsStream("vertui.glsl")),
+			vertSource,
 			null,
-			inputStreamToString(getClass().getResourceAsStream("fragui.glsl")));
+			fragSource);
 
 		initUniforms();
 	}
@@ -539,8 +515,12 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		uniFogCornerRadius = gl.glGetUniformLocation(glProgram, "fogCornerRadius");
 		uniFogDensity = gl.glGetUniformLocation(glProgram, "fogDensity");
 		uniDrawDistance = gl.glGetUniformLocation(glProgram, "drawDistance");
+		uniAmbientLighting = gl.glGetUniformLocation(glProgram, "ambientLighting");
 
 		uniTex = gl.glGetUniformLocation(glUiProgram, "tex");
+		uniTexSamplingMode = gl.glGetUniformLocation(glUiProgram, "samplingMode");
+		uniTexTargetDimensions = gl.glGetUniformLocation(glUiProgram, "targetDimensions");
+		uniTexSourceDimensions = gl.glGetUniformLocation(glUiProgram, "sourceDimensions");
 		uniTextures = gl.glGetUniformLocation(glProgram, "textures");
 		uniTextureOffsets = gl.glGetUniformLocation(glProgram, "textureOffsets");
 
@@ -750,7 +730,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		pitch = client.getCameraPitch();
 
 		final Scene scene = client.getScene();
-		final int drawDistance = Math.max(0, Math.min(MAX_DISTANCE, this.drawDistance));
+		final int drawDistance = Math.max(0, Math.min(MAX_DISTANCE, config.drawDistance()));
 		scene.setDrawDistance(drawDistance);
 	}
 
@@ -846,7 +826,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		}
 
 		// Setup anti-aliasing
-		final AntiAliasingMode antiAliasingMode = this.antiAliasingMode;
+		final AntiAliasingMode antiAliasingMode = config.antiAliasingMode();
 		final boolean aaEnabled = antiAliasingMode != AntiAliasingMode.DISABLED;
 
 		if (aaEnabled)
@@ -1030,7 +1010,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			int renderViewportWidth = viewportWidth;
 
 			// Setup anisotropic filtering
-			final AnisotropicFilteringMode anisotropicFilteringMode = this.anisotropicFilteringMode;
+			final AnisotropicFilteringMode anisotropicFilteringMode = config.anisotropicFilteringMode();
 			final boolean afEnabled = anisotropicFilteringMode != AnisotropicFilteringMode.DISABLED;
 
 			if (lastAnisotropicFilteringMode != null && !lastAnisotropicFilteringMode.equals(anisotropicFilteringMode))
@@ -1087,19 +1067,21 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 			gl.glUseProgram(glProgram);
 
-			final int drawDistance = Math.max(0, Math.min(MAX_DISTANCE, this.drawDistance));
-			final int fogDepth = this.fogDepth;
+			final int drawDistance = Math.max(0, Math.min(MAX_DISTANCE, config.drawDistance()));
+			final int fogDepth = config.fogDepth();
 			float effectiveDrawDistance = Perspective.LOCAL_TILE_SIZE * Math.min(Constants.SCENE_SIZE / 2, drawDistance);
 			gl.glUniform1i(uniUseFog, fogDepth > 0 ? 1 : 0);
 			gl.glUniform4f(uniFogColor, (sky >> 16 & 0xFF) / 255f, (sky >> 8 & 0xFF) / 255f, (sky & 0xFF) / 255f, 1f);
-			gl.glUniform1f(uniFogDepth, this.fogDepth * 0.01f * effectiveDrawDistance);
-			gl.glUniform1f(uniFogCornerRadius, this.fogCircularity * 0.01f * effectiveDrawDistance);
-			gl.glUniform1f(uniFogDensity, this.fogDensity * 0.1f);
+			gl.glUniform1f(uniFogDepth, config.fogDepth() * 0.01f * effectiveDrawDistance);
+			gl.glUniform1f(uniFogCornerRadius, config.fogCircularity() * 0.01f * effectiveDrawDistance);
+			gl.glUniform1f(uniFogDensity, config.fogDensity() * 0.1f);
 			gl.glUniform1i(uniDrawDistance, drawDistance * Perspective.LOCAL_TILE_SIZE);
 
 			// Brightness happens to also be stored in the texture provider, so we use that
 			gl.glUniform1f(uniBrightness, (float) textureProvider.getBrightness());
-			gl.glUniform1f(uniSmoothBanding, this.smoothBanding ? 0f : 1f);
+
+			gl.glUniform1f(uniSmoothBanding, config.smoothBanding() ? 0f : 1f);
+			gl.glUniform1f(uniAmbientLighting, !config.ambientLighting() ? 0f : 1f);
 
 			for (int id = 0; id < textures.length; ++id)
 			{
@@ -1223,26 +1205,31 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			gl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, 0, 0, width, height, gl.GL_BGRA, gl.GL_UNSIGNED_INT_8_8_8_8_REV, interfaceBuffer);
 		}
 
+		// Use the texture bound in the first pass
+		gl.glUseProgram(glUiProgram);
+		gl.glUniform1i(uniTex, 0);
+		gl.glUniform1i(uniTexSamplingMode, config.uiScalingMode().getMode());
+		gl.glUniform2i(uniTexSourceDimensions, canvasWidth, canvasHeight);
+
 		if (client.isStretchedEnabled())
 		{
 			Dimension dim = client.getStretchedDimensions();
 			glDpiAwareViewport(0, 0, dim.width, dim.height);
+			gl.glUniform2i(uniTexTargetDimensions, dim.width, dim.height);
 		}
 		else
 		{
 			glDpiAwareViewport(0, 0, canvasWidth, canvasHeight);
+			gl.glUniform2i(uniTexTargetDimensions, canvasWidth, canvasHeight);
 		}
 
-		// Use the texture bound in the first pass
-		gl.glUseProgram(glUiProgram);
-		gl.glUniform1i(uniTex, 0);
 
 		// Set the sampling function used when stretching the UI.
 		// This is probably better done with sampler objects instead of texture parameters, but this is easier and likely more portable.
 		// See https://www.khronos.org/opengl/wiki/Sampler_Object for details.
 		if (client.isStretchedEnabled())
 		{
-			final int function = client.isStretchedFast() ? gl.GL_NEAREST : gl.GL_LINEAR;
+			final int function = config.uiScalingMode() == UIScalingMode.LINEAR ? gl.GL_LINEAR : gl.GL_NEAREST;
 			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, function);
 			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, function);
 		}

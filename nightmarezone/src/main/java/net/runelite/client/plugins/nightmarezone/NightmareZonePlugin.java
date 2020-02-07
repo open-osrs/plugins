@@ -25,12 +25,10 @@
 package net.runelite.client.plugins.nightmarezone;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ChatMessageType;
@@ -58,7 +56,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "nmz", "minigame", "notifications"},
 	type = PluginType.MINIGAME
 )
-@Singleton
 public class NightmareZonePlugin extends Plugin
 {
 	private static final int[] NMZ_MAP_REGION = {9033};
@@ -88,28 +85,9 @@ public class NightmareZonePlugin extends Plugin
 	// above the threshold before sending notifications
 	private boolean absorptionNotificationSend = true;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean moveOverlay;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showtotalpoints;
-	private boolean powerSurgeNotification;
-	private boolean recurrentDamageNotification;
-	private boolean zapperNotification;
-	private boolean ultimateForceNotification;
-	private boolean overloadNotification;
-	private boolean absorptionNotification;
-	@Getter(AccessLevel.PACKAGE)
-	private int absorptionThreshold;
-	@Getter(AccessLevel.PACKAGE)
-	private Color absorptionColorAboveThreshold;
-	@Getter(AccessLevel.PACKAGE)
-	private Color absorptionColorBelowThreshold;
-
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlay.removeAbsorptionCounter();
 	}
@@ -138,7 +116,6 @@ public class NightmareZonePlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
 		overlay.updateConfig();
 	}
 
@@ -166,7 +143,7 @@ public class NightmareZonePlugin extends Plugin
 			return;
 		}
 
-		if (this.absorptionNotification)
+		if (config.absorptionNotification())
 		{
 			checkAbsorption();
 		}
@@ -189,7 +166,7 @@ public class NightmareZonePlugin extends Plugin
 		String msg = Text.removeTags(event.getMessage()); //remove color
 		if (msg.contains("The effects of overload have worn off, and you feel normal again."))
 		{
-			if (this.overloadNotification)
+			if (config.overloadNotification())
 			{
 				notifier.notify("Your overload has worn off");
 			}
@@ -198,28 +175,28 @@ public class NightmareZonePlugin extends Plugin
 		{
 			if (msg.contains("Power surge"))
 			{
-				if (this.powerSurgeNotification)
+				if (config.powerSurgeNotification())
 				{
 					notifier.notify(msg);
 				}
 			}
 			else if (msg.contains("Recurrent damage"))
 			{
-				if (this.recurrentDamageNotification)
+				if (config.recurrentDamageNotification())
 				{
 					notifier.notify(msg);
 				}
 			}
 			else if (msg.contains("Zapper"))
 			{
-				if (this.zapperNotification)
+				if (config.zapperNotification())
 				{
 					notifier.notify(msg);
 				}
 			}
 			else if (msg.contains("Ultimate force"))
 			{
-				if (this.ultimateForceNotification)
+				if (config.ultimateForceNotification())
 				{
 					notifier.notify(msg);
 				}
@@ -233,15 +210,15 @@ public class NightmareZonePlugin extends Plugin
 
 		if (!absorptionNotificationSend)
 		{
-			if (absorptionPoints < this.absorptionThreshold)
+			if (absorptionPoints < config.absorptionThreshold())
 			{
-				notifier.notify("Absorption points below: " + this.absorptionThreshold);
+				notifier.notify("Absorption points below: " + config.absorptionThreshold());
 				absorptionNotificationSend = true;
 			}
 		}
 		else
 		{
-			if (absorptionPoints > this.absorptionThreshold)
+			if (absorptionPoints > config.absorptionThreshold())
 			{
 				absorptionNotificationSend = false;
 			}
@@ -277,20 +254,5 @@ public class NightmareZonePlugin extends Plugin
 	{
 		nmzSessionStartTime = null;
 		pointsPerHour = 0;
-	}
-
-	private void updateConfig()
-	{
-		this.moveOverlay = config.moveOverlay();
-		this.showtotalpoints = config.showtotalpoints();
-		this.powerSurgeNotification = config.powerSurgeNotification();
-		this.recurrentDamageNotification = config.recurrentDamageNotification();
-		this.zapperNotification = config.zapperNotification();
-		this.ultimateForceNotification = config.ultimateForceNotification();
-		this.overloadNotification = config.overloadNotification();
-		this.absorptionNotification = config.absorptionNotification();
-		this.absorptionThreshold = config.absorptionThreshold();
-		this.absorptionColorAboveThreshold = config.absorptionColorAboveThreshold();
-		this.absorptionColorBelowThreshold = config.absorptionColorBelowThreshold();
 	}
 }

@@ -47,12 +47,15 @@ public class GroundMarkerOverlay extends Overlay
 {
 	private final Client client;
 	private final GroundMarkerPlugin plugin;
+	private final GroundMarkerConfig config;
 
 	@Inject
-	private GroundMarkerOverlay(final Client client, final GroundMarkerPlugin plugin)
+	private GroundMarkerOverlay(final Client client, final GroundMarkerPlugin plugin, final GroundMarkerConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
+
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.LOW);
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -90,43 +93,43 @@ public class GroundMarkerOverlay extends Overlay
 			return;
 		}
 
-		Color color = plugin.getMarkerColor();
+		Color color = config.markerColor();
 		switch (groundMarkerWorldPoint.getGroundMarkerPoint().getGroup())
 		{
 			case 2:
-				color = plugin.getMarkerColor2();
+				color = config.markerColor2();
 				break;
 			case 3:
-				color = plugin.getMarkerColor3();
+				color = config.markerColor3();
 				break;
 			case 4:
-				color = plugin.getMarkerColor4();
+				color = config.markerColor4();
 				break;
 			case 5:
-				color = plugin.getMarkerColor5();
+				color = config.markerColor5();
 				break;
 			case 6:
-				color = plugin.getMarkerColor6();
+				color = config.markerColor6();
 				break;
 			case 7:
-				color = plugin.getMarkerColor7();
+				color = config.markerColor7();
 				break;
 			case 8:
-				color = plugin.getMarkerColor8();
+				color = config.markerColor8();
 				break;
 			case 9:
-				color = plugin.getMarkerColor9();
+				color = config.markerColor9();
 				break;
 			case 10:
-				color = plugin.getMarkerColor10();
+				color = config.markerColor10();
 				break;
 			case 11:
-				color = plugin.getMarkerColor11();
+				color = config.markerColor11();
 				break;
 			case 12:
-				color = plugin.getMarkerColor12();
+				color = config.markerColor12();
 		}
-		if (plugin.isThinMarkers())
+		if (config.thinMarkers())
 		{
 			OverlayUtil.renderPolygonThin(graphics, poly, color);
 		}

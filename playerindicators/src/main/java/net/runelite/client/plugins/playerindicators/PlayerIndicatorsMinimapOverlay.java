@@ -31,7 +31,6 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.SkullIcon;
@@ -43,18 +42,19 @@ import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.util.ImageUtil;
 
-@Singleton
 public class PlayerIndicatorsMinimapOverlay extends Overlay
 {
 	private final PlayerIndicatorsService playerIndicatorsService;
 	private final PlayerIndicatorsPlugin plugin;
+	private final PlayerIndicatorsConfig config;
 	private final BufferedImage skullIcon = ImageUtil.getResourceStreamFromClass(PlayerIndicatorsPlugin.class,
 		"skull.png");
 
 	@Inject
-	private PlayerIndicatorsMinimapOverlay(final PlayerIndicatorsPlugin plugin, final PlayerIndicatorsService playerIndicatorsService)
+	private PlayerIndicatorsMinimapOverlay(final PlayerIndicatorsPlugin plugin, final PlayerIndicatorsConfig config, final PlayerIndicatorsService playerIndicatorsService)
 	{
 		this.plugin = plugin;
+		this.config = config;
 		this.playerIndicatorsService = playerIndicatorsService;
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		setPosition(OverlayPosition.DYNAMIC);
@@ -87,15 +87,15 @@ public class PlayerIndicatorsMinimapOverlay extends Overlay
 
 			if (minimapLocation != null)
 			{
-				if (plugin.isShowCombatLevel())
+				if (config.showCombatLevel())
 				{
 					name += "-(" + actor.getCombatLevel() + ")";
 				}
-				if (actor.getSkullIcon() != null && plugin.isPlayerSkull() && actor.getSkullIcon() == SkullIcon.SKULL)
+				if (actor.getSkullIcon() != null && config.playerSkull() && actor.getSkullIcon() == SkullIcon.SKULL)
 				{
 					final int width = graphics.getFontMetrics().stringWidth(name);
 					final int height = graphics.getFontMetrics().getHeight();
-					if (plugin.getSkullLocation().equals(PlayerIndicatorsPlugin.MinimapSkullLocations.AFTER_NAME))
+					if (config.skullLocation().equals(PlayerIndicatorsPlugin.MinimapSkullLocations.AFTER_NAME))
 					{
 						OverlayUtil.renderImageLocation(graphics, new Point(minimapLocation.getX()
 								+ width, minimapLocation.getY() - height),

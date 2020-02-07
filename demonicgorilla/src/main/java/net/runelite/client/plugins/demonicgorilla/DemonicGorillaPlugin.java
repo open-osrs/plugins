@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.AnimationID;
@@ -72,7 +71,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "overlay", "pve", "pvm"},
 	type = PluginType.PVM
 )
-@Singleton
 public class DemonicGorillaPlugin extends Plugin
 {
 	private static final Set<Integer> DEMONIC_PROJECTILES = ImmutableSet.of(ProjectileID.DEMONIC_GORILLA_RANGED, ProjectileID.DEMONIC_GORILLA_MAGIC, ProjectileID.DEMONIC_GORILLA_BOULDER);

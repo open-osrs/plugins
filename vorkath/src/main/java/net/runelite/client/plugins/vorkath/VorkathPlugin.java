@@ -28,7 +28,6 @@ package net.runelite.client.plugins.vorkath;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +57,6 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -68,12 +66,11 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Vorkath",
+	name = "Vorkath Helper",
 	description = "Count vorkath attacks, indicate next phase, wooxwalk timer, indicate path through acid",
 	tags = {"combat", "overlay", "pve", "pvm"},
 	type = PluginType.PVM
 )
-@Singleton
 @Slf4j
 public class VorkathPlugin extends Plugin
 {
@@ -116,17 +113,6 @@ public class VorkathPlugin extends Plugin
 	private Rectangle wooxWalkBar;
 	private int lastAcidSpotsSize = 0;
 
-	// Config values
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateAcidPools;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateAcidFreePath;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateWooxWalkPath;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateWooxWalkTick;
-	private int acidFreePathLength;
-
 	@Provides
 	VorkathConfig provideConfig(ConfigManager configManager)
 	{
@@ -134,26 +120,9 @@ public class VorkathPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp()
-	{
-		updateConfig();
-	}
-
-	@Override
 	protected void shutDown()
 	{
 		reset();
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("vorkath"))
-		{
-			return;
-		}
-
-		updateConfig();
 	}
 
 	@Subscribe
@@ -334,13 +303,13 @@ public class VorkathPlugin extends Plugin
 		}
 
 		// Update the acid free path every tick to account for player movement
-		if (this.indicateAcidFreePath && !acidSpots.isEmpty())
+		if (config.indicateAcidFreePath() && !acidSpots.isEmpty())
 		{
 			calculateAcidFreePath();
 		}
 
 		// Start the timer when the player walks into the WooxWalk zone
-		if (this.indicateWooxWalkPath && this.indicateWooxWalkTick && wooxWalkPath[0] != null && wooxWalkPath[1] != null)
+		if (config.indicateWooxWalkPath() && config.indicateWooxWalkTick() && wooxWalkPath[0] != null && wooxWalkPath[1] != null)
 		{
 			final WorldPoint playerLoc = client.getLocalPlayer().getWorldLocation();
 
@@ -381,11 +350,11 @@ public class VorkathPlugin extends Plugin
 			}
 			else
 			{
-				if (this.indicateAcidFreePath)
+				if (config.indicateAcidFreePath())
 				{
 					calculateAcidFreePath();
 				}
-				if (this.indicateWooxWalkPath)
+				if (config.indicateWooxWalkPath())
 				{
 					calculateWooxWalkPath();
 				}
@@ -503,7 +472,7 @@ public class VorkathPlugin extends Plugin
 						currentPath.add(testingLocation);
 					}
 
-					if (currentPath.size() >= this.acidFreePathLength && currentClicksRequired < bestClicksRequired
+					if (currentPath.size() >= config.acidFreePathLength() && currentClicksRequired < bestClicksRequired
 						|| (currentClicksRequired == bestClicksRequired && currentPath.size() > bestPath.size()))
 					{
 						bestPath = currentPath;
@@ -599,15 +568,6 @@ public class VorkathPlugin extends Plugin
 		final int x = (int) Math.floor(screen.getX() + width / 2.0);
 		final int y = (int) Math.floor(screen.getY() + screen.getHeight() - 2 * height);
 		wooxWalkBar = new Rectangle(x, y, width, height);
-	}
-
-	private void updateConfig()
-	{
-		this.indicateAcidPools = config.indicateAcidPools();
-		this.indicateAcidFreePath = config.indicateAcidFreePath();
-		this.indicateWooxWalkPath = config.indicateWooxWalkPath();
-		this.indicateWooxWalkTick = config.indicateWooxWalkTick();
-		this.acidFreePathLength = config.acidFreePathLength();
 	}
 
 	private void reset()

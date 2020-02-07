@@ -27,7 +27,6 @@ package net.runelite.client.plugins.tarnslair;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,9 +54,8 @@ import org.pf4j.Extension;
 	name = "Tarn's Lair",
 	description = "Mark tiles and clickboxes to help traverse the maze",
 	tags = {"agility", "maze", "minigame", "overlay"},
-	type = PluginType.UTILITY
+	type = PluginType.MINIGAME
 )
-@Singleton
 @Slf4j
 public class TarnsLairPlugin extends Plugin
 {

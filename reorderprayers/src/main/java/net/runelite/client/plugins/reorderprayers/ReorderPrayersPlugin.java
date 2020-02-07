@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.HashTable;
@@ -62,7 +61,6 @@ import org.pf4j.Extension;
 	description = "Reorder the prayers displayed on the Prayer panel",
 	type = PluginType.UTILITY
 )
-@Singleton
 public class ReorderPrayersPlugin extends Plugin
 {
 
@@ -225,7 +223,6 @@ public class ReorderPrayersPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		refreshPrayerTabOption();
 		prayerOrder = stringToPrayerOrder(config.prayerOrder());
 		reorderPrayers();

@@ -35,7 +35,6 @@ import java.awt.Shape;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCDefinition;
@@ -51,20 +50,21 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
 public class TargetClickboxOverlay extends Overlay
 {
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
 	private final Client client;
 	private final SlayerPlugin plugin;
+	private final SlayerConfig config;
 	private final ModelOutlineRenderer modelOutliner;
 
 	@Inject
-	TargetClickboxOverlay(final Client client, final SlayerPlugin plugin, final ModelOutlineRenderer modelOutlineRenderer)
+	TargetClickboxOverlay(final Client client, final SlayerPlugin plugin, final SlayerConfig config, final ModelOutlineRenderer modelOutlineRenderer)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.modelOutliner = modelOutlineRenderer;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -73,7 +73,7 @@ public class TargetClickboxOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isHighlightTargets())
+		if (config.highlightTargets())
 		{
 			Set<NPC> targets = plugin.getHighlightedTargets();
 			for (NPC target : targets)
@@ -83,11 +83,11 @@ public class TargetClickboxOverlay extends Overlay
 					continue;
 				}
 
-				Color coloration = plugin.getGetTargetColor();
+				Color coloration = config.getTargetColor();
 
 				if (plugin.isSuperior(target.getName()))
 				{
-					coloration = plugin.getGetSuperiorColor();
+					coloration = config.getSuperiorColor();
 				}
 
 				renderNpcOverlay(graphics, target, coloration);
@@ -99,7 +99,7 @@ public class TargetClickboxOverlay extends Overlay
 
 	private void renderNpcOverlay(Graphics2D graphics, NPC actor, Color color)
 	{
-		switch (plugin.getRenderStyle())
+		switch (config.renderStyle())
 		{
 			case SOUTH_WEST_TILE:
 				LocalPoint lp1 = LocalPoint.fromWorld(client, actor.getWorldLocation());
@@ -169,7 +169,7 @@ public class TargetClickboxOverlay extends Overlay
 				break;
 		}
 
-		if (plugin.isDrawNames())
+		if (config.drawNames())
 		{
 			String npcName = Text.removeTags(actor.getName());
 			Point textLocation = actor.getCanvasTextLocation(graphics, npcName, actor.getLogicalHeight() + 40);

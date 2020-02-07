@@ -29,7 +29,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -37,28 +36,29 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-@Singleton
 class PrayerFlickOverlay extends Overlay
 {
 	private final Client client;
 	private final PrayerPlugin plugin;
+	private final PrayerConfig config;
 
 	@Inject
-	private PrayerFlickOverlay(Client client, PrayerPlugin plugin)
+	private PrayerFlickOverlay(Client client, PrayerPlugin plugin, PrayerConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
 		// If there are no prayers active or flick location is set to the prayer bar we don't require the flick helper
-		if ((!plugin.isPrayersActive() && !plugin.isPrayerFlickAlwaysOn())
-			|| plugin.getPrayerFlickLocation().equals(PrayerFlickLocation.NONE)
-			|| plugin.getPrayerFlickLocation().equals(PrayerFlickLocation.PRAYER_BAR))
+		if ((!plugin.isPrayersActive() && !config.prayerFlickAlwaysOn())
+			|| config.prayerFlickLocation().equals(PrayerFlickLocation.NONE)
+			|| config.prayerFlickLocation().equals(PrayerFlickLocation.PRAYER_BAR))
 		{
 			return null;
 		}

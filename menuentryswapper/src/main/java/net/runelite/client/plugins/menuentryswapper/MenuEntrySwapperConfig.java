@@ -170,6 +170,17 @@ public interface MenuEntrySwapperConfig extends Config
 		return false;
 	}
 
+	@ConfigSection(
+		name = "Hotkey Swapping",
+		description = "",
+		position = 1,
+		keyName = "hotkeySwapping"
+	)
+	default boolean hotkeySwapping()
+	{
+		return false;
+	}
+
 	//------------------------------------------------------------//
 	// Banking
 	//------------------------------------------------------------//
@@ -465,18 +476,6 @@ public interface MenuEntrySwapperConfig extends Config
 	//------------------------------------------------------------//
 
 	@ConfigItem(
-		keyName = "hotkeyMod",
-		name = "Hotkey for Swaps",
-		description = "Set this hotkey to do custom swaps on hotkeys.",
-		position = 0,
-		section = "miscellaneousSection"
-	)
-	default Keybind hotkeyMod()
-	{
-		return Keybind.SHIFT;
-	}
-
-	@ConfigItem(
 		keyName = "customSwaps",
 		name = "Custom Swaps",
 		description = "Add custom swaps here, 1 per line. Syntax: option,target:priority" +
@@ -488,23 +487,6 @@ public interface MenuEntrySwapperConfig extends Config
 		method = "parse"
 	)
 	default String customSwaps()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "shiftCustomSwaps",
-		name = "Hotkey Swaps",
-		description = "Add custom swaps here that will only be activated when you press your hotkey." +
-			"<br>1 per line. Syntax: option,target:priority" +
-			"<br>Note that the higher your set the priority, the more it will overtake over swaps.",
-		position = 2,
-		section = "miscellaneousSection",
-		parse = true,
-		clazz = CustomSwapParse.class,
-		method = "parse"
-	)
-	default String shiftCustomSwaps()
 	{
 		return "";
 	}
@@ -526,6 +508,18 @@ public interface MenuEntrySwapperConfig extends Config
 	default String prioEntry()
 	{
 		return "";
+	}
+
+	@ConfigItem(
+		keyName = "getSwapOffer",
+		name = "Offer-All",
+		description = "Swap 'Offer', on trades with 'Offer-All'",
+		position = 3,
+		section = "miscellaneousSection"
+	)
+	default boolean getSwapOffer()
+	{
+		return false;
 	}
 
 	@ConfigItem(
@@ -1938,5 +1932,146 @@ public interface MenuEntrySwapperConfig extends Config
 	default String hideCastIgnoredCoX()
 	{
 		return "cure other, energy transfer, heal other, vengeance other";
+	}
+
+	//------------------------------------------------------------//
+	// HotKey menu swaps
+	//------------------------------------------------------------//
+
+	@ConfigItem(
+		keyName = "hotkeyMod",
+		name = "Hotkey for Swaps",
+		description = "Set this hotkey to do custom swaps on hotkeys.",
+		position = 0,
+		section = "hotkeySwapping"
+	)
+	default Keybind hotkeyMod()
+	{
+		return Keybind.SHIFT;
+	}
+
+	@ConfigItem(
+		keyName = "shiftCustomSwaps",
+		name = "Hotkey Swaps",
+		description = "Add custom swaps here that will only be activated when you press your hotkey." +
+			"<br>1 per line. Syntax: option,target:priority" +
+			"<br>Note that the higher your set the priority, the more it will overtake over swaps.",
+		position = 1,
+		section = "hotkeySwapping",
+		parse = true,
+		clazz = CustomSwapParse.class,
+		method = "parse"
+	)
+	default String shiftCustomSwaps()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "swapNpcContact",
+		name = "NPC Contact",
+		description = "Enables Hotkey Left Click NPC Contact With Last Contacted NPC.",
+		position = 2,
+		section = "hotkeySwapping"
+	)
+	default boolean swapNpcContact()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "bankWieldItem",
+		name = "Bank - Left Click 'Wield'",
+		description = "Enables Hotkey Left Click 'Wield' In The Bank Screen.",
+		position = 3,
+		section = "hotkeySwapping"
+	)
+	default boolean bankWieldItem()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "bankWearItem",
+		name = "Bank - Left Click 'Wear'",
+		description = "Enables Hotkey Left Click 'Wear' In The Bank Screen.",
+		position = 4,
+		section = "hotkeySwapping"
+	)
+	default boolean bankWearItem()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "bankEatItem",
+		name = "Bank - Left Click 'Eat'",
+		description = "Enables Left Click 'Eat' In The Bank Screen.",
+		position = 5,
+		section = "hotkeySwapping"
+	)
+	default boolean bankEatItem()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "bankDrinkItem",
+		name = "Bank - Left Click 'Drink'",
+		description = "Enables Left Click 'Drink' In The Bank Screen.",
+		position = 6,
+		section = "hotkeySwapping"
+	)
+	default boolean bankDrinkItem()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "bankEquipItem",
+		name = "Bank - Left Click 'Equip'",
+		description = "Enables Left Click 'Equip' In The Bank Screen.",
+		position = 7,
+		section = "hotkeySwapping"
+	)
+	default boolean bankEquipItem()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "bankInvigorateItem",
+		name = "Bank - Left Click 'Invigorate'",
+		description = "Enables Left Click 'Invigorate' In The Bank Screen.",
+		position = 8,
+		section = "hotkeySwapping"
+	)
+	default boolean bankInvigorateItem()
+	{
+		return false;
+	}
+	
+	@ConfigItem(
+		keyName = "hotKeyWalk",
+		name = "Hotkey to Walk",
+		description = "For when you want Walk here as a priority",
+		position = 9,
+		section = "hotkeySwapping"
+	)
+	default boolean hotKeyWalk()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "hotKeyLoot",
+		name = "Hotkey to Loot",
+		description = "For when people stand on your loot",
+		position = 10,
+		section = "hotkeySwapping"
+	)
+	default boolean hotKeyLoot()
+	{
+		return false;
 	}
 }

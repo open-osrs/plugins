@@ -27,7 +27,6 @@ package net.runelite.client.plugins.notes;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.SessionOpen;
@@ -47,7 +46,6 @@ import org.pf4j.Extension;
 	loadWhenOutdated = true,
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class NotesPlugin extends Plugin
 {
 	@Inject

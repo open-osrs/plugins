@@ -48,7 +48,7 @@ class InventoryGridOverlay extends Overlay
 	private static final int INVENTORY_SIZE = 28;
 	private static final int DISTANCE_TO_ACTIVATE_HOVER = 5;
 
-	private final InventoryGridPlugin plugin;
+	private final InventoryGridConfig config;
 	private final Client client;
 	private final ItemManager itemManager;
 
@@ -56,11 +56,11 @@ class InventoryGridOverlay extends Overlay
 	private boolean hoverActive = false;
 
 	@Inject
-	private InventoryGridOverlay(final InventoryGridPlugin plugin, final Client client, final ItemManager itemManager)
+	private InventoryGridOverlay(final InventoryGridConfig config, final Client client, final ItemManager itemManager)
 	{
 		this.itemManager = itemManager;
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
@@ -105,20 +105,20 @@ class InventoryGridOverlay extends Overlay
 			final Rectangle bounds = targetWidgetItem.getCanvasBounds();
 			boolean inBounds = bounds.contains(mousePoint);
 
-			if (plugin.isShowItem() && inBounds)
+			if (config.showItem() && inBounds)
 			{
 				drawItem(graphics, bounds, draggedItem);
 				drawItem(graphics, initialBounds, targetWidgetItem);
 			}
 
-			if (plugin.isShowHighlight() && inBounds)
+			if (config.showHighlight() && inBounds)
 			{
-				graphics.setColor(plugin.getHighlightColor());
+				graphics.setColor(config.highlightColor());
 				graphics.fill(bounds);
 			}
-			else if (plugin.isShowGrid())
+			else if (config.showGrid())
 			{
-				graphics.setColor(plugin.getGridColor());
+				graphics.setColor(config.gridColor());
 				graphics.fill(bounds);
 			}
 		}

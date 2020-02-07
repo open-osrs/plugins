@@ -28,6 +28,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ProjectileSpawned;
 import net.runelite.client.plugins.theatre.RoomHandler;
+import net.runelite.client.plugins.theatre.TheatreConfig;
 import net.runelite.client.plugins.theatre.TheatreConstant;
 import net.runelite.client.plugins.theatre.TheatrePlugin;
 import net.runelite.client.plugins.theatre.TheatreRoom;
@@ -49,9 +50,9 @@ public class SotetsegHandler extends RoomHandler
 	private final Set<Projectile> soteyProjectiles = new HashSet<>();
 	private NPC npc;
 
-	public SotetsegHandler(final Client client, final TheatrePlugin plugin)
+	public SotetsegHandler(final Client client, final TheatrePlugin plugin, final TheatreConfig config)
 	{
-		super(client, plugin);
+		super(client, plugin, config);
 	}
 
 	@Override
@@ -86,7 +87,7 @@ public class SotetsegHandler extends RoomHandler
 
 	public void render(Graphics2D graphics)
 	{
-		if (plugin.isShowSotetsegMaze())
+		if (config.showSotetsegMaze())
 		{
 			int i = 1;
 			for (GroundObject o : redTiles.keySet())
@@ -95,7 +96,7 @@ public class SotetsegHandler extends RoomHandler
 
 				if (poly != null)
 				{
-					graphics.setColor(plugin.getMazeTileColour());
+					graphics.setColor(config.mazeTileColour());
 					graphics.setStroke(new BasicStroke(2));
 					graphics.draw(poly);
 				}
@@ -110,15 +111,15 @@ public class SotetsegHandler extends RoomHandler
 			}
 		}
 
-		if (plugin.isShowSotetsegSolo())
+		if (config.showSotetsegSolo())
 		{
 			for (WorldPoint p : redOverworld)
 			{
-				drawTile(graphics, p, plugin.getMazeTileColour(), 2, 255, 10);
+				drawTile(graphics, p, config.mazeTileColour(), 2, 255, 10);
 			}
 		}
 
-		if (plugin.isShowSotetsegAttacks())
+		if (config.showSotetsegAttacks())
 		{
 
 			Map<Projectile, String> projectileMap = new HashMap<>();

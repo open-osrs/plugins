@@ -25,12 +25,10 @@
 package net.runelite.client.plugins.raidsthieving;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -48,7 +46,6 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -65,7 +62,6 @@ import org.pf4j.Extension;
 	tags = {"overlay", "skilling", "raid"},
 	type = PluginType.PVM
 )
-@Singleton
 public class RaidsThievingPlugin extends Plugin
 {
 	private static final double CHUNK_OFFSET = 3.5;
@@ -95,11 +91,6 @@ public class RaidsThievingPlugin extends Plugin
 	private BatSolver solver;
 	@Getter(AccessLevel.PACKAGE)
 	private ChestIdentifier mapper;
-	@Getter(AccessLevel.PACKAGE)
-	private Color potentialBatColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color poisonTrapColor;
-	private boolean batFoundNotify;
 	private boolean inRaidChambers;
 
 	@Provides
@@ -112,7 +103,6 @@ public class RaidsThievingPlugin extends Plugin
 	protected void startUp()
 	{
 		reset();
-		updateConfig();
 
 		overlayManager.add(overlay);
 	}
@@ -220,15 +210,6 @@ public class RaidsThievingPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("raidsthievingplugin"))
-		{
-			updateConfig();
-		}
-	}
-
 	private void reset()
 	{
 		chests.clear();
@@ -257,7 +238,7 @@ public class RaidsThievingPlugin extends Plugin
 			if (chest.isEmpty() && !chest.isPoison())
 			{
 				batsFound = true;
-				if (this.batFoundNotify)
+				if (config.batFoundNotify())
 				{
 					notifier.notify("Bats have been found!");
 				}
@@ -314,12 +295,5 @@ public class RaidsThievingPlugin extends Plugin
 		return new Point(
 			chunkOrigin.getX() + invariantChunkOffsetX,
 			chunkOrigin.getY() + invariantChunkOffsetY);
-	}
-
-	private void updateConfig()
-	{
-		this.potentialBatColor = config.getPotentialBatColor();
-		this.poisonTrapColor = config.getPoisonTrapColor();
-		this.batFoundNotify = config.batFoundNotify();
 	}
 }

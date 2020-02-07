@@ -32,7 +32,6 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
@@ -49,29 +48,33 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.util.ImageUtil;
 
 @Slf4j
-@Singleton
 public class PlayerIndicatorsOverlay extends Overlay
 {
 	private static final int ACTOR_OVERHEAD_TEXT_MARGIN = 40;
 	private static final int ACTOR_HORIZONTAL_TEXT_MARGIN = 10;
-	private static final Object[] NULL_OBJ = new Object[]{null};
+
 	private final BufferedImage agilityIcon = ImageUtil.getResourceStreamFromClass(PlayerIndicatorsPlugin.class,
 		"agility.png");
 	private final BufferedImage noAgilityIcon = ImageUtil.getResourceStreamFromClass(PlayerIndicatorsPlugin.class,
 		"no-agility.png");
 	private final BufferedImage skullIcon = ImageUtil.getResourceStreamFromClass(PlayerIndicatorsPlugin.class,
 		"skull.png");
+
 	private final PlayerIndicatorsPlugin plugin;
+	private final PlayerIndicatorsConfig config;
 	private final PlayerIndicatorsService playerIndicatorsService;
+
 	@Inject
 	private Client client;
+
 	@Inject
 	private ClanManager clanManager;
 
 	@Inject
-	public PlayerIndicatorsOverlay(PlayerIndicatorsPlugin plugin, PlayerIndicatorsService playerIndicatorsService)
+	public PlayerIndicatorsOverlay(PlayerIndicatorsPlugin plugin, PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService)
 	{
 		this.plugin = plugin;
+		this.config = config;
 		this.playerIndicatorsService = playerIndicatorsService;
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.MED);
@@ -93,7 +96,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 
 		final List indicationLocations = Arrays.asList(plugin.getLocationHashMap().get(relation));
 		final Color color = plugin.getRelationColorHashMap().get(relation);
-		final boolean skulls = plugin.isPlayerSkull();
+		final boolean skulls = config.playerSkull();
 		final String name = actor.getName();
 		final int zOffset = actor.getLogicalHeight() + ACTOR_OVERHEAD_TEXT_MARGIN;
 		final Point textLocation = actor.getCanvasTextLocation(graphics, name, zOffset);
@@ -102,14 +105,14 @@ public class PlayerIndicatorsOverlay extends Overlay
 		{
 			final StringBuilder nameSb = new StringBuilder(name);
 
-			if (plugin.isShowCombatLevel())
+			if (config.showCombatLevel())
 			{
 				nameSb.append(" (");
 				nameSb.append(actor.getCombatLevel());
 				nameSb.append(")");
 			}
 
-			if (plugin.isUnchargedGlory() &&
+			if (config.unchargedGlory() &&
 				actor.getPlayerAppearance().getEquipmentId(KitType.AMULET) == ItemID.AMULET_OF_GLORY)
 			{
 				nameSb.append(" (glory)");
@@ -119,7 +122,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 			final int x = graphics.getFontMetrics().stringWidth(builtString);
 			final int y = graphics.getFontMetrics().getHeight();
 
-			if (plugin.isHighlightClan() && actor.isClanMember() && plugin.isShowClanRanks() && relation == PlayerRelation.CLAN)
+			if (config.highlightClan() && actor.isClanMember() && config.showClanRanks() && relation == PlayerRelation.CLAN)
 			{
 				if (clanManager.getRank(actor.getName()) != null)
 				{
@@ -157,7 +160,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 
 		if (relation.equals(PlayerRelation.TARGET))
 		{
-			if (plugin.isShowAgilityLevel() && checkWildy() && plugin.getResultCache().containsKey(actor.getName()))
+			if (config.showAgilityLevel() && checkWildy() && plugin.getResultCache().containsKey(actor.getName()))
 			{
 				if (textLocation == null)
 				{
@@ -166,28 +169,28 @@ public class PlayerIndicatorsOverlay extends Overlay
 
 				final int level = plugin.getResultCache().get(actor.getName()).getAgility().getLevel();
 
-				if (plugin.getAgilityFormat() == PlayerIndicatorsPlugin.AgilityFormats.ICONS)
+				if (config.agilityFormat() == PlayerIndicatorsPlugin.AgilityFormats.ICONS)
 				{
 
-					final int width = plugin.isShowCombatLevel() ? graphics.getFontMetrics().stringWidth(name)
+					final int width = config.showCombatLevel() ? graphics.getFontMetrics().stringWidth(name)
 						+ ACTOR_HORIZONTAL_TEXT_MARGIN : graphics.getFontMetrics().stringWidth(name);
 
 					final int height = graphics.getFontMetrics().getHeight();
-					if (level >= plugin.getAgilityFirstThreshold())
+					if (level >= config.agilityFirstThreshold())
 					{
 						OverlayUtil.renderImageLocation(graphics,
 							new Point(textLocation.getX() + 5 + width,
 								textLocation.getY() - height),
 							ImageUtil.resizeImage(agilityIcon, height, height));
 					}
-					if (level >= plugin.getAgilitySecondThreshold())
+					if (level >= config.agilitySecondThreshold())
 					{
 						OverlayUtil.renderImageLocation(graphics,
 							new Point(textLocation.getX() + agilityIcon.getWidth() + width,
 								textLocation.getY() - height),
 							ImageUtil.resizeImage(agilityIcon, height, height));
 					}
-					if (level < plugin.getAgilityFirstThreshold())
+					if (level < config.agilityFirstThreshold())
 					{
 						OverlayUtil.renderImageLocation(graphics,
 							new Point(textLocation.getX() + 5 + width,
@@ -199,15 +202,15 @@ public class PlayerIndicatorsOverlay extends Overlay
 				{
 					Color agiColor = Color.WHITE;
 
-					if (level >= plugin.getAgilityFirstThreshold())
+					if (level >= config.agilityFirstThreshold())
 					{
 						agiColor = Color.CYAN;
 					}
-					else if (level >= plugin.getAgilitySecondThreshold())
+					else if (level >= config.agilitySecondThreshold())
 					{
 						agiColor = Color.GREEN;
 					}
-					else if (level < plugin.getAgilityFirstThreshold())
+					else if (level < config.agilityFirstThreshold())
 					{
 						agiColor = Color.RED;
 					}

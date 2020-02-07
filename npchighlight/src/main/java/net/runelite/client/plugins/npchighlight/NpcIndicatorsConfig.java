@@ -28,6 +28,7 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Units;
 
 @ConfigGroup("npcindicators")
 public interface NpcIndicatorsConfig extends Config
@@ -124,9 +125,33 @@ public interface NpcIndicatorsConfig extends Config
 		position = 7,
 		keyName = "showRespawnTimer",
 		name = "Show respawn timer",
-		description = "Show respawn timer of tagged NPCs")
+		description = "Show respawn timer of tagged NPCs"
+	)
 	default boolean showRespawnTimer()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		position = 7,
+		keyName = "notifyOnRespawn",
+		name = "Notify on Respawn",
+		description = "Enable notification on respawn"
+	)
+	default boolean getNotifyOnRespawn()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 8,
+		keyName = "notifyOnRespawnDelay",
+		name = "Notification Delay",
+		description = "Notify when NPC is x ms from respawning"
+	)
+	@Units(Units.MILLISECONDS)
+	default int getNotifyOnRespawnDelay()
+	{
+		return -1;
 	}
 }

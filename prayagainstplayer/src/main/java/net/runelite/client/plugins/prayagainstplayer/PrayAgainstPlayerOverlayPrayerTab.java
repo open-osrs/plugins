@@ -48,16 +48,19 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 class PrayAgainstPlayerOverlayPrayerTab extends Overlay
 {
 
+	private final PrayAgainstPlayerConfig config;
 	private final PlayerManager playerManager;
 	private final Client client;
 
 	@Inject
 	private PrayAgainstPlayerOverlayPrayerTab(
+		final PrayAgainstPlayerConfig config,
 		final PlayerManager playerManager,
 		final Client client
 	)
 	{
 		this.client = client;
+		this.config = config;
 		this.playerManager = playerManager;
 		setPosition(OverlayPosition.DETACHED);
 		setLayer(OverlayLayer.ALWAYS_ON_TOP);
@@ -68,6 +71,11 @@ class PrayAgainstPlayerOverlayPrayerTab extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		if (!config.drawTargetPrayAgainstPrayerTab())
+		{
+			return null;
+		}
+
 		for (PlayerContainer player : playerManager.getAllAttackers())
 		{
 			if (player.getAttackStyle() == AttackStyle.UNKNOWN)

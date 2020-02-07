@@ -48,15 +48,17 @@ class CannonOverlay extends Overlay
 
 	private final Client client;
 	private final CannonPlugin plugin;
+	private final CannonConfig config;
 	private final TextComponent textComponent = new TextComponent();
 
 	@Inject
-	CannonOverlay(final Client client, final CannonPlugin plugin)
+	CannonOverlay(final Client client, final CannonPlugin plugin, final CannonConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.MED);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -91,9 +93,9 @@ class CannonOverlay extends Overlay
 				textComponent.render(graphics);
 			}
 
-			if (plugin.isShowDoubleHitSpot())
+			if (config.showDoubleHitSpot())
 			{
-				Color color = plugin.getHighlightDoubleHitColor();
+				Color color = config.highlightDoubleHitColor();
 				drawDoubleHitSpots(graphics, cannonPoint, color);
 			}
 		}

@@ -26,17 +26,14 @@ package net.runelite.client.plugins.agility;
 
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import static net.runelite.api.ItemID.AGILITY_ARENA_TICKET;
@@ -90,8 +87,6 @@ import org.pf4j.Extension;
 	tags = {"grace", "marks", "overlay", "shortcuts", "skilling", "traps"},
 	type = PluginType.SKILLING
 )
-@Slf4j
-@Singleton
 public class AgilityPlugin extends Plugin
 {
 	private static final int AGILITY_ARENA_REGION_ID = 11157;
@@ -139,32 +134,6 @@ public class AgilityPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private int agilityLevel;
 
-	// Config values
-	@Getter(AccessLevel.PACKAGE)
-	private boolean removeDistanceCap;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showLapCount;
-	@Getter(AccessLevel.PACKAGE)
-	private int lapTimeout;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean lapsToLevel;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean lapsToGoal;
-	@Getter(AccessLevel.PACKAGE)
-	private Color overlayColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean highlightMarks;
-	@Getter(AccessLevel.PACKAGE)
-	private Color markColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean highlightShortcuts;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showTrapOverlay;
-	@Getter(AccessLevel.PACKAGE)
-	private Color trapColor;
-	private boolean notifyAgilityArena;
-	private boolean showAgilityArenaTimer;
-
 	@Provides
 	AgilityConfig getConfig(ConfigManager configManager)
 	{
@@ -174,8 +143,6 @@ public class AgilityPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		if (config.showShortcutLevel())
 		{
 			addMenuSubscriptions();
@@ -251,29 +218,10 @@ public class AgilityPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
-		if (!this.showAgilityArenaTimer)
+		if (!config.showAgilityArenaTimer())
 		{
 			removeAgilityArenaTimer();
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.removeDistanceCap = config.removeDistanceCap();
-		this.showLapCount = config.showLapCount();
-		this.lapTimeout = config.lapTimeout();
-		this.lapsToLevel = config.lapsToLevel();
-		this.lapsToGoal = config.lapsToGoal();
-		this.overlayColor = config.getOverlayColor();
-		this.highlightMarks = config.highlightMarks();
-		this.markColor = config.getMarkColor();
-		this.highlightShortcuts = config.highlightShortcuts();
-		this.showTrapOverlay = config.showTrapOverlay();
-		this.trapColor = config.getTrapColor();
-		this.notifyAgilityArena = config.notifyAgilityArena();
-		this.showAgilityArenaTimer = config.showAgilityArenaTimer();
 	}
 
 	@Subscribe
@@ -286,7 +234,7 @@ public class AgilityPlugin extends Plugin
 
 		agilityLevel = statChanged.getBoostedLevel();
 
-		if (!this.showLapCount)
+		if (!config.showLapCount())
 		{
 			return;
 		}
@@ -357,14 +305,12 @@ public class AgilityPlugin extends Plugin
 			if (oldTickPosition != null && newTicketPosition != null
 				&& (oldTickPosition.getX() != newTicketPosition.getX() || oldTickPosition.getY() != newTicketPosition.getY()))
 			{
-				log.debug("Ticked position moved from {} to {}", oldTickPosition, newTicketPosition);
-
-				if (this.notifyAgilityArena)
+				if (config.notifyAgilityArena())
 				{
 					notifier.notify("Ticket location changed");
 				}
 
-				if (this.showAgilityArenaTimer)
+				if (config.showAgilityArenaTimer())
 				{
 					showNewAgilityArenaTimer();
 				}

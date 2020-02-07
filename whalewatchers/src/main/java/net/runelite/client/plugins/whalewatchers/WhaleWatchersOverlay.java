@@ -33,18 +33,20 @@ public class WhaleWatchersOverlay extends Overlay
 {
 	private final Client client;
 	private final WhaleWatchersPlugin plugin;
+	private final WhaleWatchersConfig config;
 	private final PanelComponent panelComponent;
 	private String lastOpponent = "-";
 
 
 	@Inject
-	public WhaleWatchersOverlay(final Client client, final WhaleWatchersPlugin plugin)
+	public WhaleWatchersOverlay(final Client client, final WhaleWatchersPlugin plugin, final WhaleWatchersConfig config)
 	{
 		OverlayMenuEntry resetMenuEntry = new OverlayMenuEntry(MenuOpcode.RUNELITE_OVERLAY,
 			"Reset", "Damage Counter");
 		this.getMenuEntries().add(resetMenuEntry);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		setPriority(OverlayPriority.HIGHEST);
 		setPosition(OverlayPosition.TOP_LEFT);
@@ -57,7 +59,7 @@ public class WhaleWatchersOverlay extends Overlay
 	{
 		panelComponent.getChildren().clear();
 
-		if (plugin.inCombat && plugin.isShowDamageCounter())
+		if (plugin.inCombat && config.showDamageCounter())
 		{
 			panelComponent.setOrientation(ComponentOrientation.HORIZONTAL);
 			panelComponent.setWrapping(5);

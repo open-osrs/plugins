@@ -25,7 +25,6 @@
 package net.runelite.client.plugins.runecraft;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -40,25 +39,26 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
 class AbyssOverlay extends Overlay
 {
 	private final Client client;
 	private final RunecraftPlugin plugin;
+	private final RunecraftConfig config;
 
 	@Inject
-	AbyssOverlay(final Client client, final RunecraftPlugin plugin)
+	AbyssOverlay(final Client client, final RunecraftPlugin plugin, final RunecraftConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isShowRifts())
+		if (config.showRifts())
 		{
 			for (DecorativeObject object : plugin.getAbyssObjects())
 			{
@@ -66,7 +66,7 @@ class AbyssOverlay extends Overlay
 			}
 		}
 
-		if (plugin.isHightlightDarkMage())
+		if (config.hightlightDarkMage())
 		{
 			highlightDarkMage(graphics);
 		}

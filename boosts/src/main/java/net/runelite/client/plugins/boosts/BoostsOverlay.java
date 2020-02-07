@@ -48,12 +48,14 @@ class BoostsOverlay extends Overlay
 	private final Client client;
 	private final PanelComponent panelComponent = new PanelComponent();
 	private final BoostsPlugin plugin;
+	private final BoostsConfig config;
 
 	@Inject
-	private BoostsOverlay(final Client client, final BoostsPlugin plugin)
+	private BoostsOverlay(final Client client, final BoostsPlugin plugin, final BoostsConfig config)
 	{
 		super(plugin);
 		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
 		setPosition(OverlayPosition.TOP_LEFT);
 		setPriority(OverlayPriority.MED);
@@ -63,7 +65,7 @@ class BoostsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isDisplayInfoboxes() || plugin.isDisplayIcons())
+		if (config.displayInfoboxes() || config.displayIcons())
 		{
 			return null;
 		}
@@ -103,7 +105,7 @@ class BoostsOverlay extends Overlay
 				final Color strColor = getTextColor(boost);
 				String str;
 
-				if (plugin.isUseRelativeBoost())
+				if (config.useRelativeBoost())
 				{
 					str = String.valueOf(boost);
 					if (boost > 0)
@@ -133,7 +135,7 @@ class BoostsOverlay extends Overlay
 			return new Color(238, 51, 51);
 		}
 
-		return boost <= plugin.getBoostThreshold() ? Color.YELLOW : Color.GREEN;
+		return boost <= config.boostThreshold() ? Color.YELLOW : Color.GREEN;
 
 	}
 }

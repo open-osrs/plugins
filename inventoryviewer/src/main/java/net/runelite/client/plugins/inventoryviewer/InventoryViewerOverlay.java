@@ -43,7 +43,6 @@ import net.runelite.api.ItemDefinition;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.vars.InterfaceTab;
 import net.runelite.client.game.ItemManager;
-import static net.runelite.client.plugins.lootingbagviewer.LootingBagViewerOverlay.PLACEHOLDER_WIDTH;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
@@ -56,19 +55,20 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 class InventoryViewerOverlay extends Overlay
 {
 	private static final int INVENTORY_SIZE = 28;
+	public static final int PLACEHOLDER_WIDTH = 36;
 	private static final ImageComponent PLACEHOLDER_IMAGE = new ImageComponent(
 		new BufferedImage(Constants.ITEM_SPRITE_WIDTH, Constants.ITEM_SPRITE_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR));
 
 	private final Client client;
 	private final ItemManager itemManager;
-	private final InventoryViewerPlugin plugin;
+	private final InventoryViewerConfig config;
 
 	private final PanelComponent wrapperComponent = new PanelComponent();
 	private final PanelComponent inventoryComponent = new PanelComponent();
 	private final TitleComponent freeSlotsComponent = TitleComponent.builder().build();
 
 	@Inject
-	private InventoryViewerOverlay(final Client client, final ItemManager itemManager, final InventoryViewerPlugin plugin)
+	private InventoryViewerOverlay(final Client client, final ItemManager itemManager, final InventoryViewerConfig config)
 	{
 		setPosition(OverlayPosition.BOTTOM_RIGHT);
 
@@ -92,13 +92,13 @@ class InventoryViewerOverlay extends Overlay
 
 		this.itemManager = itemManager;
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isHideWhenInvOpen()
+		if (config.hideWhenInvOpen()
 			&& client.getVar(VarClientInt.INTERFACE_TAB) == InterfaceTab.INVENTORY.getId())
 		{
 			return null;
@@ -116,7 +116,7 @@ class InventoryViewerOverlay extends Overlay
 
 		final Item[] items = itemContainer.getItems();
 
-		if (plugin.getViewerMode() == InventoryViewerMode.GROUPED)
+		if (config.viewerMode() == InventoryViewerMode.GROUPED)
 		{
 			Multiset<Integer> totals = HashMultiset.create();
 			for (Item item : items)
@@ -143,7 +143,7 @@ class InventoryViewerOverlay extends Overlay
 			}
 			wrapperComponent.getChildren().add(inventoryComponent);
 
-			if (plugin.isShowFreeSlots())
+			if (config.showFreeSlots())
 			{
 				freeSlotsComponent.setText(remaining + " free");
 				wrapperComponent.setPreferredSize(new Dimension(Math.min(totals.elementSet().size(), 4) * (PLACEHOLDER_WIDTH + 6) + ComponentConstants.STANDARD_BORDER * 2, 0));
@@ -178,7 +178,7 @@ class InventoryViewerOverlay extends Overlay
 
 		wrapperComponent.getChildren().add(inventoryComponent);
 
-		if (plugin.isShowFreeSlots())
+		if (config.showFreeSlots())
 		{
 			freeSlotsComponent.setText(remaining + " free");
 			wrapperComponent.setPreferredSize(new Dimension(4 * (PLACEHOLDER_WIDTH + 6) + ComponentConstants.STANDARD_BORDER * 2, 0));

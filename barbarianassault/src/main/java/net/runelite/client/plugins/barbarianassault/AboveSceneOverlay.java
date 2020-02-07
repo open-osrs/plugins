@@ -61,36 +61,37 @@ class AboveSceneOverlay extends Overlay
 		WidgetInfo.BA_HEAL_TEAMMATE4, new Point(25, 2));
 
 	private final Client client;
-	private final BarbarianAssaultPlugin game;
-
+	private final BarbarianAssaultPlugin plugin;
+	private final BarbarianAssaultConfig config;
 
 	@Inject
-	private AboveSceneOverlay(final Client client, final BarbarianAssaultPlugin game)
+	private AboveSceneOverlay(final Client client, final BarbarianAssaultPlugin plugin, final BarbarianAssaultConfig config)
 	{
-		super(game);
+		super(plugin);
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
-		this.game = game;
+		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!game.isInGame() || game.getRole() == null || game.isUsingGloryHorn())
+		if (!plugin.isInGame() || plugin.getRole() == null || plugin.isUsingGloryHorn())
 		{
 			return null;
 		}
 
-		switch (game.getRole())
+		switch (plugin.getRole())
 		{
 
 			case HEALER:
-				if (game.isShowTeammateHealthbars())
+				if (config.showTeammateHealthbars())
 				{
 					renderHealthBars(graphics);
 				}
-				if (game.isHealerCodes())
+				if (config.healerCodes())
 				{
 					renderHealerCodes(graphics);
 				}
@@ -98,7 +99,7 @@ class AboveSceneOverlay extends Overlay
 
 
 			case COLLECTOR:
-				if (game.isHighlightCollectorEggs())
+				if (config.highlightCollectorEggs())
 				{
 					renderEggs(graphics);
 				}
@@ -143,14 +144,14 @@ class AboveSceneOverlay extends Overlay
 
 	private void renderHealerCodes(Graphics2D graphics)
 	{
-		for (Healer healer : game.getHealers().values())
+		for (Healer healer : plugin.getHealers().values())
 		{
 			Color color = Color.GREEN;
 			int timeLeft = 0;
 
-			if (game.getWave() != null)
+			if (plugin.getWave() != null)
 			{
-				timeLeft = healer.getLastFoodTime() - (int) game.getWave().getWaveTimer().getElapsedTime();
+				timeLeft = healer.getLastFoodTime() - (int) plugin.getWave().getWaveTimer().getElapsedTime();
 			}
 
 			timeLeft = timeLeft < 1 ? 0 : timeLeft;
@@ -170,7 +171,7 @@ class AboveSceneOverlay extends Overlay
 	{
 		final Color color = graphics.getColor();
 		final Stroke originalStroke = graphics.getStroke();
-		String listen = game.getLastListenText();
+		String listen = plugin.getLastListenText();
 		if (listen != null && !listen.equals("- - -"))
 		{
 			graphics.setStroke(new BasicStroke(2));
@@ -180,20 +181,20 @@ class AboveSceneOverlay extends Overlay
 			{
 				case "Red eggs":
 					graphics.setColor(new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 150));
-					game.getRedEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
+					plugin.getRedEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
 					break;
 				case "Green eggs":
 					graphics.setColor(new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), 150));
-					game.getGreenEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
+					plugin.getGreenEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
 					break;
 				case "Blue eggs":
 					graphics.setColor(new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), 150));
-					game.getBlueEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
+					plugin.getBlueEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
 					break;
 			}
 		}
 		graphics.setColor(new Color(Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue(), 150));
-		game.getYellowEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
+		plugin.getYellowEggs().forEach((point, quantity) -> drawCircle(graphics, LocalPoint.fromWorld(client, point)));
 		graphics.setColor(color);
 		graphics.setStroke(originalStroke);
 	}

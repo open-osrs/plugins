@@ -30,7 +30,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Player;
@@ -44,7 +43,6 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.ImageUtil;
 
-@Singleton
 class PrayerBarOverlay extends Overlay
 {
 	private static final Color BAR_FILL_COLOR = new Color(0, 149, 151);
@@ -57,14 +55,16 @@ class PrayerBarOverlay extends Overlay
 
 	private final Client client;
 	private final PrayerPlugin plugin;
+	private final PrayerConfig config;
 
 	private boolean showingPrayerBar;
 
 	@Inject
-	private PrayerBarOverlay(final Client client, final PrayerPlugin plugin)
+	private PrayerBarOverlay(final Client client, final PrayerPlugin plugin, final PrayerConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.HIGH);
@@ -74,7 +74,7 @@ class PrayerBarOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isShowPrayerBar() || !showingPrayerBar)
+		if (!config.showPrayerBar() || !showingPrayerBar)
 		{
 			return null;
 		}
@@ -100,9 +100,9 @@ class PrayerBarOverlay extends Overlay
 			// Use a sub-image to create the same effect the HD Health Bar has
 			graphics.drawImage(HD_FRONT_BAR.getSubimage(0, 0, progressFill, barHeight), barX, barY, progressFill, barHeight, null);
 
-			if ((plugin.isPrayersActive() || plugin.isPrayerFlickAlwaysOn())
-				&& (plugin.getPrayerFlickLocation().equals(PrayerFlickLocation.PRAYER_BAR)
-				|| plugin.getPrayerFlickLocation().equals(PrayerFlickLocation.BOTH)))
+			if ((plugin.isPrayersActive() || config.prayerFlickAlwaysOn())
+				&& (config.prayerFlickLocation().equals(PrayerFlickLocation.PRAYER_BAR)
+				|| config.prayerFlickLocation().equals(PrayerFlickLocation.BOTH)))
 			{
 				final double t = plugin.getTickProgress();
 				final int halfBarWidth = (barWidth / 2) - HD_PRAYER_BAR_PADDING;
@@ -131,9 +131,9 @@ class PrayerBarOverlay extends Overlay
 		graphics.setColor(BAR_FILL_COLOR);
 		graphics.fillRect(barX, barY, progressFill, barHeight);
 
-		if ((plugin.isPrayersActive() || plugin.isPrayerFlickAlwaysOn())
-			&& (plugin.getPrayerFlickLocation().equals(PrayerFlickLocation.PRAYER_BAR)
-			|| plugin.getPrayerFlickLocation().equals(PrayerFlickLocation.BOTH)))
+		if ((plugin.isPrayersActive() || config.prayerFlickAlwaysOn())
+			&& (config.prayerFlickLocation().equals(PrayerFlickLocation.PRAYER_BAR)
+			|| config.prayerFlickLocation().equals(PrayerFlickLocation.BOTH)))
 		{
 			double t = plugin.getTickProgress();
 
@@ -157,13 +157,13 @@ class PrayerBarOverlay extends Overlay
 			return;
 		}
 
-		if (plugin.isHideIfNotPraying() && !plugin.isPrayersActive())
+		if (config.hideIfNotPraying() && !plugin.isPrayersActive())
 		{
 			showingPrayerBar = false;
 			return;
 		}
 
-		if (plugin.isHideIfOutOfCombat() && localPlayer.getHealth() == -1)
+		if (config.hideIfOutOfCombat() && localPlayer.getHealth() == -1)
 		{
 			showingPrayerBar = false;
 		}

@@ -28,7 +28,6 @@ import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ChatMessageType;
@@ -37,7 +36,6 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -55,7 +53,6 @@ import org.pf4j.Extension;
 	tags = {"overlay", "skilling"},
 	type = PluginType.SKILLING
 )
-@Singleton
 @PluginDependency(XpTrackerPlugin.class)
 public class SmeltingPlugin extends Plugin
 {
@@ -71,8 +68,6 @@ public class SmeltingPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private SmeltingSession session;
 
-	private int statTimeout;
-
 	@Provides
 	SmeltingConfig getConfig(ConfigManager configManager)
 	{
@@ -82,8 +77,6 @@ public class SmeltingPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
-		this.statTimeout = config.statTimeout();
 		session = null;
 		overlayManager.add(overlay);
 	}
@@ -138,7 +131,7 @@ public class SmeltingPlugin extends Plugin
 	{
 		if (session != null)
 		{
-			final Duration statTimeout = Duration.ofMinutes(this.statTimeout);
+			final Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 			final Duration sinceCaught = Duration.between(session.getLastItemSmelted(), Instant.now());
 
 			if (sinceCaught.compareTo(statTimeout) >= 0)
@@ -146,17 +139,6 @@ public class SmeltingPlugin extends Plugin
 				session = null;
 			}
 		}
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("smelting"))
-		{
-			return;
-		}
-
-		this.statTimeout = config.statTimeout();
 	}
 }
 

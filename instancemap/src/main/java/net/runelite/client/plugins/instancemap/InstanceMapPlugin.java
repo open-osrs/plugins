@@ -26,7 +26,6 @@ package net.runelite.client.plugins.instancemap;
 
 import com.google.inject.Binder;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.WidgetMenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
@@ -48,7 +47,6 @@ import org.pf4j.Extension;
 	description = "Add an instanced map, accessible by right-clicking the map button",
 	type = PluginType.UTILITY
 )
-@Singleton
 public class InstanceMapPlugin extends Plugin
 {
 	private final WidgetMenuOption openMapOption = new WidgetMenuOption("Show", "Instance Map", WidgetInfo.WORLD_MAP_OPTION);
@@ -90,7 +88,6 @@ public class InstanceMapPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		overlayManager.add(overlay);
 		addCustomOptions();
 		keyManager.registerKeyListener(inputListener);

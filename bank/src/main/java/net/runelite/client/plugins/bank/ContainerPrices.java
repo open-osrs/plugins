@@ -27,6 +27,7 @@ package net.runelite.client.plugins.bank;
 import lombok.Value;
 
 @Value
+public
 class ContainerPrices
 {
 	private long gePrice;

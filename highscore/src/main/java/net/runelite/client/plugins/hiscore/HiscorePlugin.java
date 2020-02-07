@@ -35,10 +35,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
@@ -63,27 +60,19 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Highscore",
-	description = "Enable the highscore panel and an optional Lookup option on players",
+	name = "HiScore",
+	description = "Enable the HiScore panel and an optional Lookup option on players",
 	tags = {"panel", "players"},
 	loadWhenOutdated = true,
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class HiscorePlugin extends Plugin
 {
 	private static final String LOOKUP = "Lookup";
 	private static final String KICK_OPTION = "Kick";
-	private static final ImmutableList<String> AFTER_OPTIONS = ImmutableList.of("Message", "Add ignore", "Remove friend", KICK_OPTION);
+	private static final ImmutableList<String> AFTER_OPTIONS = ImmutableList.of("Message", "Add ignore", "Remove friend", "Delete", KICK_OPTION);
 	private static final Pattern BOUNTY_PATTERN = Pattern.compile("<col=ff0000>You've been assigned a target: (.*)</col>");
 
-	// config
-	private boolean playerOption;
-	private boolean menuOption;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean virtualLevels;
-	private boolean autocomplete;
-	private boolean bountyLookup;
 
 	@Inject
 	@Nullable
@@ -116,8 +105,6 @@ public class HiscorePlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		hiscorePanel = injector.getInstance(HiscorePanel.class);
 
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "normal.png");
@@ -131,11 +118,11 @@ public class HiscorePlugin extends Plugin
 
 		clientToolbar.addNavigation(navButton);
 
-		if (this.playerOption && client != null)
+		if (config.playerOption() && client != null)
 		{
 			menuManager.get().addPlayerMenuItem(LOOKUP);
 		}
-		if (this.autocomplete)
+		if (config.autocomplete())
 		{
 			hiscorePanel.addInputKeyListener(autocompleter);
 		}
@@ -161,12 +148,12 @@ public class HiscorePlugin extends Plugin
 		{
 			return;
 		}
-		updateConfig();
+
 		if (client != null)
 		{
 			menuManager.get().removePlayerMenuItem(LOOKUP);
 
-			if (this.playerOption)
+			if (config.playerOption())
 			{
 				menuManager.get().addPlayerMenuItem(LOOKUP);
 			}
@@ -174,7 +161,7 @@ public class HiscorePlugin extends Plugin
 
 		if (event.getKey().equals("autocomplete"))
 		{
-			if (this.autocomplete)
+			if (config.autocomplete())
 			{
 				hiscorePanel.addInputKeyListener(autocompleter);
 			}
@@ -189,7 +176,7 @@ public class HiscorePlugin extends Plugin
 	@Subscribe
 	private void onMenuEntryAdded(MenuEntryAdded event)
 	{
-		if (!this.menuOption)
+		if (!config.menuOption())
 		{
 			return;
 		}
@@ -199,9 +186,10 @@ public class HiscorePlugin extends Plugin
 
 		if (groupId == WidgetInfo.FRIENDS_LIST.getGroupId() || groupId == WidgetInfo.CLAN_CHAT.getGroupId() ||
 			groupId == WidgetInfo.CHATBOX.getGroupId() && !KICK_OPTION.equals(option) || //prevent from adding for Kick option (interferes with the raiding party one)
-			groupId == WidgetInfo.RAIDING_PARTY.getGroupId() || groupId == WidgetInfo.PRIVATE_CHAT_MESSAGE.getGroupId())
+			groupId == WidgetInfo.RAIDING_PARTY.getGroupId() || groupId == WidgetInfo.PRIVATE_CHAT_MESSAGE.getGroupId() ||
+			groupId == WidgetInfo.IGNORE_LIST.getGroupId())
 		{
-			if (!AFTER_OPTIONS.contains(option))
+			if (!AFTER_OPTIONS.contains(option) || (option.equals("Delete") && groupId != WidgetInfo.IGNORE_LIST.getGroupId()))
 			{
 				return;
 			}
@@ -233,7 +221,7 @@ public class HiscorePlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (!this.bountyLookup || !event.getType().equals(ChatMessageType.GAMEMESSAGE))
+		if (!config.bountyLookup() || !event.getType().equals(ChatMessageType.GAMEMESSAGE))
 		{
 			return;
 		}
@@ -244,15 +232,6 @@ public class HiscorePlugin extends Plugin
 		{
 			lookupPlayer(m.group(1));
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.playerOption = config.playerOption();
-		this.menuOption = config.menuOption();
-		this.virtualLevels = config.virtualLevels();
-		this.autocomplete = config.autocomplete();
-		this.bountyLookup = config.bountyLookup();
 	}
 
 	private void insertMenuEntry(MenuEntry newEntry, MenuEntry[] entries)

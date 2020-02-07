@@ -33,7 +33,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
 import net.runelite.api.FontID;
@@ -73,7 +72,6 @@ import org.pf4j.Extension;
 	tags = {"skill", "total", "max"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class VirtualLevelsPlugin extends Plugin implements KeyListener
 {
 	private static final String TOTAL_LEVEL_TEXT_PREFIX = "Total level:<br>";

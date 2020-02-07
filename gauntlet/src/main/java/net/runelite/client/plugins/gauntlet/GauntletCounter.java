@@ -43,12 +43,15 @@ import net.runelite.client.util.ColorUtil;
 public class GauntletCounter extends Overlay
 {
 	private final GauntletPlugin plugin;
+	private final GauntletConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	GauntletCounter(final GauntletPlugin plugin)
+	GauntletCounter(final GauntletPlugin plugin, final GauntletConfig config)
 	{
 		this.plugin = plugin;
+		this.config = config;
+
 		setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
 		setPriority(OverlayPriority.HIGH);
 	}
@@ -61,8 +64,8 @@ public class GauntletCounter extends Overlay
 
 		if (!plugin.fightingBoss() ||
 			hunllef == null ||
-			plugin.getCountAttacks() == NONE ||
-			plugin.getCountAttacks() == ONBOSS)
+			config.countAttacks() == NONE ||
+			config.countAttacks() == ONBOSS)
 		{
 			return null;
 		}

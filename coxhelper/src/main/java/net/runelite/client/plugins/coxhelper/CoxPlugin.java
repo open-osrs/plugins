@@ -28,7 +28,6 @@
 package net.runelite.client.plugins.coxhelper;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,7 +37,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,7 +65,6 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -82,7 +79,6 @@ import org.pf4j.Extension;
 	type = PluginType.PVM
 )
 @Slf4j
-@Singleton
 @Getter(AccessLevel.PACKAGE)
 public class CoxPlugin extends Plugin
 {
@@ -139,27 +135,6 @@ public class CoxPlugin extends Plugin
 	private PrayAgainst prayAgainstOlm;
 	private long lastPrayTime;
 	private int sleepcount = 0;
-	private boolean muttadile;
-	private boolean tekton;
-	private boolean tektonTickCounter;
-	private boolean guardians;
-	private boolean guardinTickCounter;
-	private boolean vangHighlight;
-	private boolean vangHealth;
-	private boolean configPrayAgainstOlm;
-	private boolean timers;
-	private boolean tpOverlay;
-	private boolean olmTick;
-	private int prayAgainstSize;
-	private Color muttaColor;
-	private Color guardColor;
-	private Color tektonColor;
-	private Color burnColor;
-	private Color acidColor;
-	private Color tpColor;
-	private CoxConfig.FontStyle fontStyle;
-	private int textSize;
-	private boolean shadows;
 
 	@Provides
 	CoxConfig getConfig(ConfigManager configManager)
@@ -170,7 +145,6 @@ public class CoxPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		overlayManager.add(coxOverlay);
 		overlayManager.add(coxInfoBox);
 		handCripple = false;
@@ -188,15 +162,6 @@ public class CoxPlugin extends Plugin
 	{
 		overlayManager.remove(coxOverlay);
 		overlayManager.remove(coxInfoBox);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("Cox"))
-		{
-			updateConfig();
-		}
 	}
 
 	@Subscribe
@@ -637,30 +602,5 @@ public class CoxPlugin extends Plugin
 	boolean inRaid()
 	{
 		return client.getVar(Varbits.IN_RAID) == 1;
-	}
-
-	private void updateConfig()
-	{
-		this.muttadile = config.muttadile();
-		this.tekton = config.tekton();
-		this.tektonTickCounter = config.tektonTickCounter();
-		this.guardians = config.guardians();
-		this.guardinTickCounter = config.guardinTickCounter();
-		this.vangHighlight = config.vangHighlight();
-		this.vangHealth = config.vangHealth();
-		this.configPrayAgainstOlm = config.prayAgainstOlm();
-		this.timers = config.timers();
-		this.tpOverlay = config.tpOverlay();
-		this.olmTick = config.olmTick();
-		this.muttaColor = config.muttaColor();
-		this.guardColor = config.guardColor();
-		this.tektonColor = config.tektonColor();
-		this.burnColor = config.burnColor();
-		this.acidColor = config.acidColor();
-		this.tpColor = config.tpColor();
-		this.fontStyle = config.fontStyle();
-		this.textSize = config.textSize();
-		this.shadows = config.shadows();
-		this.prayAgainstSize = config.prayAgainstOlmSize();
 	}
 }

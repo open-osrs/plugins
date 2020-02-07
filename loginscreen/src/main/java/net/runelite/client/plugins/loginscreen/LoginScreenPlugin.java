@@ -32,7 +32,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -56,7 +55,6 @@ import org.pf4j.Extension;
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
-@Singleton
 public class LoginScreenPlugin extends Plugin implements KeyListener
 {
 	private static final int MAX_USERNAME_LENGTH = 254;
@@ -73,15 +71,9 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 
 	private String usernameCache;
 
-	private boolean syncUsername;
-	private boolean pasteEnabled;
-	private String username;
-
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		client.setHideDisconnect(config.hideDisconnected());
 
 		applyUsername();
@@ -91,7 +83,7 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 	@Override
 	protected void shutDown()
 	{
-		if (this.syncUsername)
+		if (config.syncUsername())
 		{
 			client.getPreferences().setRememberedUsername(usernameCache);
 		}
@@ -110,7 +102,7 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
-		if (!this.syncUsername)
+		if (!config.syncUsername())
 		{
 			return;
 		}
@@ -128,14 +120,13 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 				username = client.getUsername();
 			}
 
-			if (this.username.equals(username))
+			if (config.username().equals(username))
 			{
 				return;
 			}
 
 			log.debug("Saving username: {}", username);
 			config.username(username);
-			this.username = username;
 		}
 	}
 
@@ -148,7 +139,7 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 
 	private void applyUsername()
 	{
-		if (!this.syncUsername)
+		if (!config.syncUsername())
 		{
 			return;
 		}
@@ -156,7 +147,7 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 		GameState gameState = client.getGameState();
 		if (gameState == GameState.LOGIN_SCREEN)
 		{
-			String username = this.username;
+			String username = config.username();
 
 			if (Strings.isNullOrEmpty(username))
 			{
@@ -181,7 +172,7 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		if (!this.pasteEnabled || (
+		if (!config.pasteEnabled() || (
 			client.getGameState() != GameState.LOGIN_SCREEN &&
 				client.getGameState() != GameState.LOGIN_SCREEN_AUTHENTICATOR))
 		{
@@ -246,14 +237,5 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 			client.setHideDisconnect(config.hideDisconnected());
 			return;
 		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.syncUsername = config.syncUsername();
-		this.pasteEnabled = config.pasteEnabled();
-		this.username = config.username();
 	}
 }

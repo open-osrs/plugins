@@ -32,12 +32,15 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.client.config.ChatColorConfig;
 import net.runelite.client.config.OpenOSRSConfig;
+import net.runelite.client.config.RuneLiteConfig;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,11 +56,19 @@ public class NpcIndicatorsPluginTest
 
 	@Mock
 	@Bind
-	private NpcIndicatorsConfig npcIndicatorsConfig;
+	private OpenOSRSConfig openOSRSConfig;
 
 	@Mock
 	@Bind
-	private OpenOSRSConfig openOSRSConfig;
+	private RuneLiteConfig runeLiteConfig;
+
+	@Mock
+	@Bind
+	private ChatColorConfig chatColorConfig;
+
+	@Mock
+	@Bind
+	private NpcIndicatorsConfig npcIndicatorsConfig;
 
 	@Inject
 	private NpcIndicatorsPlugin npcIndicatorsPlugin;
@@ -71,7 +82,7 @@ public class NpcIndicatorsPluginTest
 	@Test
 	public void getHighlights()
 	{
-		npcIndicatorsPlugin.setGetNpcToHighlight("goblin, , zulrah   , *wyvern, ,");
+		when(npcIndicatorsConfig.getNpcToHighlight()).thenReturn("goblin, , zulrah   , *wyvern, ,");
 		final List<String> highlightedNpcs = npcIndicatorsPlugin.getHighlights();
 		assertEquals("Length of parsed NPCs is incorrect", 3, highlightedNpcs.size());
 

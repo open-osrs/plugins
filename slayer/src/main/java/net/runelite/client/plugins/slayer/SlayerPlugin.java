@@ -263,43 +263,11 @@ public class SlayerPlugin extends Plugin
 		lingeringPresences.clear();
 	}
 
-	private boolean showInfobox;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showItemOverlay;
-	@Setter(AccessLevel.PACKAGE)
-	private boolean showSuperiorNotification;
-	private int statTimeout;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean highlightTargets;
-	@Getter(AccessLevel.PACKAGE)
-	private RenderStyle renderStyle;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getTargetColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getSuperiorColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean drawNames;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean drawMinimapNames;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean weaknessPrompt;
-	@Setter(AccessLevel.PACKAGE)
-	private boolean taskCommand;
-	private String taskName;
-	private String taskLocation;
-	@Setter(AccessLevel.PACKAGE)
-	private boolean pointsCommand;
-	private int amount;
-	private int initialAmount;
-	private int lastCertainAmount;
-
 	private boolean weaknessOverlayAttached;
 
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		weaknessOverlayAttached = false;
 
 		overlayManager.add(overlay);
@@ -376,9 +344,9 @@ public class SlayerPlugin extends Plugin
 				currentTask.setPaused(true);
 				break;
 			case LOGGED_IN:
-				if (loginTick && this.amount != -1 && !this.taskName.isEmpty() && currentTask.getTaskName() == null)
+				if (loginTick && config.amount() != -1 && !config.taskName().isEmpty() && currentTask.getTaskName() == null)
 				{
-					setTask(this.taskName, this.amount, this.initialAmount, true, this.taskLocation, this.lastCertainAmount, false);
+					setTask(config.taskName(), config.amount(), config.initialAmount(), true, config.taskLocation(), config.lastCertainAmount(), false);
 				}
 		}
 	}
@@ -386,20 +354,10 @@ public class SlayerPlugin extends Plugin
 	private void save()
 	{
 		config.amount(currentTask.getAmount());
-		this.amount = currentTask.getAmount();
-
 		config.initialAmount(currentTask.getInitialAmount());
-		this.initialAmount = currentTask.getInitialAmount();
-
 		config.taskName(currentTask.getTaskName());
-		this.taskName = currentTask.getTaskName();
-
 		config.taskLocation(currentTask.getTaskLocation());
-		this.taskLocation = currentTask.getTaskLocation();
-
 		config.lastCertainAmount(currentTask.getLastCertainAmount());
-		this.lastCertainAmount = currentTask.getLastCertainAmount();
-
 		config.streak(streak);
 	}
 
@@ -446,7 +404,7 @@ public class SlayerPlugin extends Plugin
 
 		setPoints(client.getVar(Varbits.SLAYER_REWARD_POINTS));
 
-		if (!this.showInfobox)
+		if (!config.showInfobox())
 		{
 			return;
 		}
@@ -624,7 +582,7 @@ public class SlayerPlugin extends Plugin
 		if (infoTimer != null && config.statTimeout() != 0)
 		{
 			Duration timeSinceInfobox = Duration.between(infoTimer, Instant.now());
-			Duration statTimeout = Duration.ofMinutes(this.statTimeout);
+			Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 
 			if (timeSinceInfobox.compareTo(statTimeout) >= 0)
 			{
@@ -680,7 +638,7 @@ public class SlayerPlugin extends Plugin
 			return;
 		}
 
-		if (this.showSuperiorNotification && chatMsg.equals(CHAT_SUPERIOR_MESSAGE))
+		if (config.showSuperiorNotification() && chatMsg.equals(CHAT_SUPERIOR_MESSAGE))
 		{
 			notifier.notify(CHAT_SUPERIOR_MESSAGE);
 			return;
@@ -741,7 +699,7 @@ public class SlayerPlugin extends Plugin
 			return;
 		}
 
-		final Task task = Task.getTask(taskName);
+		final Task task = Task.getTask(config.taskName());
 		int delta = slayerExp - cachedXp;
 
 		// null tasks are technically valid, it only means they arent explicitly defined in the Task enum
@@ -817,11 +775,9 @@ public class SlayerPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
 		if (event.getKey().equals("infobox"))
 		{
-			if (this.showInfobox)
+			if (config.showInfobox())
 			{
 				clientThread.invoke(this::addCounter);
 			}
@@ -856,7 +812,7 @@ public class SlayerPlugin extends Plugin
 			panel.updateCurrentTask(true, currentTask.isPaused(), currentTask, false);
 		}
 
-		if (!this.showInfobox)
+		if (!config.showInfobox())
 		{
 			return;
 		}
@@ -1089,7 +1045,7 @@ public class SlayerPlugin extends Plugin
 
 	private void addCounter()
 	{
-		if (!this.showInfobox || counter != null || currentTask == null || Strings.isNullOrEmpty(currentTask.getTaskName()))
+		if (!config.showInfobox() || counter != null || currentTask == null || Strings.isNullOrEmpty(currentTask.getTaskName()))
 		{
 			return;
 		}
@@ -1134,7 +1090,7 @@ public class SlayerPlugin extends Plugin
 
 	void taskLookup(ChatMessage chatMessage, String message)
 	{
-		if (!this.taskCommand)
+		if (!config.taskCommand())
 		{
 			return;
 		}
@@ -1209,7 +1165,7 @@ public class SlayerPlugin extends Plugin
 
 	private void pointsLookup(ChatMessage chatMessage, String message)
 	{
-		if (!this.pointsCommand)
+		if (!config.pointsCommand())
 		{
 			return;
 		}
@@ -1298,27 +1254,5 @@ public class SlayerPlugin extends Plugin
 	{
 		this.points = points;
 		this.cachedPoints = points;
-	}
-
-	private void updateConfig()
-	{
-		this.showInfobox = config.showInfobox();
-		this.showItemOverlay = config.showItemOverlay();
-		this.showSuperiorNotification = config.showSuperiorNotification();
-		this.statTimeout = config.statTimeout();
-		this.highlightTargets = config.highlightTargets();
-		this.renderStyle = config.renderStyle();
-		this.getTargetColor = config.getTargetColor();
-		this.getSuperiorColor = config.getSuperiorColor();
-		this.drawNames = config.drawNames();
-		this.drawMinimapNames = config.drawMinimapNames();
-		this.weaknessPrompt = config.weaknessPrompt();
-		this.taskCommand = config.taskCommand();
-		this.pointsCommand = config.pointsCommand();
-		this.taskName = config.taskName();
-		this.amount = config.amount();
-		this.initialAmount = config.initialAmount();
-		this.lastCertainAmount = config.lastCertainAmount();
-		this.taskLocation = config.taskLocation();
 	}
 }

@@ -21,7 +21,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
@@ -38,23 +37,22 @@ import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-@Singleton
 class PrayerAlertOverlay extends Overlay
 {
 	private final Client client;
-	private final PrayerAlertPlugin plugin;
+	private final PrayerAlertConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
 	private final ItemManager itemManager;
 
 	private final Stat prayer = Stats.PRAYER;
 
 	@Inject
-	private PrayerAlertOverlay(final Client client, final PrayerAlertPlugin plugin, final ItemManager itemManager)
+	private PrayerAlertOverlay(final Client client, final PrayerAlertConfig config, final ItemManager itemManager)
 	{
 		setPosition(OverlayPosition.TOP_RIGHT);
 		setPriority(OverlayPriority.LOW);
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 		this.itemManager = itemManager;
 	}
 
@@ -64,9 +62,9 @@ class PrayerAlertOverlay extends Overlay
 		panelComponent.getChildren().clear();
 		int prayerLevel = getPrayerLevel();
 		int prayerPoints = getPrayerPoints();
-		if (plugin.isOldRenderMode())
+		if (config.oldRenderMode())
 		{
-			if (plugin.isAlwaysShowAlert())
+			if (config.alwaysShowAlert())
 			{
 				boolean drink = drinkPrayerPotion(prayerLevel, prayerPoints);
 				if (drink)
@@ -86,7 +84,7 @@ class PrayerAlertOverlay extends Overlay
 		}
 		else
 		{
-			if (plugin.isAlwaysShowAlert())
+			if (config.alwaysShowAlert())
 			{
 				boolean drink = drinkPrayerPotion(prayerLevel, prayerPoints);
 				if (drink)

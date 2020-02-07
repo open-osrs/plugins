@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.AnimationID;
@@ -86,7 +85,6 @@ import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -103,7 +101,6 @@ import org.pf4j.Extension;
 	tags = {"pay", "dirt", "mining", "mlm", "skilling", "overlay"},
 	type = PluginType.SKILLING
 )
-@Singleton
 public class MotherlodePlugin extends Plugin
 {
 	private static final Set<Integer> MOTHERLODE_MAP_REGIONS = ImmutableSet.of(14679, 14680, 14681, 14935, 14936, 14937, 15191, 15192, 15193);
@@ -182,29 +179,6 @@ public class MotherlodePlugin extends Plugin
 	private int lastAnimation = AnimationID.IDLE;
 	private Instant lastAnimating;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showVeins;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showRockFalls;
-	@Getter(AccessLevel.PACKAGE)
-	private int statTimeout;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSack;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showMiningStats;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showDepositsLeft;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showMiningState;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showGemsFound;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showOresFound;
-	private boolean notifyOnIdle;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showTargetVein;
-	private boolean payDirtMsg;
-
 	@Provides
 	MotherlodeConfig getConfig(ConfigManager configManager)
 	{
@@ -214,8 +188,6 @@ public class MotherlodePlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlayManager.add(rocksOverlay);
 		overlayManager.add(motherlodeGemOverlay);
@@ -332,7 +304,6 @@ public class MotherlodePlugin extends Plugin
 			return;
 		}
 
-
 		depositsLeft = calculateDepositsLeft();
 
 		Instant lastPayDirtMined = session.getLastPayDirtMined();
@@ -342,7 +313,7 @@ public class MotherlodePlugin extends Plugin
 		}
 
 		// reset recentPayDirtMined if you haven't mined anything recently
-		Duration statTimeout = Duration.ofMinutes(this.statTimeout);
+		Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 		Duration sinceMined = Duration.between(lastPayDirtMined, Instant.now());
 
 		if (sinceMined.compareTo(statTimeout) >= 0)
@@ -500,7 +471,7 @@ public class MotherlodePlugin extends Plugin
 
 	private void sendIdleNotification()
 	{
-		if (!this.notifyOnIdle)
+		if (!config.notifyOnIdle())
 		{
 			return;
 		}
@@ -734,37 +705,11 @@ public class MotherlodePlugin extends Plugin
 		return Perspective.getTileHeight(client, localPoint, 0) < UPPER_FLOOR_HEIGHT;
 	}
 
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("motherlode"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.showVeins = config.showVeins();
-		this.showRockFalls = config.showRockFalls();
-		this.statTimeout = config.statTimeout();
-		this.showSack = config.showSack();
-		this.showMiningStats = config.showMiningStats();
-		this.showDepositsLeft = config.showDepositsLeft();
-		this.showMiningState = config.showMiningState();
-		this.showGemsFound = config.showGemsFound();
-		this.showOresFound = config.showOresFound();
-		this.notifyOnIdle = config.notifyOnIdle();
-		this.showTargetVein = config.showTargetVein();
-		this.payDirtMsg = config.payDirtMsg();
-	}
 
 	@Subscribe
 	private void onOverheadTextChanged(OverheadTextChanged event)
 	{
-		if (!payDirtMsg || Strings.isNullOrEmpty(event.getOverheadText()) || !(event.getActor() instanceof NPC))
+		if (!config.payDirtMsg() || Strings.isNullOrEmpty(event.getOverheadText()) || !(event.getActor() instanceof NPC))
 		{
 			return;
 		}

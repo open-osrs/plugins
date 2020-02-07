@@ -47,6 +47,7 @@ public class InfernoInfoBoxOverlay extends Overlay
 	private static final Color NOT_ACTIVATED_BACKGROUND_COLOR = new Color(150, 0, 0, 150);
 	private final Client client;
 	private final InfernoPlugin plugin;
+	private final InfernoConfig config;
 	private final SpriteManager spriteManager;
 	private final PanelComponent imagePanelComponent = new PanelComponent();
 	private BufferedImage prayMeleeSprite;
@@ -54,20 +55,21 @@ public class InfernoInfoBoxOverlay extends Overlay
 	private BufferedImage prayMagicSprite;
 
 	@Inject
-	private InfernoInfoBoxOverlay(final Client client, final InfernoPlugin plugin, final SpriteManager spriteManager)
+	private InfernoInfoBoxOverlay(final Client client, final InfernoPlugin plugin, final InfernoConfig config, final SpriteManager spriteManager)
 	{
 		setPosition(OverlayPosition.BOTTOM_RIGHT);
 		setPriority(OverlayPriority.HIGH);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.spriteManager = spriteManager;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.getPrayerDisplayMode() != InfernoPrayerDisplayMode.BOTTOM_RIGHT
-			&& plugin.getPrayerDisplayMode() != InfernoPrayerDisplayMode.BOTH)
+		if (config.prayerDisplayMode() != InfernoPrayerDisplayMode.BOTTOM_RIGHT
+			&& config.prayerDisplayMode() != InfernoPrayerDisplayMode.BOTH)
 		{
 			return null;
 		}

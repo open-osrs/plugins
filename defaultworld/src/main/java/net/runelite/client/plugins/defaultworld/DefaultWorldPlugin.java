@@ -26,7 +26,6 @@ package net.runelite.client.plugins.defaultworld;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -51,7 +50,6 @@ import org.pf4j.Extension;
 	type = PluginType.UTILITY
 )
 @Slf4j
-@Singleton
 public class DefaultWorldPlugin extends Plugin
 {
 	@Inject
@@ -69,7 +67,6 @@ public class DefaultWorldPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		worldChangeRequired = true;
 		applyWorld();
 	}
@@ -157,6 +154,11 @@ public class DefaultWorldPlugin extends Plugin
 		{
 			worldCache = client.getWorld();
 			log.debug("Stored old world {}", worldCache);
+		}
+
+		if (System.getProperty("cli.world") != null)
+		{
+			return;
 		}
 
 		final int newWorld = !config.useLastWorld() ? config.getWorld() : config.lastWorld();

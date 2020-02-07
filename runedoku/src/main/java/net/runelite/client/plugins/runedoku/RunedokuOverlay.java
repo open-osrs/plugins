@@ -46,16 +46,16 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 class RunedokuOverlay extends Overlay
 {
 
-	private final RunedokuPlugin plugin;
+	private final RunedokuConfig config;
 	private final Client client;
 	private final RunedokuUtil util;
 
 
 	@Inject
-	private RunedokuOverlay(final RunedokuPlugin plugin, final Client client, final RunedokuUtil util)
+	private RunedokuOverlay(final RunedokuPlugin plugin, final RunedokuConfig config, final Client client, final RunedokuUtil util)
 	{
 		super(plugin);
-		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
 		this.util = util;
 
@@ -136,7 +136,7 @@ class RunedokuOverlay extends Overlay
 				}
 				else
 				{
-					if (!plugin.isOnlyHighlightSelectedPiece() ^ (plugin.isOnlyHighlightSelectedPiece() && util.getSelectedPiece(client) == simpleArr.get(iteration)))
+					if (!config.onlyHighlightSelectedPiece() ^ (config.onlyHighlightSelectedPiece() && util.getSelectedPiece(client) == simpleArr.get(iteration)))
 					{
 						OverlayUtil.renderPolygon(graphics, RunedokuUtil.rectangleToPolygon(squareToHighlight.getBounds()), util.sudokuPieceToColor(simpleArr.get(iteration)));
 					}

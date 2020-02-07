@@ -86,7 +86,7 @@ public interface ProfilesConfig extends Config
 	)
 	default boolean displayEmailAddress()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(

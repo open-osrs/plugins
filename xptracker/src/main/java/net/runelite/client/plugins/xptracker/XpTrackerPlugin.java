@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Objects;
 import javax.inject.Inject;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
@@ -63,7 +62,6 @@ import net.runelite.api.widgets.WidgetID;
 import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.plugins.Plugin;
@@ -137,16 +135,6 @@ public class XpTrackerPlugin extends Plugin
 	private final XpState xpState = new XpState();
 	private final XpPauseState xpPauseState = new XpPauseState();
 
-	private boolean hideMaxed;
-	private boolean pauseOnLogout;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showIntermediateLevels;
-	private int pauseSkillAfter;
-	@Getter(AccessLevel.PACKAGE)
-	private XpTrackerConfig.OnScreenDisplayMode onScreenDisplayMode;
-	@Getter(AccessLevel.PACKAGE)
-	private XpTrackerConfig.OnScreenDisplayModeBottom onScreenDisplayModeBottom;
-
 	@Provides
 	XpTrackerConfig provideConfig(ConfigManager configManager)
 	{
@@ -162,9 +150,7 @@ public class XpTrackerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
-		xpPanel = new XpPanel(this, client, skillIconManager);
+		xpPanel = new XpPanel(this, xpTrackerConfig, client, skillIconManager);
 
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "/skill_icons/overall.png");
 
@@ -267,7 +253,7 @@ public class XpTrackerPlugin extends Plugin
 	void addOverlay(Skill skill)
 	{
 		removeOverlay(skill);
-		overlayManager.add(new XpInfoBoxOverlay(this, skill, skillIconManager.getSkillImage(skill)));
+		overlayManager.add(new XpInfoBoxOverlay(this, xpTrackerConfig, skill, skillIconManager.getSkillImage(skill)));
 	}
 
 	/**
@@ -377,7 +363,7 @@ public class XpTrackerPlugin extends Plugin
 			return;
 		}
 
-		if (this.hideMaxed && currentLevel >= Experience.MAX_REAL_LEVEL)
+		if (xpTrackerConfig.hideMaxed() && currentLevel >= Experience.MAX_REAL_LEVEL)
 		{
 			return;
 		}
@@ -687,10 +673,22 @@ public class XpTrackerPlugin extends Plugin
 				skillExperience = client.getSkillExperience(skill);
 			}
 
-			xpPauseState.tickXp(skill, skillExperience, this.pauseSkillAfter);
+			xpPauseState.tickXp(skill, skillExperience, xpTrackerConfig.pauseSkillAfter());
 		}
 
-		xpPauseState.tickLogout(this.pauseOnLogout, !GameState.LOGIN_SCREEN.equals(client.getGameState()));
+		final boolean loggedIn;
+		switch (client.getGameState())
+		{
+			case LOGIN_SCREEN:
+			case LOGGING_IN:
+			case LOGIN_SCREEN_AUTHENTICATOR:
+				loggedIn = false;
+				break;
+			default:
+				loggedIn = true;
+				break;
+		}
+		xpPauseState.tickLogout(xpTrackerConfig.pauseOnLogout(), loggedIn);
 
 		if (lastTickMillis == 0)
 		{
@@ -738,26 +736,5 @@ public class XpTrackerPlugin extends Plugin
 		{
 			pauseSkill(skill, pause);
 		}
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("xpTracker"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.hideMaxed = xpTrackerConfig.hideMaxed();
-		this.pauseOnLogout = xpTrackerConfig.pauseOnLogout();
-		this.showIntermediateLevels = xpTrackerConfig.showIntermediateLevels();
-		this.pauseSkillAfter = xpTrackerConfig.pauseSkillAfter();
-		this.onScreenDisplayMode = xpTrackerConfig.onScreenDisplayMode();
-		this.onScreenDisplayModeBottom = xpTrackerConfig.onScreenDisplayModeBottom();
 	}
 }

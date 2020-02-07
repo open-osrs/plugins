@@ -28,7 +28,6 @@ package net.runelite.client.plugins.discord;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -88,7 +85,6 @@ import org.pf4j.Extension;
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
-@Singleton
 public class DiscordPlugin extends Plugin
 {
 	@Inject
@@ -116,19 +112,6 @@ public class DiscordPlugin extends Plugin
 	private NavigationButton discordButton;
 	private boolean loginFlag;
 
-	@Getter(AccessLevel.PACKAGE)
-	private int actionTimeout;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean hideElapsedTime;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean alwaysShowParty;
-	private boolean showSkillingActivity;
-	private boolean showBossActivity;
-	private boolean showCityActivity;
-	private boolean showDungeonActivity;
-	private boolean showMinigameActivity;
-	private boolean showRaidingActivity;
-
 	@Provides
 	private DiscordConfig provideConfig(ConfigManager configManager)
 	{
@@ -138,8 +121,6 @@ public class DiscordPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "discord.png");
 
 		discordButton = NavigationButton.builder()
@@ -157,7 +138,7 @@ public class DiscordPlugin extends Plugin
 		{
 			partyService.setUsername(discordService.getCurrentUser().username + "#" + discordService.getCurrentUser().discriminator);
 		}
-
+		wsClient.unregisterMessage(DiscordUserInfo.class);
 		wsClient.registerMessage(DiscordUserInfo.class);
 	}
 
@@ -199,8 +180,6 @@ public class DiscordPlugin extends Plugin
 	{
 		if (event.getGroup().equalsIgnoreCase("discord"))
 		{
-			updateConfig();
-
 			checkForGameStateUpdate();
 			checkForAreaUpdate();
 			updatePresence();
@@ -221,7 +200,7 @@ public class DiscordPlugin extends Plugin
 
 		final DiscordGameEventType discordGameEventType = DiscordGameEventType.fromSkill(skill);
 
-		if (discordGameEventType != null && this.showSkillingActivity)
+		if (discordGameEventType != null && config.showSkillingActivity())
 		{
 			discordState.triggerEvent(discordGameEventType);
 		}
@@ -230,7 +209,7 @@ public class DiscordPlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged event)
 	{
-		if (!this.showRaidingActivity)
+		if (!config.showRaidingActivity())
 		{
 			return;
 		}
@@ -438,28 +417,15 @@ public class DiscordPlugin extends Plugin
 		switch (event.getDiscordAreaType())
 		{
 			case BOSSES:
-				return this.showBossActivity;
+				return config.showBossActivity();
 			case CITIES:
-				return this.showCityActivity;
+				return config.showCityActivity();
 			case DUNGEONS:
-				return this.showDungeonActivity;
+				return config.showDungeonActivity();
 			case MINIGAMES:
-				return this.showMinigameActivity;
+				return config.showMinigameActivity();
 		}
 
 		return false;
-	}
-
-	private void updateConfig()
-	{
-		this.actionTimeout = config.actionTimeout();
-		this.hideElapsedTime = config.hideElapsedTime();
-		this.alwaysShowParty = config.alwaysShowParty();
-		this.showSkillingActivity = config.showSkillingActivity();
-		this.showBossActivity = config.showBossActivity();
-		this.showCityActivity = config.showCityActivity();
-		this.showDungeonActivity = config.showDungeonActivity();
-		this.showMinigameActivity = config.showMinigameActivity();
-		this.showRaidingActivity = config.showRaidingActivity();
 	}
 }

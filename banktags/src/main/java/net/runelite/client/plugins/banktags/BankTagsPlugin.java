@@ -29,6 +29,7 @@ package net.runelite.client.plugins.banktags;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
@@ -41,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import static net.runelite.api.Constants.HIGH_ALCHEMY_MULTIPLIER;
 import net.runelite.api.InventoryID;
@@ -96,12 +96,12 @@ import org.pf4j.Extension;
 	type = PluginType.UTILITY
 )
 @PluginDependency(ClueScrollPlugin.class)
-@Singleton
 public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyListener
 {
 	public static final String CONFIG_GROUP = "banktags";
 	public static final String TAG_SEARCH = "tag:";
 	public static final String ICON_SEARCH = "icon_";
+	public static final String TAG_TABS_CONFIG = "tagtabs";
 	public static final String VAR_TAG_SUFFIX = "*";
 	private static final String EDIT_TAGS_MENU_OPTION = "Edit-tags";
 	private static final String NUMBER_REGEX = "[0-9]+(\\.[0-9]+)?[kmb]?";
@@ -163,6 +163,36 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	{
 		return configManager.getConfig(BankTagsConfig.class);
 	}
+
+	@Override
+	public void resetConfiguration()
+	{
+		List<String> extraKeys = Lists.newArrayList(
+			CONFIG_GROUP + "." + TagManager.ITEM_KEY_PREFIX,
+			CONFIG_GROUP + "." + ICON_SEARCH,
+			CONFIG_GROUP + "." + TAG_TABS_CONFIG
+		);
+
+		for (String prefix : extraKeys)
+		{
+			List<String> keys = configManager.getConfigurationKeys(prefix);
+			for (String key : keys)
+			{
+				String[] str = key.split("\\.", 2);
+				if (str.length == 2)
+				{
+					configManager.unsetConfiguration(str[0], str[1]);
+				}
+			}
+		}
+
+		clientThread.invokeLater(() ->
+		{
+			tabInterface.destroy();
+			tabInterface.init();
+		});
+	}
+
 
 	@Override
 	public void startUp()
@@ -482,7 +512,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	@Subscribe
 	private void onConfigChanged(ConfigChanged configChanged)
 	{
-		if (configChanged.getGroup().equals("banktags") && configChanged.getKey().equals("useTabs"))
+		if (configChanged.getGroup().equals(CONFIG_GROUP) && configChanged.getKey().equals("useTabs"))
 		{
 			if (config.tabs())
 			{

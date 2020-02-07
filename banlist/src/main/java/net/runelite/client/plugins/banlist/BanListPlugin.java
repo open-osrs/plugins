@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.ClanMember;
 import net.runelite.api.Client;
@@ -62,9 +60,7 @@ import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import org.pf4j.Extension;
 
-@Extension
 @PluginDescriptor(
 	name = "Ban List",
 	description = "Displays warning in chat when you join a" +
@@ -72,8 +68,6 @@ import org.pf4j.Extension;
 	tags = {"PVM", "WDR", "RuneWatch"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
-@Slf4j
 public class BanListPlugin extends Plugin
 {
 	private final Set<String> wdrScamSet = new HashSet<>();
@@ -94,11 +88,6 @@ public class BanListPlugin extends Plugin
 	private ChatMessageManager chatMessageManager;
 
 	private String tobNames = "";
-	private boolean enableWDRScam;
-	private boolean enableWDRToxic;
-	private boolean enableRuneWatch;
-	private boolean highlightInClan;
-	private boolean highlightInTrade;
 
 	@Provides
 	BanListConfig getConfig(ConfigManager configManager)
@@ -109,8 +98,6 @@ public class BanListPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		manualBans.addAll(Text.fromCSV(Text.standardize(config.getBannedPlayers())));
 
 		fetchFromWebsites();
@@ -139,15 +126,6 @@ public class BanListPlugin extends Plugin
 		}
 	}
 
-	private void updateConfig()
-	{
-		this.enableWDRScam = config.enableWDRScam();
-		this.enableWDRToxic = config.enableWDRToxic();
-		this.enableRuneWatch = config.enableRuneWatch();
-		this.highlightInClan = config.highlightInClan();
-		this.highlightInTrade = config.highlightInTrade();
-	}
-
 	/**
 	 * Event to keep making sure player names are highlighted red in clan chat, since the red name goes away frequently
 	 */
@@ -158,7 +136,7 @@ public class BanListPlugin extends Plugin
 			|| client.getWidget(WidgetInfo.LOGIN_CLICK_TO_PLAY_SCREEN) != null
 			|| client.getViewportWidget() == null
 			|| client.getWidget(WidgetInfo.CLAN_CHAT) == null
-			|| !this.highlightInClan)
+			|| !config.highlightInClan())
 		{
 			return;
 		}
@@ -184,7 +162,7 @@ public class BanListPlugin extends Plugin
 		if (scamList != null)
 		{
 			sendWarning(memberUsername, scamList);
-			if (this.highlightInClan)
+			if (config.highlightInClan())
 			{
 				highlightRedInCC();
 			}
@@ -193,7 +171,7 @@ public class BanListPlugin extends Plugin
 		if (toxicList != null)
 		{
 			sendWarning(memberUsername, toxicList);
-			if (this.highlightInClan)
+			if (config.highlightInClan())
 			{
 				highlightRedInCC();
 			}
@@ -206,7 +184,7 @@ public class BanListPlugin extends Plugin
 	@Subscribe
 	private void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
-		if (this.highlightInTrade && widgetLoaded.getGroupId() == PLAYER_TRADE_SCREEN_GROUP_ID)
+		if (config.highlightInTrade() && widgetLoaded.getGroupId() == PLAYER_TRADE_SCREEN_GROUP_ID)
 		{ //if trading window was loaded
 			clientThread.invokeLater(() ->
 			{
@@ -273,12 +251,12 @@ public class BanListPlugin extends Plugin
 	 */
 	private ListType checkScamList(String nameToBeChecked)
 	{
-		if (this.enableWDRScam && wdrScamSet.contains(nameToBeChecked))
+		if (config.enableWDRScam() && wdrScamSet.contains(nameToBeChecked))
 		{
 			return ListType.WEDORAIDSSCAM_LIST;
 		}
 
-		if (this.enableRuneWatch && runeWatchSet.contains(nameToBeChecked))
+		if (config.enableRuneWatch() && runeWatchSet.contains(nameToBeChecked))
 		{
 			return ListType.RUNEWATCH_LIST;
 		}
@@ -293,7 +271,7 @@ public class BanListPlugin extends Plugin
 
 	private ListType checkToxicList(String nameToBeChecked)
 	{
-		if (this.enableWDRToxic && wdrToxicSet.contains(nameToBeChecked))
+		if (config.enableWDRToxic() && wdrToxicSet.contains(nameToBeChecked))
 		{
 			return ListType.WEDORAIDSTOXIC_LIST;
 		}
@@ -380,7 +358,6 @@ public class BanListPlugin extends Plugin
 			@Override
 			public void onFailure(@NotNull Call call, @NotNull IOException e)
 			{
-				log.debug("error retrieving names from runewatch");
 			}
 
 			@Override
@@ -414,7 +391,6 @@ public class BanListPlugin extends Plugin
 			@Override
 			public void onFailure(@NotNull Call call, @NotNull IOException e)
 			{
-				log.debug("error retrieving names from wdr");
 			}
 
 			@Override

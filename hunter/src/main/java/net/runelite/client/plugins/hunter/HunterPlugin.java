@@ -25,13 +25,11 @@
 package net.runelite.client.plugins.hunter;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +53,6 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Hunter",
@@ -63,7 +60,7 @@ import org.pf4j.Extension;
 	tags = {"overlay", "skilling", "timers"},
 	type = PluginType.SKILLING
 )
-@Singleton
+@Slf4j
 public class HunterPlugin extends Plugin
 {
 	@Inject
@@ -89,16 +86,6 @@ public class HunterPlugin extends Plugin
 
 	private WorldPoint lastTickLocalPlayerLocation;
 
-	@Getter(AccessLevel.PACKAGE)
-	private Color getOpenTrapColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getFullTrapColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getEmptyTrapColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getTransTrapColor;
-	private boolean maniacalMonkeyNotify;
-
 	@Provides
 	HunterConfig provideConfig(ConfigManager configManager)
 	{
@@ -108,8 +95,6 @@ public class HunterPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlay.updateConfig();
 	}
@@ -223,7 +208,7 @@ public class HunterPlugin extends Plugin
 					myTrap.resetTimer();
 					lastActionTime = Instant.now();
 
-					if (this.maniacalMonkeyNotify && myTrap.getObjectId() == ObjectID.MONKEY_TRAP)
+					if (config.maniacalMonkeyNotify() && myTrap.getObjectId() == ObjectID.MONKEY_TRAP)
 					{
 						notifier.notify("You've caught part of a monkey's tail.");
 					}
@@ -398,21 +383,11 @@ public class HunterPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
+	public void onConfigChanged(ConfigChanged event)
 	{
 		if (event.getGroup().equals("hunterplugin"))
 		{
-			updateConfig();
 			overlay.updateConfig();
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.getOpenTrapColor = config.getOpenTrapColor();
-		this.getFullTrapColor = config.getFullTrapColor();
-		this.getEmptyTrapColor = config.getEmptyTrapColor();
-		this.getTransTrapColor = config.getTransTrapColor();
-		this.maniacalMonkeyNotify = config.maniacalMonkeyNotify();
 	}
 }

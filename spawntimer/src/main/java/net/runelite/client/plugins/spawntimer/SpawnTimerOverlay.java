@@ -18,11 +18,14 @@ import net.runelite.client.util.WildcardMatcher;
 public class SpawnTimerOverlay extends Overlay
 {
 	private final SpawnTimerPlugin plugin;
+	private final SpawnTimerConfig config;
 
 	@Inject
-	SpawnTimerOverlay(final SpawnTimerPlugin plugin)
+	SpawnTimerOverlay(final SpawnTimerPlugin plugin, final SpawnTimerConfig config)
 	{
 		this.plugin = plugin;
+		this.config = config;
+
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
@@ -52,7 +55,7 @@ public class SpawnTimerOverlay extends Overlay
 				{
 					int tick = plugin.getCurrentTick() - npc.getTick();
 					String tickString = "" + tick;
-					renderNpcOverlay(graphics, npc.getNpc(), tickString, plugin.getGetHighlightColor());
+					renderNpcOverlay(graphics, npc.getNpc(), tickString, config.getHighlightColor());
 				}
 			}
 		}

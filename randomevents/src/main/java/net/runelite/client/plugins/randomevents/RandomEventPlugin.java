@@ -43,7 +43,6 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -100,27 +99,10 @@ public class RandomEventPlugin extends Plugin
 	@Inject
 	private RandomEventConfig config;
 
-	private boolean notifyAllEvents;
-	private boolean notifyDemon;
-	private boolean notifyForester;
-	private boolean notifyFrog;
-	private boolean notifyGenie;
-	private boolean notifyBob;
-	private boolean notifyGravedigger;
-	private boolean notifyMoM;
-	private boolean notifyQuiz;
-	private boolean notifyDunce;
-
 	@Provides
 	RandomEventConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(RandomEventConfig.class);
-	}
-
-	@Override
-	protected void startUp()
-	{
-		updateConfig();
 	}
 
 	@Override
@@ -191,7 +173,7 @@ public class RandomEventPlugin extends Plugin
 
 	private boolean shouldNotify(int id)
 	{
-		if (this.notifyAllEvents)
+		if (config.notifyAllEvents())
 		{
 			return true;
 		}
@@ -199,55 +181,30 @@ public class RandomEventPlugin extends Plugin
 		switch (id)
 		{
 			case NpcID.SERGEANT_DAMIEN_6743:
-				return this.notifyDemon;
+				return config.notifyDemon();
 			case NpcID.FREAKY_FORESTER_6748:
-				return this.notifyForester;
+				return config.notifyForester();
 			case NpcID.FROG_5429:
-				return this.notifyFrog;
+				return config.notifyFrog();
 			case NpcID.GENIE:
 			case NpcID.GENIE_327:
-				return this.notifyGenie;
+				return config.notifyGenie();
 			case NpcID.EVIL_BOB:
 			case NpcID.EVIL_BOB_6754:
-				return this.notifyBob;
+				return config.notifyBob();
 			case NpcID.LEO_6746:
-				return this.notifyGravedigger;
+				return config.notifyGravedigger();
 			case NpcID.MYSTERIOUS_OLD_MAN_6750:
 			case NpcID.MYSTERIOUS_OLD_MAN_6751:
 			case NpcID.MYSTERIOUS_OLD_MAN_6752:
 			case NpcID.MYSTERIOUS_OLD_MAN_6753:
-				return this.notifyMoM;
+				return config.notifyMoM();
 			case NpcID.QUIZ_MASTER_6755:
-				return this.notifyQuiz;
+				return config.notifyQuiz();
 			case NpcID.DUNCE_6749:
-				return this.notifyDunce;
+				return config.notifyDunce();
 			default:
 				return false;
 		}
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!"randomevents".equals(event.getGroup()))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.notifyAllEvents = config.notifyAllEvents();
-		this.notifyDemon = config.notifyDemon();
-		this.notifyForester = config.notifyForester();
-		this.notifyFrog = config.notifyFrog();
-		this.notifyGenie = config.notifyGenie();
-		this.notifyBob = config.notifyBob();
-		this.notifyGravedigger = config.notifyGravedigger();
-		this.notifyMoM = config.notifyMoM();
-		this.notifyQuiz = config.notifyQuiz();
-		this.notifyDunce = config.notifyDunce();
 	}
 }

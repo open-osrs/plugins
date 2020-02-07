@@ -27,13 +27,7 @@ package net.runelite.client.plugins.inventorygrid;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import java.awt.Color;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -47,7 +41,6 @@ import org.pf4j.Extension;
 	tags = {"items", "overlay"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class InventoryGridPlugin extends Plugin
 {
 	@Inject
@@ -56,26 +49,9 @@ public class InventoryGridPlugin extends Plugin
 	@Inject
 	private OverlayManager overlayManager;
 
-	@Inject
-	private InventoryGridConfig config;
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showItem;
-	@Getter(AccessLevel.PACKAGE)
-	boolean showGrid;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showHighlight;
-	@Getter(AccessLevel.PACKAGE)
-	private int dragDelay;
-	@Getter(AccessLevel.PACKAGE)
-	private Color gridColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color highlightColor;
-
 	@Override
 	public void startUp()
 	{
-		updateConfig();
 		overlayManager.add(overlay);
 	}
 
@@ -89,24 +65,5 @@ public class InventoryGridPlugin extends Plugin
 	InventoryGridConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(InventoryGridConfig.class);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged config)
-	{
-		if (config.getGroup().equals("inventorygrid"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.showItem = config.showItem();
-		this.showGrid = config.showGrid();
-		this.showHighlight = config.showHighlight();
-		this.dragDelay = config.dragDelay();
-		this.gridColor = config.gridColor();
-		this.highlightColor = config.highlightColor();
 	}
 }

@@ -29,7 +29,6 @@ package net.runelite.client.plugins.zulrah;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -65,13 +64,12 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Zulrah",
+	name = "Zulrah Helper",
 	description = "Shows tiles on where to stand during the phases and what prayer to use.",
 	tags = {"zulrah", "boss", "helper"},
 	type = PluginType.PVM
 )
 @Slf4j
-@Singleton
 public class ZulrahPlugin extends Plugin
 {
 	private static final ZulrahPattern[] patterns = new ZulrahPattern[]
@@ -120,7 +118,6 @@ public class ZulrahPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		overlayManager.add(currentPhaseOverlay);
 		overlayManager.add(nextPhaseOverlay);
 		overlayManager.add(zulrahPrayerOverlay);

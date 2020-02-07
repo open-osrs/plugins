@@ -28,7 +28,6 @@ package net.runelite.client.plugins.tobdamagecount;
 import java.text.DecimalFormat;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -61,7 +60,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "npcs", "tob", "damage"},
 	type = PluginType.PVM
 )
-@Singleton
 public class DamageCounterPlugin extends Plugin
 {
 	//formatting the number for damage taken and dealt with to look beeter

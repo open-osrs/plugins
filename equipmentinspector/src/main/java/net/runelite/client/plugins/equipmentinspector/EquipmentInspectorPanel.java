@@ -31,7 +31,6 @@ import java.awt.GridBagLayout;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -39,7 +38,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemDefinition;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.game.ItemManager;
@@ -47,8 +45,6 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.AsyncBufferedImage;
 
-@Slf4j
-@Singleton
 class EquipmentInspectorPanel extends PluginPanel
 {
 	private final static String NO_PLAYER_SELECTED = "No player selected";

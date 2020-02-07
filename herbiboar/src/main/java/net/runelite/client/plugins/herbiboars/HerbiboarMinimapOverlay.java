@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.herbiboars;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Set;
@@ -37,28 +36,30 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
 public class HerbiboarMinimapOverlay extends Overlay
 {
 	private final HerbiboarPlugin plugin;
+	private final HerbiboarConfig config;
 
 	@Inject
-	public HerbiboarMinimapOverlay(final HerbiboarPlugin plugin)
+	public HerbiboarMinimapOverlay(final HerbiboarPlugin plugin, final HerbiboarConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
+
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isTrailShown() && plugin.isInHerbiboarArea())
+		if (config.isTrailShown() && plugin.isInHerbiboarArea())
 		{
 			HerbiboarTrail currentTrail = plugin.getCurrentTrail();
 			int finishId = plugin.getFinishId();
 			Set<Integer> shownTrailIds;
-			if (plugin.isOnlyCurrentTrailShown())
+			if (config.isOnlyCurrentTrailShown())
 			{
 				shownTrailIds = plugin.getCurrentTrailIds();
 			}
@@ -79,7 +80,7 @@ public class HerbiboarMinimapOverlay extends Overlay
 
 				if (shownTrailIds.contains(id) && (finishId > 0 || (currentTrail != null && currentTrail.getTrailId() != id && currentTrail.getTrailId() + 1 != id)))
 				{
-					OverlayUtil.renderMinimapLocation(graphics, minimapLocation, plugin.getGetTrailColor());
+					OverlayUtil.renderMinimapLocation(graphics, minimapLocation, config.getTrailColor());
 				}
 			}
 		}

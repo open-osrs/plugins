@@ -53,14 +53,16 @@ public class ImplingsOverlay extends Overlay
 {
 	private final Client client;
 	private final ImplingsPlugin plugin;
+	private final ImplingsConfig config;
 
 	@Inject
-	private ImplingsOverlay(final Client client, final ImplingsPlugin plugin)
+	private ImplingsOverlay(final Client client, final ImplingsPlugin plugin, final ImplingsConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -85,7 +87,7 @@ public class ImplingsOverlay extends Overlay
 		}
 
 		//Draw static spawns
-		if (plugin.isShowSpawn())
+		if (config.showSpawn())
 		{
 			for (ImplingSpawn spawn : ImplingSpawn.values())
 			{
@@ -95,14 +97,14 @@ public class ImplingsOverlay extends Overlay
 				}
 
 				String impName = spawn.getType().getName();
-				drawSpawn(graphics, spawn.getSpawnLocation(), impName, plugin.getGetSpawnColor());
+				drawSpawn(graphics, spawn.getSpawnLocation(), impName, config.getSpawnColor());
 			}
 
 			//Draw dynamic spawns
 			Map<Integer, String> dynamicSpawns = plugin.getDynamicSpawns();
 			for (Map.Entry<Integer, String> dynamicSpawn : dynamicSpawns.entrySet())
 			{
-				drawDynamicSpawn(graphics, dynamicSpawn.getKey(), dynamicSpawn.getValue(), plugin.getGetDynamicSpawnColor());
+				drawDynamicSpawn(graphics, dynamicSpawn.getKey(), dynamicSpawn.getValue(), config.getDynamicSpawnColor());
 
 			}
 		}

@@ -50,13 +50,15 @@ class BlastFurnaceClickBoxOverlay extends Overlay
 
 	private final Client client;
 	private final BlastFurnacePlugin plugin;
+	private final BlastFurnaceConfig config;
 
 	@Inject
-	private BlastFurnaceClickBoxOverlay(final Client client, final BlastFurnacePlugin plugin)
+	private BlastFurnaceClickBoxOverlay(final Client client, final BlastFurnacePlugin plugin, final BlastFurnaceConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -64,13 +66,13 @@ class BlastFurnaceClickBoxOverlay extends Overlay
 	{
 		int dispenserState = client.getVar(Varbits.BAR_DISPENSER);
 
-		if (plugin.isShowConveyorBelt() && plugin.getConveyorBelt() != null)
+		if (config.showConveyorBelt() && plugin.getConveyorBelt() != null)
 		{
 			Color color = dispenserState == 1 ? Color.RED : Color.GREEN;
 			renderObject(plugin.getConveyorBelt(), graphics, color);
 		}
 
-		if (plugin.isShowBarDispenser() && plugin.getBarDispenser() != null)
+		if (config.showBarDispenser() && plugin.getBarDispenser() != null)
 		{
 			boolean hasIceGloves = hasIceGloves();
 			Color color = dispenserState == 2 && hasIceGloves ? Color.GREEN : (dispenserState == 3 ? Color.GREEN : Color.RED);

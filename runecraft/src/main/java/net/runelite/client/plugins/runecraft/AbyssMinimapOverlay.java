@@ -46,22 +46,24 @@ class AbyssMinimapOverlay extends Overlay
 	private final Map<AbyssRifts, BufferedImage> abyssIcons = new HashMap<>();
 	private final Client client;
 	private final RunecraftPlugin plugin;
+	private final RunecraftConfig config;
 	private final ItemManager itemManager;
 
 	@Inject
-	AbyssMinimapOverlay(Client client, RunecraftPlugin plugin, ItemManager itemManager)
+	AbyssMinimapOverlay(Client client, RunecraftPlugin plugin, RunecraftConfig config, ItemManager itemManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.itemManager = itemManager;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isShowRifts())
+		if (!config.showRifts())
 		{
 			return null;
 		}

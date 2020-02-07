@@ -234,11 +234,36 @@ public interface EntityHiderConfig extends Config
 		return "";
 	}
 
+	@ConfigItem(
+		position = 18,
+		keyName = "blacklistDeadNpcs",
+		name = "Hide on Death Blacklist",
+		description = "Configures which NPCs NOT to hide when they die",
+		titleSection = "npcsTitle",
+		hidden = true,
+		unhide = "hideDeadNPCs"
+	)
+	default String blacklistDeadNpcs()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		position = 19,
+		keyName = "hidePets",
+		name = "Hide Pets",
+		description = "Configures whether or not other player pets are hidden"
+	)
+	default boolean hidePets()
+	{
+		return false;
+	}
+
 	@ConfigTitleSection(
 		keyName = "miscTitle",
 		name = "Miscellaneous",
 		description = "",
-		position = 18
+		position = 20
 	)
 	default Title miscTitle()
 	{
@@ -246,7 +271,7 @@ public interface EntityHiderConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 19,
+		position = 21,
 		keyName = "hideProjectiles",
 		name = "Hide Projectiles",
 		description = "Configures whether or not projectiles are hidden",

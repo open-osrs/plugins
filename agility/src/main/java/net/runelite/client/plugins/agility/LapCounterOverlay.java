@@ -43,16 +43,18 @@ import net.runelite.client.ui.overlay.components.table.TableComponent;
 @Singleton
 class LapCounterOverlay extends Overlay
 {
+	private final AgilityConfig config;
 	private final AgilityPlugin plugin;
 
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	private LapCounterOverlay(final AgilityPlugin plugin)
+	private LapCounterOverlay(final AgilityConfig config, final AgilityPlugin plugin)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		setPriority(OverlayPriority.LOW);
+		this.config = config;
 		this.plugin = plugin;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Agility overlay"));
 	}
@@ -62,7 +64,7 @@ class LapCounterOverlay extends Overlay
 	{
 		AgilitySession session = plugin.getSession();
 
-		if (!plugin.isShowLapCount() ||
+		if (!config.showLapCount() ||
 			session == null ||
 			session.getLastLapCompleted() == null ||
 			session.getCourse() == null)
@@ -70,7 +72,7 @@ class LapCounterOverlay extends Overlay
 			return null;
 		}
 
-		Duration lapTimeout = Duration.ofMinutes(plugin.getLapTimeout());
+		Duration lapTimeout = Duration.ofMinutes(config.lapTimeout());
 		Duration sinceLap = Duration.between(session.getLastLapCompleted(), Instant.now());
 
 		if (sinceLap.compareTo(lapTimeout) >= 0)
@@ -85,12 +87,12 @@ class LapCounterOverlay extends Overlay
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 		tableComponent.addRow("Total Laps:", Integer.toString(session.getTotalLaps()));
 
-		if (plugin.isLapsToLevel() && session.getLapsTillLevel() > 0)
+		if (config.lapsToLevel() && session.getLapsTillLevel() > 0)
 		{
 			tableComponent.addRow("Laps until level:", Integer.toString(session.getLapsTillLevel()));
 		}
 
-		if (plugin.isLapsToGoal() && session.getLapsTillGoal() > 0)
+		if (config.lapsToGoal() && session.getLapsTillGoal() > 0)
 		{
 			tableComponent.addRow("Laps until goal:", Integer.toString(session.getLapsTillGoal()));
 		}

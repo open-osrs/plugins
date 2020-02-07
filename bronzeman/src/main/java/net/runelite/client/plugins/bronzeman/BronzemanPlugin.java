@@ -1,38 +1,50 @@
 package net.runelite.client.plugins.bronzeman;
 
+import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.Player;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.RuneLite;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
 
 /**
@@ -43,13 +55,22 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Bronze Man Mode",
-	description = "Restrict yourself as an Iron Meme with GE use for items you have unlocked",
+	description = "Restrict yourself as an Iron Meme with GE use for items you have unlocked.",
 	tags = {"Bronze", "pve", "restrict", "game", "challenge", "bronzeman", "ironman"},
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.GAMEMODE
 )
-@Slf4j
 public class BronzemanPlugin extends Plugin
 {
+	private static final String BACKUP_CHAT_COMMAND = "!backupunlocks";
+	private static final String COUNT_CHAT_COMMAND = "!countunlocks";
+	private static final String DELETE_CHAT_COMMAND = "!deleteunlocks";
+	private static final String RESET_CHAT_COMMAND = "!resetunlocks";
+	private static final String RESTORE_CHAT_COMMAND = "!restoreunlocks";
+
+	private final BufferedImage UNLOCK_IMAGE = ImageUtil.getResourceStreamFromClass(getClass(), "item_unlocked.png");
+
+	@Inject
+	ItemManager itemManager;
 
 	@Inject
 	private Client client;
@@ -58,24 +79,42 @@ public class BronzemanPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
+	private BronzeManConfig config;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
+
+	@Inject
 	private BronzeManOverlay bronzemanOverlay;
 
 	private List<Integer> unlockedItems;
-
 	@Getter(AccessLevel.PACKAGE)
 	private BufferedImage unlockImage = null;
+
 	/**
 	 * Loads GrandExchange widgets for further manipulation of the interface
 	 **/
 	private Widget grandExchangeWindow;
 	private Widget grandExchangeChatBox;
 
+	@Provides
+	BronzeManConfig getConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(BronzeManConfig.class);
+	}
+
 	@Override
 	protected void startUp()
 	{
-		loadUnlockImage();
+		/**
+		 * Downloads the item-unlock png file to display unlocks
+		 **/
+		unlockImage = UNLOCK_IMAGE;
+
 		unlockedItems = new ArrayList<>();
 		overlayManager.add(bronzemanOverlay);
+
+		loadPlayerUnlocks();
 	}
 
 	@Override
@@ -143,7 +182,7 @@ public class BronzemanPlugin extends Plugin
 	 * Handles greying out items in the GrandExchange
 	 **/
 	@Subscribe
-	public void onGameTick(GameTick e)
+	public void onClientTick(ClientTick e)
 	{
 		if (grandExchangeWindow == null || grandExchangeChatBox == null || grandExchangeWindow.isHidden())
 		{
@@ -183,8 +222,18 @@ public class BronzemanPlugin extends Plugin
 	private void queueItemUnlock(int itemId)
 	{
 		unlockedItems.add(itemId);
-		bronzemanOverlay.addItemUnlock(itemId);
 		savePlayerUnlocks();// Save after every item to fail-safe logging out
+		if (config.notifyChatUnlock())
+		{
+			sendMessage("You have successfully unlocked item: " + itemManager.getItemDefinition(itemId).getName());
+		}
+
+		if (!config.notifyImgUnlock())
+		{
+			return;
+		}
+		bronzemanOverlay.addItemUnlock(itemId);
+
 	}
 
 	/**
@@ -194,6 +243,7 @@ public class BronzemanPlugin extends Plugin
 	{
 		queueItemUnlock(ItemID.COINS_995);
 		queueItemUnlock(ItemID.OLD_SCHOOL_BOND);
+		queueItemUnlock(ItemID.PLATINUM_TOKEN);
 	}
 
 	/**
@@ -219,7 +269,7 @@ public class BronzemanPlugin extends Plugin
 	}
 
 	/**
-	 * Loads a players unlcoks everytime they login
+	 * Loads a players unlocks everytime they login
 	 **/
 	private void loadPlayerUnlocks()
 	{
@@ -254,25 +304,158 @@ public class BronzemanPlugin extends Plugin
 		}
 	}
 
-	/**
-	 * Downloads the item-unlock png file to display unlocks
-	 **/
-	private void loadUnlockImage()
+
+	@Subscribe
+	public void onChatMessage(ChatMessage chatMessage)
 	{
+		if (config.countCommand() && chatMessage.getMessage().toLowerCase().equals(COUNT_CHAT_COMMAND))
+		{
+			sendMessage("You have successfully unlocked " + unlockedItems.size() + " items.");
+		}
+		if (config.resetCommand() && chatMessage.getMessage().toLowerCase().equals(RESET_CHAT_COMMAND))
+		{
+			resetUnlocks();
+		}
+		if (config.backupCommand() && chatMessage.getMessage().toLowerCase().equals(BACKUP_CHAT_COMMAND))
+		{
+			backupUnlocks();
+		}
+		if (config.deleteCommand() && chatMessage.getMessage().toLowerCase().equals(DELETE_CHAT_COMMAND))
+		{
+			deleteUnlocks();
+		}
+		if (config.restoreCommand() && chatMessage.getMessage().toLowerCase().equals(RESTORE_CHAT_COMMAND))
+		{
+			restoreUnlocks();
+		}
+	}
+
+	private void backupUnlocks()
+	{
+		File playerFolder = new File(RuneLite.PROFILES_DIR, client.getUsername());
+		if (!playerFolder.exists())
+		{
+			return;
+		}
+		File playerFile = new File(playerFolder, "bronzeman-unlocks.txt");
+		if (!playerFile.exists())
+		{
+			return;
+		}
+
+		Path originalPath = playerFile.toPath();
 		try
 		{
-			File imageFile = new File(RuneLite.RUNELITE_DIR, "item-unlocked.png");
-			if (!imageFile.exists())
-			{
-				InputStream in = new URL("https://i.imgur.com/KWVNlsq.png").openStream();
-				Files.copy(in, Paths.get(imageFile.getPath()));
-			}
-			unlockImage = ImageIO.read(imageFile);
+			Files.copy(originalPath, Paths.get(playerFile.getPath().replace(".txt", ".backup")),
+				StandardCopyOption.REPLACE_EXISTING);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			return;
 		}
+		sendMessage("Successfully backed up current unlock file!");
+	}
+
+	private void restoreUnlocks()
+	{
+		File playerFolder = new File(RuneLite.PROFILES_DIR, client.getUsername());
+		if (!playerFolder.exists())
+		{
+			return;
+		}
+		File playerFile = new File(playerFolder, "bronzeman-unlocks.backup");
+		if (!playerFile.exists())
+		{
+			return;
+		}
+
+		Path originalPath = playerFile.toPath();
+		try
+		{
+			Files.copy(originalPath, Paths.get(playerFile.getPath().replace(".backup", ".txt")),
+				StandardCopyOption.REPLACE_EXISTING);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+		sendMessage("Successfully restored current unlock file!");
+	}
+
+	private void resetUnlocks()
+	{
+		try
+		{
+			File playerFolder = new File(RuneLite.PROFILES_DIR, client.getUsername());
+			File playerFile = new File(playerFolder, "bronzeman-unlocks.txt");
+			playerFile.delete();
+			unlockedItems.clear();
+			savePlayerUnlocks();
+			unlockDefaultItems();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+		sendMessage("Current Unlock file succesfully reset!");
+	}
+
+	private void deleteUnlocks()
+	{
+		backupUnlocks();
+		try
+		{
+			File playerFolder = new File(RuneLite.PROFILES_DIR, client.getUsername());
+			File playerFile = new File(playerFolder, "bronzeman-unlocks.txt");
+			playerFile.delete();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+		sendMessage("Current Unlock file succesfully deleted!");
+	}
+
+	@Subscribe
+	private void onMenuOpened(MenuOpened event)
+	{
+		Player localPlayer = client.getLocalPlayer();
+
+		if (localPlayer == null)
+		{
+			return;
+		}
+
+		List<MenuEntry> menu_entries = new ArrayList<>();
+
+		for (MenuEntry entry : event.getMenuEntries())
+		{
+			String option = Text.removeTags(entry.getOption()).toLowerCase();
+
+			if (option.contains("trade with") && config.hideTradeOption())
+			{
+				continue;
+			}
+			menu_entries.add(entry);
+		}
+		event.setMenuEntries(menu_entries.toArray(new MenuEntry[0]));
+		event.setModified();
+	}
+
+	private void sendMessage(String text)
+	{
+		final ChatMessageBuilder message = new ChatMessageBuilder()
+			.append(ChatColorType.HIGHLIGHT)
+			.append(text);
+
+		chatMessageManager.queue(QueuedMessage.builder()
+			.type(ChatMessageType.CONSOLE)
+			.runeLiteFormattedMessage(message.build())
+			.build());
 	}
 
 }

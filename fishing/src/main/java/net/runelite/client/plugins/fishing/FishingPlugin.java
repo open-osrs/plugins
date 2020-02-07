@@ -27,7 +27,6 @@ package net.runelite.client.plugins.fishing;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +64,6 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -86,7 +83,6 @@ import org.pf4j.Extension;
 	type = PluginType.SKILLING
 )
 @PluginDependency(XpTrackerPlugin.class)
-@Singleton
 @Slf4j
 public class FishingPlugin extends Plugin
 {
@@ -147,33 +143,9 @@ public class FishingPlugin extends Plugin
 		return configManager.getConfig(FishingConfig.class);
 	}
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean onlyCurrentSpot;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSpotTiles;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSpotIcons;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSpotNames;
-	private int statTimeout;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showFishingStats;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showMinnowOverlay;
-	private boolean trawlerNotification;
-	private boolean trawlerTimer;
-	@Getter(AccessLevel.PACKAGE)
-	private Color overlayColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color minnowsOverlayColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color aerialOverlayColor;
-
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlayManager.add(spotOverlay);
 		overlayManager.add(fishingSpotMinimapOverlay);
@@ -204,17 +176,6 @@ public class FishingPlugin extends Plugin
 		{
 			session.setLastFishCaught(null);
 		}
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("fishing"))
-		{
-			return;
-		}
-
-		updateConfig();
 	}
 
 	@Subscribe
@@ -309,7 +270,7 @@ public class FishingPlugin extends Plugin
 		// Reset fishing session
 		if (session.getLastFishCaught() != null)
 		{
-			final Duration statTimeout = Duration.ofMinutes(this.statTimeout);
+			final Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 			final Duration sinceCaught = Duration.between(session.getLastFishCaught(), Instant.now());
 
 			if (sinceCaught.compareTo(statTimeout) >= 0)
@@ -323,7 +284,7 @@ public class FishingPlugin extends Plugin
 
 		for (NPC npc : fishingSpots)
 		{
-			if (FishingSpot.findSpot(npc.getId()) == FishingSpot.MINNOW && this.showMinnowOverlay)
+			if (FishingSpot.findSpot(npc.getId()) == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
 				final int id = npc.getIndex();
 				final MinnowSpot minnowSpot = minnowSpots.get(id);
@@ -338,7 +299,7 @@ public class FishingPlugin extends Plugin
 			}
 		}
 
-		if (this.trawlerTimer)
+		if (config.trawlerTimer())
 		{
 			updateTrawlerTimer();
 		}
@@ -375,7 +336,7 @@ public class FishingPlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged event)
 	{
-		if (!this.trawlerNotification || client.getGameState() != GameState.LOGGED_IN)
+		if (!config.trawlerNotification() || client.getGameState() != GameState.LOGGED_IN)
 		{
 			return;
 		}
@@ -481,21 +442,5 @@ public class FishingPlugin extends Plugin
 				// And then by id
 				.thenComparing(NPC::getId)
 		);
-	}
-
-	private void updateConfig()
-	{
-		this.onlyCurrentSpot = config.onlyCurrentSpot();
-		this.showSpotTiles = config.showSpotTiles();
-		this.showSpotIcons = config.showSpotIcons();
-		this.showSpotNames = config.showSpotNames();
-		this.statTimeout = config.statTimeout();
-		this.showFishingStats = config.showFishingStats();
-		this.showMinnowOverlay = config.showMinnowOverlay();
-		this.trawlerNotification = config.trawlerNotification();
-		this.trawlerTimer = config.trawlerTimer();
-		this.overlayColor = config.getOverlayColor();
-		this.minnowsOverlayColor = config.getMinnowsOverlayColor();
-		this.aerialOverlayColor = config.getAerialOverlayColor();
 	}
 }

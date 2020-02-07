@@ -28,6 +28,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
+import net.runelite.client.config.Units;
 
 @ConfigGroup(FpsPlugin.CONFIG_GROUP_KEY)
 public interface FpsConfig extends Config
@@ -54,15 +55,12 @@ public interface FpsConfig extends Config
 		description = "Desired max global frames per second",
 		position = 2
 	)
+	@Units(Units.FPS)
 	default int maxFps()
 	{
 		return 50;
 	}
 
-	@Range(
-		min = 1,
-		max = 50
-	)
 	@ConfigItem(
 		keyName = "limitFpsUnfocused",
 		name = "Limit FPS unfocused",
@@ -74,12 +72,17 @@ public interface FpsConfig extends Config
 		return false;
 	}
 
+	@Range(
+		min = 1,
+		max = 50
+	)
 	@ConfigItem(
 		keyName = "maxFpsUnfocused",
 		name = "Unfocused FPS target",
 		description = "Desired max frames per second for unfocused",
 		position = 4
 	)
+	@Units(Units.FPS)
 	default int maxFpsUnfocused()
 	{
 		return 50;

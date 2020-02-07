@@ -210,7 +210,7 @@ public class AttackStylesPluginTest
 		hideWidgetEvent.setKey("removeWarnedStyles");
 		hideWidgetEvent.setNewValue("true");
 		attackPlugin.onConfigChanged(hideWidgetEvent);
-		attackPlugin.removeWarnedStyles = true;
+		when(attackConfig.removeWarnedStyles()).thenReturn(true);
 
 		// equip bludgeon on player
 		when(client.getVar(Varbits.EQUIPPED_WEAPON_TYPE)).thenReturn(WeaponType.TYPE_26.ordinal());

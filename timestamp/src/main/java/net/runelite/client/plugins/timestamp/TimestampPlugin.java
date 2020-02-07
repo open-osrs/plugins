@@ -33,7 +33,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -54,9 +53,8 @@ import org.pf4j.Extension;
 	name = "Chat Timestamps",
 	description = "Add timestamps to chat messages",
 	tags = {"timestamp"},
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.UTILITY
 )
-@Singleton
 public class TimestampPlugin extends Plugin
 {
 	@Inject

@@ -33,7 +33,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -75,7 +74,6 @@ import org.pf4j.Extension;
 	tags = {"arrow", "hints", "world", "map", "overlay"},
 	type = PluginType.UTILITY
 )
-@Singleton
 @Slf4j
 public class DeathIndicatorPlugin extends Plugin
 {

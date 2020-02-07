@@ -28,12 +28,10 @@ package net.runelite.client.plugins.raids;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -80,6 +78,7 @@ public class RaidsOverlay extends Overlay
 	private final PanelComponent panelImages = new PanelComponent();
 	private final Client client;
 	private final RaidsPlugin plugin;
+	private final RaidsConfig config;
 	@Setter(AccessLevel.PACKAGE)
 	private boolean sharable = false;
 	@Getter(AccessLevel.PACKAGE)
@@ -93,13 +92,14 @@ public class RaidsOverlay extends Overlay
 	private int height;
 
 	@Inject
-	private RaidsOverlay(final Client client, final RaidsPlugin plugin, final ItemManager itemManager, final SpriteManager spriteManager)
+	private RaidsOverlay(final Client client, final RaidsPlugin plugin, final RaidsConfig config, final ItemManager itemManager, final SpriteManager spriteManager)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		setPriority(OverlayPriority.LOW);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.itemManager = itemManager;
 		this.spriteManager = spriteManager;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Raids overlay"));
@@ -109,7 +109,7 @@ public class RaidsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isScoutOverlay() || !scoutOverlayShown || plugin.isInRaidChambers() && client.getPlane() == OLM_PLANE)
+		if (!config.scoutOverlay() || !scoutOverlayShown || plugin.isInRaidChambers() && client.getPlane() == OLM_PLANE)
 		{
 			return null;
 		}
@@ -117,7 +117,7 @@ public class RaidsOverlay extends Overlay
 		scouterActive = false;
 		panelComponent.getChildren().clear();
 
-		if (plugin.isHideBackground())
+		if (config.hideBackground())
 		{
 			panelComponent.setBackgroundColor(null);
 		}
@@ -139,7 +139,7 @@ public class RaidsOverlay extends Overlay
 		Color color = Color.WHITE;
 		String layout = plugin.getRaid().getLayout().toCodeString();
 		String displayLayout;
-		if (plugin.isDisplayFloorBreak())
+		if (config.displayFloorBreak())
 		{
 			displayLayout = plugin.getRaid().getLayout().toCode();
 			displayLayout = displayLayout.substring(0, displayLayout.length() - 1).replaceAll("#", "").replaceFirst("¤", " | ");
@@ -149,7 +149,7 @@ public class RaidsOverlay extends Overlay
 			displayLayout = layout;
 		}
 
-		if (plugin.isEnableLayoutWhitelist() && !plugin.getLayoutWhitelist().contains(layout.toLowerCase()))
+		if (config.enableLayoutWhitelist() && !plugin.getLayoutWhitelist().contains(layout.toLowerCase()))
 		{
 			color = Color.RED;
 		}
@@ -164,6 +164,7 @@ public class RaidsOverlay extends Overlay
 		boolean thieving = false;
 		boolean vanguards = false;
 		boolean unknownCombat = false;
+		boolean unknownPuzzle = false;
 		String puzzles = "";
 		String roomName;
 		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
@@ -180,20 +181,18 @@ public class RaidsOverlay extends Overlay
 			{
 				case COMBAT:
 					combatCount++;
-					roomName = room.getBoss().getName();
-					switch (Objects.requireNonNull(RaidRoom.Boss.fromString(roomName)))
+					switch (room)
 					{
 						case VANGUARDS:
 							vanguards = true;
 							break;
-						case UNKNOWN:
+						case UNKNOWN_COMBAT:
 							unknownCombat = true;
 							break;
 					}
 					break;
 				case PUZZLE:
-					roomName = room.getPuzzle().getName();
-					switch (Objects.requireNonNull(RaidRoom.Puzzle.fromString(roomName)))
+					switch (room)
 					{
 						case CRABS:
 							crabs = true;
@@ -208,6 +207,9 @@ public class RaidsOverlay extends Overlay
 						case TIGHTROPE:
 							tightrope = true;
 							break;
+						case UNKNOWN_PUZZLE:
+							unknownPuzzle = true;
+							break;
 					}
 					break;
 				case SCAVENGERS:
@@ -221,7 +223,7 @@ public class RaidsOverlay extends Overlay
 			puzzles = crabs ? "cr" : iceDemon ? "ri" : thieving ? "tr" : "?r";
 		}
 
-		if ((plugin.isHideVanguards() && vanguards) || (plugin.isHideRopeless() && !tightrope) || (plugin.isHideUnknownCombat() && unknownCombat))
+		if ((config.hideVanguards() && vanguards) || (config.hideRopeless() && !tightrope) || (config.hideUnknownCombat() && unknownCombat))
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Bad Raid!")
@@ -232,7 +234,7 @@ public class RaidsOverlay extends Overlay
 		}
 
 		scouterActive = true;
-		displayLayout = (plugin.isEnhanceScouterTitle() ? "" + combatCount + "c " + puzzles + " " : "") + displayLayout;
+		displayLayout = (config.enhanceScouterTitle() ? "" + combatCount + "c " + puzzles + " " : "") + displayLayout;
 
 		for (Integer i : iceRooms)
 		{
@@ -264,7 +266,7 @@ public class RaidsOverlay extends Overlay
 		}
 		else
 		{
-			if (plugin.isHideBackground())
+			if (config.hideBackground())
 			{
 				panelComponent.setBackgroundColor(null);
 			}
@@ -276,9 +278,8 @@ public class RaidsOverlay extends Overlay
 
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
-
 		color = Color.ORANGE;
-		if (sharable || plugin.isAlwaysShowWorldAndCC())
+		if (sharable || config.alwaysShowWorldAndCC())
 		{
 			String clanOwner = Text.removeTags(client.getWidget(WidgetInfo.CLAN_CHAT_OWNER).getText());
 			if (clanOwner.equals("None"))
@@ -294,7 +295,7 @@ public class RaidsOverlay extends Overlay
 		int bossCount = 0;
 		roomCount = 0;
 
-		if (plugin.isEnableRotationWhitelist())
+		if (config.enableRotationWhitelist())
 		{
 			bossMatches = plugin.getRotationMatches();
 		}
@@ -316,29 +317,33 @@ public class RaidsOverlay extends Overlay
 			{
 				case COMBAT:
 					bossCount++;
-					if (plugin.getRoomWhitelist().contains(room.getBoss().getName().toLowerCase()))
+					if (plugin.getRoomWhitelist().contains(room.getName().toLowerCase()))
 					{
 						color = Color.GREEN;
 					}
-					else if (plugin.getRoomBlacklist().contains(room.getBoss().getName().toLowerCase())
-						|| plugin.isEnableRotationWhitelist() && bossCount > bossMatches)
+					else if (plugin.getRoomBlacklist().contains(room.getName().toLowerCase())
+						|| config.enableRotationWhitelist() && bossCount > bossMatches)
 					{
 						color = Color.RED;
 					}
 
-					String bossName = room.getBoss().getName();
+					String bossName = room.getName();
 					String bossNameLC = bossName.toLowerCase();
-					if (plugin.isShowRecommendedItems() && plugin.getRecommendedItemsList().get(bossNameLC) != null)
+					if (config.showRecommendedItems() && plugin.getRecommendedItemsList().get(bossNameLC) != null)
 					{
 						imageIds.addAll(plugin.getRecommendedItemsList().get(bossNameLC));
 					}
 
-					tableComponent.addRow(plugin.isShowRecommendedItems() ? "" : room.getType().getName(), ColorUtil.prependColorTag(bossName, color));
+					if (bossNameLC.startsWith("unknown"))
+					{
+						bossName = "Unknown";
+					}
+					tableComponent.addRow(room.getType().getName(), ColorUtil.prependColorTag(bossName, color));
 
 					break;
 
 				case PUZZLE:
-					String puzzleName = room.getPuzzle().getName();
+					String puzzleName = room.getName();
 					String puzzleNameLC = puzzleName.toLowerCase();
 					if (plugin.getRecommendedItemsList().get(puzzleNameLC) != null)
 					{
@@ -352,11 +357,11 @@ public class RaidsOverlay extends Overlay
 					{
 						color = Color.RED;
 					}
-					if (plugin.isColorTightrope() && puzzleNameLC.equals("tightrope"))
+					if (config.colorTightrope() && puzzleNameLC.equals("tightrope"))
 					{
-						color = plugin.getTightropeColor();
+						color = config.tightropeColor();
 					}
-					if (plugin.isCrabHandler() && puzzleNameLC.equals("crabs"))
+					if (config.crabHandler() && puzzleNameLC.equals("crabs"))
 					{
 						if (plugin.getGoodCrabs() == null)
 						{
@@ -367,33 +372,38 @@ public class RaidsOverlay extends Overlay
 							switch (plugin.getGoodCrabs())
 							{
 								case "Good Crabs":
-									color = plugin.getGoodCrabColor();
+									color = config.goodCrabColor();
 									break;
 								case "Rare Crabs":
-									color = plugin.getRareCrabColor();
+									color = config.rareCrabColor();
 									break;
 							}
 						}
 					}
 
-					tableComponent.addRow(plugin.isShowRecommendedItems() ? "" : room.getType().getName(), ColorUtil.prependColorTag(puzzleName, color));
+					if (puzzleNameLC.startsWith("unknown"))
+					{
+						puzzleName = "Unknown";
+					}
+
+					tableComponent.addRow(room.getType().getName(), ColorUtil.prependColorTag(puzzleName, color));
 					break;
 				case FARMING:
-					if (plugin.isShowScavsFarms())
+					if (config.showScavsFarms())
 					{
 						tableComponent.addRow("", ColorUtil.prependColorTag(room.getType().getName(), new Color(181, 230, 29)));
 					}
 					break;
 				case SCAVENGERS:
-					if (plugin.isScavsBeforeOlm() && roomCount == lastScavs)
+					if (config.scavsBeforeOlm() && roomCount == lastScavs)
 					{
-						tableComponent.addRow(plugin.isShowRecommendedItems() ? "" : "OlmPrep", ColorUtil.prependColorTag("Scavs", plugin.getScavPrepColor()));
+						tableComponent.addRow("OlmPrep", ColorUtil.prependColorTag("Scavs", config.scavPrepColor()));
 					}
-					else if (plugin.isScavsBeforeIce() && scavsBeforeIceRooms.contains(roomCount))
+					else if (config.scavsBeforeIce() && scavsBeforeIceRooms.contains(roomCount))
 					{
-						tableComponent.addRow(plugin.isShowRecommendedItems() ? "" : "IcePrep", ColorUtil.prependColorTag("Scavs", plugin.getScavPrepColor()));
+						tableComponent.addRow("IcePrep", ColorUtil.prependColorTag("Scavs", config.scavPrepColor()));
 					}
-					else if (plugin.isShowScavsFarms())
+					else if (config.showScavsFarms())
 					{
 						tableComponent.addRow("", ColorUtil.prependColorTag("Scavs", new Color(181, 230, 29)));
 					}
@@ -404,32 +414,21 @@ public class RaidsOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		Dimension panelDims = panelComponent.render(graphics);
-		width = (int) panelDims.getWidth();
-		height = (int) panelDims.getHeight();
 
 		//add recommended items
-		if (plugin.isShowRecommendedItems() && imageIds.size() > 0)
+		if (config.showRecommendedItems() && imageIds.size() > 0)
 		{
 			panelImages.getChildren().clear();
+
 			Integer[] idArray = imageIds.toArray(new Integer[0]);
-			int imagesVerticalOffset = TITLE_COMPONENT_HEIGHT + (sharable || plugin.isAlwaysShowWorldAndCC() ? LINE_COMPONENT_HEIGHT : 0) - BORDER_OFFSET;
-			int imagesMaxHeight = height - 2 * BORDER_OFFSET - TITLE_COMPONENT_HEIGHT - (sharable || plugin.isAlwaysShowWorldAndCC() ? LINE_COMPONENT_HEIGHT : 0);
 			boolean smallImages = false;
 
-			panelImages.setPreferredLocation(new Point(0, imagesVerticalOffset));
 			panelImages.setBackgroundColor(null);
-			if (2 * (imagesMaxHeight / ICON_SIZE) >= idArray.length)
-			{
-				panelImages.setWrapping(2);
-			}
-			else
-			{
-				panelImages.setWrapping(3);
-				smallImages = true;
-			}
 
 			panelImages.setOrientation(ComponentOrientation.HORIZONTAL);
+			panelImages.setWrapping(4);
+
+
 			for (Integer e : idArray)
 			{
 				final BufferedImage image = getImage(e, smallImages);
@@ -438,9 +437,13 @@ public class RaidsOverlay extends Overlay
 					panelImages.getChildren().add(new ImageComponent(image));
 				}
 			}
-
-			panelImages.render(graphics);
+			panelComponent.getChildren().add(panelImages);
 		}
+
+
+		Dimension panelDims = panelComponent.render(graphics);
+		width = (int) panelDims.getWidth();
+		height = (int) panelDims.getHeight();
 		return panelDims;
 	}
 

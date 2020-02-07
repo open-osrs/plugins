@@ -37,19 +37,19 @@ import net.runelite.client.ui.overlay.WidgetItemOverlay;
 @Singleton
 public class MiningCoalBagOverlay extends WidgetItemOverlay
 {
-	private final MiningPlugin plugin;
+	private final MiningConfig config;
 
 	@Inject
-	MiningCoalBagOverlay(final MiningPlugin plugin)
+	MiningCoalBagOverlay(final MiningConfig config)
 	{
 		showOnInventory();
-		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem itemWidget)
 	{
-		if (!plugin.isShowCoalBagOverlay() || (itemId != ItemID.COAL_BAG && itemId != ItemID.COAL_BAG_12019))
+		if (!config.showCoalBagOverlay() || (itemId != ItemID.COAL_BAG && itemId != ItemID.COAL_BAG_12019))
 		{
 			return;
 		}
@@ -58,6 +58,6 @@ public class MiningCoalBagOverlay extends WidgetItemOverlay
 		graphics.setColor(Color.WHITE);
 		Point location = itemWidget.getCanvasLocation();
 
-		graphics.drawString(plugin.getAmountOfCoalInCoalBag() + "", location.getX(), location.getY() + 14);
+		graphics.drawString(config.amountOfCoalInCoalBag() + "", location.getX(), location.getY() + 14);
 	}
 }

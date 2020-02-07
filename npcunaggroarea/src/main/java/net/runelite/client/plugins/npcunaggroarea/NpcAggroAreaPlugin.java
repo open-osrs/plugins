@@ -27,7 +27,6 @@ package net.runelite.client.plugins.npcunaggroarea;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
@@ -38,7 +37,6 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -73,9 +71,8 @@ import org.pf4j.Extension;
 	name = "NPC Aggression Timer",
 	description = "Highlights the unaggressive area of NPCs nearby and timer until it becomes active",
 	tags = {"highlight", "lines", "unaggro", "aggro", "aggressive", "npcs", "area", "slayer"},
-	type = PluginType.PVM
+	type = PluginType.UTILITY
 )
-@Singleton
 public class NpcAggroAreaPlugin extends Plugin
 {
 	/*
@@ -134,18 +131,6 @@ public class NpcAggroAreaPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private AggressionTimer currentTimer;
 
-	private boolean alwaysActive;
-	private String configNpcNamePatterns;
-	private boolean showTimer;
-	private boolean showAreaLines;
-	@Getter(AccessLevel.PACKAGE)
-	private Color aggroAreaColor;
-	private boolean showNotWorkingOverlay;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean hideOverlayHint;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean sendNotification;
-
 	private WorldPoint lastPlayerLocation;
 	private WorldPoint previousUnknownCenter;
 	private boolean loggingIn;
@@ -162,16 +147,14 @@ public class NpcAggroAreaPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
-		if (this.showNotWorkingOverlay)
+		if (config.showNotWorkingOverlay())
 		{
 			overlayManager.add(notWorkingOverlay);
 			notWorkingOverlayShown = true;
 		}
 
-		npcNamePatterns = NAME_SPLITTER.splitToList(this.configNpcNamePatterns);
+		npcNamePatterns = NAME_SPLITTER.splitToList(config.npcNamePatterns());
 		recheckActive();
 	}
 
@@ -228,7 +211,7 @@ public class NpcAggroAreaPlugin extends Plugin
 	{
 		if (currentTimer != null)
 		{
-			currentTimer.setVisible(active && this.showTimer);
+			currentTimer.setVisible(active && config.showTimer());
 		}
 
 		calculateLinesToDisplay();
@@ -236,7 +219,7 @@ public class NpcAggroAreaPlugin extends Plugin
 
 	private void calculateLinesToDisplay()
 	{
-		if (!active || !this.showAreaLines)
+		if (!active || !config.showAreaLines())
 		{
 			Arrays.fill(linesToDisplay, null);
 			return;
@@ -266,7 +249,7 @@ public class NpcAggroAreaPlugin extends Plugin
 	{
 		removeTimer();
 		BufferedImage image = itemManager.getImage(ItemID.ENSOULED_DEMON_HEAD);
-		currentTimer = new AggressionTimer(duration, image, this, active && this.showTimer);
+		currentTimer = new AggressionTimer(duration, image, this, active && config.showTimer());
 		infoBoxManager.addInfoBox(currentTimer);
 		hasSentNotification = false;
 	}
@@ -342,14 +325,14 @@ public class NpcAggroAreaPlugin extends Plugin
 
 	private void recheckActive()
 	{
-		active = this.alwaysActive;
+		active = config.alwaysActive();
 		checkAreaNpcs(client.getCachedNPCs());
 	}
 
 	@Subscribe
 	private void onNpcSpawned(NpcSpawned event)
 	{
-		if (this.alwaysActive)
+		if (config.alwaysActive())
 		{
 			return;
 		}
@@ -405,8 +388,6 @@ public class NpcAggroAreaPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
 		String key = event.getKey();
 		switch (key)
 		{
@@ -416,7 +397,7 @@ public class NpcAggroAreaPlugin extends Plugin
 			case "npcUnaggroShowTimer":
 				if (currentTimer != null)
 				{
-					currentTimer.setVisible(active && this.showTimer);
+					currentTimer.setVisible(active && config.showTimer());
 				}
 				break;
 			case "npcUnaggroCollisionDetection":
@@ -424,7 +405,7 @@ public class NpcAggroAreaPlugin extends Plugin
 				calculateLinesToDisplay();
 				break;
 			case "npcUnaggroNames":
-				npcNamePatterns = NAME_SPLITTER.splitToList(this.configNpcNamePatterns);
+				npcNamePatterns = NAME_SPLITTER.splitToList(config.npcNamePatterns());
 				recheckActive();
 				break;
 			case "sendNotification":
@@ -522,7 +503,7 @@ public class NpcAggroAreaPlugin extends Plugin
 
 	void doNotification()
 	{
-		if (!this.sendNotification)
+		if (!config.sendNotification())
 		{
 			return;
 		}
@@ -535,17 +516,5 @@ public class NpcAggroAreaPlugin extends Plugin
 		final Player local = client.getLocalPlayer();
 		hasSentNotification = true;
 		notifier.notify("[" + local.getName() + "]'s aggression timer has run out!");
-	}
-
-	private void updateConfig()
-	{
-		this.alwaysActive = config.alwaysActive();
-		this.configNpcNamePatterns = config.npcNamePatterns();
-		this.showTimer = config.showTimer();
-		this.showAreaLines = config.showAreaLines();
-		this.aggroAreaColor = config.aggroAreaColor();
-		this.showNotWorkingOverlay = config.showNotWorkingOverlay();
-		this.hideOverlayHint = config.hideOverlayHint();
-		this.sendNotification = config.sendNotification();
 	}
 }

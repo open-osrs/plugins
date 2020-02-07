@@ -26,7 +26,6 @@ package net.runelite.client.plugins.ammo;
 
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.InventoryID;
@@ -50,7 +49,6 @@ import org.pf4j.Extension;
 	tags = {"bolts", "darts", "chinchompa", "equipment"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class AmmoPlugin extends Plugin
 {
 	@Inject

@@ -52,7 +52,6 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -104,10 +103,6 @@ public class CorpPlugin extends Plugin
 	@Inject
 	private CorpConfig config;
 
-	private boolean leftClickCore;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showDamage;
-
 	@Provides
 	CorpConfig getConfig(ConfigManager configManager)
 	{
@@ -117,8 +112,6 @@ public class CorpPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(corpOverlay);
 		overlayManager.add(coreOverlay);
 	}
@@ -238,7 +231,7 @@ public class CorpPlugin extends Plugin
 	private void onMenuEntryAdded(MenuEntryAdded event)
 	{
 		if (event.getOpcode() != NPC_SECOND_OPTION.getId()
-			|| !this.leftClickCore || !event.getOption().equals(ATTACK))
+			|| !config.leftClickCore() || !event.getOption().equals(ATTACK))
 		{
 			return;
 		}
@@ -252,20 +245,5 @@ public class CorpPlugin extends Plugin
 
 		event.setOpcode(NPC_SECOND_OPTION.getId() + MENU_ACTION_DEPRIORITIZE_OFFSET);
 		event.setModified();
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged configChanged)
-	{
-		if (configChanged.getGroup().equals("corp"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.leftClickCore = config.leftClickCore();
-		this.showDamage = config.showDamage();
 	}
 }

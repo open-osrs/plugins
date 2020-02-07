@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Actor;
@@ -60,10 +59,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ClanManager;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.friendtagging.FriendTaggingPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.PvPUtil;
@@ -78,8 +75,6 @@ import org.pf4j.Extension;
 	tags = {"highlight", "minimap", "overlay", "players", "pklite"},
 	type = PluginType.UTILITY
 )
-@PluginDependency(FriendTaggingPlugin.class)
-@Singleton
 @Getter(AccessLevel.PACKAGE)
 public class PlayerIndicatorsPlugin extends Plugin
 {
@@ -121,27 +116,6 @@ public class PlayerIndicatorsPlugin extends Plugin
 	@Getter(AccessLevel.NONE)
 	private EventBus eventBus;
 
-	private ClanMemberRank callerRank;
-	private PlayerIndicatorsPlugin.AgilityFormats agilityFormat;
-	private PlayerIndicatorsPlugin.MinimapSkullLocations skullLocation;
-	private String configCallers;
-	private boolean highlightCallerTargets;
-	private boolean highlightCallers;
-	private boolean highlightClan;
-	private boolean highlightFriends;
-	private boolean highlightOther;
-	private boolean highlightOwnPlayer;
-	private boolean highlightTargets;
-	private boolean highlightTeam;
-	private boolean playerSkull;
-	private boolean showAgilityLevel;
-	private boolean showClanRanks;
-	private boolean showCombatLevel;
-	private boolean targetRisk;
-	private boolean unchargedGlory;
-	private boolean useClanchatRanks;
-	private int agilityFirstThreshold;
-	private int agilitySecondThreshold;
 
 	@Provides
 	PlayerIndicatorsConfig provideConfig(ConfigManager configManager)
@@ -170,7 +144,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 	@Subscribe
 	private void onInteractingChanged(InteractingChanged event)
 	{
-		if (!this.highlightCallerTargets || event.getSource() == null || callers.isEmpty() || !isCaller(event.getSource()))
+		if (!config.callersTargets() || event.getSource() == null || callers.isEmpty() || !isCaller(event.getSource()))
 		{
 			return;
 		}
@@ -225,7 +199,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 	{
 		final Player player = event.getPlayer();
 
-		if (!this.showAgilityLevel || resultCache.containsKey(player.getName()))
+		if (!config.showAgilityLevel() || resultCache.containsKey(player.getName()))
 		{
 			return;
 		}
@@ -299,28 +273,28 @@ public class PlayerIndicatorsPlugin extends Plugin
 			int image2 = -1;
 			Color color = null;
 
-			if (this.highlightCallers && isCaller(player))
+			if (config.highlightCallers() && isCaller(player))
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.CALLER)).contains(PlayerIndicationLocation.MENU))
 				{
 					color = relationColorHashMap.get(PlayerRelation.CALLER);
 				}
 			}
-			else if (this.highlightCallerTargets && isPile(player))
+			else if (config.callersTargets() && isPile(player))
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.CALLER_TARGET)).contains(PlayerIndicationLocation.MENU))
 				{
 					color = relationColorHashMap.get(PlayerRelation.CALLER_TARGET);
 				}
 			}
-			else if (this.highlightFriends && client.isFriended(player.getName(), false))
+			else if (config.highlightFriends() && client.isFriended(player.getName(), false))
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.FRIEND)).contains(PlayerIndicationLocation.MENU))
 				{
 					color = relationColorHashMap.get(PlayerRelation.FRIEND);
 				}
 			}
-			else if (this.highlightClan && player.isClanMember())
+			else if (config.highlightClan() && player.isClanMember())
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.CLAN)).contains(PlayerIndicationLocation.MENU))
 				{
@@ -333,21 +307,21 @@ public class PlayerIndicatorsPlugin extends Plugin
 					image = clanManager.getIconNumber(rank);
 				}
 			}
-			else if (this.highlightTeam && player.getTeam() > 0 && (localPlayer != null ? localPlayer.getTeam() : -1) == player.getTeam())
+			else if (config.highlightTeamMembers() && player.getTeam() > 0 && (localPlayer != null ? localPlayer.getTeam() : -1) == player.getTeam())
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.TEAM)).contains(PlayerIndicationLocation.MENU))
 				{
 					color = relationColorHashMap.get(PlayerRelation.TEAM);
 				}
 			}
-			else if (this.highlightOther && !player.isClanMember() && !player.isFriend() && !PvPUtil.isAttackable(client, player))
+			else if (config.highlightOtherPlayers() && !player.isClanMember() && !player.isFriend() && !PvPUtil.isAttackable(client, player))
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.OTHER)).contains(PlayerIndicationLocation.MENU))
 				{
 					color = relationColorHashMap.get(PlayerRelation.OTHER);
 				}
 			}
-			else if (this.highlightTargets && !player.isClanMember() && !client.isFriended(player.getName(),
+			else if (config.highlightTargets() && !player.isClanMember() && !client.isFriended(player.getName(),
 				false) && PvPUtil.isAttackable(client, player))
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.TARGET)).contains(PlayerIndicationLocation.MENU))
@@ -357,7 +331,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 			}
 
 
-			if (this.playerSkull && !player.isClanMember() && player.getSkullIcon() != null)
+			if (config.playerSkull() && !player.isClanMember() && player.getSkullIcon() != null)
 			{
 				image2 = 35;
 			}
@@ -385,7 +359,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 					lastEntry.setTarget("<img=" + image + ">" + lastEntry.getTarget());
 				}
 
-				if (image2 != -1 && this.playerSkull)
+				if (image2 != -1 && config.playerSkull())
 				{
 					lastEntry.setTarget("<img=" + image2 + ">" + lastEntry.getTarget());
 				}
@@ -398,33 +372,33 @@ public class PlayerIndicatorsPlugin extends Plugin
 
 	private void getCallerList()
 	{
-		if (!this.highlightCallers)
+		if (!config.highlightCallers())
 		{
 			return;
 		}
 
 		callers.clear();
 
-		if (this.useClanchatRanks && client.getClanMembers() != null)
+		if (config.useClanchatRanks() && client.getClanMembers() != null)
 		{
 			for (ClanMember clanMember : client.getClanMembers())
 			{
-				if (clanMember.getRank().getValue() > this.callerRank.getValue())
+				if (clanMember.getRank().getValue() > config.callerRank().getValue())
 				{
 					callers.add(Text.standardize(clanMember.getUsername()));
 				}
 			}
 		}
 
-		if (this.configCallers.contains(","))
+		if (config.callers().contains(","))
 		{
-			callers.addAll(Arrays.asList(this.configCallers.split(",")));
+			callers.addAll(Arrays.asList(config.callers().split(",")));
 			return;
 		}
 
-		if (!this.configCallers.equals(""))
+		if (!config.callers().equals(""))
 		{
-			callers.add(this.configCallers);
+			callers.add(config.callers());
 		}
 	}
 
@@ -483,77 +457,79 @@ public class PlayerIndicatorsPlugin extends Plugin
 	{
 		locationHashMap.clear();
 		relationColorHashMap.clear();
-		this.highlightOwnPlayer = config.highlightOwnPlayer();
-		if (this.highlightOwnPlayer)
+
+		if (config.highlightOwnPlayer())
 		{
 			relationColorHashMap.put(PlayerRelation.SELF, config.getOwnPlayerColor());
-			locationHashMap.put(PlayerRelation.SELF, EnumSet.copyOf(config.selfIndicatorModes()).toArray());
+			if (config.selfIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.SELF, EnumSet.copyOf(config.selfIndicatorModes()).toArray());
+			}
 		}
 
-		this.highlightFriends = config.highlightFriends();
-		if (this.highlightFriends)
+		if (config.highlightFriends())
 		{
 			relationColorHashMap.put(PlayerRelation.FRIEND, config.getFriendColor());
-			locationHashMap.put(PlayerRelation.FRIEND, config.friendIndicatorMode().toArray());
+			if (config.friendIndicatorMode() != null)
+			{
+				locationHashMap.put(PlayerRelation.FRIEND, config.friendIndicatorMode().toArray());
+			}
 		}
 
-		this.highlightClan = config.highlightClan();
-		if (this.highlightClan)
+		if (config.highlightClan())
 		{
 			relationColorHashMap.put(PlayerRelation.CLAN, config.getClanColor());
-			locationHashMap.put(PlayerRelation.CLAN, config.clanIndicatorModes().toArray());
+			if (config.clanIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.CLAN, config.clanIndicatorModes().toArray());
+			}
 		}
 
-		this.highlightTeam = config.highlightTeamMembers();
-		if (this.highlightTeam)
+		if (config.highlightTeamMembers())
 		{
 			relationColorHashMap.put(PlayerRelation.TEAM, config.getTeamcolor());
-			locationHashMap.put(PlayerRelation.TEAM, config.teamIndicatorModes().toArray());
+			if (config.teamIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.TEAM, config.teamIndicatorModes().toArray());
+			}
 		}
 
-		this.highlightOther = config.highlightOtherPlayers();
-		if (this.highlightOther)
+		if (config.highlightOtherPlayers())
 		{
 			relationColorHashMap.put(PlayerRelation.OTHER, config.getOtherColor());
-			locationHashMap.put(PlayerRelation.OTHER, EnumSet.copyOf(config.otherIndicatorModes()).toArray());
+			if (config.otherIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.OTHER, EnumSet.copyOf(config.otherIndicatorModes()).toArray());
+			}
 		}
 
-		this.highlightTargets = config.highlightTargets();
-		if (this.highlightTargets)
+		if (config.highlightTargets())
 		{
 			relationColorHashMap.put(PlayerRelation.TARGET, config.getTargetsColor());
-			locationHashMap.put(PlayerRelation.TARGET, config.targetsIndicatorModes().toArray());
+			if (config.targetsIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.TARGET, config.targetsIndicatorModes().toArray());
+			}
 		}
 
-		this.highlightCallers = config.highlightCallers();
-		if (this.highlightCallers)
+		if (config.highlightCallers())
 		{
-			this.callerRank = config.callerRank();
-
-			this.configCallers = config.callers();
 			relationColorHashMap.put(PlayerRelation.CALLER, config.callerColor());
-			locationHashMap.put(PlayerRelation.CALLER, config.callerHighlightOptions().toArray());
+			if (config.callerHighlightOptions() != null)
+			{
+				locationHashMap.put(PlayerRelation.CALLER, config.callerHighlightOptions().toArray());
+			}
 			getCallerList();
 		}
 
-		this.highlightCallerTargets = config.callersTargets();
-		if (this.highlightCallerTargets)
+		if (config.callersTargets())
 		{
 			relationColorHashMap.put(PlayerRelation.CALLER_TARGET, config.callerTargetColor());
-			locationHashMap.put(PlayerRelation.CALLER_TARGET, config.callerTargetHighlightOptions().toArray());
+			if (config.callerTargetHighlightOptions() != null)
+			{
+				locationHashMap.put(PlayerRelation.CALLER_TARGET, config.callerTargetHighlightOptions().toArray());
+			}
 		}
-
-		this.showClanRanks = config.showClanRanks();
-		this.showCombatLevel = config.showCombatLevel();
-		this.showAgilityLevel = config.showAgilityLevel();
-		this.agilityFirstThreshold = config.agilityFirstThreshold();
-		this.agilitySecondThreshold = config.agilitySecondThreshold();
-		this.agilityFormat = config.agilityFormat();
-		this.playerSkull = config.playerSkull();
-		this.skullLocation = config.skullLocation();
-		this.targetRisk = config.targetRisk();
-		this.useClanchatRanks = config.useClanchatRanks();
-		this.unchargedGlory = config.unchargedGlory();
 	}
 
 	public enum MinimapSkullLocations

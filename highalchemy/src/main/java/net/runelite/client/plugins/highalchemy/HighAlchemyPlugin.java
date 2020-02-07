@@ -28,12 +28,10 @@
 package net.runelite.client.plugins.highalchemy;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import static net.runelite.api.widgets.WidgetID.BANK_GROUP_ID;
@@ -56,11 +54,10 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "High Alchemy",
-	description = "Highlights items that yield a profit from casting the High Alchemy spell",
+	description = "Highlights items that yield a profit from casting the High Alchemy spell.",
 	tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class HighAlchemyPlugin extends Plugin
 {
 	private static final String CONFIG_GROUP = "highalchemy";
@@ -83,19 +80,9 @@ public class HighAlchemyPlugin extends Plugin
 		return configManager.getConfig(HighAlchemyConfig.class);
 	}
 
-	private boolean showBank;
-	private boolean showInventory;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getHighlightColor;
-	@Getter(AccessLevel.PACKAGE)
-	private int minProfit;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean usingFireRunes;
-
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		buildGroupList();
 		overlayManager.add(overlay);
 	}
@@ -111,7 +98,6 @@ public class HighAlchemyPlugin extends Plugin
 	{
 		if (event.getGroup().equals(CONFIG_GROUP))
 		{
-			updateConfig();
 			buildGroupList();
 		}
 	}
@@ -120,12 +106,12 @@ public class HighAlchemyPlugin extends Plugin
 	{
 		interfaceGroups.clear();
 
-		if (this.showBank)
+		if (config.showBank())
 		{
 			interfaceGroups.add(BANK_GROUP_ID);
 		}
 
-		if (this.showInventory)
+		if (config.showInventory())
 		{
 			Arrays.stream(
 				new int[]{
@@ -139,14 +125,5 @@ public class HighAlchemyPlugin extends Plugin
 				}
 			).forEach(interfaceGroups::add);
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.showBank = config.showBank();
-		this.showInventory = config.showInventory();
-		this.getHighlightColor = config.getHighlightColor();
-		this.minProfit = config.minProfit();
-		this.usingFireRunes = config.usingFireRunes();
 	}
 }

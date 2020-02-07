@@ -25,7 +25,6 @@
 package net.runelite.client.plugins.antidrag;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -39,7 +38,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 
-@Singleton
 public class AntiDragOverlay extends Overlay
 {
 	private static final int RADIUS = 20;

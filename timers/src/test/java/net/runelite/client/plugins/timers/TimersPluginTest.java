@@ -91,7 +91,7 @@ public class TimersPluginTest
 	@Test
 	public void testHalfTeleblock()
 	{
-		timersPlugin.setShowTeleblock(true);
+		when(timersConfig.showTeleblock()).thenReturn(true);
 		when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.MEMBERS));
 		ChatMessage chatMessage = new ChatMessage(null, ChatMessageType.SPAM, "", HALF_TELEBLOCK_MESSAGE, "", 0);
 		timersPlugin.onChatMessage(chatMessage);
@@ -105,7 +105,7 @@ public class TimersPluginTest
 	@Test
 	public void testFullTeleblock()
 	{
-		timersPlugin.setShowTeleblock(true);
+		when(timersConfig.showTeleblock()).thenReturn(true);
 		ChatMessage chatMessage = new ChatMessage(null, ChatMessageType.SPAM, "", FULL_TELEBLOCK_MESSAGE, "", 0);
 		timersPlugin.onChatMessage(chatMessage);
 
@@ -118,7 +118,7 @@ public class TimersPluginTest
 	@Test
 	public void testDmmHalfTb()
 	{
-		timersPlugin.setShowTeleblock(true);
+		when(timersConfig.showTeleblock()).thenReturn(true);
 		ChatMessage chatMessage = new ChatMessage(null, ChatMessageType.SPAM, "", DMM_HALF_TELEBLOCK_MESSAGE, "", 0);
 		timersPlugin.onChatMessage(chatMessage);
 
@@ -131,7 +131,7 @@ public class TimersPluginTest
 	@Test
 	public void testDmmFullTb()
 	{
-		timersPlugin.setShowTeleblock(true);
+		when(timersConfig.showTeleblock()).thenReturn(true);
 		when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.DEADMAN));
 		ChatMessage chatMessage = new ChatMessage(null, ChatMessageType.SPAM, "", HALF_TELEBLOCK_MESSAGE, "", 0);
 		timersPlugin.onChatMessage(chatMessage);

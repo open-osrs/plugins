@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.SpriteID;
 import net.runelite.client.game.SpriteManager;
+import net.runelite.client.plugins.statusbars.StatusBarsConfig;
 import net.runelite.client.plugins.statusbars.StatusBarsOverlay;
 import net.runelite.client.plugins.statusbars.StatusBarsPlugin;
 
@@ -42,9 +43,9 @@ public class EnergyRenderer extends BarRenderer
 	private final SpriteManager spriteManager;
 
 	@Inject
-	public EnergyRenderer(final StatusBarsPlugin plugin, final SpriteManager spriteManager)
+	public EnergyRenderer(final StatusBarsPlugin plugin, final StatusBarsConfig config, final SpriteManager spriteManager)
 	{
-		super(plugin);
+		super(plugin, config);
 		maximumValue = 100;
 		this.spriteManager = spriteManager;
 		standardColor = new Color(199, 174, 0, 220);

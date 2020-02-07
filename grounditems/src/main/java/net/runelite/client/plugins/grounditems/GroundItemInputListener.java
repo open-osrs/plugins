@@ -45,6 +45,9 @@ class GroundItemInputListener extends MouseAdapter implements KeyListener
 	@Inject
 	private GroundItemsPlugin plugin;
 
+	@Inject
+	private GroundItemsConfig config;
+
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
@@ -62,7 +65,7 @@ class GroundItemInputListener extends MouseAdapter implements KeyListener
 				plugin.setHotKeyPressed(true);
 				lastPress = null;
 			}
-			else if (lastPress != null && !plugin.isHotKeyPressed() && plugin.getDoubleTapDelay() > 0 && Duration.between(lastPress, Instant.now()).compareTo(Duration.ofMillis(plugin.getDoubleTapDelay())) < 0)
+			else if (lastPress != null && !plugin.isHotKeyPressed() && config.doubleTapDelay() > 0 && Duration.between(lastPress, Instant.now()).compareTo(Duration.ofMillis(config.doubleTapDelay())) < 0)
 			{
 				plugin.setHideAll(true);
 				lastPress = null;

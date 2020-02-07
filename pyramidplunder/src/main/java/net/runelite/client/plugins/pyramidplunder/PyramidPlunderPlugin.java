@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
 import static net.runelite.api.Constants.GAME_TICK_LENGTH;
@@ -67,12 +65,11 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Pyramid Plunder",
+	name = "PyramidPlunder",
 	description = "Highlights doors and spear traps in pyramid plunder and adds a numerical timer",
 	tags = {"pyramidplunder", "pyramid", "plunder", "overlay", "skilling", "thieving"},
 	type = PluginType.MINIGAME
 )
-@Singleton
 public class PyramidPlunderPlugin extends Plugin
 {
 	private static final int PYRAMID_PLUNDER_REGION_ID = 7749;
@@ -126,28 +123,10 @@ public class PyramidPlunderPlugin extends Plugin
 
 	private int pyramidTimer;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPlunderStatus;
-	private boolean highlightDoors;
-	private boolean highlightSpearTrap;
-	private boolean showTimer;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean hideWidget;
-	@Getter(AccessLevel.PACKAGE)
-	private int firstWarningTime;
-	@Getter(AccessLevel.PACKAGE)
-	private int secondWarningTime;
-
 	@Provides
 	PyramidPlunderConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(PyramidPlunderConfig.class);
-	}
-
-	@Override
-	protected void startUp()
-	{
-		updateConfig();
 	}
 
 	@Override
@@ -166,14 +145,12 @@ public class PyramidPlunderPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
-		if (!this.showTimer)
+		if (!config.showTimer())
 		{
 			removeTimer();
 		}
 
-		if (this.showTimer && isInGame)
+		if (config.showTimer() && isInGame)
 		{
 			int remainingTime = GAME_TICK_LENGTH * (PYRAMID_PLUNDER_TIMER_MAX - pyramidTimer);
 
@@ -263,7 +240,7 @@ public class PyramidPlunderPlugin extends Plugin
 		{
 			overlayManager.add(pyramidPlunderOverlay);
 			isInGame = true;
-			if (this.showTimer)
+			if (config.showTimer())
 			{
 				showTimer();
 			}
@@ -323,21 +300,10 @@ public class PyramidPlunderPlugin extends Plugin
 		}
 
 		int id = newObject.getId();
-		if (id == TRAP && this.highlightSpearTrap ||
-			(DOOR_WALL_IDS.contains(id) || id == OPENED_DOOR || id == CLOSED_DOOR) && this.highlightDoors)
+		if (id == TRAP && config.highlightSpearTrap() ||
+			(DOOR_WALL_IDS.contains(id) || id == OPENED_DOOR || id == CLOSED_DOOR) && config.highlightDoors())
 		{
 			highlighted.put(newObject, tile);
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.showPlunderStatus = config.showPlunderStatus();
-		this.highlightDoors = config.highlightDoors();
-		this.highlightSpearTrap = config.highlightSpearTrap();
-		this.showTimer = config.showTimer();
-		this.hideWidget = config.hideWidget();
-		this.firstWarningTime = config.firstWarningTime();
-		this.secondWarningTime = config.secondWarningTime();
 	}
 }

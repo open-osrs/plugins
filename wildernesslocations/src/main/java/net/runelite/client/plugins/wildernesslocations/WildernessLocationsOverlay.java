@@ -23,12 +23,14 @@ import net.runelite.client.ui.overlay.components.TextComponent;
 public class WildernessLocationsOverlay extends Overlay
 {
 	private final WildernessLocationsPlugin plugin;
+	private final WildernessLocationsConfig config;
 	private final TextComponent textComponent;
 
 	@Inject
-	public WildernessLocationsOverlay(final WildernessLocationsPlugin plugin)
+	public WildernessLocationsOverlay(final WildernessLocationsPlugin plugin, final WildernessLocationsConfig config)
 	{
 		this.plugin = plugin;
+		this.config = config;
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		setPriority(OverlayPriority.HIGH);
 		setPosition(OverlayPosition.BOTTOM_RIGHT);
@@ -38,7 +40,7 @@ public class WildernessLocationsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isRenderLocation() && plugin.isDrawOverlay())
+		if (plugin.isRenderLocation() && config.drawOverlay())
 		{
 			textComponent.setText(plugin.getLocationString());
 			return textComponent.render(graphics);

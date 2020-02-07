@@ -35,10 +35,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -52,7 +50,6 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -68,8 +65,6 @@ import org.pf4j.Extension;
 	tags = {"bosses", "combat", "minigame", "overlay", "pve", "pvm", "jad", "fire", "cape", "wave"},
 	type = PluginType.PVM
 )
-@Singleton
-@Slf4j
 public class FightCavePlugin extends Plugin
 {
 	static final int MAX_WAVE = 63;
@@ -134,9 +129,6 @@ public class FightCavePlugin extends Plugin
 	@Inject
 	private FightCaveOverlay fightCaveOverlay;
 
-	@Inject
-	private FightCaveConfig config;
-
 	@Getter(AccessLevel.PACKAGE)
 	private Set<FightCaveContainer> fightCaveContainer = new HashSet<>();
 	@Getter(AccessLevel.PACKAGE)
@@ -155,18 +147,6 @@ public class FightCavePlugin extends Plugin
 		return String.format("%dx %s", quantity, monster);
 	}
 
-
-	@Getter(AccessLevel.PACKAGE)
-	private WaveDisplayMode waveDisplay;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean tickTimersWidget;
-	@Getter(AccessLevel.PACKAGE)
-	private FightCaveConfig.FontStyle fontStyle;
-	@Getter(AccessLevel.PACKAGE)
-	private int textSize;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean shadows;
-
 	@Provides
 	FightCaveConfig provideConfig(ConfigManager configManager)
 	{
@@ -176,8 +156,6 @@ public class FightCavePlugin extends Plugin
 	@Override
 	public void startUp()
 	{
-		updateConfig();
-
 		if (client.getGameState() == GameState.LOGGED_IN && regionCheck())
 		{
 			validRegion = true;
@@ -192,17 +170,6 @@ public class FightCavePlugin extends Plugin
 		overlayManager.remove(waveOverlay);
 		overlayManager.remove(fightCaveOverlay);
 		currentWave = -1;
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("fightcave"))
-		{
-			return;
-		}
-
-		updateConfig();
 	}
 
 	@Subscribe
@@ -376,14 +343,5 @@ public class FightCavePlugin extends Plugin
 	private boolean regionCheck()
 	{
 		return ArrayUtils.contains(client.getMapRegions(), FIGHT_CAVE_REGION);
-	}
-
-	private void updateConfig()
-	{
-		this.waveDisplay = config.waveDisplay();
-		this.tickTimersWidget = config.tickTimersWidget();
-		this.fontStyle = config.fontStyle();
-		this.textSize = config.textSize();
-		this.shadows = config.shadows();
 	}
 }

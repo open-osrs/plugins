@@ -27,11 +27,9 @@
 package net.runelite.client.plugins.experiencedrop;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Actor;
@@ -70,15 +68,11 @@ import org.pf4j.Extension;
 	tags = {"experience", "levels", "tick"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class XpDropPlugin extends Plugin
 {
 	private static final int XPDROP_PADDING = 2; // space between xp drop icons
 	private static final double HITPOINT_RATIO = 1.33; // Base rate of hp xp per point damage
 	private static final double DMM_MULTIPLIER_RATIO = 10;
-	private static final double TL_MULTIPLIER_RATIO = 5;
-	private static final int TWISTED_LEAGUE_WAY_OF_THE_WARRIOR = 3;
-	private static final int TWISTED_LEAGUE_XERICS_WISDOM = 3;
 
 	@Inject
 	private Client client;
@@ -111,15 +105,6 @@ public class XpDropPlugin extends Plugin
 	private Skill lastSkill = null;
 	private PrayerType currentTickPrayer;
 	private XpDropConfig.DamageMode damageMode;
-	private boolean hideSkillIcons;
-	private Color getMeleePrayerColor;
-	private Color getRangePrayerColor;
-	private Color getMagePrayerColor;
-	private int fakeXpDropDelay;
-	private XpDropConfig.DamageMode showdamagedrops;
-
-	@Getter(AccessLevel.PACKAGE)
-	private Color damageColor;
 
 	@Provides
 	XpDropConfig provideConfig(ConfigManager configManager)
@@ -130,8 +115,6 @@ public class XpDropPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		damageMode = config.showdamagedrops();
 
 		if (damageMode == XpDropConfig.DamageMode.ABOVE_OPPONENT)
@@ -162,11 +145,9 @@ public class XpDropPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
 		if (damageMode != XpDropConfig.DamageMode.ABOVE_OPPONENT)
 		{
-			damageMode = this.showdamagedrops;
+			damageMode = config.showdamagedrops();
 
 			if (damageMode == XpDropConfig.DamageMode.ABOVE_OPPONENT)
 			{
@@ -175,7 +156,7 @@ public class XpDropPlugin extends Plugin
 		}
 		else
 		{
-			damageMode = this.showdamagedrops;
+			damageMode = config.showdamagedrops();
 
 			if (damageMode != XpDropConfig.DamageMode.ABOVE_OPPONENT)
 			{
@@ -208,7 +189,7 @@ public class XpDropPlugin extends Plugin
 			return;
 		}
 
-		if (this.hideSkillIcons)
+		if (config.hideSkillIcons())
 		{
 			if (widget.getSpriteId() > 0)
 			{
@@ -276,21 +257,21 @@ public class XpDropPlugin extends Plugin
 								|| id == SpriteID.SKILL_DEFENCE
 								|| correctPrayer))
 					{
-						color = this.getMeleePrayerColor.getRGB();
+						color = config.getMeleePrayerColor().getRGB();
 						correctPrayer = true;
 					}
 					break;
 				case RANGE:
 					if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_RANGED || correctPrayer))
 					{
-						color = this.getRangePrayerColor.getRGB();
+						color = config.getRangePrayerColor().getRGB();
 						correctPrayer = true;
 					}
 					break;
 				case MAGIC:
 					if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_MAGIC || correctPrayer))
 					{
-						color = this.getMagePrayerColor.getRGB();
+						color = config.getMagePrayerColor().getRGB();
 						correctPrayer = true;
 					}
 					break;
@@ -332,7 +313,7 @@ public class XpDropPlugin extends Plugin
 		currentTickPrayer = getActivePrayerType();
 		correctPrayer = false;
 
-		final int fakeTickDelay = this.fakeXpDropDelay;
+		final int fakeTickDelay = config.fakeXpDropDelay();
 
 		if (fakeTickDelay == 0 || lastSkill == null)
 		{
@@ -367,7 +348,7 @@ public class XpDropPlugin extends Plugin
 	@Subscribe
 	private void onScriptCallbackEvent(ScriptCallbackEvent e)
 	{
-		if (this.showdamagedrops == XpDropConfig.DamageMode.NONE)
+		if (config.showdamagedrops() == XpDropConfig.DamageMode.NONE)
 		{
 			return;
 		}
@@ -395,7 +376,7 @@ public class XpDropPlugin extends Plugin
 
 			String builder =
 				stringStack[stringStackSize - 1]
-					+ ColorUtil.colorTag(this.damageColor)
+					+ ColorUtil.colorTag(config.getDamageColor())
 					+ " ("
 					+ damage
 					+ ")";
@@ -407,23 +388,10 @@ public class XpDropPlugin extends Plugin
 	{
 		double damageDealt = diff / HITPOINT_RATIO;
 
-		// DeadMan mode has an XP modifier of 10x, Twisted League mode has an XP modifier of 5x
+		// DeadMan mode has an XP modifier of 10x
 		if (client.getWorldType().contains(WorldType.DEADMAN))
 		{
 			damageDealt = damageDealt / DMM_MULTIPLIER_RATIO;
-		}
-		if (client.getWorldType().contains(WorldType.LEAGUE))
-		{
-			damageDealt = damageDealt / TL_MULTIPLIER_RATIO;
-
-			if (client.getVar(Varbits.TWISTED_LEAGUE_RELIC_3) == TWISTED_LEAGUE_WAY_OF_THE_WARRIOR)
-			{
-				damageDealt = damageDealt / 2;
-			}
-			if (client.getVar(Varbits.TWISTED_LEAGUE_RELIC_5) == TWISTED_LEAGUE_XERICS_WISDOM)
-			{
-				damageDealt = damageDealt / 2;
-			}
 		}
 
 		// Some NPCs have an XP modifier, account for it here.
@@ -452,16 +420,5 @@ public class XpDropPlugin extends Plugin
 		NPC target = (NPC) a;
 		damage = (int) Math.rint(damageDealt / npcManager.getXpModifier(target.getId()));
 		tickShow = 3;
-	}
-
-	private void updateConfig()
-	{
-		this.hideSkillIcons = config.hideSkillIcons();
-		this.getMeleePrayerColor = config.getMeleePrayerColor();
-		this.getRangePrayerColor = config.getRangePrayerColor();
-		this.getMagePrayerColor = config.getMagePrayerColor();
-		this.fakeXpDropDelay = config.fakeXpDropDelay();
-		this.showdamagedrops = config.showdamagedrops();
-		this.damageColor = config.getDamageColor();
 	}
 }

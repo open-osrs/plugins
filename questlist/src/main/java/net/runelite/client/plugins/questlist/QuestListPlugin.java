@@ -32,7 +32,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -70,7 +69,6 @@ import org.pf4j.Extension;
 	description = "Adds searching and filtering to the quest list",
 	type = PluginType.UTILITY
 )
-@Singleton
 public class QuestListPlugin extends Plugin
 {
 	private static final int ENTRY_PADDING = 8;

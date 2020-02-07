@@ -35,7 +35,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
@@ -47,7 +46,6 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 import static net.runelite.client.util.ColorUtil.setAlphaComponent;
 
-@Singleton
 public class DropPartyOverlay extends Overlay
 {
 	private static final int FILL_START_ALPHA = 25;
@@ -55,14 +53,16 @@ public class DropPartyOverlay extends Overlay
 
 	private final Client client;
 	private final DropPartyPlugin plugin;
+	private final DropPartyConfig config;
 
 	@Inject
-	public DropPartyOverlay(final Client client, final DropPartyPlugin plugin)
+	public DropPartyOverlay(final Client client, final DropPartyPlugin plugin, final DropPartyConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -96,10 +96,10 @@ public class DropPartyOverlay extends Overlay
 				{
 					if (!markedTiles.contains(path.get(i)))
 					{
-						graphics.setColor(new Color(setAlphaComponent(plugin.getOverlayColor().getRGB(), OUTLINE_START_ALPHA), true));
+						graphics.setColor(new Color(setAlphaComponent(config.overlayColor().getRGB(), OUTLINE_START_ALPHA), true));
 						graphics.drawPolygon(tilePoly);
-						OverlayUtil.renderTextLocation(graphics, Integer.toString(i + 1), plugin.getTextSize(),
-							plugin.getFontStyle(), Color.WHITE, centerPoint(tilePoly.getBounds()), true, 0);
+						OverlayUtil.renderTextLocation(graphics, Integer.toString(i + 1), config.textSize(),
+							config.fontStyle().getFont(), Color.WHITE, centerPoint(tilePoly.getBounds()), true, 0);
 					}
 					markedTiles.add(path.get(i));
 				}

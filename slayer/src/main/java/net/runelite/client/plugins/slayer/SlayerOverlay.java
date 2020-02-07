@@ -83,11 +83,14 @@ class SlayerOverlay extends WidgetItemOverlay
 	);
 
 	private final SlayerPlugin plugin;
+	private final SlayerConfig config;
 
 	@Inject
-	private SlayerOverlay(final SlayerPlugin plugin)
+	private SlayerOverlay(final SlayerPlugin plugin, final SlayerConfig config)
 	{
 		this.plugin = plugin;
+		this.config = config;
+
 		showOnInventory();
 		showOnEquipment();
 	}
@@ -100,7 +103,7 @@ class SlayerOverlay extends WidgetItemOverlay
 			return;
 		}
 
-		if (!plugin.isShowItemOverlay())
+		if (!config.showItemOverlay())
 		{
 			return;
 		}

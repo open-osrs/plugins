@@ -37,7 +37,6 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -100,7 +99,6 @@ import org.pf4j.Extension;
 	type = PluginType.UTILITY
 )
 @Slf4j
-@Singleton
 public class GrandExchangePlugin extends Plugin
 {
 	static final String SEARCH_GRAND_EXCHANGE = "Search Grand Exchange";
@@ -170,12 +168,6 @@ public class GrandExchangePlugin extends Plugin
 	private OSBGrandExchangeResult osbGrandExchangeResult;
 	private GrandExchangeClient grandExchangeClient;
 
-	private boolean quickLookup;
-	private boolean enableNotifications;
-	private boolean enableOsbPrices;
-	private boolean enableGELimits;
-	private boolean enableAfford;
-
 	private static Map<Integer, Integer> loadGELimits() throws IOException
 	{
 		try (final JsonReader geLimitData = new JsonReader(new InputStreamReader(GrandExchangePlugin.class.getResourceAsStream("ge_limits.json"))))
@@ -215,8 +207,6 @@ public class GrandExchangePlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		updateConfig();
-
 		itemGELimits = loadGELimits();
 		panel = injector.getInstance(GrandExchangePanel.class);
 		panel.setGELimits(itemGELimits);
@@ -232,7 +222,7 @@ public class GrandExchangePlugin extends Plugin
 
 		clientToolbar.addNavigation(button);
 
-		if (this.quickLookup)
+		if (config.quickLookup())
 		{
 			mouseManager.registerMouseListener(inputListener);
 			keyManager.registerKeyListener(inputListener);
@@ -275,15 +265,6 @@ public class GrandExchangePlugin extends Plugin
 		}
 	}
 
-	private void updateConfig()
-	{
-		this.quickLookup = config.quickLookup();
-		this.enableNotifications = config.enableNotifications();
-		this.enableOsbPrices = config.enableOsbPrices();
-		this.enableGELimits = config.enableGELimits();
-		this.enableAfford = config.enableAfford();
-	}
-
 	@Subscribe
 	private void onSessionClose(SessionClose sessionClose)
 	{
@@ -295,10 +276,9 @@ public class GrandExchangePlugin extends Plugin
 	{
 		if (event.getGroup().equals("grandexchange"))
 		{
-			updateConfig();
 			if (event.getKey().equals("quickLookup"))
 			{
-				if (this.quickLookup)
+				if (config.quickLookup())
 				{
 					mouseManager.registerMouseListener(inputListener);
 					keyManager.registerKeyListener(inputListener);
@@ -393,7 +373,7 @@ public class GrandExchangePlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (!this.enableNotifications || event.getType() != ChatMessageType.GAMEMESSAGE)
+		if (!config.enableNotifications() || event.getType() != ChatMessageType.GAMEMESSAGE)
 		{
 			return;
 		}
@@ -540,7 +520,7 @@ public class GrandExchangePlugin extends Plugin
 		}
 
 
-		if (this.enableAfford && offerType == OFFER_TYPE_BUY)
+		if (config.enableAfford() && offerType == OFFER_TYPE_BUY)
 		{
 			final ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
 			int coins = 0;
@@ -570,7 +550,7 @@ public class GrandExchangePlugin extends Plugin
 		String[] lines = geText.getText().split("<br>");
 		String text = lines[0]; // remove any limit or OSB ge values
 
-		if (this.enableGELimits && itemGELimits != null)
+		if (config.enableGELimits() && itemGELimits != null)
 		{
 			final Integer itemLimit = itemGELimits.get(itemId);
 
@@ -583,7 +563,7 @@ public class GrandExchangePlugin extends Plugin
 
 		geText.setText(text);
 
-		if (!this.enableOsbPrices)
+		if (!config.enableOsbPrices())
 		{
 			return;
 		}

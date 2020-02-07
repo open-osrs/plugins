@@ -26,11 +26,9 @@
 package net.runelite.client.plugins.wintertodt;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +56,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.wintertodt.config.WintertodtNotifyMode;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import org.pf4j.Extension;
@@ -68,10 +65,9 @@ import org.pf4j.Extension;
 	name = "Wintertodt",
 	description = "Show helpful information for the Wintertodt boss",
 	tags = {"minigame", "firemaking", "boss"},
-	type = PluginType.SKILLING
+	type = PluginType.MINIGAME
 )
 @Slf4j
-@Singleton
 public class WintertodtPlugin extends Plugin
 {
 	private static final int WINTERTODT_REGION = 6462;
@@ -112,8 +108,6 @@ public class WintertodtPlugin extends Plugin
 	private Instant lastActionTime;
 
 	private int previousTimerValue;
-	private WintertodtNotifyMode notifyCondition;
-	private Color damageNotificationColor;
 
 	@Provides
 	WintertodtConfig getConfig(ConfigManager configManager)
@@ -124,9 +118,6 @@ public class WintertodtPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		this.notifyCondition = config.notifyCondition();
-		this.damageNotificationColor = config.damageNotificationColor();
-
 		reset();
 		overlayManager.add(overlay);
 	}
@@ -147,9 +138,6 @@ public class WintertodtPlugin extends Plugin
 		{
 			return;
 		}
-
-		this.notifyCondition = config.notifyCondition();
-		this.damageNotificationColor = config.damageNotificationColor();
 	}
 
 	private void reset()
@@ -309,12 +297,12 @@ public class WintertodtPlugin extends Plugin
 				wasDamaged = true;
 
 				// Recolor message for damage notification
-				messageNode.setRuneLiteFormatMessage(ColorUtil.wrapWithColorTag(messageNode.getValue(), this.damageNotificationColor));
+				messageNode.setRuneLiteFormatMessage(ColorUtil.wrapWithColorTag(messageNode.getValue(), config.damageNotificationColor()));
 				chatMessageManager.update(messageNode);
 				client.refreshChat();
 
-				// all actions except woodcutting are interrupted from damage
-				if (currentActivity != WintertodtActivity.WOODCUTTING)
+				// all actions except woodcutting and idle are interrupted from damage
+				if (currentActivity != WintertodtActivity.WOODCUTTING && currentActivity != WintertodtActivity.IDLE)
 				{
 					wasInterrupted = true;
 				}
@@ -336,7 +324,7 @@ public class WintertodtPlugin extends Plugin
 		{
 			boolean shouldNotify = false;
 
-			switch (this.notifyCondition)
+			switch (config.notifyCondition())
 			{
 				case ONLY_WHEN_INTERRUPTED:
 					if (wasInterrupted)

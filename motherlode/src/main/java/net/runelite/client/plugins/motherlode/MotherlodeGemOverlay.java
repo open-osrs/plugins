@@ -29,7 +29,6 @@ import java.awt.Graphics2D;
 import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
@@ -40,19 +39,20 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
-@Singleton
 public class MotherlodeGemOverlay extends Overlay
 {
 	private final MotherlodePlugin plugin;
+	private final MotherlodeConfig config;
 	private final MotherlodeSession motherlodeSession;
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	MotherlodeGemOverlay(final MotherlodePlugin plugin, final MotherlodeSession motherlodeSession)
+	MotherlodeGemOverlay(final MotherlodePlugin plugin, final MotherlodeConfig config, final MotherlodeSession motherlodeSession)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.plugin = plugin;
+		this.config = config;
 		this.motherlodeSession = motherlodeSession;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Gem overlay"));
 	}
@@ -62,12 +62,12 @@ public class MotherlodeGemOverlay extends Overlay
 	{
 		MotherlodeSession session = motherlodeSession;
 
-		if (session.getLastGemFound() == null || !plugin.isInMlm() || !plugin.isShowGemsFound())
+		if (session.getLastGemFound() == null || !plugin.isInMlm() || !config.showGemsFound())
 		{
 			return null;
 		}
 
-		Duration statTimeout = Duration.ofMinutes(plugin.getStatTimeout());
+		Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 		Duration sinceCut = Duration.between(session.getLastGemFound(), Instant.now());
 
 		if (sinceCut.compareTo(statTimeout) >= 0)

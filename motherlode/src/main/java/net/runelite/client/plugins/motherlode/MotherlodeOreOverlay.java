@@ -27,7 +27,6 @@ package net.runelite.client.plugins.motherlode;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.PanelComponent;
@@ -35,25 +34,26 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
-@Singleton
 public class MotherlodeOreOverlay extends Overlay
 {
 	private final MotherlodePlugin plugin;
+	private final MotherlodeConfig config;
 	private final MotherlodeSession motherlodeSession;
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	MotherlodeOreOverlay(final MotherlodePlugin plugin, final MotherlodeSession motherlodeSession)
+	MotherlodeOreOverlay(final MotherlodePlugin plugin, final MotherlodeConfig config, final MotherlodeSession motherlodeSession)
 	{
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.plugin = plugin;
+		this.config = config;
 		this.motherlodeSession = motherlodeSession;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isInMlm() || !plugin.isShowOresFound())
+		if (!plugin.isInMlm() || !config.showOresFound())
 		{
 			return null;
 		}

@@ -49,7 +49,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -66,7 +65,6 @@ import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 
 @Slf4j
-@Singleton
 class ProfilesPanel extends PluginPanel
 {
 	private static final int iterations = 100000;
@@ -84,8 +82,6 @@ class ProfilesPanel extends PluginPanel
 
 	@Inject
 	private ProfilesConfig profilesConfig;
-
-	@Inject ProfilesPlugin profilesPlugin;
 
 	private final JPasswordField txtDecryptPassword = new JPasswordField(UNLOCK_PASSWORD);
 	private final JTextField txtAccountLabel = new JTextField(ACCOUNT_LABEL);
@@ -223,7 +219,7 @@ class ProfilesPanel extends PluginPanel
 				if (ACCOUNT_USERNAME.equals(String.valueOf(txtAccountLogin.getPassword())))
 				{
 					txtAccountLogin.setText("");
-					if (profilesPlugin.isStreamerMode())
+					if (profilesConfig.streamerMode())
 					{
 						txtAccountLogin.setEchoChar('*');
 					}
@@ -280,7 +276,7 @@ class ProfilesPanel extends PluginPanel
 				return;
 			}
 			String data;
-			if (profilesPlugin.isRememberPassword() && txtPasswordLogin.getPassword() != null)
+			if (profilesConfig.rememberPassword() && txtPasswordLogin.getPassword() != null)
 			{
 				data = labelText + ":" + loginText + ":" + passwordText;
 			}
@@ -295,13 +291,13 @@ class ProfilesPanel extends PluginPanel
 				{
 					return;
 				}
+
+				redrawProfiles();
 			}
 			catch (InvalidKeySpecException | NoSuchAlgorithmException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | NoSuchPaddingException ex)
 			{
 				log.error(e.toString());
 			}
-
-			this.addAccount(data);
 
 			txtAccountLabel.setText(ACCOUNT_LABEL);
 
@@ -359,7 +355,7 @@ class ProfilesPanel extends PluginPanel
 
 		accountPanel.add(txtAccountLabel);
 		accountPanel.add(txtAccountLogin);
-		if (profilesPlugin.isRememberPassword())
+		if (profilesConfig.rememberPassword())
 		{
 			accountPanel.add(txtPasswordLogin);
 		}
@@ -414,7 +410,7 @@ class ProfilesPanel extends PluginPanel
 
 	private void addAccount(String data)
 	{
-		ProfilePanel profile = new ProfilePanel(client, data, profilesPlugin, this);
+		ProfilePanel profile = new ProfilePanel(client, data, profilesConfig, this);
 		profilesPanel.add(profile);
 
 		revalidate();

@@ -59,18 +59,18 @@ public class RunepouchOverlay extends WidgetItemOverlay
 	private static final Dimension IMAGE_SIZE = new Dimension(11, 11);
 
 	private final Client client;
-	private final RunepouchPlugin plugin;
+	private final RunepouchConfig config;
 	private final TooltipManager tooltipManager;
 
 	@Inject
 	private ItemManager itemManager;
 
 	@Inject
-	RunepouchOverlay(final Client client, final RunepouchPlugin plugin, final TooltipManager tooltipManager)
+	RunepouchOverlay(final Client client, final RunepouchConfig config, final TooltipManager tooltipManager)
 	{
 		this.tooltipManager = tooltipManager;
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 		showOnInventory();
 		showOnBank();
 	}
@@ -114,7 +114,7 @@ public class RunepouchOverlay extends WidgetItemOverlay
 				.append(ColorUtil.wrapWithColorTag(rune.getName(), Color.YELLOW))
 				.append("</br>");
 
-			if (plugin.getRunePouchOverlayMode() == MOUSE_HOVER)
+			if (config.runePouchOverlayMode() == MOUSE_HOVER)
 			{
 				continue;
 			}
@@ -126,14 +126,14 @@ public class RunepouchOverlay extends WidgetItemOverlay
 
 			graphics.setColor(Color.black);
 
-			graphics.drawString("" + formatNumber(amount), location.getX() + (plugin.isShowIcons() ? 12 : 5),
+			graphics.drawString("" + formatNumber(amount), location.getX() + (config.showIcons() ? 12 : 5),
 				location.getY() + 13 + (graphics.getFontMetrics().getHeight() - 1) * i);
 
-			graphics.setColor(plugin.getFontColor());
-			graphics.drawString("" + formatNumber(amount), location.getX() + (plugin.isShowIcons() ? 11 : 4),
+			graphics.setColor(config.fontColor());
+			graphics.drawString("" + formatNumber(amount), location.getX() + (config.showIcons() ? 11 : 4),
 				location.getY() + 12 + (graphics.getFontMetrics().getHeight() - 1) * i);
 
-			if (!plugin.isShowIcons())
+			if (!config.showIcons())
 			{
 				continue;
 			}
@@ -151,7 +151,7 @@ public class RunepouchOverlay extends WidgetItemOverlay
 
 		if (!tooltip.isEmpty()
 			&& itemWidget.getCanvasBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())
-			&& (plugin.getRunePouchOverlayMode() == MOUSE_HOVER || plugin.getRunePouchOverlayMode() == BOTH))
+			&& (config.runePouchOverlayMode() == MOUSE_HOVER || config.runePouchOverlayMode() == BOTH))
 		{
 			tooltipManager.add(new Tooltip(tooltip));
 		}

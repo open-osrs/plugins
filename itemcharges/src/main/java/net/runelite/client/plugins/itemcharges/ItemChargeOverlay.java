@@ -30,7 +30,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import net.runelite.api.Client;
 import net.runelite.api.ItemID;
+import net.runelite.api.Varbits;
 import net.runelite.api.widgets.WidgetItem;
 import static net.runelite.client.plugins.itemcharges.ItemChargeType.ABYSSAL_BRACELET;
 import static net.runelite.client.plugins.itemcharges.ItemChargeType.BELLOWS;
@@ -48,12 +50,16 @@ import net.runelite.client.ui.overlay.components.TextComponent;
 @Singleton
 class ItemChargeOverlay extends WidgetItemOverlay
 {
+	private final Client client;
 	private final ItemChargePlugin plugin;
+	private final ItemChargeConfig config;
 
 	@Inject
-	ItemChargeOverlay(final ItemChargePlugin itemChargePlugin)
+	ItemChargeOverlay(final Client client, final ItemChargePlugin itemChargePlugin, final ItemChargeConfig config)
 	{
+		this.client = client;
 		this.plugin = itemChargePlugin;
+		this.config = config;
 		showOnInventory();
 		showOnEquipment();
 	}
@@ -71,81 +77,89 @@ class ItemChargeOverlay extends WidgetItemOverlay
 		int charges;
 		if (itemId == ItemID.DODGY_NECKLACE)
 		{
-			if (!plugin.isShowDodgyCount())
+			if (!config.showDodgyCount())
 			{
 				return;
 			}
 
-			charges = plugin.getDodgyNecklace();
+			charges = config.dodgyNecklace();
 		}
 		else if (itemId == ItemID.BRACELET_OF_SLAUGHTER)
 		{
-			if (!plugin.isShowSlayerBracelets())
+			if (!config.showSlayerBracelets())
 			{
 				return;
 			}
 
-			charges = plugin.getSlaughter();
+			charges = config.slaughter();
 		}
 		else if (itemId == ItemID.EXPEDITIOUS_BRACELET)
 		{
-			if (!plugin.isShowSlayerBracelets())
+			if (!config.showSlayerBracelets())
 			{
 				return;
 			}
 
-			charges = plugin.getExpeditious();
+			charges = config.expeditious();
 		}
 		else if (itemId == ItemID.BINDING_NECKLACE)
 		{
-			if (!plugin.isShowBindingNecklaceCharges())
+			if (!config.showBindingNecklaceCharges())
 			{
 				return;
 			}
 
-			charges = plugin.getBindingNecklace();
+			charges = config.bindingNecklace();
 		}
 		else if (itemId == ItemID.XERICS_TALISMAN)
 		{
-			if (!plugin.isShowXericTalismanCharges())
+			if (!config.showXericTalismanCharges())
 			{
 				return;
 			}
-			charges = plugin.getXericTalisman();
+			charges = config.xericTalisman();
 		}
 		else if (itemId == ItemID.SOUL_BEARER)
 		{
-			if (!plugin.isShowSoulBearerCharges())
+			if (!config.showSoulBearerCharges())
 			{
 				return;
 			}
-			charges = plugin.getSoulBearer();
+			charges = config.soulBearer();
 		}
 		else if (itemId == ItemID.CHRONICLE)
 		{
-			if (!plugin.isShowChronicleCharges())
+			if (!config.showChronicleCharges())
 			{
 				return;
 			}
-			charges = plugin.getChronicle();
+			charges = config.chronicle();
+		}
+		else if (itemId == ItemID.KHAREDSTS_MEMOIRS)
+		{
+			if (!config.showKharedstsMemoirsCharges())
+			{
+				return;
+			}
+			charges = client.getVar(Varbits.KHAREDSTS_MEMOIRS_CHARGES);
 		}
 		else if (itemId >= ItemID.EXPLORERS_RING_1 && itemId <= ItemID.EXPLORERS_RING_4)
 		{
-			if (!plugin.isShowExplorerRingCharges())
+			if (!config.showExplorerRingCharges())
 			{
 				return;
 			}
 
-			charges = plugin.getExplorerRing();
+			charges = config.explorerRing();
 		}
 		else if (itemId == ItemID.RING_OF_FORGING)
 		{
-			if (!plugin.isShowRingOfForgingCount())
+			if (!config.showRingOfForgingCount())
 			{
 				return;
 			}
 
-			charges = plugin.getRingOfForging();
+			charges = config.ringOfForging();
 		}
 		else
 		{
@@ -156,15 +170,15 @@ class ItemChargeOverlay extends WidgetItemOverlay
 			}
 
 			ItemChargeType type = chargeItem.getType();
-			if ((type == TELEPORT && !plugin.isShowTeleportCharges())
-				|| (type == FUNGICIDE_SPRAY && !plugin.isShowFungicideCharges())
-				|| (type == IMPBOX && !plugin.isShowImpCharges())
-				|| (type == WATERCAN && !plugin.isShowWateringCanCharges())
-				|| (type == WATERSKIN && !plugin.isShowWaterskinCharges())
-				|| (type == BELLOWS && !plugin.isShowBellowCharges())
-				|| (type == FRUIT_BASKET && !plugin.isShowBasketCharges())
-				|| (type == SACK && !plugin.isShowSackCharges())
-				|| (type == ABYSSAL_BRACELET && !plugin.isShowAbyssalBraceletCharges()))
+			if ((type == TELEPORT && !config.showTeleportCharges())
+				|| (type == FUNGICIDE_SPRAY && !config.showFungicideCharges())
+				|| (type == IMPBOX && !config.showImpCharges())
+				|| (type == WATERCAN && !config.showWateringCanCharges())
+				|| (type == WATERSKIN && !config.showWaterskinCharges())
+				|| (type == BELLOWS && !config.showBellowCharges())
+				|| (type == FRUIT_BASKET && !config.showBasketCharges())
+				|| (type == SACK && !config.showSackCharges())
+				|| (type == ABYSSAL_BRACELET && !config.showAbyssalBraceletCharges()))
 			{
 				return;
 			}
@@ -182,9 +196,10 @@ class ItemChargeOverlay extends WidgetItemOverlay
 
 	private boolean displayOverlay()
 	{
-		return plugin.isShowTeleportCharges() || plugin.isShowDodgyCount() || plugin.isShowFungicideCharges()
-			|| plugin.isShowImpCharges() || plugin.isShowWateringCanCharges() || plugin.isShowWaterskinCharges()
-			|| plugin.isShowBellowCharges() || plugin.isShowBasketCharges() || plugin.isShowSackCharges() || plugin.isShowAbyssalBraceletCharges() || plugin.isShowExplorerRingCharges()
-			|| plugin.isShowRingOfForgingCount();
+		return config.showTeleportCharges() || config.showDodgyCount() || config.showFungicideCharges()
+			|| config.showImpCharges() || config.showWateringCanCharges() || config.showWaterskinCharges()
+			|| config.showBellowCharges() || config.showBasketCharges() || config.showSackCharges()
+			|| config.showAbyssalBraceletCharges() || config.showExplorerRingCharges()
+			|| config.showRingOfForgingCount();
 	}
 }

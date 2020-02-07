@@ -29,10 +29,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicID;
@@ -47,7 +45,6 @@ import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.SpotAnimationChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -55,15 +52,13 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "NPC Status Timer",
-	description = "Adds a timer on NPC's for their attacks and flinching",
+	description = "Adds a timer on NPC's for their attacks and flinching.",
 	tags = {"flinch", "npc"},
 	type = PluginType.PVM
 )
-@Singleton
 public class NpcStatusPlugin extends Plugin
 {
 	@Inject
@@ -84,13 +79,6 @@ public class NpcStatusPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private final Set<MemorizedNPC> memorizedNPCs = new HashSet<>();
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean isCustomAttSpeed;
-
-	private int getCustomAttSpeed;
-
-	private int getRange;
-
 	private WorldArea lastPlayerLocation;
 
 	@Provides
@@ -102,8 +90,6 @@ public class NpcStatusPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
-		this.getRange = config.getRange();
 		overlayManager.add(npcStatusOverlay);
 	}
 
@@ -169,9 +155,9 @@ public class NpcStatusPlugin extends Plugin
 				{
 					mn.setStatus(MemorizedNPC.Status.FLINCHING);
 					mn.setCombatTimerEnd(-1);
-					if (isCustomAttSpeed())
+					if (config.isCustomAttSpeed())
 					{
-						mn.setFlinchTimerEnd(client.getTickCount() + getCustomAttSpeed / 2 + 1);
+						mn.setFlinchTimerEnd(client.getTickCount() + config.getCustomAttSpeed() / 2 + 1);
 					}
 					else
 					{
@@ -198,9 +184,9 @@ public class NpcStatusPlugin extends Plugin
 				{
 					mn.setStatus(MemorizedNPC.Status.FLINCHING);
 					mn.setCombatTimerEnd(-1);
-					if (isCustomAttSpeed())
+					if (config.isCustomAttSpeed())
 					{
-						mn.setFlinchTimerEnd(client.getTickCount() + getCustomAttSpeed / 2 + 2);
+						mn.setFlinchTimerEnd(client.getTickCount() + config.getCustomAttSpeed() / 2 + 2);
 					}
 					else
 					{
@@ -228,8 +214,8 @@ public class NpcStatusPlugin extends Plugin
 			if (npc.getNpc().getInteracting() == client.getLocalPlayer())
 			{
 				//Checks: will the NPC attack this tick?
-				if (((npc.getNpc().getWorldArea().canMelee(client, lastPlayerLocation) && this.getRange == 1) //Separate mechanics for meleerange-only NPC's because they have extra collisiondata checks (fences etc.) and can't attack diagonally
-					|| (lastPlayerLocation.hasLineOfSightTo(client, npc.getNpc().getWorldArea()) && npc.getNpc().getWorldArea().distanceTo(lastPlayerLocation) <= this.getRange && this.getRange > 1))
+				if (((npc.getNpc().getWorldArea().canMelee(client, lastPlayerLocation) && config.getRange() == 1) //Separate mechanics for meleerange-only NPC's because they have extra collisiondata checks (fences etc.) and can't attack diagonally
+					|| (lastPlayerLocation.hasLineOfSightTo(client, npc.getNpc().getWorldArea()) && npc.getNpc().getWorldArea().distanceTo(lastPlayerLocation) <= config.getRange() && config.getRange() > 1))
 					&& ((npc.getStatus() != MemorizedNPC.Status.FLINCHING && CombatTime < 9) || (npc.getStatus() == MemorizedNPC.Status.FLINCHING && FlinchTime < 2))
 					&& npc.getNpc().getAnimation() != -1 //Failsafe, attacking NPC's always have an animation.
 					&& !(npc.getLastnpcarea().distanceTo(lastPlayerLocation) == 0 && npc.getLastnpcarea() != npc.getNpc().getWorldArea())) //Weird mechanic: NPC's can't attack on the tick they do a random move
@@ -237,9 +223,9 @@ public class NpcStatusPlugin extends Plugin
 					npc.setStatus(MemorizedNPC.Status.IN_COMBAT_DELAY);
 					npc.setLastnpcarea(npc.getNpc().getWorldArea());
 					npc.setLastinteracted(npc.getNpc().getInteracting());
-					if (isCustomAttSpeed())
+					if (config.isCustomAttSpeed())
 					{
-						npc.setCombatTimerEnd(client.getTickCount() + getCustomAttSpeed + 8);
+						npc.setCombatTimerEnd(client.getTickCount() + config.getCustomAttSpeed() + 8);
 					}
 					else
 					{
@@ -279,18 +265,5 @@ public class NpcStatusPlugin extends Plugin
 	{
 		checkStatus();
 		lastPlayerLocation = client.getLocalPlayer().getWorldArea();
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged configChanged)
-	{
-		if (!configChanged.getGroup().equals("npcstatus"))
-		{
-			return;
-		}
-
-		this.getRange = config.getRange();
-		this.isCustomAttSpeed = config.isCustomAttSpeed();
-		this.getCustomAttSpeed = config.getCustomAttSpeed();
 	}
 }

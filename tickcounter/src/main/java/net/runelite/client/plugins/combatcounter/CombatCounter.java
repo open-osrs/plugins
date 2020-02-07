@@ -27,7 +27,6 @@ package net.runelite.client.plugins.combatcounter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,7 +54,6 @@ import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -66,11 +63,10 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Tick Counter",
-	description = "Count the amount of perfect combat ticks performed by each player",
+	description = "Count the amount of perfect combat ticks performed by each player.",
 	tags = {"combat", "counter", "tick"},
 	type = PluginType.UTILITY
 )
-@Singleton
 @Slf4j
 public class CombatCounter extends Plugin
 {
@@ -99,22 +95,6 @@ public class CombatCounter extends Plugin
 
 	private final Map<NPC, NPCDamageCounter> npcDamageMap = new HashMap<>();
 	Map<String, Double> playerDamage = new HashMap<>();
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showTickCounter;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showDamageCounter;
-	private boolean resetOnNewInstance;
-	@Getter(AccessLevel.PACKAGE)
-	private Color selfColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color totalColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color otherColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color bgColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color titleColor;
 
 	@Provides
 	CombatCounterConfig provideConfig(ConfigManager configManager)
@@ -236,8 +216,6 @@ public class CombatCounter extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(tickOverlay);
 		overlayManager.add(damageOverlay);
 
@@ -407,7 +385,7 @@ public class CombatCounter extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if (this.resetOnNewInstance)
+		if (config.resetOnNewInstance())
 		{
 			boolean prevInstance = instanced;
 			instanced = client.isInInstancedRegion();
@@ -642,26 +620,5 @@ public class CombatCounter extends Plugin
 	private int calculateRangedDelay(double distance)
 	{
 		return 2 + (int) Math.floor((3d + distance) / 6d);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("combatcounter"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.showTickCounter = config.showTickCounter();
-		this.showDamageCounter = config.showDamageCounter();
-		this.resetOnNewInstance = config.resetOnNewInstance();
-		this.selfColor = config.selfColor();
-		this.totalColor = config.totalColor();
-		this.otherColor = config.otherColor();
-		this.bgColor = config.bgColor();
-		this.titleColor = config.titleColor();
 	}
 }

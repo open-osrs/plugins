@@ -42,16 +42,18 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 class FishingSpotMinimapOverlay extends Overlay
 {
 	private final FishingPlugin plugin;
+	private final FishingConfig config;
 
 	@Setter(AccessLevel.PACKAGE)
 	private boolean hidden;
 
 	@Inject
-	public FishingSpotMinimapOverlay(final FishingPlugin plugin)
+	public FishingSpotMinimapOverlay(final FishingPlugin plugin, final FishingConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -71,14 +73,14 @@ class FishingSpotMinimapOverlay extends Overlay
 				continue;
 			}
 
-			if (plugin.isOnlyCurrentSpot() && plugin.getCurrentSpot() != null && plugin.getCurrentSpot() != spot)
+			if (config.onlyCurrentSpot() && plugin.getCurrentSpot() != null && plugin.getCurrentSpot() != spot)
 			{
 				continue;
 			}
 
 			Color color = npc.getSpotAnimation() == GraphicID.FLYING_FISH
-				? plugin.getMinnowsOverlayColor()
-				: plugin.getOverlayColor();
+				? config.getMinnowsOverlayColor()
+				: config.getOverlayColor();
 
 			net.runelite.api.Point minimapLocation = npc.getMinimapLocation();
 			if (minimapLocation != null)

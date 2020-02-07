@@ -36,7 +36,6 @@ import java.security.spec.InvalidKeySpecException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.inject.Singleton;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -51,7 +50,6 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.ImageUtil;
 
 @Slf4j
-@Singleton
 class ProfilePanel extends JPanel
 {
 	private static final ImageIcon DELETE_ICON;
@@ -67,7 +65,7 @@ class ProfilePanel extends JPanel
 	private final String loginText;
 	private String password = null;
 
-	ProfilePanel(final Client client, final String data, final ProfilesPlugin plugin, final ProfilesPanel parent)
+	ProfilePanel(final Client client, final String data, final ProfilesConfig config, final ProfilesPanel parent)
 	{
 		String[] parts = data.split(":");
 		this.loginText = parts[1];
@@ -144,7 +142,7 @@ class ProfilePanel extends JPanel
 				if (SwingUtilities.isLeftMouseButton(e) && client.getGameState() == GameState.LOGIN_SCREEN)
 				{
 					client.setUsername(loginText);
-					if (plugin.isRememberPassword() && password != null)
+					if (config.rememberPassword() && password != null)
 					{
 						client.setPassword(password);
 					}
@@ -163,7 +161,7 @@ class ProfilePanel extends JPanel
 				if (SwingUtilities.isLeftMouseButton(e) && client.getGameState() == GameState.LOGIN_SCREEN)
 				{
 					client.setUsername(loginText);
-					if (plugin.isRememberPassword() && password != null)
+					if (config.rememberPassword() && password != null)
 					{
 						client.setPassword(password);
 					}
@@ -171,10 +169,10 @@ class ProfilePanel extends JPanel
 			}
 		});
 
-		if (plugin.isDisplayEmailAddress())
+		if (config.displayEmailAddress())
 		{
 			JLabel login = new JLabel();
-			login.setText(plugin.isStreamerMode() ? "Hidden email" : loginText);
+			login.setText(config.streamerMode() ? "Hidden email" : loginText);
 			login.setBorder(null);
 			login.setPreferredSize(new Dimension(0, 24));
 			login.setForeground(Color.WHITE);

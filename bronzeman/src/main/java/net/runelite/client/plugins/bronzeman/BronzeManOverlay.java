@@ -23,16 +23,18 @@ public class BronzeManOverlay extends Overlay
 
 	private final Client client;
 	private final BronzemanPlugin plugin;
+	private final BronzeManConfig config;
 	private final List<ItemUnlock> itemUnlockList;
 	private ItemUnlock currentUnlock;
 	@Inject
 	private ItemManager itemManager;
 
 	@Inject
-	public BronzeManOverlay(Client client, BronzemanPlugin plugin)
+	public BronzeManOverlay(final Client client, final BronzemanPlugin plugin, final BronzeManConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.itemUnlockList = new CopyOnWriteArrayList<>();
 		setPosition(OverlayPosition.TOP_CENTER);
 	}
@@ -45,19 +47,11 @@ public class BronzeManOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (client.getGameState() != GameState.LOGGED_IN)
+		if (client.getGameState() != GameState.LOGGED_IN || !config.notifyImgUnlock() || itemUnlockList.isEmpty() || itemManager == null)
 		{
 			return null;
 		}
-		if (itemUnlockList.isEmpty())
-		{
-			return null;
-		}
-		if (itemManager == null)
-		{
-			System.out.println("Item-manager is null");
-			return null;
-		}
+
 		if (currentUnlock == null)
 		{
 			currentUnlock = itemUnlockList.get(0);
@@ -73,7 +67,7 @@ public class BronzeManOverlay extends Overlay
 		{
 			currentUnlock.setLocationY(drawY + 1);
 		}
-		if (currentUnlock.displayed())
+		if (currentUnlock.displayed(itemUnlockList.size()))
 		{
 			itemUnlockList.remove(currentUnlock);
 			currentUnlock = null;

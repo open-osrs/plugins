@@ -59,7 +59,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -145,7 +144,6 @@ import org.pf4j.Extension;
 	type = PluginType.UTILITY
 )
 @Slf4j
-@Singleton
 public class LootTrackerPlugin extends Plugin
 {
 	// Activity/Event loot handling
@@ -292,18 +290,6 @@ public class LootTrackerPlugin extends Plugin
 			.collect(Collectors.toList());
 	}
 
-	private String getIgnoredItems;
-	private boolean saveLoot;
-	private boolean chestLootChat;
-	private boolean syncPanel;
-	private boolean localPersistence;
-	private LootRecordSortType sortType;
-	private boolean whitelistEnabled;
-	private String getWhitelist;
-	private boolean blacklistEnabled;
-	private String getBlacklist;
-	private boolean sendLootValueMessages;
-
 	@Provides
 	LootTrackerConfig provideConfig(ConfigManager configManager)
 	{
@@ -346,11 +332,9 @@ public class LootTrackerPlugin extends Plugin
 	{
 		if (event.getGroup().equals("loottracker"))
 		{
-			updateConfig();
-
 			if (event.getKey().equals("ignoredItems"))
 			{
-				ignoredItems = Text.fromCSV(this.getIgnoredItems);
+				ignoredItems = Text.fromCSV(config.getIgnoredItems());
 				SwingUtilities.invokeLater(panel::updateIgnoredRecords);
 			}
 			if (event.getKey().equals("ignoredNPCs"))
@@ -360,7 +344,7 @@ public class LootTrackerPlugin extends Plugin
 			}
 			if (event.getKey().equals("sortType"))
 			{
-				panel.setLootRecordSortType(this.sortType);
+				panel.setLootRecordSortType(config.sortType());
 				SwingUtilities.invokeLater(panel::rebuild);
 			}
 		}
@@ -370,10 +354,9 @@ public class LootTrackerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		ignoredItems = Text.fromCSV(config.getIgnoredItems());
 		ignoredNPCs = Text.fromCSV(config.getIgnoredNPCs());
-		updateConfig();
+
 		panel = new LootTrackerPanel(this, itemManager, config);
 		spriteManager.getSpriteAsync(SpriteID.TAB_INVENTORY, 0, panel::loadHeaderIcon);
 
@@ -393,7 +376,7 @@ public class LootTrackerPlugin extends Plugin
 			.subscribe(() ->
 			{
 				AccountSession accountSession = sessionManager.getAccountSession();
-				if (accountSession != null || this.localPersistence)
+				if (accountSession != null || config.localPersistence())
 				{
 					clientThread.invokeLater(() ->
 					{
@@ -406,7 +389,7 @@ public class LootTrackerPlugin extends Plugin
 
 						executor.submit(() ->
 						{
-							if (this.syncPanel && lootTrackerClient != null)
+							if (config.syncPanel() && lootTrackerClient != null)
 							{
 								if (accountSession != null)
 								{
@@ -424,7 +407,7 @@ public class LootTrackerPlugin extends Plugin
 								log.info("Loaded {} remote data entries", lootRecords.size());
 							}
 
-							if (this.localPersistence)
+							if (config.localPersistence())
 							{
 								DSLContext dslContext = databaseManager.getDsl();
 
@@ -567,18 +550,18 @@ public class LootTrackerPlugin extends Plugin
 
 		final int killCount = killCountMap.getOrDefault(name.toUpperCase(), -1);
 
-		if (this.whitelistEnabled)
+		if (config.whitelistEnabled())
 		{
-			final String configNpcs = this.getWhitelist.toLowerCase();
+			final String configNpcs = config.getWhitelist().toLowerCase();
 			List<String> whitelist = Text.fromCSV(configNpcs);
 			if (!whitelist.contains(name.toLowerCase()))
 			{
 				return;
 			}
 		}
-		else if (this.blacklistEnabled)
+		else if (config.blacklistEnabled())
 		{
-			final String configNpcs = this.getBlacklist.toLowerCase();
+			final String configNpcs = config.getBlacklist().toLowerCase();
 			List<String> blacklist = Text.fromCSV(configNpcs);
 			if (blacklist.contains(name.toLowerCase()))
 			{
@@ -610,7 +593,7 @@ public class LootTrackerPlugin extends Plugin
 				queuedLoots.add(lootRecord);
 			}
 		}
-		if (this.localPersistence)
+		if (config.localPersistence())
 		{
 			saveLocalLootRecord(lootRecord);
 		}
@@ -642,7 +625,7 @@ public class LootTrackerPlugin extends Plugin
 			return;
 		}
 
-		if (this.sendLootValueMessages)
+		if (config.sendLootValueMessages())
 		{
 			if (WorldType.isDeadmanWorld(client.getWorldType()) || WorldType.isHighRiskWorld(client.getWorldType()) ||
 				WorldType.isPvpWorld(client.getWorldType()) || client.getVar(Varbits.IN_WILDERNESS) == 1)
@@ -665,7 +648,7 @@ public class LootTrackerPlugin extends Plugin
 		SwingUtilities.invokeLater(() -> panel.add(name, localUsername, combat, entries));
 		LootRecord lootRecord = new LootRecord(name, localUsername, LootRecordType.PLAYER,
 			toGameItems(items), Instant.now());
-		if (this.saveLoot)
+		if (config.saveLoot())
 		{
 			synchronized (queuedLoots)
 			{
@@ -744,7 +727,7 @@ public class LootTrackerPlugin extends Plugin
 			return;
 		}
 
-		if (!(event.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) && this.chestLootChat)
+		if (!(event.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) && config.chestLootChat())
 		{
 			Item[] items = container.getItems();
 			long chestPrice = 0;
@@ -790,7 +773,7 @@ public class LootTrackerPlugin extends Plugin
 		LootRecord lootRecord = new LootRecord(eventType, client.getLocalPlayer().getName(), LootRecordType.EVENT,
 			toGameItems(items), Instant.now());
 
-		if (this.saveLoot)
+		if (config.saveLoot())
 		{
 			synchronized (queuedLoots)
 			{
@@ -991,14 +974,14 @@ public class LootTrackerPlugin extends Plugin
 						client.getLocalPlayer().getCombatLevel(), entries));
 					LootRecord lootRecord = new LootRecord(name, client.getLocalPlayer().getName(), LootRecordType.DEATH,
 						toGameItems(itemsLost), Instant.now());
-					if (this.saveLoot)
+					if (config.saveLoot())
 					{
 						synchronized (queuedLoots)
 						{
 							queuedLoots.add(lootRecord);
 						}
 					}
-					if (this.localPersistence)
+					if (config.localPersistence())
 					{
 						saveLocalLootRecord(lootRecord);
 					}
@@ -1217,7 +1200,6 @@ public class LootTrackerPlugin extends Plugin
 		}
 
 		config.setIgnoredItems(Text.toCSV(ignoredItemSet));
-		this.getIgnoredItems = Text.toCSV(ignoredItemSet);
 		panel.updateIgnoredRecords();
 	}
 
@@ -1366,21 +1348,6 @@ public class LootTrackerPlugin extends Plugin
 			return pet.getPetID();
 		}
 		return -1;
-	}
-
-	private void updateConfig()
-	{
-		this.getIgnoredItems = config.getIgnoredItems();
-		this.saveLoot = config.saveLoot();
-		this.chestLootChat = config.chestLootChat();
-		this.syncPanel = config.syncPanel();
-		this.localPersistence = config.localPersistence();
-		this.sortType = config.sortType();
-		this.whitelistEnabled = config.whitelistEnabled();
-		this.getWhitelist = config.getWhitelist();
-		this.blacklistEnabled = config.blacklistEnabled();
-		this.getBlacklist = config.getBlacklist();
-		this.sendLootValueMessages = config.sendLootValueMessages();
 	}
 
 	private void initDatabase()
