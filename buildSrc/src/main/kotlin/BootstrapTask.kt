@@ -52,6 +52,7 @@ open class BootstrapTask : DefaultTask() {
 
             project.subprojects.forEach {
                 if (it.project.properties.containsKey("PluginName") && it.project.properties.containsKey("PluginDescription")) {
+                    var pluginAdded = false
                     val plugin = it.project.tasks.get("jar").outputs.files.singleFile
 
                     val releases = ArrayList<JsonBuilder>()
@@ -64,7 +65,7 @@ open class BootstrapTask : DefaultTask() {
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 
-                     val pluginObject = JsonBuilder(
+                    val pluginObject = JsonBuilder(
                             "name" to it.project.extra.get("PluginName"),
                             "id" to nameToId(it.project.extra.get("PluginName") as String),
                             "description" to it.project.extra.get("PluginDescription"),
@@ -81,13 +82,21 @@ open class BootstrapTask : DefaultTask() {
                         }
 
                         if (it.project.version.toString() in item.getJSONArray("releases").toString()) {
+                            pluginAdded = true
                             plugins.add(item)
                             break
                         }
 
                         plugins.add(JsonMerger(arrayMergeMode = JsonMerger.ArrayMergeMode.MERGE_ARRAY).merge(item, pluginObject))
-                        plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile())
+                        pluginAdded = true
                     }
+
+                    if (!pluginAdded)
+                    {
+                        plugins.add(pluginObject)
+                    }
+
+                    plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile())
                 }
             }
 
