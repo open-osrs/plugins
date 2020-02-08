@@ -165,8 +165,7 @@ jobs:
         run: ./gradlew checkstyleTest --console=plain
 
   bump:
-    name: Bump version numbers
-    needs: [build, checkstyleMain, checkstyleTest]
+    name: Check version numbers
     runs-on: ubuntu-latest
 
     steps:
@@ -197,21 +196,31 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Bump version numbers
-        run: ./gradlew bumpVersion --newFiles="${{ steps.changedFiles.outputs.files_created }}" --changedFiles="${{ steps.changedFiles.outputs.files_updated }}" --console=plain
-
-      - name: Commit changed files
+        id: bumpNewChanged
+        if: steps.changedFiles.outputs.files_created != '' && steps.changedFiles.outputs.files_updated != ''
         run: |
-          git add \*.kts
-          git diff-index --quiet HEAD \
-          || git -c user.name="GitHub" -c user.email="noreply@github.com" commit \
-            --author="github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>" \
-            -m "Bump version(s)"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ steps.extract_actor_repo.outputs.repo }}
-          branch: ${{ steps.extract_actor_repo_branch.outputs.branch }}
+          ./gradlew bumpVersion --newFiles="${{ steps.changedFiles.outputs.files_created }}" --changedFiles="${{ steps.changedFiles.outputs.files_updated }}" --console=plain
+
+      - name: Bump version numbers
+        id: bumpChanged
+        if: steps.changedFiles.outputs.files_created == '' && steps.changedFiles.outputs.files_updated != ''
+        run: |
+          ./gradlew bumpVersion --changedFiles="${{ steps.changedFiles.outputs.files_updated }}" --console=plain
+
+      - name: Bump version numbers
+        id: bumpNew
+        if: steps.changedFiles.outputs.files_created != '' && steps.changedFiles.outputs.files_updated == ''
+        run: |
+          ./gradlew bumpVersion --newFiles="${{ steps.changedFiles.outputs.files_created }}" --console=plain
+
+      - name: Detect changes
+        id: detectChanges
+        run: |
+          git update-index --skip-worktree gradlew
+
+          if ! git diff-index --quiet HEAD --; then
+              exit 1
+          fi
 
   approve:
     name: Approve
