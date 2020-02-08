@@ -29,7 +29,6 @@ package net.runelite.client.plugins.interfacestyles;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -53,7 +52,6 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Interface Styles",
@@ -61,7 +59,7 @@ import org.pf4j.Extension;
 	tags = {"2005", "2010", "skin", "theme", "ui"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
+@Slf4j
 public class InterfaceStylesPlugin extends Plugin
 {
 	@Inject
@@ -78,11 +76,6 @@ public class InterfaceStylesPlugin extends Plugin
 
 	private Sprite[] defaultCrossSprites;
 
-	private Skin skin;
-	private boolean hdHealthBars;
-	private boolean hdMenu;
-	private boolean rsCrossSprites;
-
 	@Provides
 	InterfaceStylesConfig provideConfig(ConfigManager configManager)
 	{
@@ -92,7 +85,6 @@ public class InterfaceStylesPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		clientThread.invoke(this::updateAllOverrides);
 	}
 
@@ -113,7 +105,6 @@ public class InterfaceStylesPlugin extends Plugin
 	{
 		if (config.getGroup().equals("interfaceStyles"))
 		{
-			updateConfig();
 			clientThread.invoke(this::updateAllOverrides);
 		}
 	}
@@ -127,7 +118,7 @@ public class InterfaceStylesPlugin extends Plugin
 	@Subscribe
 	private void onPostHealthBar(PostHealthBar postHealthBar)
 	{
-		if (!this.hdHealthBars)
+		if (!config.hdHealthBars())
 		{
 			return;
 		}
@@ -173,7 +164,7 @@ public class InterfaceStylesPlugin extends Plugin
 	@Subscribe
 	private void onBeforeMenuRender(BeforeMenuRender event)
 	{
-		if (this.hdMenu)
+		if (config.hdMenu())
 		{
 			client.draw2010Menu();
 			event.consume();
@@ -186,9 +177,9 @@ public class InterfaceStylesPlugin extends Plugin
 		{
 			for (Skin skin : spriteOverride.getSkin())
 			{
-				if (skin == this.skin)
+				if (skin == config.skin())
 				{
-					String file = this.skin.toString() + "/" + spriteOverride.getSpriteID() + ".png";
+					String file = config.skin().toString() + "/" + spriteOverride.getSpriteID() + ".png";
 					Sprite spritePixels = getFileSpritePixels(file);
 
 					if (spriteOverride.getSpriteID() == SpriteID.COMPASS_TEXTURE)
@@ -218,9 +209,9 @@ public class InterfaceStylesPlugin extends Plugin
 	{
 		for (WidgetOverride widgetOverride : WidgetOverride.values())
 		{
-			if (widgetOverride.getSkin() == this.skin)
+			if (widgetOverride.getSkin() == config.skin())
 			{
-				String file = this.skin.toString() + "/widget/" + widgetOverride.getName() + ".png";
+				String file = config.skin().toString() + "/widget/" + widgetOverride.getName() + ".png";
 				Sprite spritePixels = getFileSpritePixels(file);
 
 				if (spritePixels != null)
@@ -265,7 +256,7 @@ public class InterfaceStylesPlugin extends Plugin
 	{
 		for (WidgetOffset widgetOffset : WidgetOffset.values())
 		{
-			if (widgetOffset.getSkin() != this.skin)
+			if (widgetOffset.getSkin() != config.skin())
 			{
 				continue;
 			}
@@ -299,7 +290,7 @@ public class InterfaceStylesPlugin extends Plugin
 
 	private void overrideHealthBars()
 	{
-		if (this.hdHealthBars)
+		if (config.hdHealthBars())
 		{
 			spriteManager.addSpriteOverrides(HealthbarOverride.values());
 			// Reset health bar caches to apply the override
@@ -319,7 +310,7 @@ public class InterfaceStylesPlugin extends Plugin
 
 	private void overrideCrossSprites()
 	{
-		if (this.rsCrossSprites)
+		if (config.rsCrossSprites())
 		{
 			// If we've already replaced them,
 			// we don't need to replace them again
@@ -398,13 +389,5 @@ public class InterfaceStylesPlugin extends Plugin
 			Sprite compass = ImageUtil.getImageSprite(compassImage, client);
 			client.setCompass(compass);
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.skin = config.skin();
-		this.hdHealthBars = config.hdHealthBars();
-		this.hdMenu = config.hdMenu();
-		this.rsCrossSprites = config.rsCrossSprites();
 	}
 }

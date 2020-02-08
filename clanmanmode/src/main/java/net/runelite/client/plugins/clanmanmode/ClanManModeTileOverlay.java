@@ -14,11 +14,11 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 @Singleton
 public class ClanManModeTileOverlay extends Overlay
 {
-	private final ClanManModeService ClanManModeService;
+	private final net.runelite.client.plugins.clanmanmode.ClanManModeService ClanManModeService;
 	private final ClanManModeConfig config;
 
 	@Inject
-	private ClanManModeTileOverlay(final ClanManModeConfig config, final ClanManModeService ClanManModeService)
+	private ClanManModeTileOverlay(final ClanManModeConfig config, final net.runelite.client.plugins.clanmanmode.ClanManModeService ClanManModeService)
 	{
 		this.config = config;
 		this.ClanManModeService = ClanManModeService;

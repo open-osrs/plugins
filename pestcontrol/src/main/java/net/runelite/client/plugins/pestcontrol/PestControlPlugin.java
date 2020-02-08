@@ -27,8 +27,6 @@ package net.runelite.client.plugins.pestcontrol;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,7 +68,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Pest Control",
@@ -78,7 +75,7 @@ import org.pf4j.Extension;
 	tags = {"minigame", "overlay"},
 	type = PluginType.MINIGAME
 )
-@Singleton
+@Slf4j
 public class PestControlPlugin extends Plugin
 {
 	private static final int VOID_KNIGHTS_OUTPOST = 10537;
@@ -163,22 +160,6 @@ public class PestControlPlugin extends Plugin
 
 	private PointsInfoboxCounter pointsInfoboxCounter;
 
-	private boolean showHintArrow;
-	private boolean showPortalWeakness;
-	private boolean highlightGangplanks;
-	private HighlightPortalOption portalHighlight;
-	private Color activePortalColor;
-	private Color shieldedPortalColor;
-	private NpcHighlightStyle highlightSpinners;
-	private Color spinnerColor;
-	private NpcHighlightStyle highlightBrawlers;
-	private Color brawlerColor;
-	private boolean highlightRepairables;
-	@Getter(AccessLevel.PACKAGE)
-	private Color repairableColor;
-	private boolean showPoints;
-	private boolean showTimeTillNextPortal;
-
 	@Provides
 	PestControlConfig provideConfig(ConfigManager configManager)
 	{
@@ -188,7 +169,6 @@ public class PestControlPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		loadPlugin();
 	}
 
@@ -203,7 +183,6 @@ public class PestControlPlugin extends Plugin
 	{
 		if (configEvent.getGroup().equals("pestcontrol"))
 		{
-			updateConfig();
 			unloadPlugin();
 			loadPlugin();
 		}
@@ -235,53 +214,53 @@ public class PestControlPlugin extends Plugin
 
 		overlayManager.add(widgetOverlay);
 
-		if (this.highlightSpinners != NpcHighlightStyle.OFF)
+		if (config.highlightSpinners() != NpcHighlightStyle.OFF)
 		{
 			for (Integer npcId : PestControlNpc.getSpinnerIdSet())
 			{
 				highlightedNpcList.put(npcId, new NpcHighlightContext(
-					this.highlightSpinners,
-					this.spinnerColor,
+					config.highlightSpinners(),
+					config.spinnerColor(),
 					true
 				));
 			}
 		}
 
-		if (this.highlightBrawlers != NpcHighlightStyle.OFF)
+		if (config.highlightBrawlers() != NpcHighlightStyle.OFF)
 		{
 			for (Integer npcId : PestControlNpc.getBrawlerIdSet())
 			{
 				highlightedNpcList.put(npcId, new NpcHighlightContext(
-					this.highlightBrawlers,
-					this.brawlerColor,
+					config.highlightBrawlers(),
+					config.brawlerColor(),
 					false
 				));
 			}
 		}
 
-		if (this.portalHighlight != HighlightPortalOption.OFF)
+		if (config.portalHighlight() != HighlightPortalOption.OFF)
 		{
-			if (this.portalHighlight == HighlightPortalOption.ACTIVE ||
-				this.portalHighlight == HighlightPortalOption.ALL)
+			if (config.portalHighlight() == HighlightPortalOption.ACTIVE ||
+				config.portalHighlight() == HighlightPortalOption.ALL)
 			{
 				for (Integer portalNpcId : PestControlNpc.getActivePortalIdSet())
 				{
 					highlightedNpcList.put(portalNpcId, new NpcHighlightContext(
 						NpcHighlightStyle.HULL,
-						this.activePortalColor,
+						config.activePortalColor(),
 						false
 					));
 				}
 			}
 
-			if (this.portalHighlight == HighlightPortalOption.SHIELDED ||
-				this.portalHighlight == HighlightPortalOption.ALL)
+			if (config.portalHighlight() == HighlightPortalOption.SHIELDED ||
+				config.portalHighlight() == HighlightPortalOption.ALL)
 			{
 				for (Integer portalNpcId : PestControlNpc.getShieldedPortalIdSet())
 				{
 					highlightedNpcList.put(portalNpcId, new NpcHighlightContext(
 						NpcHighlightStyle.HULL,
-						this.shieldedPortalColor,
+						config.shieldedPortalColor(),
 						false
 					));
 				}
@@ -293,12 +272,12 @@ public class PestControlPlugin extends Plugin
 			overlayManager.add(npcHighlightOverlay);
 		}
 
-		if (this.highlightRepairables)
+		if (config.highlightRepairables())
 		{
 			overlayManager.add(repairOverlay);
 		}
 
-		if (this.showHintArrow)
+		if (config.showHintArrow())
 		{
 			overlayManager.add(hintArrowOverlay);
 
@@ -308,17 +287,17 @@ public class PestControlPlugin extends Plugin
 			}
 		}
 
-		if (this.highlightGangplanks)
+		if (config.highlightGangplanks())
 		{
 			overlayManager.add(gangplankOverlay);
 		}
 
-		if (this.showTimeTillNextPortal)
+		if (config.showTimeTillNextPortal())
 		{
 			overlayManager.add(timerOverlay);
 		}
 
-		if (this.showPortalWeakness)
+		if (config.showPortalWeakness())
 		{
 			overlayManager.add(portalWeaknessOverlay);
 		}
@@ -339,7 +318,7 @@ public class PestControlPlugin extends Plugin
 
 		highlightedNpcList.clear();
 
-		if (game != null && this.showHintArrow && client.hasHintArrow())
+		if (game != null && config.showHintArrow() && client.hasHintArrow())
 		{
 			client.clearHintArrow();
 		}
@@ -357,7 +336,7 @@ public class PestControlPlugin extends Plugin
 
 	private void handlePointsInfoboxCounter()
 	{
-		if (!this.showPoints)
+		if (!config.showPoints())
 		{
 			return;
 		}
@@ -694,23 +673,5 @@ public class PestControlPlugin extends Plugin
 			return client.getLocalPlayer().getWorldLocation().getRegionID() == VOID_KNIGHTS_OUTPOST;
 		}
 		return false;
-	}
-
-	private void updateConfig()
-	{
-		this.showHintArrow = config.showHintArrow();
-		this.showPortalWeakness = config.showPortalWeakness();
-		this.highlightGangplanks = config.highlightGangplanks();
-		this.portalHighlight = config.portalHighlight();
-		this.activePortalColor = config.activePortalColor();
-		this.shieldedPortalColor = config.shieldedPortalColor();
-		this.highlightSpinners = config.highlightSpinners();
-		this.spinnerColor = config.spinnerColor();
-		this.highlightBrawlers = config.highlightBrawlers();
-		this.brawlerColor = config.brawlerColor();
-		this.highlightRepairables = config.highlightRepairables();
-		this.repairableColor = config.repairableColor();
-		this.showPoints = config.showPoints();
-		this.showTimeTillNextPortal = config.showTimeTillNextPortal();
 	}
 }

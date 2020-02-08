@@ -25,13 +25,11 @@
 package net.runelite.client.plugins.inferno;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +51,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.inferno.displaymodes.InfernoNamingDisplayMode;
 import net.runelite.client.plugins.inferno.displaymodes.InfernoPrayerDisplayMode;
 import net.runelite.client.plugins.inferno.displaymodes.InfernoSafespotDisplayMode;
 import net.runelite.client.plugins.inferno.displaymodes.InfernoWaveDisplayMode;
@@ -70,7 +67,6 @@ import org.pf4j.Extension;
 	type = PluginType.PVM
 )
 @Slf4j
-@Singleton
 public class InfernoPlugin extends Plugin
 {
 	private static final int INFERNO_REGION = 9043;
@@ -119,6 +115,7 @@ public class InfernoPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private boolean finalPhase = false;
+	@Getter(AccessLevel.PACKAGE)
 	private NPC zukShield = null;
 	private WorldPoint zukShieldLastPosition = null;
 	private WorldPoint zukShieldBase = null;
@@ -143,95 +140,6 @@ public class InfernoPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private long lastTick;
 
-	@Getter(AccessLevel.PACKAGE)
-	private InfernoPrayerDisplayMode prayerDisplayMode;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean descendingBoxes;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateNonPriorityDescendingBoxes;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateBlobDetectionTick;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateWhenPrayingCorrectly;
-
-	private InfernoWaveDisplayMode waveDisplay;
-	@Getter(AccessLevel.PACKAGE)
-	private InfernoNamingDisplayMode npcNaming;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean npcLevels;
-	private Color getWaveOverlayHeaderColor;
-	private Color getWaveTextColor;
-
-	@Getter(AccessLevel.PACKAGE)
-	private InfernoSafespotDisplayMode safespotDisplayMode;
-	@Getter(AccessLevel.PACKAGE)
-	private int safespotsCheckSize;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateNonSafespotted;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateTemporarySafespotted;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateSafespotted;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateObstacles;
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateNibblers;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateCentralNibbler;
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateActiveHealersJad;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean indicateActiveHealersZuk;
-
-	private boolean indicateNpcPositionBat;
-	private boolean indicateNpcPositionBlob;
-	private boolean indicateNpcPositionMeleer;
-	private boolean indicateNpcPositionRanger;
-	private boolean indicateNpcPositionMage;
-
-	private boolean ticksOnNpcBat;
-	private boolean ticksOnNpcBlob;
-	private boolean ticksOnNpcMeleer;
-	private boolean ticksOnNpcRanger;
-	private boolean ticksOnNpcMage;
-	private boolean ticksOnNpcHealerJad;
-	private boolean ticksOnNpcJad;
-	private boolean ticksOnNpcZuk;
-
-	private boolean safespotsBat;
-	private boolean safespotsBlob;
-	private boolean safespotsMeleer;
-	private boolean safespotsRanger;
-	private boolean safespotsMage;
-	private boolean safespotsHealerJad;
-	private boolean safespotsJad;
-	private InfernoZukShieldDisplayMode safespotsZukShieldBeforeHealers;
-	private InfernoZukShieldDisplayMode safespotsZukShieldAfterHealers;
-
-	private boolean prayerBat;
-	private boolean prayerBlob;
-	private boolean prayerMeleer;
-	private boolean prayerRanger;
-	private boolean prayerMage;
-	private boolean prayerHealerJad;
-	private boolean prayerJad;
-
-	private boolean hideNibblerDeath;
-	private boolean hideBatDeath;
-	private boolean hideBlobDeath;
-	private boolean hideBlobSmallRangedDeath;
-	private boolean hideBlobSmallMagicDeath;
-	private boolean hideBlobSmallMeleeDeath;
-	private boolean hideMeleerDeath;
-	private boolean hideRangerDeath;
-	private boolean hideMagerDeath;
-	private boolean hideJadDeath;
-	private boolean hideHealerJadDeath;
-	private boolean hideHealerZukDeath;
-	private boolean hideZukDeath;
-
 	@Provides
 	InfernoConfig provideConfig(ConfigManager configManager)
 	{
@@ -241,17 +149,15 @@ public class InfernoPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
-		waveOverlay.setDisplayMode(this.waveDisplay);
-		waveOverlay.setWaveHeaderColor(this.getWaveOverlayHeaderColor);
-		waveOverlay.setWaveTextColor(this.getWaveTextColor);
+		waveOverlay.setDisplayMode(config.waveDisplay());
+		waveOverlay.setWaveHeaderColor(config.getWaveOverlayHeaderColor());
+		waveOverlay.setWaveTextColor(config.getWaveTextColor());
 
 		if (isInInferno())
 		{
 			overlayManager.add(infernoOverlay);
 
-			if (this.waveDisplay != InfernoWaveDisplayMode.NONE)
+			if (config.waveDisplay() != InfernoWaveDisplayMode.NONE)
 			{
 				overlayManager.add(waveOverlay);
 			}
@@ -283,22 +189,21 @@ public class InfernoPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
 		hideNpcDeaths();
 		showNpcDeaths();
 
 		if (event.getKey().endsWith("color"))
 		{
-			waveOverlay.setWaveHeaderColor(this.getWaveOverlayHeaderColor);
-			waveOverlay.setWaveTextColor(this.getWaveTextColor);
+			waveOverlay.setWaveHeaderColor(config.getWaveOverlayHeaderColor());
+			waveOverlay.setWaveTextColor(config.getWaveTextColor());
 		}
 		else if ("waveDisplay".equals(event.getKey()))
 		{
 			overlayManager.remove(waveOverlay);
 
-			waveOverlay.setDisplayMode(this.waveDisplay);
+			waveOverlay.setDisplayMode(config.waveDisplay());
 
-			if (isInInferno() && this.waveDisplay != InfernoWaveDisplayMode.NONE)
+			if (isInInferno() && config.waveDisplay() != InfernoWaveDisplayMode.NONE)
 			{
 				overlayManager.add(waveOverlay);
 			}
@@ -445,7 +350,7 @@ public class InfernoPlugin extends Plugin
 			overlayManager.add(jadOverlay);
 			overlayManager.add(prayerOverlay);
 
-			if (this.waveDisplay != InfernoWaveDisplayMode.NONE)
+			if (config.waveDisplay() != InfernoWaveDisplayMode.NONE)
 			{
 				overlayManager.add(waveOverlay);
 			}
@@ -494,12 +399,12 @@ public class InfernoPlugin extends Plugin
 			// Map all upcoming attacks and their priority + determine which NPC is about to attack next
 			if (infernoNPC.getTicksTillNextAttack() > 0 && isPrayerHelper(infernoNPC)
 				&& (infernoNPC.getNextAttack() != InfernoNPC.Attack.UNKNOWN
-				|| (indicateBlobDetectionTick && infernoNPC.getType() == InfernoNPC.Type.BLOB
+				|| (config.indicateBlobDetectionTick() && infernoNPC.getType() == InfernoNPC.Type.BLOB
 				&& infernoNPC.getTicksTillNextAttack() >= 4)))
 			{
 				upcomingAttacks.computeIfAbsent(infernoNPC.getTicksTillNextAttack(), k -> new HashMap<>());
 
-				if (indicateBlobDetectionTick && infernoNPC.getType() == InfernoNPC.Type.BLOB
+				if (config.indicateBlobDetectionTick() && infernoNPC.getType() == InfernoNPC.Type.BLOB
 					&& infernoNPC.getTicksTillNextAttack() >= 4)
 				{
 					upcomingAttacks.computeIfAbsent(infernoNPC.getTicksTillNextAttack() - 3, k -> new HashMap<>());
@@ -564,8 +469,8 @@ public class InfernoPlugin extends Plugin
 
 	private void calculateClosestAttack()
 	{
-		if (prayerDisplayMode == InfernoPrayerDisplayMode.PRAYER_TAB
-			|| prayerDisplayMode == InfernoPrayerDisplayMode.BOTH)
+		if (config.prayerDisplayMode() == InfernoPrayerDisplayMode.PRAYER_TAB
+			|| config.prayerDisplayMode() == InfernoPrayerDisplayMode.BOTH)
 		{
 			int closestTick = 999;
 			int closestPriority = 999;
@@ -592,9 +497,9 @@ public class InfernoPlugin extends Plugin
 	{
 		if (currentWaveNumber < 69)
 		{
-			if (safespotDisplayMode != InfernoSafespotDisplayMode.OFF)
+			if (config.safespotDisplayMode() != InfernoSafespotDisplayMode.OFF)
 			{
-				int checkSize = (int) Math.floor(safespotsCheckSize / 2.0);
+				int checkSize = (int) Math.floor(config.safespotsCheckSize() / 2.0);
 
 				for (int x = -checkSize; x <= checkSize; x++)
 				{
@@ -725,10 +630,10 @@ public class InfernoPlugin extends Plugin
 
 			zukShieldLastPosition = zukShield.getWorldLocation();
 
-			if (safespotDisplayMode != InfernoSafespotDisplayMode.OFF)
+			if (config.safespotDisplayMode() != InfernoSafespotDisplayMode.OFF)
 			{
-				if ((finalPhase && safespotsZukShieldAfterHealers == InfernoZukShieldDisplayMode.LIVE)
-					|| (!finalPhase && safespotsZukShieldBeforeHealers == InfernoZukShieldDisplayMode.LIVE))
+				if ((finalPhase && config.safespotsZukShieldAfterHealers() == InfernoZukShieldDisplayMode.LIVE)
+					|| (!finalPhase && config.safespotsZukShieldBeforeHealers() == InfernoZukShieldDisplayMode.LIVE))
 				{
 					for (int x = zukShield.getWorldLocation().getX() - 1; x <= zukShield.getWorldLocation().getX() + 3; x++)
 					{
@@ -738,8 +643,8 @@ public class InfernoPlugin extends Plugin
 						}
 					}
 				}
-				else if ((finalPhase && safespotsZukShieldAfterHealers == InfernoZukShieldDisplayMode.PREDICT)
-					|| (!finalPhase && safespotsZukShieldBeforeHealers == InfernoZukShieldDisplayMode.PREDICT))
+				else if ((finalPhase && config.safespotsZukShieldAfterHealers() == InfernoZukShieldDisplayMode.PREDICT)
+					|| (!finalPhase && config.safespotsZukShieldBeforeHealers() == InfernoZukShieldDisplayMode.PREDICT))
 				{
 					if (zukShieldCornerTicks >= 0)
 					{
@@ -757,7 +662,7 @@ public class InfernoPlugin extends Plugin
 
 	private void calculateSafespotAreas()
 	{
-		if (safespotDisplayMode == InfernoSafespotDisplayMode.AREA)
+		if (config.safespotDisplayMode() == InfernoSafespotDisplayMode.AREA)
 		{
 			for (WorldPoint worldPoint : safeSpotMap.keySet())
 			{
@@ -826,19 +731,19 @@ public class InfernoPlugin extends Plugin
 		switch (infernoNPC.getType())
 		{
 			case BAT:
-				return prayerBat;
+				return config.prayerBat();
 			case BLOB:
-				return prayerBlob;
+				return config.prayerBlob();
 			case MELEE:
-				return prayerMeleer;
+				return config.prayerMeleer();
 			case RANGER:
-				return prayerRanger;
+				return config.prayerRanger();
 			case MAGE:
-				return prayerMage;
+				return config.prayerMage();
 			case HEALER_JAD:
-				return prayerHealerJad;
+				return config.prayerHealerJad();
 			case JAD:
-				return prayerJad;
+				return config.prayerJad();
 			default:
 				return false;
 		}
@@ -849,21 +754,21 @@ public class InfernoPlugin extends Plugin
 		switch (infernoNPC.getType())
 		{
 			case BAT:
-				return ticksOnNpcBat;
+				return config.ticksOnNpcBat();
 			case BLOB:
-				return ticksOnNpcBlob;
+				return config.ticksOnNpcBlob();
 			case MELEE:
-				return ticksOnNpcMeleer;
+				return config.ticksOnNpcMeleer();
 			case RANGER:
-				return ticksOnNpcRanger;
+				return config.ticksOnNpcRanger();
 			case MAGE:
-				return ticksOnNpcMage;
+				return config.ticksOnNpcMage();
 			case HEALER_JAD:
-				return ticksOnNpcHealerJad;
+				return config.ticksOnNpcHealerJad();
 			case JAD:
-				return ticksOnNpcJad;
+				return config.ticksOnNpcJad();
 			case ZUK:
-				return ticksOnNpcZuk;
+				return config.ticksOnNpcZuk();
 			default:
 				return false;
 		}
@@ -874,19 +779,19 @@ public class InfernoPlugin extends Plugin
 		switch (infernoNPC.getType())
 		{
 			case BAT:
-				return safespotsBat;
+				return config.safespotsBat();
 			case BLOB:
-				return safespotsBlob;
+				return config.safespotsBlob();
 			case MELEE:
-				return safespotsMeleer;
+				return config.safespotsMeleer();
 			case RANGER:
-				return safespotsRanger;
+				return config.safespotsRanger();
 			case MAGE:
-				return safespotsMage;
+				return config.safespotsMage();
 			case HEALER_JAD:
-				return safespotsHealerJad;
+				return config.safespotsHealerJad();
 			case JAD:
-				return safespotsJad;
+				return config.safespotsJad();
 			default:
 				return false;
 		}
@@ -897,15 +802,15 @@ public class InfernoPlugin extends Plugin
 		switch (infernoNPC.getType())
 		{
 			case BAT:
-				return indicateNpcPositionBat;
+				return config.indicateNpcPositionBat();
 			case BLOB:
-				return indicateNpcPositionBlob;
+				return config.indicateNpcPositionBlob();
 			case MELEE:
-				return indicateNpcPositionMeleer;
+				return config.indicateNpcPositionMeleer();
 			case RANGER:
-				return indicateNpcPositionRanger;
+				return config.indicateNpcPositionRanger();
 			case MAGE:
-				return indicateNpcPositionMage;
+				return config.indicateNpcPositionMage();
 			default:
 				return false;
 		}
@@ -914,55 +819,55 @@ public class InfernoPlugin extends Plugin
 	private void hideNpcDeaths()
 	{
 
-		if (this.hideNibblerDeath)
+		if (config.hideNibblerDeath())
 		{
 			client.addHiddenNpcDeath("Jal-Nib");
 		}
-		if (this.hideBatDeath)
+		if (config.hideBatDeath())
 		{
 			client.addHiddenNpcDeath("Jal-MejRah");
 		}
-		if (this.hideBlobDeath)
+		if (config.hideBlobDeath())
 		{
 			client.addHiddenNpcDeath("Jal-Ak");
 		}
-		if (this.hideBlobSmallMeleeDeath)
+		if (config.hideBlobSmallMeleeDeath())
 		{
 			client.addHiddenNpcDeath("Jal-AkRek-Ket");
 		}
-		if (this.hideBlobSmallMagicDeath)
+		if (config.hideBlobSmallMagicDeath())
 		{
 			client.addHiddenNpcDeath("Jal-AkRek-Mej");
 		}
-		if (this.hideBlobSmallRangedDeath)
+		if (config.hideBlobSmallRangedDeath())
 		{
 			client.addHiddenNpcDeath("Jal-AkRek-Xil");
 		}
-		if (this.hideMeleerDeath)
+		if (config.hideMeleerDeath())
 		{
 			client.addHiddenNpcDeath("Jal-ImKot");
 		}
-		if (this.hideRangerDeath)
+		if (config.hideRangerDeath())
 		{
 			client.addHiddenNpcDeath("Jal-Xil");
 		}
-		if (this.hideMagerDeath)
+		if (config.hideMagerDeath())
 		{
 			client.addHiddenNpcDeath("Jal-Zek");
 		}
-		if (this.hideHealerJadDeath && isInInferno())
+		if (config.hideHealerJadDeath() && isInInferno())
 		{
 			client.addHiddenNpcDeath("Yt-HurKot");
 		}
-		if (this.hideJadDeath)
+		if (config.hideJadDeath())
 		{
 			client.addHiddenNpcDeath("JalTok-Jad");
 		}
-		if (this.hideHealerZukDeath)
+		if (config.hideHealerZukDeath())
 		{
 			client.addHiddenNpcDeath("Jal-MejJak");
 		}
-		if (this.hideZukDeath)
+		if (config.hideZukDeath())
 		{
 			client.addHiddenNpcDeath("TzKal-Zuk");
 		}
@@ -971,133 +876,57 @@ public class InfernoPlugin extends Plugin
 	private void showNpcDeaths()
 	{
 
-		if (!this.hideNibblerDeath)
+		if (!config.hideNibblerDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-Nib");
 		}
-		if (!this.hideBatDeath)
+		if (!config.hideBatDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-MejRah");
 		}
-		if (!this.hideBlobDeath)
+		if (!config.hideBlobDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-Ak");
 		}
-		if (!this.hideBlobSmallMeleeDeath)
+		if (!config.hideBlobSmallMeleeDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-AkRek-Ket");
 		}
-		if (!this.hideBlobSmallMagicDeath)
+		if (!config.hideBlobSmallMagicDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-AkRek-Mej");
 		}
-		if (!this.hideBlobSmallRangedDeath)
+		if (!config.hideBlobSmallRangedDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-AkRek-Xil");
 		}
-		if (!this.hideMeleerDeath)
+		if (!config.hideMeleerDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-ImKot");
 		}
-		if (!this.hideRangerDeath)
+		if (!config.hideRangerDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-Xil");
 		}
-		if (!this.hideMagerDeath)
+		if (!config.hideMagerDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-Zek");
 		}
-		if (!this.hideHealerJadDeath)
+		if (!config.hideHealerJadDeath())
 		{
 			client.removeHiddenNpcDeath("Yt-HurKot");
 		}
-		if (!this.hideJadDeath)
+		if (!config.hideJadDeath())
 		{
 			client.removeHiddenNpcDeath("JalTok-Jad");
 		}
-		if (!this.hideHealerZukDeath)
+		if (!config.hideHealerZukDeath())
 		{
 			client.removeHiddenNpcDeath("Jal-MejJak");
 		}
-		if (!this.hideZukDeath)
+		if (!config.hideZukDeath())
 		{
 			client.removeHiddenNpcDeath("TzKal-Zuk");
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.prayerDisplayMode = config.prayerDisplayMode();
-		this.descendingBoxes = config.descendingBoxes();
-		this.indicateWhenPrayingCorrectly = config.indicateWhenPrayingCorrectly();
-		this.indicateNonPriorityDescendingBoxes = config.indicateNonPriorityDescendingBoxes();
-		this.indicateBlobDetectionTick = config.indicateBlobDetectionTick();
-
-		this.waveDisplay = config.waveDisplay();
-		this.npcNaming = config.npcNaming();
-		this.npcLevels = config.npcLevels();
-		this.getWaveOverlayHeaderColor = config.getWaveOverlayHeaderColor();
-		this.getWaveTextColor = config.getWaveTextColor();
-
-		this.safespotDisplayMode = config.safespotDisplayMode();
-		this.safespotsCheckSize = config.safespotsCheckSize();
-		this.indicateNonSafespotted = config.indicateNonSafespotted();
-		this.indicateTemporarySafespotted = config.indicateTemporarySafespotted();
-		this.indicateSafespotted = config.indicateSafespotted();
-		this.indicateObstacles = config.indicateObstacles();
-		this.safespotsZukShieldBeforeHealers = config.safespotsZukShieldBeforeHealers();
-
-		this.indicateNibblers = config.indicateNibblers();
-		this.indicateCentralNibbler = config.indicateCentralNibbler();
-
-		this.indicateActiveHealersJad = config.indicateActiveHealerJad();
-		this.indicateActiveHealersZuk = config.indicateActiveHealerZuk();
-
-		this.indicateNpcPositionBat = config.indicateNpcPositionBat();
-		this.indicateNpcPositionBlob = config.indicateNpcPositionBlob();
-		this.indicateNpcPositionMeleer = config.indicateNpcPositionMeleer();
-		this.indicateNpcPositionRanger = config.indicateNpcPositionRanger();
-		this.indicateNpcPositionMage = config.indicateNpcPositionMage();
-
-		this.ticksOnNpcBat = config.ticksOnNpcBat();
-		this.ticksOnNpcBlob = config.ticksOnNpcBlob();
-		this.ticksOnNpcMeleer = config.ticksOnNpcMeleer();
-		this.ticksOnNpcRanger = config.ticksOnNpcRanger();
-		this.ticksOnNpcMage = config.ticksOnNpcMage();
-		this.ticksOnNpcHealerJad = config.ticksOnNpcHealerJad();
-		this.ticksOnNpcJad = config.ticksOnNpcJad();
-		this.ticksOnNpcZuk = config.ticksOnNpcZuk();
-
-		this.safespotsBat = config.safespotsBat();
-		this.safespotsBlob = config.safespotsBlob();
-		this.safespotsMeleer = config.safespotsMeleer();
-		this.safespotsRanger = config.safespotsRanger();
-		this.safespotsMage = config.safespotsMage();
-		this.safespotsHealerJad = config.safespotsHealerJad();
-		this.safespotsJad = config.safespotsJad();
-		this.safespotsZukShieldBeforeHealers = config.safespotsZukShieldBeforeHealers();
-		this.safespotsZukShieldAfterHealers = config.safespotsZukShieldAfterHealers();
-
-		this.prayerBat = config.prayerBat();
-		this.prayerBlob = config.prayerBlob();
-		this.prayerMeleer = config.prayerMeleer();
-		this.prayerRanger = config.prayerRanger();
-		this.prayerMage = config.prayerMage();
-		this.prayerHealerJad = config.prayerHealerJad();
-		this.prayerJad = config.prayerJad();
-
-		this.hideNibblerDeath = config.hideNibblerDeath();
-		this.hideBatDeath = config.hideBatDeath();
-		this.hideBlobDeath = config.hideBlobDeath();
-		this.hideBlobSmallRangedDeath = config.hideBlobSmallRangedDeath();
-		this.hideBlobSmallMagicDeath = config.hideBlobSmallMagicDeath();
-		this.hideBlobSmallMeleeDeath = config.hideBlobSmallMeleeDeath();
-		this.hideMeleerDeath = config.hideMeleerDeath();
-		this.hideRangerDeath = config.hideRangerDeath();
-		this.hideMagerDeath = config.hideMagerDeath();
-		this.hideHealerJadDeath = config.hideHealerJadDeath();
-		this.hideJadDeath = config.hideJadDeath();
-		this.hideHealerZukDeath = config.hideHealerZukDeath();
-		this.hideZukDeath = config.hideZukDeath();
 	}
 }

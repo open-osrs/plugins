@@ -21,6 +21,7 @@ import net.runelite.api.events.SpotAnimationChanged;
 import net.runelite.api.util.Text;
 import net.runelite.client.graphics.ModelOutlineRenderer;
 import net.runelite.client.plugins.theatre.RoomHandler;
+import net.runelite.client.plugins.theatre.TheatreConfig;
 import net.runelite.client.plugins.theatre.TheatreConstant;
 import net.runelite.client.plugins.theatre.TheatrePlugin;
 import net.runelite.client.plugins.theatre.TheatreRoom;
@@ -67,9 +68,9 @@ public class MaidenHandler extends RoomHandler
 	private long startTime = 0;
 	private final ModelOutlineRenderer modelOutline;
 
-	public MaidenHandler(final Client client, final TheatrePlugin plugin, final ModelOutlineRenderer modelOutline)
+	public MaidenHandler(final Client client, final TheatrePlugin plugin, final TheatreConfig config, final ModelOutlineRenderer modelOutline)
 	{
-		super(client, plugin);
+		super(client, plugin, config);
 		this.modelOutline = modelOutline;
 	}
 
@@ -138,7 +139,7 @@ public class MaidenHandler extends RoomHandler
 			}
 		}
 
-		if (plugin.isShowMaidenBloodToss())
+		if (config.showMaidenBloodToss())
 		{
 			for (WorldPoint point : bloodThrows)
 			{
@@ -146,7 +147,7 @@ public class MaidenHandler extends RoomHandler
 			}
 		}
 
-		if (plugin.isShowMaidenBloodSpawns())
+		if (config.showMaidenBloodSpawns())
 		{
 			for (WorldPoint point : bloodSpawnLocation)
 			{
@@ -196,7 +197,7 @@ public class MaidenHandler extends RoomHandler
 				maiden = npc;
 				break;
 			case "Nylocas Matomenos":
-				if (!plugin.isShowNyloFreezeHighlights())
+				if (!config.showNyloFreezeHighlights())
 				{
 					return;
 				}
@@ -328,7 +329,7 @@ public class MaidenHandler extends RoomHandler
 			seconds = seconds % 60;
 
 			int percentage = 70 - (20 * ((wave++) - 1));
-			if (plugin.isExtraTimers())
+			if (config.extraTimers())
 			{
 				this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'The Maiden of Sugadinti - " + percentage + "%' completed! Duration: <col=ff0000>" + minutes + ":" + twoDigitString(seconds), null);
 			}

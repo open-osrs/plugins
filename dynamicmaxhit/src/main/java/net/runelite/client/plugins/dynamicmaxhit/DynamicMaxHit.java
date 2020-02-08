@@ -54,9 +54,7 @@ import net.runelite.api.events.SpotAnimationChanged;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
@@ -98,27 +96,30 @@ public class DynamicMaxHit extends Plugin
 	private static final String EXTENDED_SUPER_ANTIFIRE_DRINK_MESSAGE = "You drink some of your extended super antifire potion.";
 	private static final String SUPER_ANTIFIRE_DRINK_MESSAGE = "You drink some of your super antifire potion";
 	private static final String SUPER_ANTIFIRE_EXPIRED_MESSAGE = "<col=7f007f>Your super antifire potion has expired.</col>";
+
 	@Inject
 	private Client client;
-	@Inject
-	private EventBus eventBus;
+
 	@Inject
 	private ItemManager itemManager;
+
 	@Inject
 	private OverlayManager overlayManager;
+
 	@Inject
 	private AttackerOverlay attackerOverlay;
+
 	@Inject
 	private MenuManager menuManager;
+
 	@Inject
 	private DynamicMaxHitConfig config;
+
 	@Getter(AccessLevel.PACKAGE)
 	private Map<String, Victim> victims = new HashMap<>();
 	private boolean antiFireActive;
 	private final ExecutorService httpExecutor = Executors.newFixedThreadPool(100);
 	private final Map<String, HiscoreResult> resultCache = new HashMap<>();
-	private boolean enablePrayer;
-	private boolean enablePotions;
 
 	@Provides
 	DynamicMaxHitConfig getConfig(ConfigManager configManager)
@@ -151,18 +152,6 @@ public class DynamicMaxHit extends Plugin
 	{
 		overlayManager.remove(attackerOverlay);
 		menuManager.removePlayerMenuItem(CALC);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("dynamicMaxHit"))
-		{
-			return;
-		}
-
-		this.enablePotions = config.enablePotions();
-		this.enablePrayer = config.enablePrayer();
 	}
 
 	@Subscribe
@@ -649,7 +638,7 @@ public class DynamicMaxHit extends Plugin
 
 		double prayerBonus = 1;
 
-		if (this.enablePrayer)
+		if (config.enablePrayer())
 		{
 			switch (player.getPredictedPrayer())
 			{
@@ -689,7 +678,7 @@ public class DynamicMaxHit extends Plugin
 				break;
 		}
 
-		if (this.enablePotions)
+		if (config.enablePotions())
 		{
 			skillPower += player.getPotionBoost();
 		}

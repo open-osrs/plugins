@@ -28,9 +28,6 @@ import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
@@ -48,10 +45,9 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Account Switcher",
 	description = "Allow for a allows you to easily switch between multiple OSRS Accounts",
-	tags = {"profile", "account", "login", "log in"},
+	tags = {"profile", "account", "login", "log in", "pklite"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class ProfilesPlugin extends Plugin
 {
 	@Inject
@@ -65,15 +61,6 @@ public class ProfilesPlugin extends Plugin
 
 	private ProfilesPanel panel;
 	private NavigationButton navButton;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean switchToPanel;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean streamerMode;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean displayEmailAddress;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean rememberPassword;
-
 
 	@Provides
 	ProfilesConfig getConfig(ConfigManager configManager)
@@ -84,8 +71,6 @@ public class ProfilesPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		panel = injector.getInstance(ProfilesPanel.class);
 		panel.init();
 
@@ -111,7 +96,7 @@ public class ProfilesPlugin extends Plugin
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
-		if (!this.switchToPanel)
+		if (!config.switchPanel())
 		{
 			return;
 		}
@@ -132,35 +117,22 @@ public class ProfilesPlugin extends Plugin
 			panel = injector.getInstance(ProfilesPanel.class);
 			this.shutDown();
 			this.startUp();
-			updateConfig();
 		}
 		if (event.getGroup().equals("profiles") && !event.getKey().equals("rememberPassword"))
 		{
-			updateConfig();
-
-			if (panel != null)
-			{
-				panel.redrawProfiles();
-			}
+			panel = injector.getInstance(ProfilesPanel.class);
+			panel.redrawProfiles();
 		}
 	}
 
 	private void OpenPanel(boolean openPanel)
 	{
-		if (openPanel && this.switchToPanel)
+		if (openPanel && config.switchPanel())
 		{
 			// If we haven't seen the latest feed item,
 			// open the feed panel.
 			navButton.getOnSelect().run();
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.switchToPanel = config.switchPanel();
-		this.rememberPassword  = config.rememberPassword();
-		this.streamerMode = config.streamerMode();
-		this.displayEmailAddress = config.displayEmailAddress();
 	}
 
 }

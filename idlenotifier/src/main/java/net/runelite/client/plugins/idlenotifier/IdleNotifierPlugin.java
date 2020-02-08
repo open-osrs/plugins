@@ -36,9 +36,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Setter;
 import net.runelite.api.Actor;
 import net.runelite.api.AnimationID;
 import static net.runelite.api.AnimationID.*;
@@ -72,7 +69,6 @@ import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.Sound;
 import net.runelite.client.game.SoundManager;
 import net.runelite.client.plugins.Plugin;
@@ -87,9 +83,8 @@ import org.pf4j.Extension;
 	name = "Idle Notifier",
 	description = "Send a notification when going idle, or when HP/Prayer reaches a threshold",
 	tags = {"health", "hitpoints", "notifications", "prayer", "pvp", "pker"},
-	type = PluginType.UTILITY
+	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class IdleNotifierPlugin extends Plugin
 {
 	// This must be more than 500 client ticks (10 seconds) before you get AFK kicked
@@ -270,36 +265,6 @@ public class IdleNotifierPlugin extends Plugin
 	private boolean isFirstTick = true;
 	private boolean resourceDoorReady = false;
 
-	@Setter(AccessLevel.PACKAGE)
-	private boolean animationIdle;
-	private boolean animationIdleSound;
-	@Setter(AccessLevel.PACKAGE)
-	private boolean interactionIdle;
-	private boolean interactionIdleSound;
-	@Setter(AccessLevel.PACKAGE)
-	private boolean logoutIdle;
-	private boolean outOfCombatSound;
-	private boolean showSkullNotification;
-	private boolean showUnskullNotification;
-	@Setter(AccessLevel.PACKAGE)
-	private int getIdleNotificationDelay;
-	@Setter(AccessLevel.PACKAGE)
-	private int getHitpointsThreshold;
-	private boolean getPlayHealthSound;
-	@Setter(AccessLevel.PACKAGE)
-	private int getPrayerThreshold;
-	private boolean getPlayPrayerSound;
-	private int getOxygenThreshold;
-	@Setter(AccessLevel.PACKAGE)
-	private int getSpecEnergyThreshold;
-	private boolean getSpecSound;
-	private boolean getOverSpecEnergy;
-	private boolean notifyPkers;
-	private boolean notifyResourceDoor;
-	private boolean outOfItemsIdle;
-	@Setter(AccessLevel.PACKAGE)
-	private boolean movementIdle;
-
 	@Provides
 	IdleNotifierConfig provideConfig(ConfigManager configManager)
 	{
@@ -349,7 +314,7 @@ public class IdleNotifierPlugin extends Plugin
 	private void onPlayerSpawned(PlayerSpawned event)
 	{
 		final Player p = event.getPlayer();
-		if (this.notifyPkers && p != null && p != client.getLocalPlayer()
+		if (config.notifyPkers() && p != null && p != client.getLocalPlayer()
 			&& PvPUtil.isAttackable(client, p) && !client.isFriended(p.getName(), false)
 			&& !client.isClanMember(p.getName()))
 		{
@@ -367,7 +332,7 @@ public class IdleNotifierPlugin extends Plugin
 
 		if (regionCheck())
 		{
-			if (this.notifyResourceDoor && wall.getId() == 83 && resourceDoorReady)
+			if (config.notifyResourceDoor() && wall.getId() == 83 && resourceDoorReady)
 			{
 				notifier.notify("Door warning! The resource area door has been opened!");
 			}
@@ -576,7 +541,7 @@ public class IdleNotifierPlugin extends Plugin
 		skullNotifier();
 
 		final Player local = client.getLocalPlayer();
-		final Duration waitDuration = Duration.ofMillis(this.getIdleNotificationDelay);
+		final Duration waitDuration = Duration.ofMillis(config.getIdleNotificationDelay());
 		lastCombatCountdown = Math.max(lastCombatCountdown - 1, 0);
 
 		if (client.getGameState() != GameState.LOGGED_IN
@@ -590,7 +555,7 @@ public class IdleNotifierPlugin extends Plugin
 			return;
 		}
 
-		if (this.logoutIdle && checkIdleLogout())
+		if (config.logoutIdle() && checkIdleLogout())
 		{
 			notifyWith(local, "is about to log out from idling too long!");
 		}
@@ -600,24 +565,24 @@ public class IdleNotifierPlugin extends Plugin
 			notifyWith(local, "is about to log out from being online for 6 hours!");
 		}
 
-		if (this.outOfItemsIdle && checkOutOfItemsIdle(waitDuration))
+		if (config.outOfItemsIdle() && checkOutOfItemsIdle(waitDuration))
 		{
 			notifyWith(local, "has run out of items!");
 			// If this triggers, don't also trigger animation idle notification afterwards.
 			lastAnimation = IDLE;
 		}
 
-		if (this.movementIdle && checkMovementIdle(waitDuration, local))
+		if (config.movementIdle() && checkMovementIdle(waitDuration, local))
 		{
 			notifier.notify("[" + local.getName() + "] has stopped moving!");
 		}
 
-		if (this.interactionIdle && checkInteractionIdle(waitDuration, local))
+		if (config.interactionIdle() && checkInteractionIdle(waitDuration, local))
 		{
 			if (lastInteractWasCombat)
 			{
 				notifyWith(local, "is now out of combat!");
-				if (this.outOfCombatSound)
+				if (config.outOfCombatSound())
 				{
 					soundManager.playSound(Sound.OUT_OF_COMBAT);
 				}
@@ -625,7 +590,7 @@ public class IdleNotifierPlugin extends Plugin
 			else
 			{
 				notifyWith(local, "is now idle!");
-				if (this.interactionIdleSound)
+				if (config.interactionIdleSound())
 				{
 					soundManager.playSound(Sound.IDLE);
 				}
@@ -633,10 +598,10 @@ public class IdleNotifierPlugin extends Plugin
 			interactingNotified = true;
 		}
 
-		if (this.animationIdle && checkAnimationIdle(waitDuration, local))
+		if (config.animationIdle() && checkAnimationIdle(waitDuration, local))
 		{
 			notifyWith(local, "is now idle!");
-			if (this.animationIdleSound)
+			if (config.animationIdleSound())
 			{
 				soundManager.playSound(Sound.IDLE);
 			}
@@ -645,7 +610,7 @@ public class IdleNotifierPlugin extends Plugin
 		if (checkLowHitpoints())
 		{
 			notifyWith(local, "has low hitpoints!");
-			if (this.getPlayHealthSound)
+			if (config.getPlayHealthSound())
 			{
 				soundManager.playSound(Sound.LOW_HEATLH);
 			}
@@ -654,7 +619,7 @@ public class IdleNotifierPlugin extends Plugin
 		if (checkLowPrayer())
 		{
 			notifyWith(local, "has low prayer!");
-			if (this.getPlayPrayerSound)
+			if (config.getPlayPrayerSound())
 			{
 				soundManager.playSound(Sound.LOW_PRAYER);
 			}
@@ -668,7 +633,7 @@ public class IdleNotifierPlugin extends Plugin
 		if (checkFullSpecEnergy())
 		{
 			notifyWith(local, "has restored spec energy!");
-			if (this.getSpecSound)
+			if (config.getSpecSound())
 			{
 				soundManager.playSound(Sound.RESTORED_SPECIAL_ATTACK);
 			}
@@ -679,7 +644,7 @@ public class IdleNotifierPlugin extends Plugin
 	{
 		int currentSpecEnergy = client.getVar(VarPlayer.SPECIAL_ATTACK_PERCENT);
 
-		int threshold = this.getSpecEnergyThreshold * 10;
+		int threshold = config.getSpecEnergyThreshold() * 10;
 		if (threshold == 0)
 		{
 			lastSpecEnergy = currentSpecEnergy;
@@ -690,7 +655,7 @@ public class IdleNotifierPlugin extends Plugin
 		// regen was small enough.
 		boolean notify = lastSpecEnergy < threshold && currentSpecEnergy >= threshold && currentSpecEnergy - lastSpecEnergy <= 100;
 
-		notify = (notify) || ((this.getOverSpecEnergy) && (currentSpecEnergy >= threshold) && (currentSpecEnergy != lastSpecEnergy) && (currentSpecEnergy - lastSpecEnergy <= 100));
+		notify = (notify) || ((config.getOverSpecEnergy()) && (currentSpecEnergy >= threshold) && (currentSpecEnergy != lastSpecEnergy) && (currentSpecEnergy - lastSpecEnergy <= 100));
 
 		lastSpecEnergy = currentSpecEnergy;
 		return notify;
@@ -698,11 +663,11 @@ public class IdleNotifierPlugin extends Plugin
 
 	private boolean checkLowOxygen()
 	{
-		if (this.getOxygenThreshold == 0)
+		if (config.getOxygenThreshold() == 0)
 		{
 			return false;
 		}
-		if (this.getOxygenThreshold >= client.getVar(Varbits.OXYGEN_LEVEL) * 0.1)
+		if (config.getOxygenThreshold() >= client.getVar(Varbits.OXYGEN_LEVEL) * 0.1)
 		{
 			if (!notifyOxygen)
 			{
@@ -719,13 +684,13 @@ public class IdleNotifierPlugin extends Plugin
 
 	private boolean checkLowHitpoints()
 	{
-		if (this.getHitpointsThreshold == 0)
+		if (config.getHitpointsThreshold() == 0)
 		{
 			return false;
 		}
-		if (client.getRealSkillLevel(Skill.HITPOINTS) > this.getHitpointsThreshold)
+		if (client.getRealSkillLevel(Skill.HITPOINTS) > config.getHitpointsThreshold())
 		{
-			if (client.getBoostedSkillLevel(Skill.HITPOINTS) + client.getVar(Varbits.NMZ_ABSORPTION) <= this.getHitpointsThreshold)
+			if (client.getBoostedSkillLevel(Skill.HITPOINTS) + client.getVar(Varbits.NMZ_ABSORPTION) <= config.getHitpointsThreshold())
 			{
 				if (!notifyHitpoints)
 				{
@@ -744,13 +709,13 @@ public class IdleNotifierPlugin extends Plugin
 
 	private boolean checkLowPrayer()
 	{
-		if (this.getPrayerThreshold == 0)
+		if (config.getPrayerThreshold() == 0)
 		{
 			return false;
 		}
-		if (client.getRealSkillLevel(Skill.PRAYER) > this.getPrayerThreshold)
+		if (client.getRealSkillLevel(Skill.PRAYER) > config.getPrayerThreshold())
 		{
-			if (client.getBoostedSkillLevel(Skill.PRAYER) <= this.getPrayerThreshold)
+			if (client.getBoostedSkillLevel(Skill.PRAYER) <= config.getPrayerThreshold())
 			{
 				if (!notifyPrayer)
 				{
@@ -784,6 +749,11 @@ public class IdleNotifierPlugin extends Plugin
 			{
 				lastInteract = null;
 				lastInteracting = null;
+
+				// prevent animation notifications from firing too
+				lastAnimation = IDLE;
+				lastAnimating = null;
+
 				return true;
 			}
 		}
@@ -871,6 +841,11 @@ public class IdleNotifierPlugin extends Plugin
 			{
 				lastAnimation = IDLE;
 				lastAnimating = null;
+
+				// prevent interaction notifications from firing too
+				lastInteract = null;
+				lastInteracting = null;
+
 				return true;
 			}
 		}
@@ -964,11 +939,11 @@ public class IdleNotifierPlugin extends Plugin
 		{
 			if (!isFirstTick)
 			{
-				if (this.showSkullNotification && lastTickSkull == null && currentTickSkull == SkullIcon.SKULL)
+				if (config.showSkullNotification() && lastTickSkull == null && currentTickSkull == SkullIcon.SKULL)
 				{
 					notifyWith(local, "is now skulled!");
 				}
-				else if (this.showUnskullNotification && lastTickSkull == SkullIcon.SKULL && currentTickSkull == null)
+				else if (config.showUnskullNotification() && lastTickSkull == SkullIcon.SKULL && currentTickSkull == null)
 				{
 					notifyWith(local, "is now unskulled!");
 				}
@@ -990,47 +965,5 @@ public class IdleNotifierPlugin extends Plugin
 	private void notifyWith(Player local, String message)
 	{
 		notifier.notify("[" + local.getName() + "] " + message);
-	}
-
-	@Override
-	protected void startUp()
-	{
-		updateConfig();
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("idlenotifier"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.animationIdle = config.animationIdle();
-		this.animationIdleSound = config.animationIdleSound();
-		this.interactionIdle = config.interactionIdle();
-		this.interactionIdleSound = config.interactionIdleSound();
-		this.logoutIdle = config.logoutIdle();
-		this.outOfCombatSound = config.outOfCombatSound();
-		this.showSkullNotification = config.showSkullNotification();
-		this.showUnskullNotification = config.showUnskullNotification();
-		this.getIdleNotificationDelay = config.getIdleNotificationDelay();
-		this.getHitpointsThreshold = config.getHitpointsThreshold();
-		this.getPlayHealthSound = config.getPlayHealthSound();
-		this.getPrayerThreshold = config.getPrayerThreshold();
-		this.getPlayPrayerSound = config.getPlayPrayerSound();
-		this.getOxygenThreshold = config.getOxygenThreshold();
-		this.getSpecEnergyThreshold = config.getSpecEnergyThreshold();
-		this.getSpecSound = config.getSpecSound();
-		this.getOverSpecEnergy = config.getOverSpecEnergy();
-		this.notifyPkers = config.notifyPkers();
-		this.notifyResourceDoor = config.notifyResourceDoor();
-		this.outOfItemsIdle = config.outOfItemsIdle();
-		this.movementIdle = config.movementIdle();
 	}
 }

@@ -39,18 +39,18 @@ import net.runelite.client.ui.overlay.OverlayPriority;
 @Singleton
 class PrayAgainstPlayerOverlay extends Overlay
 {
-	private final PrayAgainstPlayerPlugin plugin;
+	private final PrayAgainstPlayerConfig config;
 	private final PlayerManager playerManager;
 	private final ModelOutlineRenderer outlineRenderer;
 
 	@Inject
 	private PrayAgainstPlayerOverlay(
-		final PrayAgainstPlayerPlugin plugin,
+		final PrayAgainstPlayerConfig config,
 		final PlayerManager playerManager,
 		final ModelOutlineRenderer outlineRenderer
 	)
 	{
-		this.plugin = plugin;
+		this.config = config;
 		this.playerManager = playerManager;
 		this.outlineRenderer = outlineRenderer;
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -64,16 +64,16 @@ class PrayAgainstPlayerOverlay extends Overlay
 		for (PlayerContainer player : playerManager.getAllAttackers())
 		{
 			if (player.getPlayer() == null
-				|| (plugin.isIgnoreFriends() && player.isFriend()
-				|| (plugin.isIgnoreClanMates() && player.isClan()))
+				|| (config.ignoreFriends() && player.isFriend()
+				|| (config.ignoreClanMates() && player.isClan()))
 			)
 			{
 				continue;
 			}
-
-			if (plugin.isHighlightAttackers())
+			
+			if (config.highlightAttackers())
 			{
-				outlineRenderer.drawOutline(player.getPlayer(), plugin.getHighlightWidth(), player.getAttackStyle().getColor());
+				outlineRenderer.drawOutline(player.getPlayer(), config.highlightWidth(), player.getAttackStyle().getColor());
 			}
 		}
 		return null;

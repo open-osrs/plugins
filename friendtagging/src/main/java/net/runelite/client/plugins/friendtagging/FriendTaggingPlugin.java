@@ -17,9 +17,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Friend;
 import net.runelite.api.Ignore;
@@ -44,15 +42,13 @@ import net.runelite.client.plugins.PluginType;
 import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Friend Tagging",
-	description = "Tag people on your friends list",
+	description = "Tag people on your friends list.",
 	tags = {"PVP", "friend", "finder", "pk", "pklite"},
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.UTILITY
 )
-@Singleton
 public class FriendTaggingPlugin extends Plugin
 {
 	public static final ConcurrentHashMap<String, String> taggedFriends = new ConcurrentHashMap<>();
@@ -86,7 +82,6 @@ public class FriendTaggingPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		menuManager.addManagedCustomMenu(friendsTabMenuOption);
 		menuManager.addManagedCustomMenu(ignoreTabMenuOption);
 		menuManager.addManagedCustomMenu(friendTabResizableOption);

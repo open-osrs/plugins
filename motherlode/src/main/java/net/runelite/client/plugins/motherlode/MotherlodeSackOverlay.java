@@ -52,16 +52,18 @@ class MotherlodeSackOverlay extends Overlay
 	private static final Color DANGER = new Color(150, 0, 0, 150);
 	private final Client client;
 	private final MotherlodePlugin plugin;
+	private final MotherlodeConfig config;
 
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	MotherlodeSackOverlay(final Client client, final MotherlodePlugin plugin)
+	MotherlodeSackOverlay(final Client client, final MotherlodePlugin plugin, final MotherlodeConfig config)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Sack overlay"));
 	}
 
@@ -85,7 +87,7 @@ class MotherlodeSackOverlay extends Overlay
 		{
 			sack.setHidden(true);
 
-			if (plugin.isShowSack())
+			if (config.showSack())
 			{
 				if (plugin.getCurSackSize() >= plugin.getMaxSackSize())
 				{
@@ -95,7 +97,7 @@ class MotherlodeSackOverlay extends Overlay
 				tableComponent.addRow("Pay-dirt in sack:", String.valueOf(client.getVar(Varbits.SACK_NUMBER)));
 			}
 
-			if (plugin.isShowDepositsLeft())
+			if (config.showDepositsLeft())
 			{
 				final Integer depositsLeft = plugin.getDepositsLeft();
 				Color color = Color.WHITE;

@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.1"
+version = "0.0.2"
 
 project.extra["PluginName"] = "Notes"
 project.extra["PluginDescription"] = "Enable the Notes panel"
@@ -44,6 +44,7 @@ dependencies {
     compileOnly(Libraries.jopt)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
+    compileOnly(Libraries.rxjava)
 }
 
 tasks {

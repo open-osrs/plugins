@@ -110,9 +110,8 @@ class WoodcuttingTreesOverlay extends Overlay
 			}
 
 			LocalPoint centeredLocation = new LocalPoint(
-				minLocation.getX() + treeRespawn.getLenX() * Perspective.LOCAL_HALF_TILE_SIZE,
-				minLocation.getY() + treeRespawn.getLenY() * Perspective.LOCAL_HALF_TILE_SIZE);
-
+					minLocation.getX() + treeRespawn.getLenX() * Perspective.LOCAL_HALF_TILE_SIZE,
+					minLocation.getY() + treeRespawn.getLenY() * Perspective.LOCAL_HALF_TILE_SIZE);
 			float percent = (now.toEpochMilli() - treeRespawn.getStartTime().toEpochMilli()) / (float) treeRespawn.getRespawnTime();
 			Point point = Perspective.localToCanvas(client, centeredLocation, client.getPlane());
 			if (point == null || percent > 1.0f)

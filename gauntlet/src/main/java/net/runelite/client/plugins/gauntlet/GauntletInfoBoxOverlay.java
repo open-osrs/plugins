@@ -47,14 +47,16 @@ public class GauntletInfoBoxOverlay extends Overlay
 	private static final Color NOT_ACTIVATED_BACKGROUND_COLOR = new Color(150, 0, 0, 150);
 	private final Client client;
 	private final GauntletPlugin plugin;
+	private final GauntletConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
 	private final SpriteManager spriteManager;
 
 	@Inject
-	GauntletInfoBoxOverlay(final Client client, final GauntletPlugin plugin, final SpriteManager spriteManager)
+	GauntletInfoBoxOverlay(final Client client, final GauntletPlugin plugin, final GauntletConfig config, final SpriteManager spriteManager)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.spriteManager = spriteManager;
 		setPosition(OverlayPosition.BOTTOM_RIGHT);
 		setPriority(OverlayPriority.HIGH);
@@ -65,7 +67,7 @@ public class GauntletInfoBoxOverlay extends Overlay
 	{
 		panelComponent.getChildren().clear();
 
-		if (!plugin.isHighlightPrayerInfobox() || !plugin.fightingBoss() || plugin.getHunllef() == null)
+		if (!config.highlightPrayerInfobox() || !plugin.fightingBoss() || plugin.getHunllef() == null)
 		{
 			return null;
 		}

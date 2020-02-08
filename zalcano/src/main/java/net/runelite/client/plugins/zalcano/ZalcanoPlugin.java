@@ -25,7 +25,6 @@
  */
 package net.runelite.client.plugins.zalcano;
 
-import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import lombok.AccessLevel;
@@ -112,11 +111,6 @@ public class ZalcanoPlugin extends Plugin
 		eventBus.unregister("regionchecker");
 		overlayManager.remove(overlay);
 		overlayManager.remove(stepsOverlay);
-	}
-
-	@Override
-	public void configure(Binder binder)
-	{
 	}
 
 	private void onGameTickCheckRegion(GameTick gameTick)

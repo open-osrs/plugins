@@ -25,14 +25,8 @@
 package net.runelite.client.plugins.itemidentification;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -45,7 +39,6 @@ import org.pf4j.Extension;
 	description = "Show identifying text over items with difficult to distinguish sprites",
 	type = PluginType.UTILITY
 )
-@Singleton
 public class ItemIdentificationPlugin extends Plugin
 {
 	@Inject
@@ -53,24 +46,6 @@ public class ItemIdentificationPlugin extends Plugin
 
 	@Inject
 	private ItemIdentificationOverlay overlay;
-
-	@Inject
-	private ItemIdentificationConfig config;
-
-	@Getter(AccessLevel.PACKAGE)
-	private ItemIdentificationMode identificationType;
-	@Getter(AccessLevel.PACKAGE)
-	private Color textColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSeeds;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showHerbs;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSaplings;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showOres;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showGems;
 
 	@Provides
 	ItemIdentificationConfig getConfig(ConfigManager configManager)
@@ -81,7 +56,6 @@ public class ItemIdentificationPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		overlayManager.add(overlay);
 	}
 
@@ -89,27 +63,5 @@ public class ItemIdentificationPlugin extends Plugin
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("itemidentification"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.identificationType = config.identificationType();
-		this.textColor = config.textColor();
-		this.showSeeds = config.showSeeds();
-		this.showHerbs = config.showHerbs();
-		this.showSaplings = config.showSaplings();
-		this.showOres = config.showOres();
-		this.showGems = config.showGems();
 	}
 }

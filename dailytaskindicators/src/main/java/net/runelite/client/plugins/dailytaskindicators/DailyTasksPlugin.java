@@ -28,7 +28,6 @@ package net.runelite.client.plugins.dailytaskindicators;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -44,7 +43,6 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -56,7 +54,6 @@ import org.pf4j.Extension;
 	description = "Show chat notifications for daily tasks upon login",
 	type = PluginType.UTILITY
 )
-@Singleton
 public class DailyTasksPlugin extends Plugin
 {
 	private static final int ONE_DAY = 86400000;
@@ -87,16 +84,6 @@ public class DailyTasksPlugin extends Plugin
 	private long lastReset;
 	private boolean loggingIn;
 
-	private boolean showHerbBoxes;
-	private boolean showStaves;
-	private boolean showEssence;
-	private boolean showRunes;
-	private boolean showSand;
-	private boolean showFlax;
-	private boolean showBonemeal;
-	private boolean showArrows;
-	private boolean showDynamite;
-
 	@Provides
 	DailyTasksConfig provideConfig(ConfigManager configManager)
 	{
@@ -106,8 +93,6 @@ public class DailyTasksPlugin extends Plugin
 	@Override
 	public void startUp()
 	{
-		updateConfig();
-
 		loggingIn = true;
 	}
 
@@ -139,47 +124,47 @@ public class DailyTasksPlugin extends Plugin
 			lastReset = (long) Math.floor(currentTime / ONE_DAY) * ONE_DAY;
 			loggingIn = false;
 
-			if (this.showHerbBoxes)
+			if (config.showHerbBoxes())
 			{
 				checkHerbBoxes(dailyReset);
 			}
 
-			if (this.showStaves)
+			if (config.showStaves())
 			{
 				checkStaves(dailyReset);
 			}
 
-			if (this.showEssence)
+			if (config.showEssence())
 			{
 				checkEssence(dailyReset);
 			}
 
-			if (this.showRunes)
+			if (config.showRunes())
 			{
 				checkRunes(dailyReset);
 			}
 
-			if (this.showSand)
+			if (config.showSand())
 			{
 				checkSand(dailyReset);
 			}
 
-			if (this.showFlax)
+			if (config.showFlax())
 			{
 				checkFlax(dailyReset);
 			}
 
-			if (this.showBonemeal)
+			if (config.showBonemeal())
 			{
 				checkBonemeal(dailyReset);
 			}
 
-			if (this.showArrows)
+			if (config.showArrows())
 			{
 				checkArrows(dailyReset);
 			}
 
-			if (this.showDynamite)
+			if (config.showDynamite())
 			{
 				checkDynamite(dailyReset);
 			}
@@ -300,27 +285,5 @@ public class DailyTasksPlugin extends Plugin
 				.type(ChatMessageType.CONSOLE)
 				.runeLiteFormattedMessage(message)
 				.build());
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged configChanged)
-	{
-		if (configChanged.getGroup().equals("dailytaskindicators"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.showHerbBoxes = config.showHerbBoxes();
-		this.showStaves = config.showStaves();
-		this.showEssence = config.showEssence();
-		this.showRunes = config.showRunes();
-		this.showSand = config.showSand();
-		this.showFlax = config.showFlax();
-		this.showBonemeal = config.showBonemeal();
-		this.showArrows = config.showArrows();
-		this.showDynamite = config.showDynamite();
 	}
 }

@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.quote;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.MessageNode;
 import net.runelite.api.events.ChatMessage;
@@ -61,7 +60,6 @@ import org.pf4j.Extension;
 	tags = {"duel", "messages", "notifications", "trade", "username"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class ChatNotificationsPlugin extends Plugin
 {
 	// Private message cache used to avoid duplicate notifications from ChatHistory.
@@ -83,13 +81,6 @@ public class ChatNotificationsPlugin extends Plugin
 	private Pattern usernameMatcher = null;
 	private String usernameReplacer = "";
 	private Pattern highlightMatcher = null;
-	private boolean highlightOwnName;
-	private String highlightWordsString;
-	private boolean notifyOnOwnName;
-	private boolean notifyOnHighlight;
-	private boolean notifyOnTrade;
-	private boolean notifyOnDuel;
-	private boolean notifyOnPm;
 
 	/**
 	 * Get the last color tag from a string, or null if there was none
@@ -143,8 +134,6 @@ public class ChatNotificationsPlugin extends Plugin
 	@Override
 	public void startUp()
 	{
-		updateConfig();
-
 		updateHighlights();
 	}
 
@@ -171,7 +160,6 @@ public class ChatNotificationsPlugin extends Plugin
 	{
 		if (event.getGroup().equals("chatnotification"))
 		{
-			updateConfig();
 			updateHighlights();
 		}
 	}
@@ -180,9 +168,9 @@ public class ChatNotificationsPlugin extends Plugin
 	{
 		highlightMatcher = null;
 
-		if (!this.highlightWordsString.trim().equals(""))
+		if (!config.highlightWordsString().trim().equals(""))
 		{
-			List<String> items = Text.fromCSV(this.highlightWordsString);
+			List<String> items = Text.fromCSV(config.highlightWordsString());
 			String joined = items.stream()
 				.map(Text::escapeJagex) // we compare these strings to the raw Jagex ones
 				.map(this::quoteAndIgnoreColor) // regex escape and ignore nested colors in the target message
@@ -202,13 +190,13 @@ public class ChatNotificationsPlugin extends Plugin
 		switch (chatMessage.getType())
 		{
 			case TRADEREQ:
-				if (chatMessage.getMessage().contains("wishes to trade with you.") && this.notifyOnTrade)
+				if (chatMessage.getMessage().contains("wishes to trade with you.") && config.notifyOnTrade())
 				{
 					notifier.notify(chatMessage.getMessage());
 				}
 				break;
 			case CHALREQ_TRADE:
-				if (chatMessage.getMessage().contains("wishes to duel with you.") && this.notifyOnDuel)
+				if (chatMessage.getMessage().contains("wishes to duel with you.") && config.notifyOnDuel())
 				{
 					notifier.notify(chatMessage.getMessage());
 				}
@@ -222,7 +210,7 @@ public class ChatNotificationsPlugin extends Plugin
 				break;
 			case PRIVATECHAT:
 			case MODPRIVATECHAT:
-				if (this.notifyOnPm)
+				if (config.notifyOnPm())
 				{
 					int messageHash = this.buildMessageHash(chatMessage);
 					if (this.privateMessageHashes.contains(messageHash))
@@ -242,7 +230,7 @@ public class ChatNotificationsPlugin extends Plugin
 			usernameReplacer = "<col" + ChatColorType.HIGHLIGHT.name() + "><u>" + username + "</u><col" + ChatColorType.NORMAL.name() + ">";
 		}
 
-		if (this.highlightOwnName && usernameMatcher != null)
+		if (config.highlightOwnName() && usernameMatcher != null)
 		{
 			Matcher matcher = usernameMatcher.matcher(messageNode.getValue());
 			if (matcher.find())
@@ -250,7 +238,7 @@ public class ChatNotificationsPlugin extends Plugin
 				messageNode.setValue(matcher.replaceAll(usernameReplacer));
 				update = true;
 
-				if (this.notifyOnOwnName)
+				if (config.notifyOnOwnName())
 				{
 					sendNotification(chatMessage);
 				}
@@ -296,7 +284,7 @@ public class ChatNotificationsPlugin extends Plugin
 				matcher.appendTail(stringBuffer);
 				messageNode.setValue(stringBuffer.toString());
 
-				if (this.notifyOnHighlight)
+				if (config.notifyOnHighlight())
 				{
 					sendNotification(chatMessage);
 				}
@@ -334,17 +322,6 @@ public class ChatNotificationsPlugin extends Plugin
 		stringBuilder.append(Text.removeTags(message.getMessage()));
 		String notification = stringBuilder.toString();
 		notifier.notify(notification);
-	}
-
-	private void updateConfig()
-	{
-		this.highlightOwnName = config.highlightOwnName();
-		this.highlightWordsString = config.highlightWordsString();
-		this.notifyOnOwnName = config.notifyOnOwnName();
-		this.notifyOnHighlight = config.notifyOnHighlight();
-		this.notifyOnTrade = config.notifyOnTrade();
-		this.notifyOnDuel = config.notifyOnDuel();
-		this.notifyOnPm = config.notifyOnPm();
 	}
 
 	private String quoteAndIgnoreColor(String str)

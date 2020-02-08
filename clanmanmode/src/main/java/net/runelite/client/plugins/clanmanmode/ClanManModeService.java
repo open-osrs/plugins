@@ -17,12 +17,14 @@ public class ClanManModeService
 {
 	private final Client client;
 	private final ClanManModePlugin plugin;
+	private final ClanManModeConfig config;
 
 	@Inject
-	private ClanManModeService(final Client client, final ClanManModePlugin plugin)
+	private ClanManModeService(final Client client, final ClanManModePlugin plugin, final ClanManModeConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	private final Map<String, String> interactors = new HashMap<>();
@@ -50,9 +52,9 @@ public class ClanManModeService
 				interactor = ((Player) interacting);
 			}
 
-			if (plugin.isShowAttackers() && interactor != null && interactor.getName().equals(localName))
+			if (config.showAttackers() && interactor != null && interactor.getName().equals(localName))
 			{
-				consumer.accept(player, plugin.getGetAttackerColor());
+				consumer.accept(player, config.getAttackerColor());
 			}
 
 			if (plugin.inwildy == 1)
@@ -63,7 +65,7 @@ public class ClanManModeService
 					{
 						plugin.clan.put(player.getName(), player.getCombatLevel());
 					}
-					if (plugin.isHighlightAttacked() && interactor != null && !interactors.containsKey(interactor.getName()))
+					if (config.highlightAttacked() && interactor != null && !interactors.containsKey(interactor.getName()))
 					{
 						WorldPoint a = interactor.getWorldLocation();
 						int underLevel = ((a.getY() - 9920) / 8) + 1;
@@ -74,12 +76,12 @@ public class ClanManModeService
 						{
 							wildydiff = 0;
 						}
-						if (plugin.isCalcSelfCB())
+						if (config.CalcSelfCB())
 						{
 							if (interacting.getCombatLevel() <= selfmax && interacting.getCombatLevel() - wildydiff >= selfmin && !interactor.isClanMember())
 							{
 								interactors.put(interactor.getName(), player.getName());
-								consumer.accept(interactor, plugin.getGetClanAttackableColor());
+								consumer.accept(interactor, config.getClanAttackableColor());
 							}
 						}
 						else
@@ -87,18 +89,18 @@ public class ClanManModeService
 							if (interacting.getCombatLevel() <= maxatk && interacting.getCombatLevel() - wildydiff >= minatk && !interactor.isClanMember())
 							{
 								interactors.put(interactor.getName(), player.getName());
-								consumer.accept(interactor, plugin.getGetClanAttackableColor());
+								consumer.accept(interactor, config.getClanAttackableColor());
 							}
 						}
 					}
 				}
 				else
 				{
-					if (plugin.isPersistentClan() && plugin.clan.containsKey(player.getName()))
+					if (config.PersistentClan() && plugin.clan.containsKey(player.getName()))
 					{
-						consumer.accept(player, plugin.getGetClanMemberColor());
+						consumer.accept(player, config.getClanMemberColor());
 					}
-					if (plugin.isHighlightAttacked() && interactors.containsKey(player.getName()))
+					if (config.highlightAttacked() && interactors.containsKey(player.getName()))
 					{
 						String attackername = interactors.get(player.getName());
 						boolean found = false;
@@ -116,7 +118,7 @@ public class ClanManModeService
 								{
 									if (ainteract.getName().equals(player.getName()))
 									{
-										consumer.accept(player, plugin.getGetClanAttackableColor());
+										consumer.accept(player, config.getClanAttackableColor());
 									}
 									else
 									{
@@ -136,9 +138,9 @@ public class ClanManModeService
 						}
 						continue;
 					}
-					if (plugin.isHighlightAttackable())
+					if (config.highlightAttackable())
 					{
-						if ((plugin.isHideAttackable() && plugin.ticks >= plugin.getHideTime()) || plugin.clan.containsKey(player.getName()))
+						if ((config.hideAttackable() && plugin.ticks >= config.hideTime()) || plugin.clan.containsKey(player.getName()))
 						{
 							continue;
 						}
@@ -151,18 +153,18 @@ public class ClanManModeService
 						{
 							wildydiff = 0;
 						}
-						if (plugin.isCalcSelfCB())
+						if (config.CalcSelfCB())
 						{
 							if (player.getCombatLevel() <= selfmax && player.getCombatLevel() - wildydiff >= selfmin)
 							{
-								consumer.accept(player, plugin.getGetAttackableColor());
+								consumer.accept(player, config.getAttackableColor());
 							}
 						}
 						else
 						{
 							if (player.getCombatLevel() <= maxatk && player.getCombatLevel() - wildydiff >= minatk)
 							{
-								consumer.accept(player, plugin.getGetAttackableColor());
+								consumer.accept(player, config.getAttackableColor());
 							}
 						}
 					}

@@ -52,14 +52,16 @@ class BarrowsOverlay extends Overlay
 
 	private final Client client;
 	private final BarrowsPlugin plugin;
+	private final BarrowsConfig config;
 
 	@Inject
-	private BarrowsOverlay(final Client client, final BarrowsPlugin plugin)
+	private BarrowsOverlay(final Client client, final BarrowsPlugin plugin, final BarrowsConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -71,7 +73,7 @@ class BarrowsOverlay extends Overlay
 		Widget puzzleAnswer = plugin.getPuzzleAnswer();
 
 		// tunnels are only on z=0
-		if (!plugin.getWalls().isEmpty() && client.getPlane() == 0 && plugin.isShowMinimap())
+		if (!plugin.getWalls().isEmpty() && client.getPlane() == 0 && config.showMinimap())
 		{
 			// NPC dots
 			graphics.setColor(npcColor);
@@ -117,12 +119,12 @@ class BarrowsOverlay extends Overlay
 			graphics.setColor(playerColor);
 			graphics.fillRect(local.getMinimapLocation().getX(), local.getMinimapLocation().getY(), 3, 3);
 		}
-		else if (plugin.isShowBrotherLoc())
+		else if (config.showBrotherLoc())
 		{
 			renderBarrowsBrothers(graphics);
 		}
 
-		if (puzzleAnswer != null && plugin.isShowPuzzleAnswer() && !puzzleAnswer.isHidden())
+		if (puzzleAnswer != null && config.showPuzzleAnswer() && !puzzleAnswer.isHidden())
 		{
 			Rectangle answerRect = puzzleAnswer.getBounds();
 			graphics.setColor(Color.GREEN);
@@ -230,11 +232,11 @@ class BarrowsOverlay extends Overlay
 
 				if (client.getVar(brother.getKilledVarbit()) > 0)
 				{
-					graphics.setColor(plugin.getDeadBrotherLocColor());
+					graphics.setColor(config.deadBrotherLocColor());
 				}
 				else
 				{
-					graphics.setColor(plugin.getBrotherLocColor());
+					graphics.setColor(config.brotherLocColor());
 				}
 
 				graphics.drawString(brotherLetter, minimapText.getX(), minimapText.getY());

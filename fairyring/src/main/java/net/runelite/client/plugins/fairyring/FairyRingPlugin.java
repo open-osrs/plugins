@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -56,7 +55,6 @@ import net.runelite.api.widgets.WidgetType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.game.chatbox.ChatboxTextInput;
 import net.runelite.client.plugins.Plugin;
@@ -64,7 +62,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Fairy Rings",
@@ -72,7 +69,7 @@ import org.pf4j.Extension;
 	tags = {"teleportation"},
 	type = PluginType.UTILITY
 )
-@Singleton
+@Slf4j
 public class FairyRingPlugin extends Plugin
 {
 	private static final String[] leftDial = new String[]{"A", "D", "C", "B"};
@@ -100,8 +97,6 @@ public class FairyRingPlugin extends Plugin
 	private Widget searchBtn;
 	private Collection<CodeWidgets> codes = null;
 
-	private boolean autoOpen;
-
 	@Data
 	private static class CodeWidgets
 	{
@@ -113,23 +108,6 @@ public class FairyRingPlugin extends Plugin
 		private Widget code;
 
 		private Widget description;
-	}
-
-	@Override
-	protected void startUp()
-	{
-		this.autoOpen = config.autoOpen();
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("fairyrings"))
-		{
-			return;
-		}
-
-		this.autoOpen = config.autoOpen();
 	}
 
 	@Provides
@@ -168,7 +146,7 @@ public class FairyRingPlugin extends Plugin
 
 				codes = null;
 
-				if (this.autoOpen)
+				if (config.autoOpen())
 				{
 					openSearch();
 				}

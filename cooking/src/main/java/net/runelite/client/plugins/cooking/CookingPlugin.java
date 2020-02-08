@@ -30,10 +30,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
@@ -45,7 +43,6 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.SpotAnimationChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
@@ -65,7 +62,6 @@ import org.pf4j.Extension;
 	tags = {"overlay", "skilling", "cook"},
 	type = PluginType.SKILLING
 )
-@Singleton
 @PluginDependency(XpTrackerPlugin.class)
 public class CookingPlugin extends Plugin
 {
@@ -90,10 +86,6 @@ public class CookingPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private CookingSession session;
 
-	private int statTimeout;
-	@Setter(AccessLevel.PACKAGE)
-	private boolean fermentTimer;
-
 	@Provides
 	CookingConfig getConfig(ConfigManager configManager)
 	{
@@ -103,8 +95,6 @@ public class CookingPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		session = null;
 		overlayManager.add(overlay);
 	}
@@ -132,12 +122,12 @@ public class CookingPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick gameTick)
 	{
-		if (session == null || this.statTimeout == 0)
+		if (session == null || config.statTimeout() == 0)
 		{
 			return;
 		}
 
-		Duration statTimeout = Duration.ofMinutes(this.statTimeout);
+		Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 		Duration sinceCut = Duration.between(session.getLastCookingAction(), Instant.now());
 
 		if (sinceCut.compareTo(statTimeout) >= 0)
@@ -156,7 +146,7 @@ public class CookingPlugin extends Plugin
 			return;
 		}
 
-		if (player.getSpotAnimation() == GraphicID.WINE_MAKE && this.fermentTimer)
+		if (player.getSpotAnimation() == GraphicID.WINE_MAKE && config.fermentTimer())
 		{
 			Optional<FermentTimer> fermentTimerOpt = infoBoxManager.getInfoBoxes().stream()
 				.filter(FermentTimer.class::isInstance)
@@ -212,20 +202,5 @@ public class CookingPlugin extends Plugin
 			session.updateLastCookingAction();
 			session.increaseBurnAmount();
 		}
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged configChanged)
-	{
-		if (configChanged.getGroup().equals("cooking"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.statTimeout = config.statTimeout();
-		this.fermentTimer = config.fermentTimer();
 	}
 }

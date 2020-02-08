@@ -25,11 +25,9 @@
 package net.runelite.client.plugins.blastmine;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -54,9 +52,8 @@ import org.pf4j.Extension;
 	name = "Blast Mine",
 	description = "Show helpful information for the Blast Mine minigame",
 	tags = {"explode", "explosive", "mining", "minigame", "skilling"},
-	type = PluginType.SKILLING
+	type = PluginType.MINIGAME
 )
-@Singleton
 public class BlastMinePlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)
@@ -77,19 +74,6 @@ public class BlastMinePlugin extends Plugin
 	@Inject
 	private BlastMinePluginConfig config;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showOreOverlay;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showRockIconOverlay;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showTimerOverlay;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showWarningOverlay;
-	@Getter(AccessLevel.PACKAGE)
-	private Color timerColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color warningColor;
-
 	@Provides
 	BlastMinePluginConfig getConfig(ConfigManager configManager)
 	{
@@ -99,8 +83,6 @@ public class BlastMinePlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(blastMineRockOverlay);
 		overlayManager.add(blastMineOreCountOverlay);
 	}
@@ -157,15 +139,5 @@ public class BlastMinePlugin extends Plugin
 		rocks.values().removeIf(rock ->
 			(rock.getRemainingTimeRelative() == 1 && rock.getType() != BlastMineRockType.NORMAL) ||
 				(rock.getRemainingFuseTimeRelative() == 1 && rock.getType() == BlastMineRockType.LIT));
-	}
-
-	private void updateConfig()
-	{
-		this.showOreOverlay = config.showOreOverlay();
-		this.showRockIconOverlay = config.showRockIconOverlay();
-		this.showTimerOverlay = config.showTimerOverlay();
-		this.showWarningOverlay = config.showWarningOverlay();
-		this.timerColor = config.getTimerColor();
-		this.warningColor = config.getWarningColor();
 	}
 }

@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "Inventory Setups"
 project.extra["PluginDescription"] = "Save inventory setups"
@@ -37,8 +37,13 @@ dependencies {
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
 
+    compileOnly(project(":banktags"))
+    compileOnly(project(":runepouch"))
+
+    compileOnly(Libraries.apacheCommonsLang)
     compileOnly(Libraries.guice)
     compileOnly(Libraries.gson)
+    compileOnly(Libraries.jopt)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
 }
@@ -50,6 +55,11 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to
+                            arrayOf(
+                                    nameToId("banktags"),
+                                    nameToId("runepouch")
+                            ).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

@@ -43,13 +43,13 @@ import net.runelite.client.ui.overlay.components.TextComponent;
 @Singleton
 class ItemIdentificationOverlay extends WidgetItemOverlay
 {
-	private final ItemIdentificationPlugin plugin;
+	private final ItemIdentificationConfig config;
 	private final ItemManager itemManager;
 
 	@Inject
-	ItemIdentificationOverlay(ItemIdentificationPlugin plugin, ItemManager itemManager)
+	ItemIdentificationOverlay(ItemIdentificationConfig config, ItemManager itemManager)
 	{
-		this.plugin = plugin;
+		this.config = config;
 		this.itemManager = itemManager;
 
 		showOnInventory();
@@ -69,31 +69,37 @@ class ItemIdentificationOverlay extends WidgetItemOverlay
 		switch (iden.type)
 		{
 			case SEED:
-				if (!plugin.isShowSeeds())
+				if (!config.showSeeds())
 				{
 					return;
 				}
 				break;
 			case HERB:
-				if (!plugin.isShowHerbs())
+				if (!config.showHerbs())
 				{
 					return;
 				}
 				break;
 			case SAPLING:
-				if (!plugin.isShowSaplings())
+				if (!config.showSaplings())
 				{
 					return;
 				}
 				break;
 			case ORE:
-				if (!plugin.isShowOres())
+				if (!config.showOres())
 				{
 					return;
 				}
 				break;
 			case GEM:
-				if (!plugin.isShowGems())
+				if (!config.showGems())
+				{
+					return;
+				}
+				break;
+			case POTION:
+				if (!config.showPotions())
 				{
 					return;
 				}
@@ -108,8 +114,8 @@ class ItemIdentificationOverlay extends WidgetItemOverlay
 	{
 		final TextComponent textComponent = new TextComponent();
 		textComponent.setPosition(new Point(bounds.x - 1, bounds.y + bounds.height - 1));
-		textComponent.setColor(plugin.getTextColor());
-		switch (plugin.getIdentificationType())
+		textComponent.setColor(config.textColor());
+		switch (config.identificationType())
 		{
 			case SHORT:
 				textComponent.setText(iden.shortName);

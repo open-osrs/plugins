@@ -2,13 +2,11 @@ package net.runelite.client.plugins.spawntimer;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.GameState;
@@ -20,7 +18,6 @@ import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -34,7 +31,6 @@ import org.pf4j.Extension;
 	tags = {"highlight", "minimap", "npcs", "overlay", "spawn", "tags", "lyzrd"},
 	type = PluginType.PVM
 )
-@Singleton
 public class SpawnTimerPlugin extends Plugin
 {
 	@Inject
@@ -47,7 +43,7 @@ public class SpawnTimerPlugin extends Plugin
 	Set<thing> ticks = new HashSet<>();
 
 	@Inject
-	private SpawnTimerOverlay SpawnTimerOverlay;
+	private net.runelite.client.plugins.spawntimer.SpawnTimerOverlay SpawnTimerOverlay;
 
 	@Inject
 	private SpawnTimerConfig config;
@@ -61,17 +57,9 @@ public class SpawnTimerPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	public int currentTick;
 
-	private String getNpcToHighlight;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getHighlightColor;
-
 	@Override
 	protected void startUp()
 	{
-
-		this.getNpcToHighlight = config.getNpcToHighlight();
-		this.getHighlightColor = config.getHighlightColor();
-
 		currentTick = 0;
 		overlayManager.add(SpawnTimerOverlay);
 	}
@@ -131,7 +119,7 @@ public class SpawnTimerPlugin extends Plugin
 	@VisibleForTesting
 	public List<String> getHighlights()
 	{
-		final String configNpcs = this.getNpcToHighlight.toLowerCase();
+		final String configNpcs = config.getNpcToHighlight().toLowerCase();
 
 		if (configNpcs.isEmpty())
 		{
@@ -139,17 +127,5 @@ public class SpawnTimerPlugin extends Plugin
 		}
 
 		return Text.fromCSV(configNpcs);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("spawntimer"))
-		{
-			return;
-		}
-
-		this.getNpcToHighlight = config.getNpcToHighlight();
-		this.getHighlightColor = config.getHighlightColor();
 	}
 }

@@ -56,20 +56,20 @@ public enum Positivity
 	 */
 	BETTER_UNCAPPED;
 
-	public static Color getColor(ItemStatPlugin plugin, Positivity positivity)
+	public static Color getColor(ItemStatConfig config, Positivity positivity)
 	{
 		switch (positivity)
 		{
 			case BETTER_UNCAPPED:
-				return plugin.getColorBetterUncapped();
+				return config.colorBetterUncapped();
 			case BETTER_SOMECAPPED:
-				return plugin.getColorBetterSomeCapped();
+				return config.colorBetterSomeCapped();
 			case BETTER_CAPPED:
-				return plugin.getColorBetterCapped();
+				return config.colorBetterCapped();
 			case NO_CHANGE:
-				return plugin.getColorNoChange();
+				return config.colorNoChange();
 			case WORSE:
-				return plugin.getColorWorse();
+				return config.colorWorse();
 			default:
 				return Color.WHITE;
 		}

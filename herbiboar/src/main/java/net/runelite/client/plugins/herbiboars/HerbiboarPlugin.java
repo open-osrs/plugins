@@ -25,7 +25,6 @@
 package net.runelite.client.plugins.herbiboars;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,7 +58,6 @@ import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -74,7 +71,6 @@ import org.pf4j.Extension;
 	tags = {"herblore", "hunter", "skilling", "overlay"},
 	type = PluginType.SKILLING
 )
-@Singleton
 public class HerbiboarPlugin extends Plugin
 {
 	private static final List<WorldPoint> END_LOCATIONS = Arrays.asList(
@@ -115,9 +111,6 @@ public class HerbiboarPlugin extends Plugin
 
 	@Inject
 	private HerbiboarMinimapOverlay minimapOverlay;
-
-	@Inject
-	private HerbiboarConfig config;
 
 	@Getter(AccessLevel.PACKAGE)
 	private boolean inHerbiboarArea;
@@ -162,29 +155,6 @@ public class HerbiboarPlugin extends Plugin
 	@Setter(AccessLevel.PACKAGE)
 	private boolean herbiboarRendered = false;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean isStartShown;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getStartColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean isTunnelShown;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getTunnelColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean isObjectShown;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getObjectColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean isTrailShown;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getTrailColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean isOnlyCurrentTrailShown;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showOutlines;
-	@Getter(AccessLevel.PACKAGE)
-	private RenderStyle outlineStyle;
-
 	@Provides
 	HerbiboarConfig getConfig(ConfigManager configManager)
 	{
@@ -194,8 +164,6 @@ public class HerbiboarPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlayManager.add(minimapOverlay);
 		inHerbiboarArea = checkArea();
@@ -467,29 +435,5 @@ public class HerbiboarPlugin extends Plugin
 	List<WorldPoint> getEndLocations()
 	{
 		return END_LOCATIONS;
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("herbiboar"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.isStartShown = config.isStartShown();
-		this.getStartColor = config.getStartColor();
-		this.isTunnelShown = config.isTunnelShown();
-		this.getTunnelColor = config.getTunnelColor();
-		this.isObjectShown = config.isObjectShown();
-		this.getObjectColor = config.getObjectColor();
-		this.isTrailShown = config.isTrailShown();
-		this.getTrailColor = config.getTrailColor();
-		this.isOnlyCurrentTrailShown = config.isOnlyCurrentTrailShown();
-		this.showOutlines = config.showOutlines();
-		this.outlineStyle = config.outlineStyle();
 	}
 }

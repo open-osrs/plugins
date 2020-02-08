@@ -48,17 +48,17 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 class BlastMineOreCountOverlay extends Overlay
 {
 	private final Client client;
-	private final BlastMinePlugin plugin;
+	private final BlastMinePluginConfig config;
 	private final ItemManager itemManager;
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	private BlastMineOreCountOverlay(final BlastMinePlugin plugin, final Client client, final ItemManager itemManager)
+	private BlastMineOreCountOverlay(final BlastMinePlugin plugin, final BlastMinePluginConfig config, final Client client, final ItemManager itemManager)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 		this.itemManager = itemManager;
 		panelComponent.setOrientation(ComponentOrientation.HORIZONTAL);
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Blast mine overlay"));
@@ -76,7 +76,7 @@ class BlastMineOreCountOverlay extends Overlay
 
 		panelComponent.getChildren().clear();
 
-		if (plugin.isShowOreOverlay())
+		if (config.showOreOverlay())
 		{
 			blastMineWidget.setHidden(true);
 			panelComponent.getChildren().add(new ImageComponent(getImage(ItemID.COAL, client.getVar(Varbits.BLAST_MINE_COAL))));

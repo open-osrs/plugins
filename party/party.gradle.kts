@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.1"
+version = "0.0.2"
 
 project.extra["PluginName"] = "Party"
 project.extra["PluginDescription"] = "Shows useful information about current party"
@@ -38,7 +38,10 @@ dependencies {
     compileOnly("com.openosrs:runelite-client:$rlVersion")
     compileOnly("com.openosrs:http-api:$rlVersion")
 
+    compileOnly(project(":discord"))
+
     compileOnly(Libraries.guice)
+    compileOnly(Libraries.gson)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.okhttp3)
@@ -52,6 +55,7 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to nameToId("discord"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

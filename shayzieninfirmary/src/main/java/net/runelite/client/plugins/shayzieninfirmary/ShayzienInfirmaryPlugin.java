@@ -27,10 +27,8 @@ package net.runelite.client.plugins.shayzieninfirmary;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
@@ -41,7 +39,6 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Shayzien Infirmary",
@@ -49,7 +46,6 @@ import org.pf4j.Extension;
 	tags = {"shayzien", "infirmary", "soldiers"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class ShayzienInfirmaryPlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)

@@ -39,11 +39,13 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 class XpDropOverlay extends Overlay
 {
 	private final XpDropPlugin plugin;
+	private final XpDropConfig config;
 
 	@Inject
-	private XpDropOverlay(final XpDropPlugin plugin)
+	private XpDropOverlay(final XpDropPlugin plugin, final XpDropConfig config)
 	{
 		this.plugin = plugin;
+		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.MED);
 	}
@@ -62,7 +64,7 @@ class XpDropOverlay extends Overlay
 
 				if (textLocation != null && plugin.getDamage() != 0)
 				{
-					OverlayUtil.renderTextLocation(graphics, textLocation, damageStr, plugin.getDamageColor());
+					OverlayUtil.renderTextLocation(graphics, textLocation, damageStr, config.getDamageColor());
 				}
 			}
 		}

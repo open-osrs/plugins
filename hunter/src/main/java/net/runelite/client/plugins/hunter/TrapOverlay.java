@@ -53,6 +53,7 @@ public class TrapOverlay extends Overlay
 
 	private final Client client;
 	private final HunterPlugin plugin;
+	private final HunterConfig config;
 
 	private Color colorOpen, colorOpenBorder;
 	private Color colorEmpty, colorEmptyBorder;
@@ -60,11 +61,13 @@ public class TrapOverlay extends Overlay
 	private Color colorTrans, colorTransBorder;
 
 	@Inject
-	TrapOverlay(final Client client, final HunterPlugin plugin)
+	TrapOverlay(final Client client, final HunterPlugin plugin, final HunterConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
+
 		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
 	}
 
@@ -80,13 +83,13 @@ public class TrapOverlay extends Overlay
 	 */
 	public void updateConfig()
 	{
-		colorEmptyBorder = plugin.getGetEmptyTrapColor();
+		colorEmptyBorder = config.getEmptyTrapColor();
 		colorEmpty = new Color(colorEmptyBorder.getRed(), colorEmptyBorder.getGreen(), colorEmptyBorder.getBlue(), 100);
-		colorFullBorder = plugin.getGetFullTrapColor();
+		colorFullBorder = config.getFullTrapColor();
 		colorFull = new Color(colorFullBorder.getRed(), colorFullBorder.getGreen(), colorFullBorder.getBlue(), 100);
-		colorOpenBorder = plugin.getGetOpenTrapColor();
+		colorOpenBorder = config.getOpenTrapColor();
 		colorOpen = new Color(colorOpenBorder.getRed(), colorOpenBorder.getGreen(), colorOpenBorder.getBlue(), 100);
-		colorTransBorder = plugin.getGetTransTrapColor();
+		colorTransBorder = config.getTransTrapColor();
 		colorTrans = new Color(colorTransBorder.getRed(), colorTransBorder.getGreen(), colorTransBorder.getBlue(), 100);
 	}
 

@@ -28,7 +28,6 @@ package net.runelite.client.plugins.gauntlet;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,7 +50,6 @@ import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.Projectile;
 import net.runelite.api.ProjectileID;
-import net.runelite.api.Skill;
 import net.runelite.api.SoundEffectID;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.AnimationChanged;
@@ -63,6 +61,7 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ProjectileSpawned;
+import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -72,7 +71,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SkillIconManager;
-import net.runelite.client.game.XpDropEvent;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -88,7 +86,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Gauntlet",
-	description = "All-in-one plugin for the Gauntlet",
+	description = "All-in-one plugin for the Gauntlet.",
 	tags = {"Gauntlet"},
 	type = PluginType.PVM
 )
@@ -155,7 +153,7 @@ public class GauntletPlugin extends Plugin
 
 	@Inject
 	@Getter(AccessLevel.NONE)
-	private GauntletCounter GauntletCounter;
+	private net.runelite.client.plugins.gauntlet.GauntletCounter GauntletCounter;
 
 	@Setter(AccessLevel.PACKAGE)
 	@Nullable
@@ -167,34 +165,14 @@ public class GauntletPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
-	private boolean attackVisualOutline;
 	private boolean completeStartup = false;
-	private boolean displayTimerChat;
-	private boolean displayTimerWidget;
 	@Setter(AccessLevel.PACKAGE)
 	private boolean flash;
-	private boolean flashOnWrongAttack;
-	private boolean highlightPrayerInfobox;
-	private boolean highlightResources;
-	private boolean highlightResourcesIcons;
-	private boolean highlightWidget;
-	private boolean overlayBoss;
-	private boolean overlayBossPrayer;
-	private boolean overlayTornadoes;
 	private boolean timerVisible = true;
-	private boolean uniqueAttackVisual;
-	private boolean uniquePrayerAudio;
-	private boolean uniquePrayerVisual;
-	private Color highlightResourcesColor;
 	private final Map<String, Integer> items = new HashMap<>();
 	private final Set<Missiles> projectiles = new HashSet<>();
 	private final Set<Resources> resources = new HashSet<>();
-
-	private GauntletConfig.CounterDisplay countAttacks;
-	private int resourceIconSize;
 	private Set<Tornado> tornadoes = new HashSet<>();
-	private int projectileIconSize;
-	private boolean displayResources;
 	private Counter oreCounter;
 	private Counter woodCounter;
 	private Counter clothCounter;
@@ -207,6 +185,11 @@ public class GauntletPlugin extends Plugin
 	private int herbGathered;
 	private int currentFarmingAction = -1;
 	private boolean countersVisible = false;
+	private int miningXp = 0;
+	private int farmingXp = 0;
+	private int woodcuttingXp = 0;
+	private int fishingXp = 0;
+	private boolean inGauntlet = false;
 
 	@Provides
 	GauntletConfig getConfig(ConfigManager configManager)
@@ -217,12 +200,11 @@ public class GauntletPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		initializeCounters();
 		overlayManager.add(overlay);
 		overlayManager.add(infoboxoverlay);
 		overlayManager.add(GauntletCounter);
-		timerVisible = this.displayTimerWidget;
+		timerVisible = config.displayTimerWidget();
 		timer.resetStates();
 		if (timerVisible)
 		{
@@ -273,11 +255,16 @@ public class GauntletPlugin extends Plugin
 		woodGathered = 0;
 		clothGathered = 0;
 		herbGathered = 0;
+		if (oreCounter != null)
+		{
+			updateCounters();
+		}
 	}
 
 	private void updateCounters()
 	{
 		oreCounter.setCount(oresGathered);
+
 		woodCounter.setCount(woodGathered);
 		clothCounter.setCount(clothGathered);
 		fishCounter.setCount(fishGathered);
@@ -335,31 +322,48 @@ public class GauntletPlugin extends Plugin
 		updateCounters();
 	}
 
+
 	@Subscribe
-	private void onXpDropEvent(XpDropEvent experienceChanged)
+	private void onStatsChanged(StatChanged event)
 	{
-		if (experienceChanged.getSkill().compareTo(Skill.MINING) == 0)
+		switch (event.getSkill())
 		{
-			oresGathered++;
-		}
-		if (experienceChanged.getSkill().compareTo(Skill.WOODCUTTING) == 0)
-		{
-			woodGathered++;
-		}
-		if (experienceChanged.getSkill().compareTo(Skill.FARMING) == 0)
-		{
-			if (currentFarmingAction == GATHERING_HERB)
-			{
-				herbGathered++;
-			}
-			else if (currentFarmingAction == GATHERING_CLOTH)
-			{
-				clothGathered++;
-			}
-		}
-		if (experienceChanged.getSkill().compareTo(Skill.FISHING) == 0)
-		{
-			fishGathered++;
+			case MINING:
+				if (miningXp != event.getXp())
+				{
+					oresGathered++;
+					miningXp = event.getXp();
+				}
+				break;
+			case FISHING:
+				if (fishingXp != event.getXp())
+				{
+					fishGathered++;
+					fishingXp = event.getXp();
+				}
+				break;
+			case WOODCUTTING:
+				if (woodcuttingXp != event.getXp())
+				{
+					woodGathered++;
+					woodcuttingXp = event.getXp();
+				}
+				break;
+			case FARMING:
+				if (farmingXp != event.getXp())
+				{
+					if (currentFarmingAction == GATHERING_HERB)
+					{
+						herbGathered++;
+						farmingXp = event.getXp();
+					}
+					else if (currentFarmingAction == GATHERING_CLOTH)
+					{
+						clothGathered++;
+						farmingXp = event.getXp();
+					}
+				}
+				break;
 		}
 		updateCounters();
 	}
@@ -443,16 +447,14 @@ public class GauntletPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
 		if (event.getKey().equals("displayTimerWidget"))
 		{
-			if (this.displayTimerWidget && !timerVisible)
+			if (config.displayTimerWidget() && !timerVisible)
 			{
 				overlayManager.add(timer);
 				timerVisible = true;
 			}
-			else if (!this.displayTimerWidget && timerVisible)
+			else if (!config.displayTimerWidget() && timerVisible)
 			{
 				overlayManager.remove(timer);
 				timerVisible = false;
@@ -461,7 +463,7 @@ public class GauntletPlugin extends Plugin
 
 		if (event.getKey().equals("displayResources"))
 		{
-			if (this.displayResources && this.startedGauntlet())
+			if (config.displayGatheredResources() && this.startedGauntlet())
 			{
 				addCounters();
 			}
@@ -571,7 +573,7 @@ public class GauntletPlugin extends Plugin
 			else if (HUNLLEF_PRAYER_PROJECTILES.contains(proj.getId()))
 			{
 				hunllef.updateAttack(PRAYER);
-				if (this.uniquePrayerAudio)
+				if (config.uniquePrayerAudio())
 				{
 					client.playSoundEffect(SoundEffectID.MAGIC_SPLASH_BOING);
 				}
@@ -586,17 +588,23 @@ public class GauntletPlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged event)
 	{
+		if (client.getVar(Varbits.GAUNTLET_ENTERED) == 1 && !inGauntlet)
+		{
+			resetGatheringCounters();
+			inGauntlet = true;
+		}
 		if (this.completeStartup)
 		{
 			timer.checkStates(true);
 		}
-		if (startedGauntlet() && displayResources)
+		if (startedGauntlet() && config.displayGatheredResources())
 		{
 			addCounters();
 		}
 		else
 		{
 			removeCounters();
+			inGauntlet = false;
 		}
 	}
 
@@ -608,28 +616,5 @@ public class GauntletPlugin extends Plugin
 	boolean startedGauntlet()
 	{
 		return client.getVar(Varbits.GAUNTLET_ENTERED) == 1;
-	}
-
-	private void updateConfig()
-	{
-		this.highlightResources = config.highlightResources();
-		this.highlightResourcesColor = config.highlightResourcesColor();
-		this.highlightResourcesIcons = config.highlightResourcesIcons();
-		this.flashOnWrongAttack = config.flashOnWrongAttack();
-		this.highlightWidget = config.highlightWidget();
-		this.resourceIconSize = config.resourceIconSize();
-		this.projectileIconSize = config.projectileIconSize();
-		this.countAttacks = config.countAttacks();
-		this.uniquePrayerAudio = config.uniquePrayerAudio();
-		this.uniquePrayerVisual = config.uniquePrayerVisual();
-		this.uniqueAttackVisual = config.uniqueAttackVisual();
-		this.overlayBoss = config.overlayBoss();
-		this.overlayBossPrayer = config.overlayBossPrayer();
-		this.overlayTornadoes = config.overlayTornadoes();
-		this.displayTimerWidget = config.displayTimerWidget();
-		this.displayTimerChat = config.displayTimerChat();
-		this.attackVisualOutline = config.attackVisualOutline();
-		this.highlightPrayerInfobox = config.highlightPrayerInfobox();
-		this.displayResources = config.displayGatheredResources();
 	}
 }

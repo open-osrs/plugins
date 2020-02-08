@@ -25,7 +25,6 @@
 package net.runelite.client.plugins.pestcontrol;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -39,7 +38,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
 public class TimerOverlay extends Overlay
 {
 	private final PestControlPlugin plugin;

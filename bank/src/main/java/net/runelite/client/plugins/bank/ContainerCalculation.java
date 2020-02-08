@@ -34,7 +34,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
 
-class ContainerCalculation
+public class ContainerCalculation
 {
 	private final ItemManager itemManager;
 
@@ -48,7 +48,7 @@ class ContainerCalculation
 	}
 
 	@Nullable
-	ContainerPrices calculate(Item[] items)
+	public ContainerPrices calculate(Item[] items)
 	{
 		// Returns last calculation if inventory hasn't changed
 

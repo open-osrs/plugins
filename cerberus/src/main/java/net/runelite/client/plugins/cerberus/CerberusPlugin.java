@@ -29,7 +29,6 @@ import com.google.common.collect.ComparisonChain;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.GameState;
@@ -52,7 +51,6 @@ import org.pf4j.Extension;
 	tags = {"bosses", "combat", "ghosts", "prayer", "pve", "overlay", "souls"},
 	type = PluginType.PVM
 )
-@Singleton
 public class CerberusPlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)

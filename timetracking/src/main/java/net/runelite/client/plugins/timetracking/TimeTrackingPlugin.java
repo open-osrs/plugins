@@ -51,7 +51,7 @@ import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.CONFIG
 import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.STOPWATCHES;
 import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.TIMERS;
 import net.runelite.client.plugins.timetracking.clocks.ClockManager;
-import net.runelite.client.plugins.timestamp.FarmingTracker;
+import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
 import net.runelite.client.plugins.timetracking.hunter.BirdHouseTracker;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;

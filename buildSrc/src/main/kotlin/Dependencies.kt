@@ -24,7 +24,7 @@
  */
 
 object ProjectVersions {
-    const val rlVersion = "1.5.44-SNAPSHOT"
+    const val rlVersion = "1.6.6-SNAPSHOT"
     const val apiVersion = "0.0.1"
 }
 
@@ -35,21 +35,22 @@ object Libraries {
         const val apacheCommonsText = "1.8"
         const val discord = "1.1"
         const val gson = "2.8.6"
-        const val guava = "28.1-jre"
+        const val guava = "28.2-jre"
         const val guice = "4.2.2"
         const val hamcrest = "2.2"
         const val javax = "1.3.2"
         const val jogamp = "2.3.2"
         const val jopt = "5.0.4"
         const val jooq = "3.12.3"
-        const val junit = "4.12"
+        const val junit = "4.13"
         const val logback = "1.2.3"
         const val lombok = "1.18.10"
-        const val mockito = "3.1.0"
-        const val okhttp3 = "4.2.2"
+        const val mockito = "3.2.4"
+        const val okhttp3 = "4.3.0"
         const val pf4j = "3.2.0"
-        const val rxjava = "2.2.14"
-        const val slf4j = "1.7.29"
+        const val radiance = "2.5.1"
+        const val rxjava = "2.2.16"
+        const val slf4j = "1.7.30"
     }
 
     const val annotations = "org.jetbrains:annotations:${Versions.annotations}"
@@ -75,4 +76,6 @@ object Libraries {
     const val pf4j = "org.pf4j:pf4j:${Versions.pf4j}"
     const val rxjava = "io.reactivex.rxjava2:rxjava:${Versions.rxjava}"
     const val slf4jApi = "org.slf4j:slf4j-api:${Versions.slf4j}"
+    const val substance = "org.pushing-pixels:radiance-substance:${Versions.radiance}"
+
 }

@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
@@ -39,12 +37,10 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Chat Translator",
-	description = "Translates messages from one Language to another",
+	description = "Translates messages from one Language to another.",
 	tags = {"translate", "language", "english", "spanish", "dutch", "french", "welsh", "german"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
-@Slf4j
 public class ChatTranslationPlugin extends Plugin implements KeyListener
 {
 	private static final Object PUBLIC = new Object();
@@ -259,9 +255,8 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 			messageNode.setRuneLiteFormatMessage(translation);
 			chatMessageManager.update(messageNode);
 		}
-		catch (IOException e)
+		catch (IOException ignored)
 		{
-			log.warn("Error translating message", e);
 		}
 
 		client.refreshChat();
@@ -297,7 +292,6 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 		}
 		catch (IOException e)
 		{
-			log.warn("Error translating message", e);
 			return;
 		}
 

@@ -33,7 +33,6 @@ import java.awt.image.BufferedImage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ChatMessageType;
@@ -74,7 +73,6 @@ import org.pf4j.Extension;
 	tags = {"inventory", "notifications", "overlay"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class ItemChargePlugin extends Plugin
 {
 	private static final Pattern DODGY_CHECK_PATTERN = Pattern.compile(
@@ -175,69 +173,6 @@ public class ItemChargePlugin extends Plugin
 	// Limits destroy callback to once per tick
 	private int lastCheckTick;
 
-	private Color veryLowWarningColor;
-	private Color lowWarningolor;
-	private int veryLowWarning;
-	private int lowWarning;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showTeleportCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showDodgyCount;
-	private boolean dodgyNotification;
-	@Getter(AccessLevel.PACKAGE)
-	private int dodgyNecklace;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showImpCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showFungicideCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showWateringCanCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showWaterskinCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showBellowCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showBasketCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSackCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showAbyssalBraceletCharges;
-	private boolean recoilNotification;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showBindingNecklaceCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private int bindingNecklace;
-	private boolean bindingNotification;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showExplorerRingCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private int explorerRing;
-	private boolean showInfoboxes;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSlayerBracelets;
-	@Getter(AccessLevel.PACKAGE)
-	private int expeditious;
-	@Getter(AccessLevel.PACKAGE)
-	private int slaughter;
-	@Getter(AccessLevel.PACKAGE)
-	private int xericTalisman;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSoulBearerCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private int soulBearer;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showChronicleCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showXericTalismanCharges;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showrecoil;
-	@Getter(AccessLevel.PACKAGE)
-	private int chronicle;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showRingOfForgingCount;
-	@Getter(AccessLevel.PACKAGE)
-	private int ringOfForging;
-
 	@Provides
 	ItemChargeConfig getConfig(ConfigManager configManager)
 	{
@@ -247,8 +182,6 @@ public class ItemChargePlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlayManager.add(recoilOverlay);
 		recoilRingImage = itemManager.getImage(RING_OF_RECOIL);
@@ -271,46 +204,44 @@ public class ItemChargePlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
-		if (!this.showInfoboxes)
+		if (!config.showInfoboxes())
 		{
 			infoBoxManager.removeIf(ItemChargeInfobox.class::isInstance);
 			return;
 		}
 
-		if (!this.showTeleportCharges)
+		if (!config.showTeleportCharges())
 		{
 			removeInfobox(ItemWithSlot.TELEPORT);
 		}
 
-		if (!this.showAbyssalBraceletCharges)
+		if (!config.showAbyssalBraceletCharges())
 		{
 			removeInfobox(ItemWithSlot.ABYSSAL_BRACELET);
 		}
 
-		if (!this.showDodgyCount)
+		if (!config.showDodgyCount())
 		{
 			removeInfobox(ItemWithSlot.DODGY_NECKLACE);
 		}
 
-		if (!this.showSlayerBracelets)
+		if (!config.showSlayerBracelets())
 		{
 			removeInfobox(ItemWithSlot.BRACELET_OF_SLAUGHTER);
 			removeInfobox(ItemWithSlot.EXPEDITIOUS_BRACELET);
 		}
 
-		if (!this.showBindingNecklaceCharges)
+		if (!config.showBindingNecklaceCharges())
 		{
 			removeInfobox(ItemWithSlot.BINDING_NECKLACE);
 		}
 
-		if (!this.showExplorerRingCharges)
+		if (!config.showExplorerRingCharges())
 		{
 			removeInfobox(ItemWithSlot.EXPLORER_RING);
 		}
 
-		if (!this.showRingOfForgingCount)
+		if (!config.showRingOfForgingCount())
 		{
 			removeInfobox(ItemWithSlot.RING_OF_FORGING);
 		}
@@ -340,7 +271,7 @@ public class ItemChargePlugin extends Plugin
 
 		if (event.getType() == ChatMessageType.GAMEMESSAGE || event.getType() == ChatMessageType.SPAM)
 		{
-			if (this.recoilNotification && message.contains(RING_OF_RECOIL_BREAK_MESSAGE))
+			if (config.recoilNotification() && message.contains(RING_OF_RECOIL_BREAK_MESSAGE))
 			{
 				notifier.notify("Your Ring of Recoil has shattered");
 			}
@@ -370,7 +301,7 @@ public class ItemChargePlugin extends Plugin
 			}
 			else if (dodgyBreakMatcher.find())
 			{
-				if (this.dodgyNotification)
+				if (config.dodgyNotification())
 				{
 					notifier.notify("Your dodgy necklace has crumbled to dust.");
 				}
@@ -379,7 +310,7 @@ public class ItemChargePlugin extends Plugin
 			}
 			else if (message.contains(BINDING_BREAK_TEXT))
 			{
-				if (this.bindingNotification)
+				if (config.bindingNotification())
 				{
 					notifier.notify(BINDING_BREAK_TEXT);
 				}
@@ -389,7 +320,7 @@ public class ItemChargePlugin extends Plugin
 			}
 			else if (bindingNecklaceUsedMatcher.find())
 			{
-				updateBindingNecklaceCharges(this.bindingNecklace - 1);
+				updateBindingNecklaceCharges(config.bindingNecklace() - 1);
 			}
 			else if (bindingNecklaceCheckMatcher.find())
 			{
@@ -463,7 +394,7 @@ public class ItemChargePlugin extends Plugin
 				if (EquipmentInventorySlot.RING.getSlotIdx() < items.length
 					&& items[EquipmentInventorySlot.RING.getSlotIdx()].getId() == ItemID.RING_OF_FORGING)
 				{
-					int charges = Ints.constrainToRange(this.ringOfForging - 1, 0, MAX_RING_OF_FORGING_CHARGES);
+					int charges = Ints.constrainToRange(config.ringOfForging() - 1, 0, MAX_RING_OF_FORGING_CHARGES);
 					updateRingOfForgingCharges(charges);
 				}
 			}
@@ -482,45 +413,45 @@ public class ItemChargePlugin extends Plugin
 	@Subscribe
 	private void onItemContainerChanged(ItemContainerChanged event)
 	{
-		if (event.getItemContainer() != client.getItemContainer(InventoryID.EQUIPMENT) || !this.showInfoboxes)
+		if (event.getItemContainer() != client.getItemContainer(InventoryID.EQUIPMENT) || !config.showInfoboxes())
 		{
 			return;
 		}
 
 		final Item[] items = event.getItemContainer().getItems();
 
-		if (this.showTeleportCharges)
+		if (config.showTeleportCharges())
 		{
 			updateJewelleryInfobox(ItemWithSlot.TELEPORT, items);
 		}
 
-		if (this.showDodgyCount)
+		if (config.showDodgyCount())
 		{
 			updateJewelleryInfobox(ItemWithSlot.DODGY_NECKLACE, items);
 		}
 
-		if (this.showAbyssalBraceletCharges)
+		if (config.showAbyssalBraceletCharges())
 		{
 			updateJewelleryInfobox(ItemWithSlot.ABYSSAL_BRACELET, items);
 		}
 
-		if (this.showSlayerBracelets)
+		if (config.showSlayerBracelets())
 		{
 			updateJewelleryInfobox(ItemWithSlot.BRACELET_OF_SLAUGHTER, items);
 			updateJewelleryInfobox(ItemWithSlot.EXPEDITIOUS_BRACELET, items);
 		}
 
-		if (this.showBindingNecklaceCharges)
+		if (config.showBindingNecklaceCharges())
 		{
 			updateJewelleryInfobox(ItemWithSlot.BINDING_NECKLACE, items);
 		}
 
-		if (this.showExplorerRingCharges)
+		if (config.showExplorerRingCharges())
 		{
 			updateJewelleryInfobox(ItemWithSlot.EXPLORER_RING, items);
 		}
 
-		if (this.showRingOfForgingCount)
+		if (config.showRingOfForgingCount())
 		{
 			updateJewelleryInfobox(ItemWithSlot.RING_OF_FORGING, items);
 		}
@@ -537,12 +468,10 @@ public class ItemChargePlugin extends Plugin
 			if (braceletText.contains("bracelet of slaughter"))
 			{
 				config.slaughter(MAX_SLAUGHTER_CHARGES);
-				this.slaughter = MAX_SLAUGHTER_CHARGES;
 			}
 			else if (braceletText.contains("expeditious bracelet"))
 			{
 				config.expeditious(MAX_EXPEDITIOUS_CHARGES);
-				this.expeditious = MAX_EXPEDITIOUS_CHARGES;
 			}
 		}
 
@@ -631,7 +560,7 @@ public class ItemChargePlugin extends Plugin
 	{
 		if (event.getActor() == client.getLocalPlayer() && client.getLocalPlayer().getSpotAnimation() == GraphicID.XERIC_TELEPORT)
 		{
-			final int xericCharges = Math.max(this.xericTalisman - 1, 0);
+			final int xericCharges = Math.max(config.xericTalisman() - 1, 0);
 			updateXericCharges(xericCharges);
 		}
 	}
@@ -658,7 +587,6 @@ public class ItemChargePlugin extends Plugin
 		int lastExplorerRingCharge = -1;
 		if (lastExplorerRingCharge != explorerRingCharge)
 		{
-			lastExplorerRingCharge = explorerRingCharge;
 			updateExplorerRingCharges(explorerRingCharge);
 		}
 	}
@@ -666,9 +594,8 @@ public class ItemChargePlugin extends Plugin
 	private void updateDodgyNecklaceCharges(final int value)
 	{
 		config.dodgyNecklace(value);
-		this.dodgyNecklace = value;
 
-		if (this.showInfoboxes && this.showDodgyCount)
+		if (config.showInfoboxes() && config.showDodgyCount())
 		{
 			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
@@ -684,9 +611,8 @@ public class ItemChargePlugin extends Plugin
 	private void updateBraceletOfSlaughterCharges(final int value)
 	{
 		config.slaughter(value);
-		this.slaughter = value;
 
-		if (this.showInfoboxes && this.showSlayerBracelets)
+		if (config.showInfoboxes() && config.showSlayerBracelets())
 		{
 			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
@@ -702,9 +628,8 @@ public class ItemChargePlugin extends Plugin
 	private void updateExpeditiousCharges(final int value)
 	{
 		config.expeditious(value);
-		this.expeditious = value;
 
-		if (this.showInfoboxes && this.showSlayerBracelets)
+		if (config.showInfoboxes() && config.showSlayerBracelets())
 		{
 			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
@@ -720,9 +645,8 @@ public class ItemChargePlugin extends Plugin
 	private void updateBindingNecklaceCharges(final int value)
 	{
 		config.bindingNecklace(value);
-		this.bindingNecklace = value;
 
-		if (this.showInfoboxes && this.showBindingNecklaceCharges)
+		if (config.showInfoboxes() && config.showBindingNecklaceCharges())
 		{
 			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
@@ -738,28 +662,24 @@ public class ItemChargePlugin extends Plugin
 	private void updateXericCharges(int xericCharges)
 	{
 		config.xericTalisman(xericCharges);
-		this.xericTalisman = xericCharges;
 	}
 
 	private void updateSoulBearerCharges(int soulBearerCharges)
 	{
 		config.soulBearer(soulBearerCharges);
-		this.soulBearer = soulBearerCharges;
 	}
 
 	private void updateChronicleCharges(int chronicleCharges)
 	{
 		config.chronicle(chronicleCharges);
-		this.chronicle = chronicleCharges;
 	}
 
 	private void updateExplorerRingCharges(final int value)
 	{
 		// Note: Varbit counts upwards. We count down from the maximum charges.
 		config.explorerRing(MAX_EXPLORER_RING_CHARGES - value);
-		this.explorerRing = MAX_EXPLORER_RING_CHARGES - value;
 
-		if (this.showInfoboxes && this.showExplorerRingCharges)
+		if (config.showInfoboxes() && config.showExplorerRingCharges())
 		{
 			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
@@ -828,23 +748,23 @@ public class ItemChargePlugin extends Plugin
 		{
 			if (id == ItemID.DODGY_NECKLACE && type == ItemWithSlot.DODGY_NECKLACE)
 			{
-				charges = this.dodgyNecklace;
+				charges = config.dodgyNecklace();
 			}
 			else if (id == ItemID.BRACELET_OF_SLAUGHTER && type == ItemWithSlot.BRACELET_OF_SLAUGHTER)
 			{
-				charges = this.slaughter;
+				charges = config.slaughter();
 			}
 			else if (id == ItemID.EXPEDITIOUS_BRACELET && type == ItemWithSlot.EXPEDITIOUS_BRACELET)
 			{
-				charges = this.expeditious;
+				charges = config.expeditious();
 			}
 			else if (id == ItemID.BINDING_NECKLACE && type == ItemWithSlot.BINDING_NECKLACE)
 			{
-				charges = this.bindingNecklace;
+				charges = config.bindingNecklace();
 			}
 			else if ((id >= ItemID.EXPLORERS_RING_1 && id <= ItemID.EXPLORERS_RING_4) && type == ItemWithSlot.EXPLORER_RING)
 			{
-				charges = this.explorerRing;
+				charges = config.explorerRing();
 			}
 		}
 		else if (itemWithCharge.getType() == type.getType())
@@ -866,9 +786,8 @@ public class ItemChargePlugin extends Plugin
 	private void updateRingOfForgingCharges(final int value)
 	{
 		config.ringOfForging(value);
-		this.ringOfForging = value;
 
-		if (this.showInfoboxes && this.showRingOfForgingCount)
+		if (config.showInfoboxes() && config.showRingOfForgingCount())
 		{
 			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
@@ -903,51 +822,14 @@ public class ItemChargePlugin extends Plugin
 	Color getColor(int charges)
 	{
 		Color color = Color.WHITE;
-		if (charges <= this.veryLowWarning)
+		if (charges <= config.veryLowWarning())
 		{
-			color = this.veryLowWarningColor;
+			color = config.veryLowWarningColor();
 		}
-		else if (charges <= this.lowWarning)
+		else if (charges <= config.lowWarning())
 		{
-			color = this.lowWarningolor;
+			color = config.lowWarningolor();
 		}
 		return color;
-	}
-
-	private void updateConfig()
-	{
-		this.veryLowWarningColor = config.veryLowWarningColor();
-		this.lowWarningolor = config.lowWarningolor();
-		this.veryLowWarning = config.veryLowWarning();
-		this.lowWarning = config.lowWarning();
-		this.showTeleportCharges = config.showTeleportCharges();
-		this.showDodgyCount = config.showDodgyCount();
-		this.dodgyNotification = config.dodgyNotification();
-		this.dodgyNecklace = config.dodgyNecklace();
-		this.showImpCharges = config.showImpCharges();
-		this.showFungicideCharges = config.showFungicideCharges();
-		this.showWateringCanCharges = config.showWateringCanCharges();
-		this.showWaterskinCharges = config.showWaterskinCharges();
-		this.showBellowCharges = config.showBellowCharges();
-		this.showAbyssalBraceletCharges = config.showAbyssalBraceletCharges();
-		this.recoilNotification = config.recoilNotification();
-		this.showBindingNecklaceCharges = config.showBindingNecklaceCharges();
-		this.bindingNecklace = config.bindingNecklace();
-		this.bindingNotification = config.bindingNotification();
-		this.showExplorerRingCharges = config.showExplorerRingCharges();
-		this.explorerRing = config.explorerRing();
-		this.showInfoboxes = config.showInfoboxes();
-		this.showSlayerBracelets = config.showSlayerBracelets();
-		this.expeditious = config.expeditious();
-		this.slaughter = config.slaughter();
-		this.xericTalisman = config.xericTalisman();
-		this.showSoulBearerCharges = config.showSoulBearerCharges();
-		this.soulBearer = config.soulBearer();
-		this.showChronicleCharges = config.showChronicleCharges();
-		this.showXericTalismanCharges = config.showXericTalismanCharges();
-		this.showrecoil = config.showrecoil();
-		this.chronicle = config.chronicle();
-		this.showBasketCharges = config.showBasketCharges();
-		this.showSackCharges = config.showSackCharges();
 	}
 }

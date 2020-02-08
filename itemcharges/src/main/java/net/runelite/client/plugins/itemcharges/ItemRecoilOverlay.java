@@ -44,13 +44,15 @@ class ItemRecoilOverlay extends Overlay
 	private static final Color NOT_ACTIVATED_BACKGROUND_COLOR = new Color(150, 0, 0, 150);
 	private static final Color ACTIVATED_BACKGROUND_COLOR = new Color(0, 150, 0, 150);
 	private final ItemChargePlugin plugin;
+	private final ItemChargeConfig config;
 	private final PanelComponent imagePanelComponent = new PanelComponent();
 
 	@Inject
-	public ItemRecoilOverlay(final ItemChargePlugin plugin)
+	public ItemRecoilOverlay(final ItemChargePlugin plugin, final ItemChargeConfig config)
 	{
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -60,7 +62,7 @@ class ItemRecoilOverlay extends Overlay
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 
 		this.imagePanelComponent.getChildren().clear();
-		if (plugin.isShowrecoil() && plugin.isRingOfRecoilAvailable())
+		if (config.showrecoil() && plugin.isRingOfRecoilAvailable())
 		{
 			BufferedImage recoilImage = plugin.getRecoilRingImage();
 			imagePanelComponent.setBackgroundColor(plugin

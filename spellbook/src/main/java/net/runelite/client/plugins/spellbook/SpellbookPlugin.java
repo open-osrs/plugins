@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +75,6 @@ import org.pf4j.Extension;
 	tags = {"resize", "spell", "mobile", "lowers", "pvp", "skill", "level"},
 	type = PluginType.UTILITY
 )
-@Singleton
 @Slf4j
 public class SpellbookPlugin extends Plugin
 {
@@ -131,10 +129,6 @@ public class SpellbookPlugin extends Plugin
 	private ImmutableSet<String> notFilteredSpells;
 	private Spellbook spellbook;
 	private boolean mageTabOpen;
-	private boolean enableMobile;
-	private boolean dragSpells;
-	private boolean scroll;
-	private int size;
 
 	@Provides
 	SpellbookConfig getConfig(ConfigManager configManager)
@@ -145,7 +139,7 @@ public class SpellbookPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
+		loadFilter();
 		refreshMagicTabOption();
 	}
 
@@ -159,15 +153,6 @@ public class SpellbookPlugin extends Plugin
 		mouseManager.unregisterMouseWheelListener(mouseListener);
 	}
 
-	private void updateConfig()
-	{
-		loadFilter();
-		this.enableMobile = config.enableMobile();
-		this.dragSpells = config.dragSpells();
-		this.scroll = config.scroll();
-		this.size = config.size();
-	}
-
 	@Subscribe
 	private void onConfigChanged(final ConfigChanged event)
 	{
@@ -176,25 +161,9 @@ public class SpellbookPlugin extends Plugin
 			return;
 		}
 
-		switch (event.getKey())
+		if (event.getKey().equals("filter"))
 		{
-			case "filter":
-				loadFilter();
-				break;
-			case "enableMobile":
-				enableMobile = config.enableMobile();
-				break;
-			case "dragSpells":
-				dragSpells = config.dragSpells();
-				break;
-			case "scroll":
-				scroll = config.scroll();
-				break;
-			case "size":
-				size = config.size();
-				break;
-			default:
-				return;
+			loadFilter();
 		}
 
 		runRebuild();
@@ -270,7 +239,7 @@ public class SpellbookPlugin extends Plugin
 
 			mouseManager.registerMouseListener(mouseListener);
 
-			if (this.scroll)
+			if (config.scroll())
 			{
 				mouseManager.registerMouseWheelListener(mouseListener);
 			}
@@ -302,7 +271,7 @@ public class SpellbookPlugin extends Plugin
 	{
 		clearMagicTabMenus();
 
-		if (!this.dragSpells || !mageTabOpen)
+		if (!config.dragSpells() || !mageTabOpen)
 		{
 			return;
 		}
@@ -325,7 +294,7 @@ public class SpellbookPlugin extends Plugin
 	private void onScriptCallbackEvent(final ScriptCallbackEvent event)
 	{
 		if (client.getVar(Varbits.FILTER_SPELLBOOK) != 0
-			|| !this.enableMobile
+			|| !config.enableMobile()
 			|| !event.getEventName().toLowerCase().contains("spell"))
 		{
 			return;
@@ -379,7 +348,7 @@ public class SpellbookPlugin extends Plugin
 				iStack[iStackSize - 1] = 1;
 				break;
 			case "resizeSpell":
-				final int size = this.size;
+				final int size = config.size();
 
 				if (size == 0)
 				{
@@ -392,7 +361,7 @@ public class SpellbookPlugin extends Plugin
 				iStack[iStackSize - 1] = columns;
 				break;
 			case "setSpellAreaSize":
-				if (!this.dragSpells)
+				if (!config.dragSpells())
 				{
 					return;
 				}
@@ -428,7 +397,7 @@ public class SpellbookPlugin extends Plugin
 			}
 			case "setSpellPosition":
 			{
-				if (!this.dragSpells)
+				if (!config.dragSpells())
 				{
 					return;
 				}
@@ -472,7 +441,9 @@ public class SpellbookPlugin extends Plugin
 			return;
 		}
 
-		final Collection<Spell> gson = GSON.fromJson(cfg, new TypeToken<List<Spell>>() {}.getType());
+		final Collection<Spell> gson = GSON.fromJson(cfg, new TypeToken<List<Spell>>()
+		{
+		}.getType());
 
 		for (final Spell s : gson)
 		{
@@ -654,7 +625,7 @@ public class SpellbookPlugin extends Plugin
 	{
 		final Widget clickedWidget = currentWidget();
 
-		if (clickedWidget == null || dragging || !this.scroll)
+		if (clickedWidget == null || dragging || !config.scroll())
 		{
 			return;
 		}
@@ -706,7 +677,7 @@ public class SpellbookPlugin extends Plugin
 
 	private int trueSize(final Spell s)
 	{
-		return s.getSize() * 2 + this.size;
+		return s.getSize() * 2 + config.size();
 	}
 
 	private static boolean isUnfiltered(final String spell, final Set<String> unfiltereds)

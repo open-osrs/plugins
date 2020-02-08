@@ -60,9 +60,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Graceful;
 import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.pf4j.Extension;
 
-@Extension
 @PluginDescriptor(
 	name = "Status Orbs",
 	description = "Configure settings for the Minimap orbs",
@@ -84,7 +82,6 @@ public class StatusOrbsPlugin extends Plugin
 
 	private static final int SPEC_REGEN_TICKS = 50;
 	private static final int NORMAL_HP_REGEN_TICKS = 100;
-	private static final int TWISTED_LEAGUE_ENDLESS_ENDURANCE_RELIC = 2;
 
 	@Inject
 	private Client client;
@@ -129,20 +126,10 @@ public class StatusOrbsPlugin extends Plugin
 	private int lastEnergy = 0;
 	private boolean localPlayerRunningToDestination;
 	private WorldPoint prevLocalPlayerLocation;
+	@Getter(AccessLevel.PACKAGE)
+	private double recoverRate = 1;
 
 	private BufferedImage heart;
-
-	private boolean dynamicHpHeart;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showHitpoints;
-	private boolean showWhenNoChange;
-	private int getNotifyBeforeHpRegenSeconds;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSpecial;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showRun;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean replaceOrbText;
 
 	@Provides
 	StatusOrbsConfig provideConfig(ConfigManager configManager)
@@ -153,10 +140,8 @@ public class StatusOrbsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
-		if (this.dynamicHpHeart && client.getGameState().equals(GameState.LOGGED_IN))
+		if (config.dynamicHpHeart() && client.getGameState().equals(GameState.LOGGED_IN))
 		{
 			clientThread.invoke(this::checkHealthIcon);
 		}
@@ -169,7 +154,7 @@ public class StatusOrbsPlugin extends Plugin
 		localPlayerRunningToDestination = false;
 		prevLocalPlayerLocation = null;
 		resetRunOrbText();
-		if (this.dynamicHpHeart)
+		if (config.dynamicHpHeart())
 		{
 			clientThread.invoke(this::resetHealthIcon);
 		}
@@ -180,17 +165,16 @@ public class StatusOrbsPlugin extends Plugin
 	{
 		if (event.getGroup().equals("statusorbs"))
 		{
-			updateConfig();
 			switch (event.getKey())
 			{
 				case "replaceOrbText":
-					if (!this.replaceOrbText)
+					if (!config.replaceOrbText())
 					{
 						resetRunOrbText();
 					}
 					break;
 				case "dynamicHpHeart":
-					if (this.dynamicHpHeart)
+					if (config.dynamicHpHeart())
 					{
 						checkHealthIcon();
 					}
@@ -206,7 +190,7 @@ public class StatusOrbsPlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged e)
 	{
-		if (this.dynamicHpHeart)
+		if (config.dynamicHpHeart())
 		{
 			checkHealthIcon();
 		}
@@ -252,18 +236,12 @@ public class StatusOrbsPlugin extends Plugin
 			hpPerMs *= 2;
 		}
 
-		if (client.getVar(Varbits.TWISTED_LEAGUE_RELIC_1) == TWISTED_LEAGUE_ENDLESS_ENDURANCE_RELIC)
-		{
-			ticksPerHPRegen /= 4;
-			hpPerMs *= 4;
-		}
-
 		ticksSinceHPRegen = (ticksSinceHPRegen + 1) % ticksPerHPRegen;
 		hitpointsPercentage = ticksSinceHPRegen / (double) ticksPerHPRegen;
 
 		int currentHP = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		int maxHP = client.getRealSkillLevel(Skill.HITPOINTS);
-		if (currentHP == maxHP && !this.showWhenNoChange)
+		if (currentHP == maxHP && !config.showWhenNoChange())
 		{
 			hitpointsPercentage = 0;
 		}
@@ -279,7 +257,7 @@ public class StatusOrbsPlugin extends Plugin
 				client.getLocalDestinationLocation() != null &&
 				prevLocalPlayerLocation.distanceTo(client.getLocalPlayer().getWorldLocation()) > 1;
 
-		if (this.getNotifyBeforeHpRegenSeconds > 0 && currentHP < maxHP && shouldNotifyHpRegenThisTick(ticksPerHPRegen))
+		if (config.getNotifyBeforeHpRegenSeconds() > 0 && currentHP < maxHP && shouldNotifyHpRegenThisTick(ticksPerHPRegen))
 		{
 			notifier.notify("[" + client.getLocalPlayer().getName() + "] regenerates their next hitpoint soon!");
 		}
@@ -291,7 +269,9 @@ public class StatusOrbsPlugin extends Plugin
 
 		prevLocalPlayerLocation = client.getLocalPlayer().getWorldLocation();
 
-		if (this.replaceOrbText)
+		recoverRate = Graceful.calculateRecoveryRate(client.getItemContainer(InventoryID.EQUIPMENT));
+
+		if (config.replaceOrbText())
 		{
 			setRunOrbText(getEstimatedRunTimeRemaining(true));
 		}
@@ -327,7 +307,7 @@ public class StatusOrbsPlugin extends Plugin
 	{
 		// if the configured duration lies between two ticks, choose the earlier tick
 		final int ticksBeforeHPRegen = ticksPerHPRegen - ticksSinceHPRegen;
-		final int notifyTick = (int) Math.ceil(this.getNotifyBeforeHpRegenSeconds * 1000d / Constants.GAME_TICK_LENGTH);
+		final int notifyTick = (int) Math.ceil(config.getNotifyBeforeHpRegenSeconds() * 1000d / Constants.GAME_TICK_LENGTH);
 		return ticksBeforeHPRegen == notifyTick;
 	}
 
@@ -384,11 +364,7 @@ public class StatusOrbsPlugin extends Plugin
 
 		// Calculate the amount of energy recovered every second
 		double recoverRate = (48 + client.getBoostedSkillLevel(Skill.AGILITY)) / 360.0;
-
-		if (Graceful.hasFullSet(client.getItemContainer(InventoryID.EQUIPMENT)))
-		{
-			recoverRate *= 1.3; // 30% recover rate increase from Graceful set effect
-		}
+		recoverRate *= Graceful.calculateRecoveryRate(client.getItemContainer(InventoryID.EQUIPMENT));
 
 		// Calculate the number of seconds left
 		final double secondsLeft = (100 - client.getEnergy()) / recoverRate;
@@ -434,11 +410,8 @@ public class StatusOrbsPlugin extends Plugin
 	private double runRegenPerTick()
 	{
 		double recoverRate = (client.getBoostedSkillLevel(Skill.AGILITY) / 6d + 8) / 100;
+		recoverRate *= Graceful.calculateRecoveryRate(client.getItemContainer(InventoryID.EQUIPMENT));
 
-		if (Graceful.hasFullSet(client.getItemContainer(InventoryID.EQUIPMENT)))
-		{
-			return recoverRate * 1.3;
-		}
 		return recoverRate;
 	}
 
@@ -449,16 +422,5 @@ public class StatusOrbsPlugin extends Plugin
 	{
 		client.getWidgetSpriteCache().reset();
 		client.getSpriteOverrides().remove(SpriteID.MINIMAP_ORB_HITPOINTS_ICON);
-	}
-
-	private void updateConfig()
-	{
-		this.dynamicHpHeart = config.dynamicHpHeart();
-		this.showHitpoints = config.showHitpoints();
-		this.showWhenNoChange = config.showWhenNoChange();
-		this.getNotifyBeforeHpRegenSeconds = config.getNotifyBeforeHpRegenSeconds();
-		this.showSpecial = config.showSpecial();
-		this.showRun = config.showRun();
-		this.replaceOrbText = config.replaceOrbText();
 	}
 }

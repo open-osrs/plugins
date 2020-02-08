@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.NPC;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.Prayer;
@@ -32,10 +33,11 @@ public class InfernoOverlay extends Overlay
 	private static final int BOX_HEIGHT = 5;
 
 	private final InfernoPlugin plugin;
+	private final InfernoConfig config;
 	private final Client client;
 
 	@Inject
-	private InfernoOverlay(final Client client, final InfernoPlugin plugin)
+	private InfernoOverlay(final Client client, final InfernoPlugin plugin, final InfernoConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
@@ -43,6 +45,7 @@ public class InfernoOverlay extends Overlay
 
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -52,16 +55,16 @@ public class InfernoOverlay extends Overlay
 		final Widget rangePrayerWidget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
 		final Widget magicPrayerWidget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
 
-		if (plugin.isIndicateObstacles())
+		if (config.indicateObstacles())
 		{
 			renderObstacles(graphics);
 		}
 
-		if (plugin.getSafespotDisplayMode() == InfernoSafespotDisplayMode.AREA)
+		if (config.safespotDisplayMode() == InfernoSafespotDisplayMode.AREA)
 		{
 			renderAreaSafepots(graphics);
 		}
-		else if (plugin.getSafespotDisplayMode() == InfernoSafespotDisplayMode.INDIVIDUAL_TILES)
+		else if (config.safespotDisplayMode() == InfernoSafespotDisplayMode.INDIVIDUAL_TILES)
 		{
 			renderIndividualTilesSafespots(graphics);
 		}
@@ -70,36 +73,36 @@ public class InfernoOverlay extends Overlay
 		{
 			if (infernoNPC.getNpc().getConvexHull() != null)
 			{
-				if (plugin.isIndicateNonSafespotted() && plugin.isNormalSafespots(infernoNPC)
+				if (config.indicateNonSafespotted() && plugin.isNormalSafespots(infernoNPC)
 					&& infernoNPC.canAttack(client, client.getLocalPlayer().getWorldLocation()))
 				{
 					OverlayUtil.renderPolygon(graphics, infernoNPC.getNpc().getConvexHull(), Color.RED);
 				}
-				if (plugin.isIndicateTemporarySafespotted() && plugin.isNormalSafespots(infernoNPC)
+				if (config.indicateTemporarySafespotted() && plugin.isNormalSafespots(infernoNPC)
 					&& infernoNPC.canMoveToAttack(client, client.getLocalPlayer().getWorldLocation(), plugin.getObstacles()))
 				{
 					OverlayUtil.renderPolygon(graphics, infernoNPC.getNpc().getConvexHull(), Color.YELLOW);
 				}
-				if (plugin.isIndicateSafespotted() && plugin.isNormalSafespots(infernoNPC))
+				if (config.indicateSafespotted() && plugin.isNormalSafespots(infernoNPC))
 				{
 					OverlayUtil.renderPolygon(graphics, infernoNPC.getNpc().getConvexHull(), Color.GREEN);
 				}
-				if (plugin.isIndicateNibblers() && infernoNPC.getType() == InfernoNPC.Type.NIBBLER
-					&& (!plugin.isIndicateCentralNibbler() || plugin.getCentralNibbler() != infernoNPC))
+				if (config.indicateNibblers() && infernoNPC.getType() == InfernoNPC.Type.NIBBLER
+					&& (!config.indicateCentralNibbler() || plugin.getCentralNibbler() != infernoNPC))
 				{
 					OverlayUtil.renderPolygon(graphics, infernoNPC.getNpc().getConvexHull(), Color.CYAN);
 				}
-				if (plugin.isIndicateCentralNibbler() && infernoNPC.getType() == InfernoNPC.Type.NIBBLER
+				if (config.indicateCentralNibbler() && infernoNPC.getType() == InfernoNPC.Type.NIBBLER
 					&& plugin.getCentralNibbler() == infernoNPC)
 				{
 					OverlayUtil.renderPolygon(graphics, infernoNPC.getNpc().getConvexHull(), Color.BLUE);
 				}
-				if (plugin.isIndicateActiveHealersJad() && infernoNPC.getType() == InfernoNPC.Type.HEALER_JAD
+				if (config.indicateActiveHealerJad() && infernoNPC.getType() == InfernoNPC.Type.HEALER_JAD
 					&& infernoNPC.getNpc().getInteracting() != client.getLocalPlayer())
 				{
 					OverlayUtil.renderPolygon(graphics, infernoNPC.getNpc().getConvexHull(), Color.CYAN);
 				}
-				if (plugin.isIndicateActiveHealersZuk() && infernoNPC.getType() == InfernoNPC.Type.HEALER_ZUK
+				if (config.indicateActiveHealerZuk() && infernoNPC.getType() == InfernoNPC.Type.HEALER_ZUK
 					&& infernoNPC.getNpc().getInteracting() != client.getLocalPlayer())
 				{
 					OverlayUtil.renderPolygon(graphics, infernoNPC.getNpc().getConvexHull(), Color.CYAN);
@@ -113,19 +116,24 @@ public class InfernoOverlay extends Overlay
 
 			if (plugin.isTicksOnNpc(infernoNPC) && infernoNPC.getTicksTillNextAttack() > 0)
 			{
-				renderTicksOnNpc(graphics, infernoNPC);
+				renderTicksOnNpc(graphics, infernoNPC, infernoNPC.getNpc());
+			}
+
+			if (config.ticksOnNpcZukShield() && infernoNPC.getType() == InfernoNPC.Type.ZUK && plugin.getZukShield() != null && infernoNPC.getTicksTillNextAttack() > 0)
+			{
+				renderTicksOnNpc(graphics, infernoNPC, plugin.getZukShield());
 			}
 		}
 
-		if ((plugin.getPrayerDisplayMode() == InfernoPrayerDisplayMode.PRAYER_TAB
-			|| plugin.getPrayerDisplayMode() == InfernoPrayerDisplayMode.BOTH)
+		if ((config.prayerDisplayMode() == InfernoPrayerDisplayMode.PRAYER_TAB
+			|| config.prayerDisplayMode() == InfernoPrayerDisplayMode.BOTH)
 			&& (meleePrayerWidget != null && !meleePrayerWidget.isHidden()
 			&& rangePrayerWidget != null && !rangePrayerWidget.isHidden()
 			&& magicPrayerWidget != null && !magicPrayerWidget.isHidden()))
 		{
 			renderPrayerIconOverlay(graphics);
 
-			if (plugin.isDescendingBoxes())
+			if (config.descendingBoxes())
 			{
 				renderDescendingBoxes(graphics);
 			}
@@ -345,12 +353,12 @@ public class InfernoOverlay extends Overlay
 		}
 	}
 
-	private void renderTicksOnNpc(Graphics2D graphics, InfernoNPC infernoNPC)
+	private void renderTicksOnNpc(Graphics2D graphics, InfernoNPC infernoNPC, NPC renderOnNPC)
 	{
 		final Color color = (infernoNPC.getTicksTillNextAttack() == 1
 			|| (infernoNPC.getType() == InfernoNPC.Type.BLOB && infernoNPC.getTicksTillNextAttack() == 4))
 			? infernoNPC.getNextAttack().getCriticalColor() : infernoNPC.getNextAttack().getNormalColor();
-		final Point canvasPoint = infernoNPC.getNpc().getCanvasTextLocation(
+		final Point canvasPoint = renderOnNPC.getCanvasTextLocation(
 			graphics, String.valueOf(infernoNPC.getTicksTillNextAttack()), 0);
 		OverlayUtil.renderTextLocation(graphics, String.valueOf(infernoNPC.getTicksTillNextAttack()),
 			plugin.getTextSize(), plugin.getFontStyle().getFont(), color, canvasPoint, false, 0);
@@ -408,7 +416,7 @@ public class InfernoOverlay extends Overlay
 				{
 					OverlayUtil.renderFilledPolygon(graphics, boxRectangle, color);
 				}
-				else if (plugin.isIndicateNonPriorityDescendingBoxes())
+				else if (config.indicateNonPriorityDescendingBoxes())
 				{
 					OverlayUtil.renderOutlinePolygon(graphics, boxRectangle, color);
 				}
@@ -435,7 +443,7 @@ public class InfernoOverlay extends Overlay
 				prayerForAttack = InfernoNPC.Attack.MELEE;
 			}
 
-			if (plugin.getClosestAttack() != prayerForAttack || plugin.isIndicateWhenPrayingCorrectly())
+			if (plugin.getClosestAttack() != prayerForAttack || config.indicateWhenPrayingCorrectly())
 			{
 				final Widget prayerWidget = client.getWidget(plugin.getClosestAttack().getPrayer().getWidgetInfo());
 				final Rectangle prayerRectangle = new Rectangle((int) prayerWidget.getBounds().getWidth(),

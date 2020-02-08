@@ -29,20 +29,14 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ItemDefinition;
-import net.runelite.api.Player;
 import net.runelite.api.events.PlayerMenuOptionClicked;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.util.Text;
@@ -52,8 +46,8 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.PlayerContainer;
+import net.runelite.client.game.PlayerManager;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -61,32 +55,27 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.QuantityFormatter;
 import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
 	name = "Equipment Inspector",
-	description = "Inspect other players their gear",
 	type = PluginType.PVP
 )
-@Singleton
-@Slf4j
 public class EquipmentInspectorPlugin extends Plugin
 {
 	private static final String INSPECT_EQUIPMENT = "Gear";
 
 	@Inject
-	@Nullable
 	private Client client;
-
-	@Inject
-	private ItemManager itemManager;
 
 	@Inject
 	private EquipmentInspectorConfig config;
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
+
 	@Inject
 	private MenuManager menuManager;
 
@@ -96,17 +85,11 @@ public class EquipmentInspectorPlugin extends Plugin
 	@Inject
 	private ClientToolbar pluginToolbar;
 
+	@Inject
+	private PlayerManager playerManager;
+
 	private NavigationButton navButton;
 	private EquipmentInspectorPanel equipmentInspectorPanel;
-	private int TotalPrice = 0;
-	private int Prot1 = 0;
-	private int Prot2 = 0;
-	private int Prot3 = 0;
-	private int Prot4 = 0;
-
-	private boolean ShowValue;
-	private int protecteditems;
-	private boolean ExactValue;
 
 	@Provides
 	EquipmentInspectorConfig provideConfig(ConfigManager configManager)
@@ -117,8 +100,6 @@ public class EquipmentInspectorPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		equipmentInspectorPanel = injector.getInstance(EquipmentInspectorPanel.class);
 		if (client != null)
 		{
@@ -148,167 +129,99 @@ public class EquipmentInspectorPlugin extends Plugin
 	@Subscribe
 	private void onPlayerMenuOptionClicked(PlayerMenuOptionClicked event)
 	{
-		if (event.getMenuOption().equals(INSPECT_EQUIPMENT))
+		if (!event.getMenuOption().equals(INSPECT_EQUIPMENT))
 		{
-			executor.execute(() ->
+			return;
+		}
+
+		executor.execute(() ->
+		{
+			try
 			{
-				try
+				SwingUtilities.invokeAndWait(() ->
 				{
-					SwingUtilities.invokeAndWait(() ->
+					if (!navButton.isSelected())
 					{
-						if (!navButton.isSelected())
-						{
-							navButton.getOnSelect().run();
-						}
-					});
-				}
-				catch (InterruptedException | InvocationTargetException e)
-				{
-
-					throw new RuntimeException(e);
-
-				}
-				String playerName = Text.removeTags(event.getMenuTarget());
-				// The player menu uses a non-breaking space in the player name, we need to replace this to compare
-				// against the playerName in the player cache.
-				String finalPlayerName = playerName.replace('\u00A0', ' ');
-				List<Player> players = null;
-				if (client != null)
-				{
-					players = client.getPlayers();
-				}
-				Optional<Player> targetPlayer = Optional.empty();
-				if (players != null)
-				{
-					targetPlayer = players.stream()
-						.filter(Objects::nonNull)
-						.filter(p -> p.getName().equals(finalPlayerName)).findFirst();
-				}
-
-				if (targetPlayer.isPresent())
-				{
-					TotalPrice = 0;
-					Prot1 = 0;
-					Prot2 = 0;
-					Prot3 = 0;
-					Prot4 = 0;
-					Player p = targetPlayer.get();
-					Map<KitType, ItemDefinition> playerEquipment = new HashMap<>();
-
-					for (KitType kitType : KitType.values())
-					{
-						if (kitType == KitType.RING)
-						{
-							continue; //prevents the equipment inspector from breaking
-						}
-						if (kitType == KitType.AMMUNITION)
-						{
-							continue;
-						}
-
-						int itemId = p.getPlayerAppearance().getEquipmentId(kitType);
-						if (itemId != -1)
-						{
-							ItemDefinition itemComposition = client.getItemDefinition(itemId);
-							playerEquipment.put(kitType, itemComposition);
-							int ItemPrice = itemManager.getItemPrice(itemId);
-							TotalPrice += ItemPrice;
-							if (ItemPrice > Prot1)
-							{
-								Prot4 = Prot3;
-								Prot3 = Prot2;
-								Prot2 = Prot1;
-
-								Prot1 = ItemPrice;
-							}
-							else if (ItemPrice > Prot2)
-							{
-								Prot4 = Prot3;
-								Prot3 = Prot2;
-								Prot2 = ItemPrice;
-							}
-							else if (ItemPrice > Prot3)
-							{
-								Prot4 = Prot3;
-								Prot3 = ItemPrice;
-							}
-							else if (ItemPrice > Prot4)
-							{
-								Prot4 = ItemPrice;
-							}
-						}
+						navButton.getOnSelect().run();
 					}
-					int IgnoredItems = this.protecteditems;
-					if (IgnoredItems != 0 && IgnoredItems != 1 && IgnoredItems != 2 && IgnoredItems != 3)
-					{
-						IgnoredItems = 4;
+				});
+			}
+			catch (InterruptedException | InvocationTargetException e)
+			{
+				throw new RuntimeException(e);
+			}
 
-					}
-					if (this.ShowValue)
-					{
-						switch (IgnoredItems)
-						{
-							case 1:
-								TotalPrice = TotalPrice - Prot1;
-								break;
-							case 2:
-								TotalPrice = TotalPrice - Prot1;
-								TotalPrice = TotalPrice - Prot2;
+			String playerName = Text.removeTags(event.getMenuTarget()).replace('\u00A0', ' ');
+			final PlayerContainer player = playerManager.getPlayer(playerName);
+			final Map<KitType, ItemDefinition> playerEquipment = new HashMap<>();
 
-								break;
-							case 3:
-								TotalPrice = TotalPrice - Prot1;
-								TotalPrice = TotalPrice - Prot2;
-								TotalPrice = TotalPrice - Prot3;
-								break;
-							case 4:
-								TotalPrice = TotalPrice - Prot1;
-								TotalPrice = TotalPrice - Prot2;
-								TotalPrice = TotalPrice - Prot3;
-								TotalPrice = TotalPrice - Prot4;
-								break;
-						}
-						String StringPrice = "";
-						if (!this.ExactValue)
-						{
-							TotalPrice = TotalPrice / 1000;
-							StringPrice = NumberFormat.getIntegerInstance().format(TotalPrice);
-							StringPrice = StringPrice + 'K';
-						}
-						if (this.ExactValue)
-						{
-							StringPrice = NumberFormat.getIntegerInstance().format(TotalPrice);
-						}
-						chatMessageManager.queue(QueuedMessage.builder()
-							.type(ChatMessageType.CONSOLE)
-							.runeLiteFormattedMessage(new ChatMessageBuilder()
-								.append(ChatColorType.HIGHLIGHT)
-								.append("Risked Value: ")
-								.append(ChatColorType.NORMAL)
-								.append(StringPrice)
-								.build())
-							.build());
-					}
-					equipmentInspectorPanel.update(playerEquipment, playerName);
+			if (player == null)
+			{
+				return;
+			}
 
+			for (KitType kitType : KitType.values())
+			{
+				if (kitType == KitType.RING || kitType == KitType.AMMUNITION ||
+					player.getPlayer().getPlayerAppearance() == null)
+				{
+					continue;
 				}
-			});
-		}
+
+				final int itemId = player.getPlayer().getPlayerAppearance().getEquipmentId(kitType);
+
+				if (itemId != -1)
+				{
+					ItemDefinition itemComposition = client.getItemDefinition(itemId);
+					playerEquipment.put(kitType, itemComposition);
+				}
+			}
+
+			if (config.showValue())
+			{
+				final LinkedHashMap<Integer, Integer> gear = new LinkedHashMap<>(player.getGear());
+				removeEntries(gear, config.protectedItems());
+
+				int risk = 0;
+				for (int value : gear.values())
+				{
+					risk += value;
+				}
+
+				String price;
+
+				if (!config.exactValue())
+				{
+					price = QuantityFormatter.quantityToRSDecimalStack(risk);
+				}
+				else
+				{
+					price = NumberFormat.getIntegerInstance().format(risk);
+				}
+
+				chatMessageManager.queue(QueuedMessage.builder()
+					.type(ChatMessageType.CONSOLE)
+					.runeLiteFormattedMessage(new ChatMessageBuilder()
+						.append(ChatColorType.HIGHLIGHT)
+						.append("Risked Value: ")
+						.append(ChatColorType.NORMAL)
+						.append(price)
+						.build())
+					.build());
+			}
+			equipmentInspectorPanel.update(playerEquipment, playerName);
+		});
 	}
 
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
+	private static void removeEntries(LinkedHashMap<Integer, Integer> map, int quantity)
 	{
-		if (event.getGroup().equalsIgnoreCase("equipmentinspector"))
+		for (int i = 0; i < quantity; i++)
 		{
-			updateConfig();
+			if (!map.entrySet().iterator().hasNext())
+			{
+				return;
+			}
+			map.entrySet().remove(map.entrySet().iterator().next());
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.ShowValue = config.ShowValue();
-		this.protecteditems = config.protecteditems();
-		this.ExactValue = config.ExactValue();
 	}
 }

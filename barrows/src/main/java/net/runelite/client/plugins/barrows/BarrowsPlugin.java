@@ -27,12 +27,10 @@ package net.runelite.client.plugins.barrows;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -71,9 +69,8 @@ import org.pf4j.Extension;
 	name = "Barrows Brothers",
 	description = "Show helpful information for the Barrows minigame",
 	tags = {"combat", "minigame", "minimap", "bosses", "pve", "pvm"},
-	type = PluginType.PVM
+	type = PluginType.MINIGAME
 )
-@Singleton
 public class BarrowsPlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)
@@ -129,18 +126,6 @@ public class BarrowsPlugin extends Plugin
 	@Inject
 	private BarrowsConfig config;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showMinimap;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showBrotherLoc;
-	@Getter(AccessLevel.PACKAGE)
-	private Color brotherLocColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color deadBrotherLocColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPuzzleAnswer;
-	private boolean showPrayerDrainTimer;
-
 	@Provides
 	BarrowsConfig provideConfig(ConfigManager configManager)
 	{
@@ -150,8 +135,6 @@ public class BarrowsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(barrowsOverlay);
 		overlayManager.add(brotherOverlay);
 	}
@@ -186,23 +169,11 @@ public class BarrowsPlugin extends Plugin
 	{
 		if (event.getGroup().equals("barrows"))
 		{
-			updateConfig();
-
-			if (!this.showPrayerDrainTimer)
+			if (!config.showPrayerDrainTimer())
 			{
 				stopPrayerDrainTimer();
 			}
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.showMinimap = config.showMinimap();
-		this.showBrotherLoc = config.showBrotherLoc();
-		this.brotherLocColor = config.brotherLocColor();
-		this.deadBrotherLocColor = config.deadBrotherLocColor();
-		this.showPuzzleAnswer = config.showPuzzleAnswer();
-		this.showPrayerDrainTimer = config.showPrayerDrainTimer();
 	}
 
 	@Subscribe
@@ -313,7 +284,7 @@ public class BarrowsPlugin extends Plugin
 
 	private void startPrayerDrainTimer()
 	{
-		if (this.showPrayerDrainTimer)
+		if (config.showPrayerDrainTimer())
 		{
 			final LoopTimer loopTimer = new LoopTimer(
 				PRAYER_DRAIN_INTERVAL_MS,

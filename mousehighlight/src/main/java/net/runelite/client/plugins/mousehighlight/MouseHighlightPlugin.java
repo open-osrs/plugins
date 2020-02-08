@@ -26,9 +26,6 @@ package net.runelite.client.plugins.mousehighlight;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
@@ -39,7 +36,6 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -51,9 +47,8 @@ import org.pf4j.Extension;
 	name = "Mouse Tooltips",
 	description = "Render default actions as a tooltip",
 	tags = {"actions", "overlay", "tooltip", "hide"},
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.UTILITY
 )
-@Singleton
 public class MouseHighlightPlugin extends Plugin
 {
 	@Inject
@@ -68,17 +63,6 @@ public class MouseHighlightPlugin extends Plugin
 	@Inject
 	private MouseHighlightOverlay overlay;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean mainTooltip;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean uiTooltip;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean chatboxTooltip;
-	private boolean shouldHideSpells;
-	private boolean shouldHideCombat;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean isRightClickTooltipEnabled;
-
 	@Provides
 	MouseHighlightConfig provideConfig(ConfigManager configManager)
 	{
@@ -88,8 +72,6 @@ public class MouseHighlightPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		adjustTips();
 		overlayManager.add(overlay);
 	}
@@ -134,8 +116,8 @@ public class MouseHighlightPlugin extends Plugin
 
 		try
 		{
-			setTipHidden(WidgetInfo.SPELL_TOOLTIP, this.shouldHideSpells);
-			setTipHidden(WidgetInfo.COMBAT_TOOLTIP, this.shouldHideCombat);
+			setTipHidden(WidgetInfo.SPELL_TOOLTIP, config.shouldHideSpells());
+			setTipHidden(WidgetInfo.COMBAT_TOOLTIP, config.shouldHideCombat());
 		}
 		catch (Exception e)
 		{
@@ -171,26 +153,5 @@ public class MouseHighlightPlugin extends Plugin
 		}
 
 		widget.setHidden(hidden);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("motherlode"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.mainTooltip = config.mainTooltip();
-		this.uiTooltip = config.uiTooltip();
-		this.chatboxTooltip = config.chatboxTooltip();
-		this.shouldHideSpells = config.shouldHideSpells();
-		this.shouldHideCombat = config.shouldHideCombat();
-		this.isRightClickTooltipEnabled = config.isRightClickTooltipEnabled();
 	}
 }

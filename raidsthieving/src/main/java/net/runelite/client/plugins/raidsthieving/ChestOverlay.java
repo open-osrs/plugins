@@ -30,7 +30,6 @@ import java.awt.Graphics2D;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
@@ -46,19 +45,20 @@ import net.runelite.client.ui.overlay.components.ProgressPieComponent;
  * Represents the overlay that shows timers on traps that are placed by the
  * player.
  */
-@Singleton
 public class ChestOverlay extends Overlay
 {
 
 	private final Client client;
 	private final RaidsThievingPlugin plugin;
+	private final RaidsThievingConfig config;
 
 	@Inject
-	ChestOverlay(final Client client, final RaidsThievingPlugin plugin)
+	ChestOverlay(final Client client, final RaidsThievingPlugin plugin, final RaidsThievingConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
 	}
 
@@ -86,15 +86,15 @@ public class ChestOverlay extends Overlay
 			{
 				if (!plugin.isBatsFound() && !chest.isEverOpened() && shouldDrawChest(pos))
 				{
-					Color drawColor = new Color(plugin.getPotentialBatColor().getRed(),
-						plugin.getPotentialBatColor().getGreen(),
-						plugin.getPotentialBatColor().getBlue(),
+					Color drawColor = new Color(config.getPotentialBatColor().getRed(),
+						config.getPotentialBatColor().getGreen(),
+						config.getPotentialBatColor().getBlue(),
 						getChestOpacity(pos));
 					drawCircleOnTrap(graphics, chest, drawColor);
 				}
 				if (chest.isPoison())
 				{
-					drawCircleOnTrap(graphics, chest, plugin.getPoisonTrapColor());
+					drawCircleOnTrap(graphics, chest, config.getPoisonTrapColor());
 				}
 			}
 		}

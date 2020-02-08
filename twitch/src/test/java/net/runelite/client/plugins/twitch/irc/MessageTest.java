@@ -25,6 +25,7 @@
 package net.runelite.client.plugins.twitch.irc;
 
 import java.util.Map;
+import net.runelite.client.plugins.twitch.Message;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

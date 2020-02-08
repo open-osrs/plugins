@@ -30,10 +30,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -71,8 +69,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "health", "hitpoints", "npcs", "overlay"},
 	type = PluginType.UTILITY
 )
-@Singleton
-@Slf4j
 public class OpponentInfoPlugin extends Plugin
 {
 	private static final Duration WAIT = Duration.ofSeconds(5);
@@ -114,13 +110,6 @@ public class OpponentInfoPlugin extends Plugin
 
 	private Instant lastTime;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean lookupOnInteraction;
-	@Getter(AccessLevel.PACKAGE)
-	private HitpointsDisplayStyle hitpointsDisplayStyle;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showOpponentsOpponent;
-
 	private String attackingColTag;
 	private boolean showAttackers;
 	private boolean showAttacking;
@@ -140,7 +129,6 @@ public class OpponentInfoPlugin extends Plugin
 		this.showAttacking = config.showAttackingMenu();
 		this.showHitpoints = config.showHitpointsMenu();
 
-		updateConfig();
 		updateMenuSubs();
 
 		overlayManager.add(opponentInfoOverlay);
@@ -252,15 +240,6 @@ public class OpponentInfoPlugin extends Plugin
 				attackingColTag = ColorUtil.colorTag(config.attackingColor());
 				break;
 		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.lookupOnInteraction = config.lookupOnInteraction();
-		this.hitpointsDisplayStyle = config.hitpointsDisplayStyle();
-		this.showOpponentsOpponent = config.showOpponentsOpponent();
 	}
 
 	private void onBeforeRender(BeforeRender event)

@@ -28,14 +28,13 @@ package net.runelite.client.plugins.entityhider;
 
 import com.google.inject.Provides;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.Player;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
@@ -53,7 +52,6 @@ import org.pf4j.Extension;
 	tags = {"npcs", "players", "projectiles"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class EntityHiderPlugin extends Plugin
 {
 	@Inject
@@ -83,6 +81,22 @@ public class EntityHiderPlugin extends Plugin
 		if (event.getGroup().equals("entityhider"))
 		{
 			updateConfig();
+
+			final Set<Integer> blacklist = new HashSet<>();
+
+			for (String s : Text.COMMA_SPLITTER.split(config.blacklistDeadNpcs()))
+			{
+				try
+				{
+					blacklist.add(Integer.parseInt(s));
+				}
+				catch (NumberFormatException ignored)
+				{
+				}
+
+			}
+
+			client.setBlacklistDeadNpcs(blacklist);
 
 			if (event.getOldValue() == null || event.getNewValue() == null)
 			{
@@ -120,33 +134,25 @@ public class EntityHiderPlugin extends Plugin
 	{
 		if (event.getGameState() == GameState.LOGGED_IN)
 		{
-			client.setIsHidingEntities(isPlayerRegionAllowed());
+			client.setIsHidingEntities(true);
 		}
 	}
 
 	private void updateConfig()
 	{
-		client.setIsHidingEntities(isPlayerRegionAllowed());
-
+		client.setIsHidingEntities(true);
 		client.setPlayersHidden(config.hidePlayers());
 		client.setPlayersHidden2D(config.hidePlayers2D());
 		client.setHideSpecificPlayers(Text.fromCSV(config.hideSpecificPlayers()));
-
 		client.setFriendsHidden(config.hideFriends());
 		client.setClanMatesHidden(config.hideClanMates());
-
 		client.setLocalPlayerHidden(config.hideLocalPlayer());
 		client.setLocalPlayerHidden2D(config.hideLocalPlayer2D());
-
 		client.setNPCsHidden(config.hideNPCs());
 		client.setNPCsHidden2D(config.hideNPCs2D());
-		//client.setNPCsNames(Text.fromCSV(config.hideNPCsNames()));
-		//client.setNPCsHiddenOnDeath(Text.fromCSV(config.hideNPCsOnDeath()));
-
+		client.setPetsHidden(config.hidePets());
 		client.setAttackersHidden(config.hideAttackers());
-
 		client.setProjectilesHidden(config.hideProjectiles());
-
 		client.setDeadNPCsHidden(config.hideDeadNPCs());
 	}
 
@@ -154,42 +160,19 @@ public class EntityHiderPlugin extends Plugin
 	protected void shutDown()
 	{
 		client.setIsHidingEntities(false);
-
 		client.setPlayersHidden(false);
 		client.setPlayersHidden2D(false);
-
 		client.setFriendsHidden(false);
 		client.setClanMatesHidden(false);
-
 		client.setLocalPlayerHidden(false);
 		client.setLocalPlayerHidden2D(false);
-
 		client.setNPCsHidden(false);
 		client.setNPCsHidden2D(false);
-
+		client.setPetsHidden(false);
 		client.setAttackersHidden(false);
-
 		client.setProjectilesHidden(false);
-
 		client.setDeadNPCsHidden(false);
-
 		Text.fromCSV(config.hideNPCsNames()).forEach(client::removeHiddenNpcName);
 		Text.fromCSV(config.hideNPCsOnDeath()).forEach(client::removeHiddenNpcDeath);
-	}
-
-	private boolean isPlayerRegionAllowed()
-	{
-		final Player localPlayer = client.getLocalPlayer();
-
-		if (localPlayer == null)
-		{
-			return true;
-		}
-
-		final WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
-		final int playerRegionID = worldPoint == null ? 0 : worldPoint.getRegionID();
-
-		// 9520 = Castle Wars
-		return playerRegionID != 9520;
 	}
 }

@@ -53,6 +53,7 @@ class GauntletTimer extends Overlay
 {
 	private final Client client;
 	private final GauntletPlugin plugin;
+	private final GauntletConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
 	@Inject
 	private ChatMessageManager chatMessageManager;
@@ -61,7 +62,7 @@ class GauntletTimer extends Overlay
 	private RaidState currentState = UNKNOWN;
 
 	@Inject
-	public GauntletTimer(Client client, GauntletPlugin plugin)
+	public GauntletTimer(Client client, GauntletPlugin plugin, GauntletConfig config)
 	{
 		super(plugin);
 
@@ -70,6 +71,7 @@ class GauntletTimer extends Overlay
 
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Gauntlet Timer Overlay"));
 	}
@@ -209,7 +211,7 @@ class GauntletTimer extends Overlay
 
 	private void printPrepTime()
 	{
-		if (!plugin.isDisplayTimerChat() || timeRaidStart == -1L)
+		if (!config.displayTimerChat() || timeRaidStart == -1L)
 		{
 			return;
 		}
@@ -230,7 +232,7 @@ class GauntletTimer extends Overlay
 
 	private void printBossTime()
 	{
-		if (!plugin.isDisplayTimerChat() || timeRaidStart == -1L || timeBossEnter == -1L)
+		if (!config.displayTimerChat() || timeRaidStart == -1L || timeBossEnter == -1L)
 		{
 			return;
 		}

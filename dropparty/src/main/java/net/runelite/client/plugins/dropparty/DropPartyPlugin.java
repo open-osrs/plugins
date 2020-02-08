@@ -28,11 +28,9 @@
 package net.runelite.client.plugins.dropparty;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -42,7 +40,6 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -56,23 +53,8 @@ import org.pf4j.Extension;
 	tags = {"Drop", "Party", "marker", "player"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class DropPartyPlugin extends Plugin
 {
-	@Inject
-	private DropPartyConfig config;
-	@Getter(AccessLevel.PACKAGE)
-	private List<WorldPoint> playerPath = new ArrayList<>();
-	@Getter(AccessLevel.PACKAGE)
-	private String playerName = "";
-	@Getter(AccessLevel.PACKAGE)
-	private int showAmmount = 0;
-	@Getter(AccessLevel.PACKAGE)
-	private int MAXPATHSIZE = 100;
-	private Player runningPlayer;
-	@Getter(AccessLevel.PACKAGE)
-	private Color overlayColor;
-
 	@Inject
 	private OverlayManager overlayManager;
 
@@ -83,9 +65,14 @@ public class DropPartyPlugin extends Plugin
 	private Client client;
 
 	@Getter(AccessLevel.PACKAGE)
-	private int fontStyle;
+	private List<WorldPoint> playerPath = new ArrayList<>();
 	@Getter(AccessLevel.PACKAGE)
-	private int textSize;
+	private String playerName = "";
+	@Getter(AccessLevel.PACKAGE)
+	private int showAmmount = 0;
+	@Getter(AccessLevel.PACKAGE)
+	private int MAXPATHSIZE = 100;
+	private Player runningPlayer;
 
 	@Provides
 	DropPartyConfig getConfig(ConfigManager configManager)
@@ -96,7 +83,6 @@ public class DropPartyPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		overlayManager.add(coreOverlay);
 		reset();
 	}
@@ -144,7 +130,6 @@ public class DropPartyPlugin extends Plugin
 	private void cordsError()
 	{
 		playerPath.add(null);
-
 	}
 
 	private void shuffleList()
@@ -167,35 +152,11 @@ public class DropPartyPlugin extends Plugin
 			playerPath.add(null);
 
 		}
-
-
 	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("drop"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
 
 	private void reset()
 	{
 		playerPath.clear();
 
-	}
-
-
-	private void updateConfig()
-	{
-		this.playerName = config.playerName();
-		this.showAmmount = config.showAmmount();
-		this.overlayColor = config.overlayColor();
-		this.fontStyle = config.fontStyle().getFont();
-		this.textSize = config.textSize();
 	}
 }

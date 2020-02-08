@@ -32,8 +32,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
@@ -62,7 +60,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "notifications", "skilling", "overlay"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class BoostsPlugin extends Plugin
 {
 	private static final Set<Skill> BOOSTABLE_COMBAT_SKILLS = ImmutableSet.of(
@@ -112,20 +109,6 @@ public class BoostsPlugin extends Plugin
 	private int lastChangeUp = -1;
 	private boolean preserveBeenActive = false;
 	private long lastTickMillis;
-	private BoostsConfig.DisplayBoosts displayBoosts;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean useRelativeBoost;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean displayInfoboxes;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean displayIcons;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean boldIconFont;
-	private BoostsConfig.DisplayChangeMode displayNextBuffChange;
-	private BoostsConfig.DisplayChangeMode displayNextDebuffChange;
-	@Getter(AccessLevel.PACKAGE)
-	private int boostThreshold;
-	private boolean groupNotifications;
 
 	@Provides
 	BoostsConfig provideConfig(ConfigManager configManager)
@@ -136,8 +119,6 @@ public class BoostsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(boostsOverlay);
 		overlayManager.add(combatIconsOverlay);
 		updateShownSkills();
@@ -152,7 +133,7 @@ public class BoostsPlugin extends Plugin
 		{
 			if (skill != Skill.OVERALL)
 			{
-				infoBoxManager.addInfoBox(new BoostIndicator(skill, skillIconManager.getSkillImage(skill), this, client));
+				infoBoxManager.addInfoBox(new BoostIndicator(skill, skillIconManager.getSkillImage(skill), this, config, client));
 			}
 		}
 	}
@@ -191,15 +172,14 @@ public class BoostsPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
 		updateShownSkills();
 
-		if (this.displayNextBuffChange == BoostsConfig.DisplayChangeMode.NEVER)
+		if (config.displayNextBuffChange() == BoostsConfig.DisplayChangeMode.NEVER)
 		{
 			lastChangeDown = -1;
 		}
 
-		if (this.displayNextDebuffChange == BoostsConfig.DisplayChangeMode.NEVER)
+		if (config.displayNextDebuffChange() == BoostsConfig.DisplayChangeMode.NEVER)
 		{
 			lastChangeUp = -1;
 		}
@@ -234,7 +214,7 @@ public class BoostsPlugin extends Plugin
 		lastSkillLevels[skillIdx] = cur;
 		updateBoostedStats();
 
-		int boostThreshold = this.boostThreshold;
+		int boostThreshold = config.boostThreshold();
 
 		if (boostThreshold != 0)
 		{
@@ -243,7 +223,7 @@ public class BoostsPlugin extends Plugin
 			int boost = cur - real;
 			if (boost <= boostThreshold && boostThreshold < lastBoost)
 			{
-				if (this.groupNotifications)
+				if (config.groupNotifications())
 				{
 					boostedSkillsChanged.add(skill.getName());
 				}
@@ -260,7 +240,7 @@ public class BoostsPlugin extends Plugin
 	{
 		lastTickMillis = System.currentTimeMillis();
 
-		if (this.groupNotifications && !boostedSkillsChanged.isEmpty())
+		if (config.groupNotifications() && !boostedSkillsChanged.isEmpty())
 		{
 			if (boostedSkillsChanged.size() == 1)
 			{
@@ -291,7 +271,7 @@ public class BoostsPlugin extends Plugin
 
 		if (getChangeUpTicks() <= 0)
 		{
-			switch (this.displayNextDebuffChange)
+			switch (config.displayNextDebuffChange())
 			{
 				case ALWAYS:
 					if (lastChangeUp != -1)
@@ -309,7 +289,7 @@ public class BoostsPlugin extends Plugin
 
 		if (getChangeDownTicks() <= 0)
 		{
-			switch (this.displayNextBuffChange)
+			switch (config.displayNextBuffChange())
 			{
 				case ALWAYS:
 					if (lastChangeDown != -1)
@@ -328,7 +308,7 @@ public class BoostsPlugin extends Plugin
 
 	private void updateShownSkills()
 	{
-		switch (this.displayBoosts)
+		switch (config.displayBoosts())
 		{
 			case NONE:
 				shownSkills.removeAll(BOOSTABLE_COMBAT_SKILLS);
@@ -400,8 +380,8 @@ public class BoostsPlugin extends Plugin
 	int getChangeDownTicks()
 	{
 		if (lastChangeDown == -1 ||
-			this.displayNextBuffChange == BoostsConfig.DisplayChangeMode.NEVER ||
-			(this.displayNextBuffChange == BoostsConfig.DisplayChangeMode.BOOSTED && !isChangedUp))
+			config.displayNextBuffChange() == BoostsConfig.DisplayChangeMode.NEVER ||
+			(config.displayNextBuffChange() == BoostsConfig.DisplayChangeMode.BOOSTED && !isChangedUp))
 		{
 			return -1;
 		}
@@ -428,8 +408,8 @@ public class BoostsPlugin extends Plugin
 	int getChangeUpTicks()
 	{
 		if (lastChangeUp == -1 ||
-			this.displayNextDebuffChange == BoostsConfig.DisplayChangeMode.NEVER ||
-			(this.displayNextDebuffChange == BoostsConfig.DisplayChangeMode.BOOSTED && !isChangedDown))
+			config.displayNextDebuffChange() == BoostsConfig.DisplayChangeMode.NEVER ||
+			(config.displayNextDebuffChange() == BoostsConfig.DisplayChangeMode.BOOSTED && !isChangedDown))
 		{
 			return -1;
 		}
@@ -449,18 +429,5 @@ public class BoostsPlugin extends Plugin
 	{
 		final long diff = System.currentTimeMillis() - lastTickMillis;
 		return time != -1 ? (int) ((time * Constants.GAME_TICK_LENGTH - diff) / 1000d) : time;
-	}
-
-	private void updateConfig()
-	{
-		this.displayBoosts = config.displayBoosts();
-		this.useRelativeBoost = config.useRelativeBoost();
-		this.displayInfoboxes = config.displayInfoboxes();
-		this.displayIcons = config.displayIcons();
-		this.boldIconFont = config.boldIconFont();
-		this.displayNextBuffChange = config.displayNextBuffChange();
-		this.displayNextDebuffChange = config.displayNextDebuffChange();
-		this.boostThreshold = config.boostThreshold();
-		this.groupNotifications = config.groupNotifications();
 	}
 }

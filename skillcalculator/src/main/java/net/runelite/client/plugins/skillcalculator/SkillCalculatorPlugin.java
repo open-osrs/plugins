@@ -60,7 +60,7 @@ import org.pf4j.Extension;
 	name = "Skill Calculator",
 	description = "Enable the Skill Calculator panel",
 	tags = {"panel", "skilling"},
-	type = PluginType.UTILITY
+	type = PluginType.MISCELLANEOUS
 )
 public class SkillCalculatorPlugin extends Plugin
 {

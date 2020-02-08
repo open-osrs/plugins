@@ -37,7 +37,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.Getter;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
@@ -75,7 +74,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "poison", "venom", "heart", "hp"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class PoisonPlugin extends Plugin
 {
 	static final int POISON_TICK_TICKS = 30;
@@ -133,12 +131,6 @@ public class PoisonPlugin extends Plugin
 	@Getter
 	private Map<Actor, ActorPoisonInfo> poisonedActors = new HashMap<>();
 
-	private boolean showInfoboxes;
-	private boolean changeHealthIcon;
-	private boolean showForPlayers;
-	private boolean showForNpcs;
-	private int fontSize;
-
 	@Provides
 	PoisonConfig getConfig(ConfigManager configManager)
 	{
@@ -148,12 +140,11 @@ public class PoisonPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
-		actorOverlay.setFontSize(this.fontSize);
+		actorOverlay.setDisplayTicks(config.ticks());
+		actorOverlay.setFontSize(config.fontSize());
 		overlayManager.add(poisonOverlay);
 
-		if (this.showForNpcs || this.showForPlayers)
+		if (config.showForNpcs() || config.showForPlayers())
 		{
 			overlayManager.add(actorOverlay);
 		}
@@ -203,7 +194,7 @@ public class PoisonPlugin extends Plugin
 			final int damage = nextDamage(poisonValue);
 			this.lastDamage = damage;
 
-			if (this.showInfoboxes)
+			if (config.showInfoboxes())
 			{
 				if (infobox != null)
 				{
@@ -247,8 +238,8 @@ public class PoisonPlugin extends Plugin
 		Actor actor = event.getActor();
 
 		if (actor == client.getLocalPlayer() ||
-			actor instanceof NPC && !this.showForNpcs ||
-			actor instanceof Player && !this.showForPlayers)
+			actor instanceof NPC && !config.showForNpcs() ||
+			actor instanceof Player && !config.showForPlayers())
 		{
 			return;
 		}
@@ -328,15 +319,14 @@ public class PoisonPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
 
-		if (!this.showInfoboxes && infobox != null)
+		if (!config.showInfoboxes() && infobox != null)
 		{
 			infoBoxManager.removeInfoBox(infobox);
 			infobox = null;
 		}
 
-		if (this.changeHealthIcon)
+		if (config.changeHealthIcon())
 		{
 			clientThread.invoke(this::checkHealthIcon);
 		}
@@ -349,18 +339,18 @@ public class PoisonPlugin extends Plugin
 		{
 			overlayManager.remove(actorOverlay);
 
-			if (!this.showForPlayers && !this.showForNpcs)
+			if (!config.showForPlayers() && !config.showForNpcs())
 			{
 				poisonedActors.clear();
 			}
 			else
 			{
-				if (!this.showForNpcs)
+				if (!config.showForNpcs())
 				{
 					poisonedActors.entrySet().removeIf(a -> a instanceof NPC);
 				}
 
-				if (!this.showForPlayers)
+				if (!config.showForPlayers())
 				{
 					poisonedActors.entrySet().removeIf(a -> a instanceof Player);
 				}
@@ -369,9 +359,11 @@ public class PoisonPlugin extends Plugin
 			}
 		}
 
+
+		actorOverlay.setDisplayTicks(config.ticks());
 		if (event.getKey().equals("fontsize"))
 		{
-			actorOverlay.setFontSize(this.fontSize);
+			actorOverlay.setFontSize(config.fontSize());
 		}
 	}
 
@@ -466,7 +458,7 @@ public class PoisonPlugin extends Plugin
 
 	private void checkHealthIcon()
 	{
-		if (!this.changeHealthIcon)
+		if (!config.changeHealthIcon())
 		{
 			return;
 		}
@@ -511,15 +503,5 @@ public class PoisonPlugin extends Plugin
 		client.getWidgetSpriteCache().reset();
 		client.getSpriteOverrides().remove(SpriteID.MINIMAP_ORB_HITPOINTS_ICON);
 		heart = null;
-	}
-
-	private void updateConfig()
-	{
-		this.showInfoboxes = config.showInfoboxes();
-		this.changeHealthIcon = config.changeHealthIcon();
-		this.showForPlayers = config.showForPlayers();
-		this.showForNpcs = config.showForNpcs();
-		this.fontSize = config.fontSize();
-		actorOverlay.setDisplayTicks(config.ticks());
 	}
 }

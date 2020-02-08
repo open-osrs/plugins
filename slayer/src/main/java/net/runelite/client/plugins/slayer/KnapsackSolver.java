@@ -31,7 +31,6 @@ import javax.inject.Singleton;
 @Singleton
 class KnapsackSolver
 {
-
 	private List<Integer> reconstructItemsInSack(int[][] sackMatrix, List<Integer> items, int i, int w)
 	{
 		if (i == 0)

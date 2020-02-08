@@ -45,7 +45,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.notes.events.PageAdded;
 import net.runelite.client.plugins.notes.events.PageDeleted;
@@ -62,6 +62,9 @@ class NotesPanel extends PluginPanel
 	@Inject
 	private NotesManager notesManager;
 
+	@Inject
+	private EventBus eventBus;
+
 	private final JPanel display = new JPanel();
 	private final MaterialTabGroup tabGroup = new MaterialTabGroup(display);
 	private final ImageIcon addIcon = new ImageIcon(ImageUtil.getResourceStreamFromClass(getClass(), "add_icon.png"));
@@ -72,6 +75,10 @@ class NotesPanel extends PluginPanel
 	void init(final NotesConfig mConfig)
 	{
 		config = mConfig;
+
+		eventBus.subscribe(PageAdded.class, this, this::onPageAdded);
+		eventBus.subscribe(PageDeleted.class, this, this::onPageDeleted);
+		eventBus.subscribe(ConfigChanged.class, this, this::onConfigChanged);
 
 		// this may or may not qualify as a hack
 		// but this lets the editor pane expand to fill the whole parent panel
@@ -128,7 +135,6 @@ class NotesPanel extends PluginPanel
 		repaint();
 	}
 
-	@Subscribe
 	private void onConfigChanged(ConfigChanged e)
 	{
 		if (!e.getGroup().equals(NotesConfig.CONFIG_GROUP))
@@ -139,7 +145,6 @@ class NotesPanel extends PluginPanel
 		rebuild();
 	}
 
-	@Subscribe
 	private void onPageAdded(PageAdded e)
 	{
 		MaterialTab tab = buildTab(e.getIndex());
@@ -157,7 +162,6 @@ class NotesPanel extends PluginPanel
 		repaint();
 	}
 
-	@Subscribe
 	private void onPageDeleted(PageDeleted e)
 	{
 		rebuild();

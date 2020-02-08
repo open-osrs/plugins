@@ -120,8 +120,7 @@ public class CookingPluginTest
 		Player player = mock(Player.class);
 		when(player.getSpotAnimation()).thenReturn(GraphicID.WINE_MAKE);
 
-		cookingPlugin.setFermentTimer(true);
-
+		when(config.fermentTimer()).thenReturn(true);
 		when(client.getLocalPlayer()).thenReturn(player);
 
 		SpotAnimationChanged graphicChanged = new SpotAnimationChanged();

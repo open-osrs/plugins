@@ -25,7 +25,6 @@
 package net.runelite.client.plugins.pestcontrol;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Dimension;
@@ -47,7 +46,6 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
 @Slf4j
-@Singleton
 public class PortalWeaknessOverlay extends Overlay
 {
 	private final PestControlPlugin plugin;

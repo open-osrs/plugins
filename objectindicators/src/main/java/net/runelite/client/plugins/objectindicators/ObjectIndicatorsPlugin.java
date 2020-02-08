@@ -29,7 +29,6 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +70,6 @@ import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -88,7 +85,6 @@ import org.pf4j.Extension;
 	tags = {"overlay", "objects", "mark", "marker"},
 	type = PluginType.UTILITY
 )
-@Singleton
 @Slf4j
 public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 {
@@ -115,19 +111,7 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 	private ObjectIndicatorsOverlay overlay;
 
 	@Inject
-	private ObjectIndicatorsConfig config;
-
-	@Inject
 	private KeyManager keyManager;
-
-	@Getter(AccessLevel.PACKAGE)
-	private RenderStyle objectMarkerRenderStyle;
-	@Getter(AccessLevel.PACKAGE)
-	private OutlineRenderStyle objectMarkerOutlineRenderStyle;
-	@Getter(AccessLevel.PACKAGE)
-	private Color objectMarkerColor;
-	@Getter(AccessLevel.PACKAGE)
-	private int objectMarkerAlpha;
 
 	@Provides
 	ObjectIndicatorsConfig provideConfig(ConfigManager configManager)
@@ -138,8 +122,6 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		keyManager.registerKeyListener(this);
 	}
@@ -353,8 +335,8 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 		for (ObjectPoint objectPoint : objectPoints)
 		{
 			if (worldPoint.getRegionX() == objectPoint.getRegionX()
-					&& worldPoint.getRegionY() == objectPoint.getRegionY()
-					&& object.getPlane() == objectPoint.getZ())
+				&& worldPoint.getRegionY() == objectPoint.getRegionY()
+				&& worldPoint.getPlane() == objectPoint.getZ())
 			{
 				// Transform object to get the name which matches against what we've stored
 				ObjectDefinition objectDefinition = getObjectDefinition(object.getId());
@@ -436,11 +418,12 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 		return false;
 	}
 
-	/** mark or unmark an object
+	/**
+	 * mark or unmark an object
 	 *
 	 * @param objectComposition transformed composition of object based on vars
-	 * @param name name of objectComposition
-	 * @param object tile object, for multilocs object.getId() is the base id
+	 * @param name              name of objectComposition
+	 * @param object            tile object, for multilocs object.getId() is the base id
 	 */
 	private void markObject(ObjectDefinition objectComposition, String name, final TileObject object)
 	{
@@ -456,7 +439,7 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 			regionId,
 			worldPoint.getRegionX(),
 			worldPoint.getRegionY(),
-			client.getPlane());
+			worldPoint.getPlane());
 
 		Set<ObjectPoint> objectPoints = points.computeIfAbsent(regionId, k -> new HashSet<>());
 
@@ -517,26 +500,6 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 		return points.stream()
 			.filter(point -> !point.getName().equals("null"))
 			.collect(Collectors.toSet());
-	}
-
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("objectindicators"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.objectMarkerRenderStyle = config.objectMarkerRenderStyle();
-		this.objectMarkerOutlineRenderStyle = config.objectMarkerOutlineRenderStyle();
-		this.objectMarkerColor = config.objectMarkerColor();
-		this.objectMarkerAlpha = config.objectMarkerAlpha();
 	}
 
 	private ObjectDefinition getObjectDefinition(int id)

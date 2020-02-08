@@ -47,14 +47,16 @@ public class HighAlchemyOverlay extends WidgetItemOverlay
 {
 	private final ItemManager itemManager;
 	private final HighAlchemyPlugin plugin;
+	private final HighAlchemyConfig config;
 	private final int alchPrice;
 	private final int alchPriceNoStaff;
 
 	@Inject
-	public HighAlchemyOverlay(final ItemManager itemManager, final HighAlchemyPlugin plugin)
+	public HighAlchemyOverlay(final ItemManager itemManager, final HighAlchemyPlugin plugin, final HighAlchemyConfig config)
 	{
 		this.itemManager = itemManager;
 		this.plugin = plugin;
+		this.config = config;
 
 		int natPrice = itemManager.getItemPrice(ItemID.NATURE_RUNE, true);
 		this.alchPrice = natPrice;
@@ -78,13 +80,13 @@ public class HighAlchemyOverlay extends WidgetItemOverlay
 		final int id = getNotedId(itemId);
 		final int gePrice = getGEPrice(id);
 		final int haPrice = getHAPrice(id);
-		final int materialCost = plugin.isUsingFireRunes() ? alchPriceNoStaff : alchPrice;
-		final int desiredProfit = plugin.getMinProfit();
+		final int materialCost = config.usingFireRunes() ? alchPriceNoStaff : alchPrice;
+		final int desiredProfit = config.minProfit();
 		final int haProfit = getHAProfit(haPrice, gePrice, materialCost);
 
 		if (gePrice > 0 && haPrice > 0 && haProfit >= desiredProfit)
 		{
-			final Color color = plugin.getGetHighlightColor();
+			final Color color = config.getHighlightColor();
 
 			if (color != null)
 			{

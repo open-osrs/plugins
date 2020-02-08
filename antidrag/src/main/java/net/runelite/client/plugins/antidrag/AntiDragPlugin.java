@@ -27,7 +27,6 @@ package net.runelite.client.plugins.antidrag;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.FocusChanged;
@@ -38,24 +37,18 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.customcursor.CustomCursorPlugin;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.HotkeyListener;
-import org.pf4j.Extension;
 
-@Extension
 @PluginDescriptor(
 	name = "Anti Drag",
 	description = "Prevent dragging an item for a specified delay",
 	tags = {"antidrag", "delay", "inventory", "items"},
 	type = PluginType.UTILITY
 )
-@PluginDependency(CustomCursorPlugin.class)
-@Singleton
 public class AntiDragPlugin extends Plugin
 {
 	private static final int DEFAULT_DELAY = 5;

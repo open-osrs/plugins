@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.FontTypeFace;
 import net.runelite.api.QuestState;
@@ -64,14 +62,12 @@ import net.runelite.client.plugins.achievementdiary.diaries.WildernessDiaryRequi
 import org.pf4j.Extension;
 
 @Extension
-@Slf4j
 @PluginDescriptor(
 	name = "Diary Requirements",
 	description = "Display level requirements in Achievement Diary interface",
 	tags = {"achievements", "tasks"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class DiaryRequirementsPlugin extends Plugin
 {
 	private static final String AND_JOINER = ", ";
@@ -123,7 +119,6 @@ public class DiaryRequirementsPlugin extends Plugin
 		GenericDiaryRequirement requirements = getRequirementsForTitle(titleWidget.getText());
 		if (requirements == null)
 		{
-			log.debug("Unknown achievement diary {}", titleWidget.getText());
 			return;
 		}
 
@@ -174,7 +169,6 @@ public class DiaryRequirementsPlugin extends Plugin
 						if (runningWidth == 0 || wordWidth + runningWidth < maxWidth)
 						{
 							runningWidth += wordWidth;
-							b.append(word);
 						}
 						else
 						{
@@ -182,8 +176,8 @@ public class DiaryRequirementsPlugin extends Plugin
 							b.delete(0, b.length());
 							runningWidth = wordWidth;
 							b.append(strike);
-							b.append(word);
 						}
+						b.append(word);
 					}
 					newRequirements.set(i + offset, b.toString());
 				}
@@ -332,7 +326,6 @@ public class DiaryRequirementsPlugin extends Plugin
 			int realFavour = client.getVar(f.getHouse().getVarbit());
 			return (realFavour / 10) >= f.getPercent();
 		}
-		log.warn("Unknown requirement {}", r);
 		return false;
 	}
 }

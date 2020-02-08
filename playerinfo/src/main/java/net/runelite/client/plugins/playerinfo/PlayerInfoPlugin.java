@@ -25,12 +25,8 @@
 package net.runelite.client.plugins.playerinfo;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.SpriteID;
@@ -51,7 +47,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "overlay"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class PlayerInfoPlugin extends Plugin
 {
 	@Inject
@@ -69,23 +64,6 @@ public class PlayerInfoPlugin extends Plugin
 	@Inject
 	private SpriteManager spriteManager;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean enableHealth;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean enablePrayer;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean enableEnergy;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean enableSpec;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean enableWorld;
-	@Getter(AccessLevel.PACKAGE)
-	private Color colorHigh;
-	@Getter(AccessLevel.PACKAGE)
-	private Color colorMed;
-	@Getter(AccessLevel.PACKAGE)
-	private Color colorLow;
-
 	@Provides
 	PlayerInfoConfig provideConfig(ConfigManager configManager)
 	{
@@ -95,8 +73,6 @@ public class PlayerInfoPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		clientThread.invoke(() ->
 		{
 			if (client.getGameState().ordinal() < GameState.LOGIN_SCREEN.ordinal())
@@ -110,11 +86,11 @@ public class PlayerInfoPlugin extends Plugin
 			BufferedImage combatImg = spriteManager.getSprite(SpriteID.MINIMAP_ORB_SPECIAL_ICON, 0);
 			BufferedImage worldImg = spriteManager.getSprite(SpriteID.MINIMAP_ORB_WORLD_MAP_PLANET, 0);
 
-			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(healthImg, this, client, IndicatorType.HEALTH));
-			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(prayerImg, this, client, IndicatorType.PRAYER));
-			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(energyImg, this, client, IndicatorType.ENERGY));
-			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(combatImg, this, client, IndicatorType.SPECIAL));
-			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(worldImg, this, client, IndicatorType.WORLD));
+			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(healthImg, this, config, client, IndicatorType.HEALTH));
+			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(prayerImg, this, config, client, IndicatorType.PRAYER));
+			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(energyImg, this, config, client, IndicatorType.ENERGY));
+			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(combatImg, this, config, client, IndicatorType.SPECIAL));
+			infoBoxManager.addInfoBox(new PlayerInfoCustomIndicator(worldImg, this, config, client, IndicatorType.WORLD));
 
 			return true;
 		});
@@ -124,17 +100,5 @@ public class PlayerInfoPlugin extends Plugin
 	protected void shutDown()
 	{
 		infoBoxManager.removeIf(i -> i instanceof PlayerInfoCustomIndicator);
-	}
-
-	private void updateConfig()
-	{
-		this.enableHealth = config.enableHealth();
-		this.enablePrayer = config.enablePrayer();
-		this.enableEnergy = config.enableEnergy();
-		this.enableSpec = config.enableSpec();
-		this.enableWorld = config.enableWorld();
-		this.colorHigh = config.colorHigh();
-		this.colorMed = config.colorMed();
-		this.colorLow = config.colorLow();
 	}
 }

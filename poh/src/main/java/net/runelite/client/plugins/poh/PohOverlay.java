@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -40,7 +39,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-@Singleton
 public class PohOverlay extends Overlay
 {
 	private static final PohIcons[] PORTALS = new PohIcons[]
@@ -58,14 +56,16 @@ public class PohOverlay extends Overlay
 
 	private final Client client;
 	private final PohPlugin plugin;
+	private final PohConfig config;
 
 	@Inject
-	public PohOverlay(final Client client, final PohPlugin plugin)
+	public PohOverlay(final Client client, final PohPlugin plugin, final PohConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -97,51 +97,51 @@ public class PohOverlay extends Overlay
 	public void updateConfig()
 	{
 		iconList.clear();
-		if (plugin.isShowPortals())
+		if (config.showPortals())
 		{
 			Collections.addAll(iconList, PORTALS);
 		}
-		if (plugin.isShowAltar())
+		if (config.showAltar())
 		{
 			iconList.add(PohIcons.ALTAR);
 		}
-		if (plugin.isShowGlory())
+		if (config.showGlory())
 		{
 			iconList.add(PohIcons.GLORY);
 		}
-		if (plugin.isShowRepairStand())
+		if (config.showRepairStand())
 		{
 			iconList.add(PohIcons.REPAIR);
 		}
-		if (plugin.isShowPools())
+		if (config.showPools())
 		{
 			iconList.add(PohIcons.POOLS);
 		}
-		if (plugin.isShowExitPortal())
+		if (config.showExitPortal())
 		{
 			iconList.add(PohIcons.EXITPORTAL);
 		}
-		if (plugin.isShowSpellbook())
+		if (config.showSpellbook())
 		{
 			iconList.add(PohIcons.SPELLBOOKALTAR);
 		}
-		if (plugin.isShowJewelleryBox())
+		if (config.showJewelleryBox())
 		{
 			iconList.add(PohIcons.JEWELLERYBOX);
 		}
-		if (plugin.isShowMagicTravel())
+		if (config.showMagicTravel())
 		{
 			iconList.add(PohIcons.MAGICTRAVEL);
 		}
-		if (plugin.isShowPortalNexus())
+		if (config.showPortalNexus())
 		{
 			iconList.add(PohIcons.PORTALNEXUS);
 		}
-		if (plugin.isShowDigsitePendant())
+		if (config.showDigsitePendant())
 		{
 			iconList.add(PohIcons.DIGSITEPENDANT);
 		}
-		if (plugin.isShowXericsTalisman())
+		if (config.showXericsTalisman())
 		{
 			iconList.add(PohIcons.XERICSTALISMAN);
 		}

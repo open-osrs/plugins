@@ -57,14 +57,16 @@ public class AoeWarningOverlay extends Overlay
 
 	private final Client client;
 	private final AoeWarningPlugin plugin;
+	private final AoeWarningConfig config;
 
 	@Inject
-	public AoeWarningOverlay(final Client client, final AoeWarningPlugin plugin)
+	public AoeWarningOverlay(final Client client, final AoeWarningPlugin plugin, final AoeWarningConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -120,7 +122,7 @@ public class AoeWarningOverlay extends Overlay
 			final int tickProgress = proj.getFinalTick() - client.getTickCount();
 
 			int fillAlpha, outlineAlpha;
-			if (plugin.isConfigFadeEnabled())
+			if (config.isFadeEnabled())
 			{
 				fillAlpha = (int) ((1 - progress) * FILL_START_ALPHA);
 				outlineAlpha = (int) ((1 - progress) * OUTLINE_START_ALPHA);
@@ -157,18 +159,18 @@ public class AoeWarningOverlay extends Overlay
 				outlineAlpha = 255;
 			}
 
-			if (plugin.isConfigOutlineEnabled())
+			if (config.isOutlineEnabled())
 			{
-				graphics.setColor(new Color(setAlphaComponent(plugin.getOverlayColor().getRGB(), outlineAlpha), true));
+				graphics.setColor(new Color(setAlphaComponent(config.overlayColor().getRGB(), outlineAlpha), true));
 				graphics.drawPolygon(tilePoly);
 			}
-			if (plugin.isTickTimers() && tickProgress >= 0)
+			if (config.tickTimers() && tickProgress >= 0)
 			{
-				OverlayUtil.renderTextLocation(graphics, Integer.toString(tickProgress), plugin.getTextSize(),
-					plugin.getFontStyle(), color, centerPoint(tilePoly.getBounds()), plugin.isShadows(), 0);
+				OverlayUtil.renderTextLocation(graphics, Integer.toString(tickProgress), config.textSize(),
+					config.fontStyle().getFont(), color, centerPoint(tilePoly.getBounds()), config.shadows(), 0);
 			}
 
-			graphics.setColor(new Color(setAlphaComponent(plugin.getOverlayColor().getRGB(), fillAlpha), true));
+			graphics.setColor(new Color(setAlphaComponent(config.overlayColor().getRGB(), fillAlpha), true));
 			graphics.fillPolygon(tilePoly);
 		});
 		projectiles.removeIf(proj -> now.isAfter(proj.getStartTime().plus(Duration.ofMillis(proj.getLifetime()))));

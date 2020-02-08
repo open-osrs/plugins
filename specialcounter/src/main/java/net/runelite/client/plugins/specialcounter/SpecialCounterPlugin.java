@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018, Raqes <j.raqes@gmail.com>
+ * Copyright (c) 2018, https://openosrs.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +29,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
@@ -47,6 +47,8 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -64,9 +66,8 @@ import org.pf4j.Extension;
 	name = "Special Attack Counter",
 	description = "Track DWH, Arclight, Darklight, and BGS special attacks used on NPCs",
 	tags = {"combat", "npcs", "overlay"},
-	type = PluginType.PVM
+	type = PluginType.UTILITY
 )
-@Singleton
 public class SpecialCounterPlugin extends Plugin
 {
 	private int currentWorld = -1;
@@ -101,6 +102,7 @@ public class SpecialCounterPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+
 		wsClient.registerMessage(SpecialCounterUpdate.class);
 	}
 
@@ -233,6 +235,61 @@ public class SpecialCounterPlugin extends Plugin
 		modifier = 1d;
 		interactedNpcIds.add(npcId);
 
+		if (client.getWidget(WidgetInfo.THEATRE_OF_BLOOD_PARTY) != null)
+		{
+			Boss boss = Boss.getBoss(npcId);
+			if (boss != null)
+			{
+				int teamSize = 0;
+				Widget x = client.getWidget(WidgetInfo.THEATRE_OF_BLOOD_PARTY);
+				for (Widget y : x.getStaticChildren())
+				{
+					if (!y.isHidden())
+					{
+						teamSize++;
+					}
+				}
+				if (boss == Boss.SOTETSEG_5_MAN)
+				{
+					if (teamSize > 0 && teamSize <= 3)
+					{
+						boss = Boss.SOTETSEG_3_MAN;
+					}
+					else if (teamSize == 4)
+					{
+						boss = Boss.SOTETSEG_4_MAN;
+					}
+
+				}
+				if (boss == Boss.NYLOCAS_VASILIAS_5_MAN)
+				{
+					if (teamSize > 0 && teamSize <= 3)
+					{
+						boss = Boss.NYLOCAS_VASILIAS_3_MAN;
+					}
+					else if (teamSize == 4)
+					{
+						boss = Boss.NYLOCAS_VASILIAS_4_MAN;
+					}
+
+				}
+				if (boss == Boss.PESTILENT_BLOAT_5_MAN)
+				{
+					if (teamSize > 0 && teamSize <= 3)
+					{
+						boss = Boss.PESTILENT_BLOAT_3_MAN;
+					}
+					else if (teamSize == 4)
+					{
+						boss = Boss.PESTILENT_BLOAT_4_MAN;
+					}
+
+				}
+				modifier = boss.getModifier();
+				interactedNpcIds.addAll(boss.getIds());
+			}
+			return;
+		}
 		// Add alternate forms of bosses
 		final Boss boss = Boss.getBoss(npcId);
 		if (boss != null)

@@ -29,10 +29,8 @@ package net.runelite.client.plugins.privateserver;
 import com.google.inject.Provides;
 import java.math.BigInteger;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.RuneLite;
 import net.runelite.client.config.ConfigManager;
@@ -51,8 +49,6 @@ import org.pf4j.Extension;
 	tags = {"RSPS", "Server", "Private"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
-@Slf4j
 public class PrivateServerPlugin extends Plugin
 {
 	@Inject

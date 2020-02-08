@@ -32,7 +32,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
@@ -42,7 +41,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
 @Slf4j
-@Singleton
 public class WidgetOverlay extends Overlay
 {
 	private final Client client;

@@ -27,12 +27,14 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Provides;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -40,19 +42,24 @@ import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.CommandExecuted;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.SpotAnimationChanged;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.plugins.tmorph.ui.TPanel;
+import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.Clipboard;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.pf4j.Extension;
 
@@ -63,24 +70,24 @@ import org.pf4j.Extension;
 	tags = {"transform", "model", "item", "morph"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class TMorph extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)
 	private static final Map<String, KitType> kit;
-	private static final Color COLOR = new Color(10, 134, 74, 255);
 
 	static
 	{
 		final ImmutableMap.Builder<String, KitType> builder = new ImmutableMap.Builder<>();
+
 		for (KitType kit : KitType.values())
 		{
 			builder.put(kit.getName(), kit);
 		}
+
 		kit = builder.build();
 	}
 
-	@Getter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PUBLIC)
 	private static final Splitter NEWLINE_SPLITTER = Splitter
 		.on("\n")
 		.omitEmptyStrings()
@@ -95,15 +102,16 @@ public class TMorph extends Plugin
 	@Inject
 	private EventBus eventBus;
 
-	private Map<String, String> set1;
-	private Map<String, String> set2;
-	private Map<String, String> set3;
-	private int animation;
-	private int globalAnimSwap;
-	private int globalGraphicSwap;
-	private int graphic;
-	private int targetAnimation;
-	private int targetGraphic;
+	@Inject
+	private ClientToolbar clientToolbar;
+
+	@Inject
+	private ClientThread clientThread;
+
+	private TPanel panel;
+	private NavigationButton navButton;
+	@Setter
+	private Map<String, String> panelMorph = new HashMap<>();
 
 	@Provides
 	TMorphConfig provideConfig(ConfigManager configManager)
@@ -114,7 +122,18 @@ public class TMorph extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
+		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "nav.png");
+
+		panel = injector.getInstance(TPanel.class);
+
+		navButton = NavigationButton.builder()
+			.tooltip("TMorph")
+			.icon(icon)
+			.priority(100)
+			.panel(panel)
+			.build();
+
+		clientToolbar.addNavigation(navButton);
 	}
 
 	@Override
@@ -124,7 +143,7 @@ public class TMorph extends Plugin
 	}
 
 	@Subscribe
-	private void onCommandExecuted(CommandExecuted event)
+	public void onCommandExecuted(CommandExecuted event)
 	{
 		final String[] args = event.getArguments();
 
@@ -165,32 +184,47 @@ public class TMorph extends Plugin
 						sb.append(kitType.getName());
 						sb.append("\n");
 					}
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "TMorph", ColorUtil.prependColorTag("Your current gear has been copied to your clipboard", COLOR), null);
+					client.addChatMessage(
+						ChatMessageType.GAMEMESSAGE,
+						"TMorph",
+						ColorUtil.prependColorTag("Your current gear has been copied to your clipboard", Color.RED),
+						null
+					);
 					Clipboard.store(sb.toString());
 				}
 				else
 				{
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "TMorph", ColorUtil.prependColorTag("Invalid syntax, do ::tmorph copy", Color.RED), null);
+					client.addChatMessage(
+						ChatMessageType.GAMEMESSAGE,
+						"TMorph",
+						ColorUtil.prependColorTag("Invalid syntax, do ::tmorph copy", Color.RED),
+						null
+					);
 				}
 			}
 			catch (Exception e)
 			{
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "TMorph", ColorUtil.prependColorTag("Invalid syntax, do ::tmorph copy", Color.RED), null);
+				client.addChatMessage(
+					ChatMessageType.GAMEMESSAGE,
+					"TMorph",
+					ColorUtil.prependColorTag("Invalid syntax, do ::tmorph copy", Color.RED),
+					null
+				);
 			}
 		}
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
+	public void onGameStateChanged(GameStateChanged event)
 	{
-		if (event.getGroup().equals("TMorph"))
+		if (event.getGameState() == GameState.LOGIN_SCREEN)
 		{
-			updateConfig();
+			clientThread.invokeLater(() -> panel.populateSlots());
 		}
 	}
 
 	@Subscribe
-	private void onSpotAnimationChanged(SpotAnimationChanged event)
+	public void onSpotAnimationChanged(SpotAnimationChanged event)
 	{
 		final Actor actor = event.getActor();
 
@@ -199,21 +233,21 @@ public class TMorph extends Plugin
 			return;
 		}
 
-		if (this.graphic <= 0 && this.targetGraphic <= 0 && this.globalGraphicSwap > 0)
+		if (config.graphicSwap() <= 0 && config.graphicTarget() <= 0 && config.globalGraphicSwap() > 0)
 		{
-			actor.setSpotAnimation(this.globalGraphicSwap);
+			actor.setSpotAnimation(config.globalGraphicSwap());
 		}
-		if (this.graphic > 0 && this.targetGraphic > 0)
+		if (config.graphicSwap() > 0 && config.graphicTarget() > 0)
 		{
-			if (actor.getSpotAnimation() == this.targetGraphic)
+			if (actor.getSpotAnimation() == config.graphicTarget())
 			{
-				actor.setSpotAnimation(this.graphic);
+				actor.setSpotAnimation(config.graphicSwap());
 			}
 		}
 	}
 
 	@Subscribe
-	private void onAnimationChanged(AnimationChanged event)
+	public void onAnimationChanged(AnimationChanged event)
 	{
 		final Actor actor = event.getActor();
 
@@ -222,21 +256,21 @@ public class TMorph extends Plugin
 			return;
 		}
 
-		if (this.targetAnimation <= 0 && this.animation <= 0 && this.globalAnimSwap > 0)
+		if (config.animationTarget() <= 0 && config.animationSwap() <= 0 && config.globalAnimSwap() > 0)
 		{
-			actor.setAnimation(this.globalAnimSwap);
+			actor.setAnimation(config.globalAnimSwap());
 		}
-		if (this.targetAnimation > 0 && this.animation > 0)
+		if (config.animationTarget() > 0 && config.animationSwap() > 0)
 		{
-			if (actor.getAnimation() == this.targetAnimation)
+			if (actor.getAnimation() == config.animationTarget())
 			{
-				actor.setAnimation(this.animation);
+				actor.setAnimation(config.animationSwap());
 			}
 		}
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick event)
+	public void onGameTick(GameTick event)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
 		{
@@ -253,14 +287,15 @@ public class TMorph extends Plugin
 			return;
 		}
 
-		updateGear(set1, player);
-		updateGear(set2, player);
-		updateGear(set3, player);
+		updateGear(panelMorph, player);
+		updateGear(NEWLINE_SPLITTER.withKeyValueSeparator(':').split(config.set1()), player);
+		updateGear(NEWLINE_SPLITTER.withKeyValueSeparator(':').split(config.set2()), player);
+		updateGear(NEWLINE_SPLITTER.withKeyValueSeparator(':').split(config.set3()), player);
 	}
 
-	private void updateGear(Map<String, String> map, Player player)
+	public void updateGear(Map<String, String> map, Player player)
 	{
-		if (map == null || map.isEmpty())
+		if (map == null || map.isEmpty() || player.getPlayerAppearance() == null)
 		{
 			return;
 		}
@@ -300,18 +335,5 @@ public class TMorph extends Plugin
 				player.getPlayerAppearance().getEquipmentIds()[slot.getIndex()] = ints[1] + 512;
 			}
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.set1 = NEWLINE_SPLITTER.withKeyValueSeparator(':').split(config.set1());
-		this.set2 = NEWLINE_SPLITTER.withKeyValueSeparator(':').split(config.set2());
-		this.set3 = NEWLINE_SPLITTER.withKeyValueSeparator(':').split(config.set3());
-		this.animation = config.animationSwap();
-		this.globalAnimSwap = config.globalAnimSwap();
-		this.globalGraphicSwap = config.globalGraphicSwap();
-		this.graphic = config.graphicSwap();
-		this.targetAnimation = config.animationTarget();
-		this.targetGraphic = config.graphicTarget();
 	}
 }

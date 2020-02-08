@@ -26,7 +26,6 @@ package net.runelite.client.plugins.mta;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.client.config.ConfigManager;
@@ -48,7 +47,6 @@ import org.pf4j.Extension;
 	tags = {"mta", "magic", "minigame", "overlay"},
 	type = PluginType.MINIGAME
 )
-@Singleton
 public class MTAPlugin extends Plugin
 {
 	@Inject

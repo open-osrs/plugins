@@ -32,6 +32,7 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.menus.AbstractComparableEntry;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.theatre.RoomHandler;
+import net.runelite.client.plugins.theatre.TheatreConfig;
 import net.runelite.client.plugins.theatre.TheatreConstant;
 import net.runelite.client.plugins.theatre.TheatrePlugin;
 import net.runelite.client.plugins.theatre.TheatreRoom;
@@ -56,9 +57,9 @@ public class NyloHandler extends RoomHandler
 	private NyloOverlay overlay = null;
 	private NyloPredictor predictor = null;
 
-	public NyloHandler(final Client client, final TheatrePlugin plugin, final MenuManager menuManager, final EventBus eventBus)
+	public NyloHandler(final Client client, final TheatrePlugin plugin, final TheatreConfig config, final MenuManager menuManager, final EventBus eventBus)
 	{
-		super(client, plugin);
+		super(client, plugin, config);
 		this.menuManager = menuManager;
 		this.eventBus = eventBus;
 	}
@@ -74,7 +75,7 @@ public class NyloHandler extends RoomHandler
 		this.reset();
 
 		this.plugin.setRoom(TheatreRoom.NYLOCAS);
-		if (overlay == null && plugin.isShowNylocasAmount())
+		if (overlay == null && config.showNylocasAmount())
 		{
 			overlay = new NyloOverlay(client, plugin, this);
 			plugin.getOverlayManager().add(overlay);
@@ -82,7 +83,7 @@ public class NyloHandler extends RoomHandler
 
 		this.startTime = System.currentTimeMillis();
 		this.startTick = this.client.getTickCount();
-		if (plugin.isNylocasMenuSwap())
+		if (config.nylocasMenuSwap())
 		{
 			eventBus.subscribe(MenuOptionClicked.class, MESNAME, this::onMenuOptionClicked);
 		}
@@ -110,7 +111,7 @@ public class NyloHandler extends RoomHandler
 		long minutes = seconds / 60L;
 		seconds = seconds % 60;
 
-		if (this.startTime != 0 && plugin.isExtraTimers())
+		if (this.startTime != 0 && config.extraTimers())
 		{
 			this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'The Nylocas - Waves' " +
 				"completed! Duration: <col=ff0000>" + minutes + ":" + twoDigitString(seconds), null);
@@ -131,7 +132,7 @@ public class NyloHandler extends RoomHandler
 
 	public void onConfigChanged()
 	{
-		if (plugin.isNylocasMenuSwap())
+		if (config.nylocasMenuSwap())
 		{
 			eventBus.subscribe(MenuOptionClicked.class, MESNAME, this::onMenuOptionClicked);
 		}
@@ -145,12 +146,12 @@ public class NyloHandler extends RoomHandler
 			return;
 		}
 
-		if (overlay == null && plugin.isShowNylocasAmount())
+		if (overlay == null && config.showNylocasAmount())
 		{
 			overlay = new NyloOverlay(client, plugin, this);
 			plugin.getOverlayManager().add(overlay);
 		}
-		else if (overlay != null && !plugin.isShowNylocasAmount())
+		else if (overlay != null && !config.showNylocasAmount())
 		{
 			plugin.getOverlayManager().remove(overlay);
 			overlay = null;
@@ -171,7 +172,7 @@ public class NyloHandler extends RoomHandler
 
 	public void render(Graphics2D graphics)
 	{
-		if (plugin.isShowNyloPillarHealth())
+		if (config.showNyloPillarHealth())
 		{
 			for (Map.Entry<NPC, Integer> pillars : pillars.entrySet())
 			{
@@ -190,7 +191,7 @@ public class NyloHandler extends RoomHandler
 			}
 		}
 
-		switch (plugin.getShowNylocasExplosions())
+		switch (config.showNylocasExplosions())
 		{
 			case TILE:
 				for (Map.Entry<NPC, Integer> spiders : spiders.entrySet())
@@ -224,7 +225,7 @@ public class NyloHandler extends RoomHandler
 
 		Set<NPC> toHighlight = new HashSet<>();
 
-		if (plugin.isHighlightNyloAgros())
+		if (config.highlightNyloAgros())
 		{
 			for (NPC npc : new ArrayList<>(this.waveAgros))
 			{
@@ -424,6 +425,7 @@ public class NyloHandler extends RoomHandler
 			for (NPC npc : pillars.keySet())
 			{
 				LocalPoint lp = npc.getLocalLocation();
+
 				if (lp.getSceneX() < minX)
 				{
 					minX = lp.getSceneX();

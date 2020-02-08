@@ -33,7 +33,6 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.ObjectDefinition;
 import net.runelite.api.Point;
@@ -56,7 +55,6 @@ import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.ColorUtil;
 
-@Singleton
 public class PyramidPlunderOverlay extends Overlay
 {
 	private static final int MAX_DISTANCE = 2400;
@@ -65,6 +63,7 @@ public class PyramidPlunderOverlay extends Overlay
 
 	private final Client client;
 	private final PyramidPlunderPlugin plugin;
+	private final PyramidPlunderConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	private static final int MAX_TICK_COUNT = 500;
@@ -78,10 +77,11 @@ public class PyramidPlunderOverlay extends Overlay
 	}
 
 	@Inject
-	private PyramidPlunderOverlay(final Client client, final PyramidPlunderPlugin plugin)
+	private PyramidPlunderOverlay(final Client client, final PyramidPlunderPlugin plugin, final PyramidPlunderConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
@@ -142,7 +142,7 @@ public class PyramidPlunderOverlay extends Overlay
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 
-		if (plugin.isShowPlunderStatus())
+		if (config.showPlunderStatus())
 		{
 			final Widget widget = client.getWidget(WidgetInfo.PYRAMID_PLUNDER_DATA);
 			if (widget == null)
@@ -150,7 +150,7 @@ public class PyramidPlunderOverlay extends Overlay
 				return null;
 			}
 
-			toggleDefaultWidget(plugin.isHideWidget());
+			toggleDefaultWidget(config.hideWidget());
 
 			panelComponent.getChildren().clear();
 
@@ -188,11 +188,11 @@ public class PyramidPlunderOverlay extends Overlay
 
 	private Color getColor(int timeLeft)
 	{
-		if (timeLeft < plugin.getSecondWarningTime())
+		if (timeLeft < config.secondWarningTime())
 		{
 			return Color.RED;
 		}
-		else if (timeLeft < plugin.getFirstWarningTime())
+		else if (timeLeft < config.firstWarningTime())
 		{
 			return Color.YELLOW;
 		}

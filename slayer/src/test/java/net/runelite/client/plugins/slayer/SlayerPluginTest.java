@@ -411,11 +411,11 @@ public class SlayerPluginTest
 	{
 		ChatMessage chatMessageEvent = new ChatMessage(null, GAMEMESSAGE, "Superior", SUPERIOR_MESSAGE, null, 0);
 
-		slayerPlugin.setShowSuperiorNotification(true);
+		when(slayerConfig.showSuperiorNotification()).thenReturn(true);
 		slayerPlugin.onChatMessage(chatMessageEvent);
 		verify(notifier).notify(SUPERIOR_MESSAGE);
 
-		slayerPlugin.setShowSuperiorNotification(false);
+		when(slayerConfig.showSuperiorNotification()).thenReturn(false);
 		slayerPlugin.onChatMessage(chatMessageEvent);
 		verifyNoMoreInteractions(notifier);
 	}
@@ -429,7 +429,7 @@ public class SlayerPluginTest
 		task.setAmount(42);
 		task.setInitialAmount(42);
 
-		slayerPlugin.setTaskCommand(true);
+		when(slayerConfig.taskCommand()).thenReturn(true);
 		when(chatClient.getTask(anyString())).thenReturn(task);
 
 		ChatMessage setMessage = new ChatMessage();
@@ -476,6 +476,7 @@ public class SlayerPluginTest
 		final Player player = mock(Player.class);
 		when(player.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
 		when(client.getLocalPlayer()).thenReturn(player);
+		when(slayerConfig.taskName()).thenReturn("Dagannoth");
 
 		StatChanged statChanged = new StatChanged(
 			Skill.SLAYER,
@@ -504,6 +505,7 @@ public class SlayerPluginTest
 		final Player player = mock(Player.class);
 		when(player.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
 		when(client.getLocalPlayer()).thenReturn(player);
+		when(slayerConfig.taskName()).thenReturn("Monster");
 
 		StatChanged statChanged = new StatChanged(
 			Skill.SLAYER,
@@ -533,6 +535,7 @@ public class SlayerPluginTest
 		final Player player = mock(Player.class);
 		when(player.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
 		when(client.getLocalPlayer()).thenReturn(player);
+		when(slayerConfig.taskName()).thenReturn("TzTok-Jad");
 
 		StatChanged statChanged = new StatChanged(
 			Skill.SLAYER,
@@ -573,6 +576,7 @@ public class SlayerPluginTest
 		final Player player = mock(Player.class);
 		when(player.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
 		when(client.getLocalPlayer()).thenReturn(player);
+		when(slayerConfig.taskName()).thenReturn("TzKal-Zuk");
 
 		StatChanged statChanged = new StatChanged(
 			Skill.SLAYER,
@@ -613,6 +617,7 @@ public class SlayerPluginTest
 		final Player player = mock(Player.class);
 		when(player.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
 		when(client.getLocalPlayer()).thenReturn(player);
+		when(slayerConfig.taskName()).thenReturn("Bears");
 
 		slayerPlugin.setTask("Bears", 35, 35, true, 0);
 

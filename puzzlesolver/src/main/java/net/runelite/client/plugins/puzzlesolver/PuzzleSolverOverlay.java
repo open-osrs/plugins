@@ -75,7 +75,7 @@ public class PuzzleSolverOverlay extends Overlay
 	private static final int DOT_MARKER_SIZE = 16;
 
 	private final Client client;
-	private final PuzzleSolverPlugin plugin;
+	private final PuzzleSolverConfig config;
 	private final ScheduledExecutorService executorService;
 	private final SpriteManager spriteManager;
 
@@ -88,13 +88,13 @@ public class PuzzleSolverOverlay extends Overlay
 	private BufferedImage rightArrow;
 
 	@Inject
-	public PuzzleSolverOverlay(final Client client, final PuzzleSolverPlugin plugin, final ScheduledExecutorService executorService, final SpriteManager spriteManager)
+	public PuzzleSolverOverlay(final Client client, final PuzzleSolverConfig config, final ScheduledExecutorService executorService, final SpriteManager spriteManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.HIGH);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
-		this.plugin = plugin;
+		this.config = config;
 		this.executorService = executorService;
 		this.spriteManager = spriteManager;
 	}
@@ -102,7 +102,7 @@ public class PuzzleSolverOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if ((!plugin.isDisplaySolution() && !plugin.isDisplayRemainingMoves())
+		if ((!config.displaySolution() && !config.displayRemainingMoves())
 			|| client.getGameState() != GameState.LOGGED_IN)
 		{
 			return null;
@@ -206,7 +206,7 @@ public class PuzzleSolverOverlay extends Overlay
 						{
 							infoString = "Solved!";
 						}
-						else if (plugin.isDisplayRemainingMoves())
+						else if (config.displayRemainingMoves())
 						{
 							infoString = "Moves left: " + stepsLeft;
 						}
@@ -215,9 +215,9 @@ public class PuzzleSolverOverlay extends Overlay
 							infoString = null;
 						}
 
-						if (plugin.isDisplaySolution())
+						if (config.displaySolution())
 						{
-							if (plugin.isDrawDots())
+							if (config.drawDots())
 							{
 								graphics.setColor(Color.YELLOW);
 

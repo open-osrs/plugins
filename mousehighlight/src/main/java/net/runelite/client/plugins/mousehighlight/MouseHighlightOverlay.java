@@ -46,14 +46,16 @@ class MouseHighlightOverlay extends Overlay
 	private final TooltipManager tooltipManager;
 	private final Client client;
 	private final MouseHighlightPlugin plugin;
+	private final MouseHighlightConfig config;
 
 	@Inject
-	MouseHighlightOverlay(final Client client, final TooltipManager tooltipManager, final MouseHighlightPlugin plugin)
+	MouseHighlightOverlay(final Client client, final TooltipManager tooltipManager, final MouseHighlightPlugin plugin, final MouseHighlightConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		this.client = client;
 		this.tooltipManager = tooltipManager;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
@@ -107,12 +109,12 @@ class MouseHighlightOverlay extends Overlay
 		final int childId = WidgetInfo.TO_CHILD(widgetId);
 		final Widget widget = client.getWidget(groupId, childId);
 
-		if (!plugin.isUiTooltip() && widget != null)
+		if (!config.uiTooltip() && widget != null)
 		{
 			return null;
 		}
 
-		if (!plugin.isChatboxTooltip() && groupId == WidgetInfo.CHATBOX.getGroupId())
+		if (!config.chatboxTooltip() && groupId == WidgetInfo.CHATBOX.getGroupId())
 		{
 			return null;
 		}
@@ -127,7 +129,7 @@ class MouseHighlightOverlay extends Overlay
 			}
 		}
 
-		if (widget == null && !plugin.isMainTooltip())
+		if (widget == null && !config.mainTooltip())
 		{
 			return null;
 		}
@@ -146,11 +148,12 @@ class MouseHighlightOverlay extends Overlay
 	private boolean shouldNotRenderMenuAction(int type)
 	{
 		return type == MenuOpcode.RUNELITE_OVERLAY.getId()
-			|| (!plugin.isRightClickTooltipEnabled() && isMenuActionRightClickOnly(type));
+			|| type == MenuOpcode.CC_OP_LOW_PRIORITY.getId()
+			|| (!config.isRightClickTooltipEnabled() && isMenuActionRightClickOnly(type));
 	}
 
 	private boolean isMenuActionRightClickOnly(int type)
 	{
-		return type == MenuOpcode.EXAMINE_ITEM_BANK_EQ.getId();
+		return type == MenuOpcode.CC_OP_LOW_PRIORITY.getId();
 	}
 }

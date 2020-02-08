@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +75,6 @@ import org.pf4j.Extension;
 	type = PluginType.UTILITY
 )
 @Slf4j
-@Singleton
 public class PohPlugin extends Plugin
 {
 	static final Set<Integer> BURNER_UNLIT = Sets.newHashSet(ObjectID.INCENSE_BURNER, ObjectID.INCENSE_BURNER_13210, ObjectID.INCENSE_BURNER_13212);
@@ -95,9 +93,6 @@ public class PohPlugin extends Plugin
 	private PohOverlay overlay;
 
 	@Inject
-	private PohConfig config;
-
-	@Inject
 	private Client client;
 
 	@Inject
@@ -109,33 +104,6 @@ public class PohPlugin extends Plugin
 	@Inject
 	private BurnerOverlay burnerOverlay;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPortals;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showAltar;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showGlory;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPools;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showRepairStand;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showExitPortal;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showBurner;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSpellbook;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showJewelleryBox;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showMagicTravel;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPortalNexus;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showDigsitePendant;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showXericsTalisman;
-
 	@Provides
 	PohConfig getConfig(ConfigManager configManager)
 	{
@@ -145,8 +113,6 @@ public class PohPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlayManager.add(burnerOverlay);
 		overlay.updateConfig();
@@ -168,8 +134,6 @@ public class PohPlugin extends Plugin
 		{
 			return;
 		}
-
-		updateConfig();
 
 		overlay.updateConfig();
 	}
@@ -291,22 +255,5 @@ public class PohPlugin extends Plugin
 		final double tickLengthSeconds = Constants.GAME_TICK_LENGTH / 1000.0;
 		incenseBurner.setCountdownTimer((200 + fmLevel) * tickLengthSeconds);
 		incenseBurner.setRandomTimer(fmLevel * tickLengthSeconds);
-	}
-
-	private void updateConfig()
-	{
-		this.showPortals = config.showPortals();
-		this.showAltar = config.showAltar();
-		this.showGlory = config.showGlory();
-		this.showPools = config.showPools();
-		this.showRepairStand = config.showRepairStand();
-		this.showExitPortal = config.showExitPortal();
-		this.showBurner = config.showBurner();
-		this.showSpellbook = config.showSpellbook();
-		this.showJewelleryBox = config.showJewelleryBox();
-		this.showMagicTravel = config.showMagicTravel();
-		this.showPortalNexus = config.showPortalNexus();
-		this.showDigsitePendant = config.showDigsitePendant();
-		this.showXericsTalisman = config.showXericsTalisman();
 	}
 }

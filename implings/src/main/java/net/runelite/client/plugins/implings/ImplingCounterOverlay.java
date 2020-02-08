@@ -15,20 +15,23 @@ import net.runelite.client.ui.overlay.components.table.TableComponent;
 public class ImplingCounterOverlay extends Overlay
 {
 	private final ImplingsPlugin plugin;
+	private final ImplingsConfig config;
 
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	public ImplingCounterOverlay(final ImplingsPlugin plugin)
+	public ImplingCounterOverlay(final ImplingsPlugin plugin, final ImplingsConfig config)
 	{
 		this.plugin = plugin;
+		this.config = config;
+
 		setPosition(OverlayPosition.TOP_LEFT);
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isShowSpawn() || plugin.getImplings().isEmpty())
+		if (!config.showSpawn() || plugin.getImplings().isEmpty())
 		{
 			return null;
 		}

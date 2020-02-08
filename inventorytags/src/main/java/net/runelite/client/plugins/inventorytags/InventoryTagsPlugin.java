@@ -30,7 +30,6 @@ import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.events.MenuOpened;
@@ -40,7 +39,6 @@ import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.menus.WidgetMenuOption;
 import net.runelite.client.plugins.Plugin;
@@ -57,7 +55,6 @@ import org.pf4j.Extension;
 	tags = {"highlight", "items", "overlay", "tagging"},
 	type = PluginType.UTILITY
 )
-@Singleton
 public class InventoryTagsPlugin extends Plugin
 {
 	private static final String ITEM_KEY_PREFIX = "item_";
@@ -70,6 +67,10 @@ public class InventoryTagsPlugin extends Plugin
 	private static final String SETNAME_GROUP_6 = "Group 6";
 	private static final String SETNAME_GROUP_7 = "Group 7";
 	private static final String SETNAME_GROUP_8 = "Group 8";
+	private static final String SETNAME_GROUP_9 = "Group 9";
+	private static final String SETNAME_GROUP_10 = "Group 10";
+	private static final String SETNAME_GROUP_11 = "Group 11";
+	private static final String SETNAME_GROUP_12 = "Group 12";
 
 
 	private static final String CONFIGURE = "Configure";
@@ -91,8 +92,8 @@ public class InventoryTagsPlugin extends Plugin
 	private static final WidgetMenuOption RESIZABLE_BOTTOM_LINE_INVENTORY_TAB_SAVE = new WidgetMenuOption(SAVE,
 		MENU_TARGET, WidgetInfo.RESIZABLE_VIEWPORT_BOTTOM_LINE_INVENTORY_TAB);
 
-	private static final List<String> GROUPS = ImmutableList.of(SETNAME_GROUP_8, SETNAME_GROUP_7, SETNAME_GROUP_6,
-		SETNAME_GROUP_5, SETNAME_GROUP_4, SETNAME_GROUP_3, SETNAME_GROUP_2, SETNAME_GROUP_1);
+	private static final List<String> GROUPS = ImmutableList.of(SETNAME_GROUP_12, SETNAME_GROUP_11, SETNAME_GROUP_10, SETNAME_GROUP_9,
+		SETNAME_GROUP_8, SETNAME_GROUP_7, SETNAME_GROUP_6, SETNAME_GROUP_5, SETNAME_GROUP_4, SETNAME_GROUP_3, SETNAME_GROUP_2, SETNAME_GROUP_1);
 
 	@Inject
 	private ConfigManager configManager;
@@ -110,16 +111,6 @@ public class InventoryTagsPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	private boolean editorMode;
-
-	private InventoryTagsConfig.amount amount;
-	private Color group1Color;
-	private Color group2Color;
-	private Color group3Color;
-	private Color group4Color;
-	private Color group5Color;
-	private Color group6Color;
-	private Color group7Color;
-	private Color group8Color;
 
 	@Provides
 	InventoryTagsConfig provideConfig(ConfigManager configManager)
@@ -151,8 +142,6 @@ public class InventoryTagsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		refreshInventoryMenuOptions();
 		overlayManager.add(overlay);
 	}
@@ -219,13 +208,13 @@ public class InventoryTagsPlugin extends Plugin
 				return;
 			}
 
-			MenuEntry[] menuList = new MenuEntry[amount.toInt() + 1];
+			MenuEntry[] menuList = new MenuEntry[config.getAmount().toInt() + 1];
 			int num = 0;
 
 			// preserve the 'Cancel' option as the client will reuse the first entry for Cancel and only resets option/action
 			menuList[num++] = event.getMenuEntries()[0];
 
-			List<String> groups = GROUPS.subList(Math.max(GROUPS.size() - amount.toInt(), 0), GROUPS.size());
+			List<String> groups = GROUPS.subList(Math.max(GROUPS.size() - config.getAmount().toInt(), 0), GROUPS.size());
 
 			for (final String groupName : groups)
 			{
@@ -251,21 +240,29 @@ public class InventoryTagsPlugin extends Plugin
 		switch (name)
 		{
 			case SETNAME_GROUP_1:
-				return this.group1Color;
+				return config.getGroup1Color();
 			case SETNAME_GROUP_2:
-				return this.group2Color;
+				return config.getGroup2Color();
 			case SETNAME_GROUP_3:
-				return this.group3Color;
+				return config.getGroup3Color();
 			case SETNAME_GROUP_4:
-				return this.group4Color;
+				return config.getGroup4Color();
 			case SETNAME_GROUP_5:
-				return this.group5Color;
+				return config.getGroup5Color();
 			case SETNAME_GROUP_6:
-				return this.group6Color;
+				return config.getGroup6Color();
 			case SETNAME_GROUP_7:
-				return this.group7Color;
+				return config.getGroup7Color();
 			case SETNAME_GROUP_8:
-				return this.group8Color;
+				return config.getGroup8Color();
+			case SETNAME_GROUP_9:
+				return config.getGroup9Color();
+			case SETNAME_GROUP_10:
+				return config.getGroup10Color();
+			case SETNAME_GROUP_11:
+				return config.getGroup11Color();
+			case SETNAME_GROUP_12:
+				return config.getGroup12Color();
 		}
 		return null;
 	}
@@ -295,27 +292,5 @@ public class InventoryTagsPlugin extends Plugin
 			menuManager.addManagedCustomMenu(RESIZABLE_INVENTORY_TAB_CONFIGURE);
 			menuManager.addManagedCustomMenu(RESIZABLE_BOTTOM_LINE_INVENTORY_TAB_CONFIGURE);
 		}
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("inventorytags"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.amount = config.getAmount();
-		this.group1Color = config.getGroup1Color();
-		this.group2Color = config.getGroup2Color();
-		this.group3Color = config.getGroup3Color();
-		this.group4Color = config.getGroup4Color();
-		this.group5Color = config.getGroup5Color();
-		this.group6Color = config.getGroup6Color();
-		this.group7Color = config.getGroup7Color();
-		this.group8Color = config.getGroup8Color();
 	}
 }

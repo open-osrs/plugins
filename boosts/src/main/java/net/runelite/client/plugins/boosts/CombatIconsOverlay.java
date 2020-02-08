@@ -31,12 +31,14 @@ class CombatIconsOverlay extends Overlay
 	private final PanelComponent panelComponent = new PanelComponent();
 	private final SkillIconManager iconManager;
 	private final BoostsPlugin plugin;
+	private final BoostsConfig config;
 
 	@Inject
-	private CombatIconsOverlay(final Client client, final BoostsPlugin plugin, final SkillIconManager iconManager)
+	private CombatIconsOverlay(final Client client, final BoostsPlugin plugin, final BoostsConfig config, final SkillIconManager iconManager)
 	{
 		super(plugin);
 		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
 		this.iconManager = iconManager;
 		setPosition(OverlayPosition.TOP_LEFT);
@@ -47,12 +49,12 @@ class CombatIconsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isDisplayInfoboxes() || !plugin.isDisplayIcons())
+		if (config.displayInfoboxes() || !config.displayIcons())
 		{
 			return null;
 		}
 
-		if (plugin.isBoldIconFont())
+		if (config.boldIconFont())
 		{
 			graphics.setFont(FontManager.getRunescapeBoldFont());
 		}
@@ -79,7 +81,7 @@ class CombatIconsOverlay extends Overlay
 				final Color strColor = getTextColor(boost);
 				String str;
 
-				if (plugin.isUseRelativeBoost())
+				if (config.useRelativeBoost())
 				{
 					str = String.valueOf(boost);
 					if (boost > 0)
@@ -137,7 +139,7 @@ class CombatIconsOverlay extends Overlay
 			return new Color(238, 51, 51);
 		}
 
-		return boost <= plugin.getBoostThreshold() ? Color.YELLOW : Color.GREEN;
+		return boost <= config.boostThreshold() ? Color.YELLOW : Color.GREEN;
 
 	}
 }

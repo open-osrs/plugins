@@ -52,14 +52,16 @@ public class PartyStatsOverlay extends Overlay
 	private static final Color PRAY_BG = Color.black;
 
 	private final PartyPlugin plugin;
+	private final PartyConfig config;
 	private final PartyService party;
 	private final PanelComponent body = new PanelComponent();
 
 	@Inject
-	private PartyStatsOverlay(final PartyPlugin plugin, final PartyService party, final PartyConfig config)
+	private PartyStatsOverlay(final PartyPlugin plugin, final PartyConfig config, final PartyService party)
 	{
 		super(plugin);
 		this.plugin = plugin;
+		this.config = config;
 		this.party = party;
 		body.setBorder(new Rectangle());
 		body.setGap(new Point(0, ComponentConstants.STANDARD_BORDER / 2));
@@ -69,7 +71,7 @@ public class PartyStatsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isStats())
+		if (!config.stats())
 		{
 			return null;
 		}
@@ -107,7 +109,7 @@ public class PartyStatsOverlay extends Overlay
 
 				final TitleComponent name = TitleComponent.builder()
 					.text(v.getName())
-					.color(plugin.isRecolorNames() ? v.getColor() : Color.WHITE)
+					.color(config.recolorNames() ? v.getColor() : Color.WHITE)
 					.build();
 
 				panel.getChildren().add(name);

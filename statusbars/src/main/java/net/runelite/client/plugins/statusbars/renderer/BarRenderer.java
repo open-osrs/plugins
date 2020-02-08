@@ -34,6 +34,7 @@ import java.awt.Point;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.Client;
+import net.runelite.client.plugins.statusbars.StatusBarsConfig;
 import net.runelite.client.plugins.statusbars.StatusBarsOverlay;
 import net.runelite.client.plugins.statusbars.StatusBarsPlugin;
 import net.runelite.client.ui.FontManager;
@@ -56,24 +57,13 @@ public abstract class BarRenderer
 	private static final int OFFSET = 2;
 
 	protected final StatusBarsPlugin plugin;
+	protected final StatusBarsConfig config;
 	int maximumValue;
 	int currentValue;
 	int restore;
 	Color standardColor;
 	Color restoreColor;
 	Image icon;
-
-	private static int getBarHeight(int base, int current, int size)
-	{
-		final double ratio = (double) current / base;
-
-		if (ratio >= 1)
-		{
-			return size;
-		}
-
-		return (int) Math.round(ratio * size);
-	}
 
 	protected abstract void update(Client client, StatusBarsOverlay overlay);
 
@@ -97,7 +87,7 @@ public abstract class BarRenderer
 		final int widthOfCounter = graphics.getFontMetrics().stringWidth(counterText);
 		final int centerText = (BAR_WIDTH - PADDING) / 2 - (widthOfCounter / 2);
 
-		if (plugin.isEnableCounter())
+		if (config.enableCounter())
 		{
 			graphics.setFont(FontManager.getRunescapeSmallFont());
 			TEXT.setText(counterText);
@@ -108,7 +98,7 @@ public abstract class BarRenderer
 			TEXT.setText("");
 		}
 
-		if (plugin.isEnableSkillIcon())
+		if (config.enableSkillIcon())
 		{
 			graphics.drawImage(icon, x + ICON_AND_COUNTER_OFFSET_X + PADDING, y + ICON_AND_COUNTER_OFFSET_Y - icon.getWidth(null), null);
 			TEXT.setPosition(new Point(x + centerText + 1, y + SKILL_ICON_HEIGHT));
@@ -147,15 +137,27 @@ public abstract class BarRenderer
 		}
 	}
 
+	private static int getBarHeight(int base, int current, int size)
+	{
+		final double ratio = (double) current / base;
+
+		if (ratio >= 1)
+		{
+			return size;
+		}
+
+		return (int) Math.round(ratio * size);
+	}
+
 	public void draw(Client client, StatusBarsOverlay overlay, Graphics2D graphics, int x, int y, int height)
 	{
 		update(client, overlay);
 		renderBar(graphics, x, y, height);
-		if (plugin.isEnableRestorationBars())
+		if (config.enableRestorationBars())
 		{
 			renderRestore(graphics, x, y, height);
 		}
-		if (plugin.isEnableSkillIcon() || plugin.isEnableCounter())
+		if (config.enableSkillIcon() || config.enableCounter())
 		{
 			renderIconsAndCounters(graphics, x, y);
 		}

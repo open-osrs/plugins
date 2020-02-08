@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.bank;
+package client.plugins.bank;
 
 import com.google.inject.Guice;
 import com.google.inject.testing.fieldbinder.Bind;
@@ -37,6 +37,8 @@ import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.client.config.OpenOSRSConfig;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.bank.BankConfig;
+import net.runelite.client.plugins.bank.BankPlugin;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;

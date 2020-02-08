@@ -28,7 +28,6 @@ package net.runelite.client.plugins.keyremapping;
 import com.google.inject.Provides;
 import java.awt.Color;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,7 +41,6 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.ModifierlessKeybind;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyManager;
@@ -60,7 +58,6 @@ import org.pf4j.Extension;
 	tags = {"enter", "chat", "wasd", "camera"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class KeyRemappingPlugin extends Plugin
 {
 	private static final String PRESS_ENTER_TO_CHAT = "Press Enter to Chat...";
@@ -86,57 +83,9 @@ public class KeyRemappingPlugin extends Plugin
 	@Setter(AccessLevel.PACKAGE)
 	private boolean typing;
 
-	private boolean hideDisplayName;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean cameraRemap;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind up;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind down;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind left;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind right;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean fkeyRemap;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f1;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f2;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f3;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f4;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f5;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f6;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f7;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f8;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f9;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f10;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f11;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind f12;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind esc;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind ctrl;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind alt;
-	@Getter(AccessLevel.PACKAGE)
-	private ModifierlessKeybind shift;
-
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		typing = false;
 		keyManager.registerKeyListener(inputListener);
 
@@ -213,8 +162,6 @@ public class KeyRemappingPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
 		clientThread.invoke(() ->
 			{
 				Widget chatboxInput = client.getWidget(WidgetInfo.CHATBOX_INPUT);
@@ -271,7 +218,7 @@ public class KeyRemappingPlugin extends Plugin
 
 	private void setChatboxWidgetInput(Widget widget, String input)
 	{
-		if (this.hideDisplayName)
+		if (config.hideDisplayName())
 		{
 			widget.setText(input);
 			return;
@@ -284,32 +231,5 @@ public class KeyRemappingPlugin extends Plugin
 			String newText = text.substring(0, idx) + ": " + input;
 			widget.setText(newText);
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.hideDisplayName = config.hideDisplayName();
-		this.cameraRemap = config.cameraRemap();
-		this.up = config.up();
-		this.down = config.down();
-		this.left = config.left();
-		this.right = config.right();
-		this.fkeyRemap = config.fkeyRemap();
-		this.f1 = config.f1();
-		this.f2 = config.f2();
-		this.f3 = config.f3();
-		this.f4 = config.f4();
-		this.f5 = config.f5();
-		this.f6 = config.f6();
-		this.f7 = config.f7();
-		this.f8 = config.f8();
-		this.f9 = config.f9();
-		this.f10 = config.f10();
-		this.f11 = config.f11();
-		this.f12 = config.f12();
-		this.esc = config.esc();
-		this.ctrl = config.ctrl();
-		this.alt = config.alt();
-		this.shift = config.shift();
 	}
 }

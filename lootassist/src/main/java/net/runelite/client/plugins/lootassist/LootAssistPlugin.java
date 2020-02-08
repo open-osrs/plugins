@@ -2,7 +2,6 @@ package net.runelite.client.plugins.lootassist;
 
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Actor;
 import net.runelite.api.AnimationID;
 import net.runelite.api.Player;
@@ -23,7 +22,6 @@ import org.pf4j.Extension;
 	tags = {"pklite", "loot", "looting", "loot assist", "assist", "loot assist"},
 	type = PluginType.PVP
 )
-@Singleton
 public class LootAssistPlugin extends Plugin
 {
 	@Inject

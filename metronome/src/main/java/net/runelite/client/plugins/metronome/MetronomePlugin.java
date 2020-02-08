@@ -29,7 +29,6 @@ import com.google.inject.Provides;
 import java.io.File;
 import java.io.IOException;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -57,7 +56,6 @@ import org.pf4j.Extension;
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
-@Singleton
 public class MetronomePlugin extends Plugin
 {
 	@Inject
@@ -70,14 +68,6 @@ public class MetronomePlugin extends Plugin
 	private int tockCounter = 0;
 	private Clip tickClip;
 	private Clip tockClip;
-
-	private int tickCount;
-	private boolean enableTock;
-	private int tockNumber;
-	private int tickOffset;
-	private String tickPath;
-	private String tockPath;
-	private int volume;
 
 	@Provides
 	MetronomePluginConfiguration provideConfig(ConfigManager configManager)
@@ -98,7 +88,7 @@ public class MetronomePlugin extends Plugin
 			Clip audioClip = AudioSystem.getClip();
 			audioClip.open(audioStream);
 			FloatControl gainControl = (FloatControl) audioClip.getControl(FloatControl.Type.MASTER_GAIN);
-			float gainValue = (((float) this.volume) * 40f / 100f) - 35f;
+			float gainValue = (((float) config.volume()) * 40f / 100f) - 35f;
 			gainControl.setValue(gainValue);
 
 			return audioClip;
@@ -113,10 +103,8 @@ public class MetronomePlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
-		tickClip = GetAudioClip(this.tickPath);
-		tockClip = GetAudioClip(this.tockPath);
+		tickClip = GetAudioClip(config.tickPath());
+		tockClip = GetAudioClip(config.tockPath());
 	}
 
 	@Override
@@ -140,11 +128,9 @@ public class MetronomePlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
 		if (event.getKey().equals("volume"))
 		{
-			float gainValue = (((float) this.volume) * 40f / 100f) - 35f;
+			float gainValue = (((float) config.volume()) * 40f / 100f) - 35f;
 			FloatControl gainControlTick = (FloatControl) tickClip.getControl(FloatControl.Type.MASTER_GAIN);
 			gainControlTick.setValue(gainValue);
 
@@ -157,7 +143,7 @@ public class MetronomePlugin extends Plugin
 			{
 				tickClip.close();
 			}
-			tickClip = GetAudioClip(this.tickPath);
+			tickClip = GetAudioClip(config.tickPath());
 		}
 		if (event.getKey().equals("tockSoundFilePath"))
 		{
@@ -165,21 +151,21 @@ public class MetronomePlugin extends Plugin
 			{
 				tockClip.close();
 			}
-			tockClip = GetAudioClip(this.tockPath);
+			tockClip = GetAudioClip(config.tockPath());
 		}
 	}
 
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (this.tickCount == 0)
+		if (config.tickCount() == 0)
 		{
 			return;
 		}
 
-		if ((++tickCounter + this.tickOffset) % this.tickCount == 0)
+		if ((++tickCounter + config.tickOffset()) % config.tickCount() == 0)
 		{
-			if ((this.enableTock && this.tockNumber > 0) && ++tockCounter % this.tockNumber == 0)
+			if ((config.enableTock() && config.tockNumber() > 0) && ++tockCounter % config.tockNumber() == 0)
 			{
 				if (tockClip == null)
 				{
@@ -212,16 +198,5 @@ public class MetronomePlugin extends Plugin
 				}
 			}
 		}
-	}
-
-	private void updateConfig()
-	{
-		this.tickCount = config.tickCount();
-		this.enableTock = config.enableTock();
-		this.tockNumber = config.tockNumber();
-		this.tickOffset = config.tickOffset();
-		this.tickPath = config.tickPath();
-		this.tockPath = config.tockPath();
-		this.volume = config.volume();
 	}
 }

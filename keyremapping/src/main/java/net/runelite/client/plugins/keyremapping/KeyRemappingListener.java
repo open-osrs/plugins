@@ -41,9 +41,11 @@ import net.runelite.client.input.MouseAdapter;
 @Singleton
 class KeyRemappingListener extends MouseAdapter implements KeyListener
 {
-
 	@Inject
 	private KeyRemappingPlugin plugin;
+
+	@Inject
+	private KeyRemappingConfig config;
 
 	@Inject
 	private Client client;
@@ -68,24 +70,24 @@ class KeyRemappingListener extends MouseAdapter implements KeyListener
 
 		if (!plugin.isTyping())
 		{
-			if (plugin.isCameraRemap())
+			if (config.cameraRemap())
 			{
-				if (plugin.getUp().matches(e))
+				if (config.up().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_UP);
 					e.setKeyCode(KeyEvent.VK_UP);
 				}
-				else if (plugin.getDown().matches(e))
+				else if (config.down().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_DOWN);
 					e.setKeyCode(KeyEvent.VK_DOWN);
 				}
-				else if (plugin.getLeft().matches(e))
+				else if (config.left().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_LEFT);
 					e.setKeyCode(KeyEvent.VK_LEFT);
 				}
-				else if (plugin.getRight().matches(e))
+				else if (config.right().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_RIGHT);
 					e.setKeyCode(KeyEvent.VK_RIGHT);
@@ -95,84 +97,84 @@ class KeyRemappingListener extends MouseAdapter implements KeyListener
 			// In addition to the above checks, the F-key remapping shouldn't
 			// activate when dialogs are open which listen for number keys
 			// to select options
-			if (plugin.isFkeyRemap() && !plugin.isDialogOpen())
+			if (config.fkeyRemap() && !plugin.isDialogOpen())
 			{
-				if (plugin.getF1().matches(e))
+				if (config.f1().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F1);
 					e.setKeyCode(KeyEvent.VK_F1);
 				}
-				else if (plugin.getF2().matches(e))
+				else if (config.f2().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F2);
 					e.setKeyCode(KeyEvent.VK_F2);
 				}
-				else if (plugin.getF3().matches(e))
+				else if (config.f3().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F3);
 					e.setKeyCode(KeyEvent.VK_F3);
 				}
-				else if (plugin.getF4().matches(e))
+				else if (config.f4().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F4);
 					e.setKeyCode(KeyEvent.VK_F4);
 				}
-				else if (plugin.getF5().matches(e))
+				else if (config.f5().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F5);
 					e.setKeyCode(KeyEvent.VK_F5);
 				}
-				else if (plugin.getF6().matches(e))
+				else if (config.f6().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F6);
 					e.setKeyCode(KeyEvent.VK_F6);
 				}
-				else if (plugin.getF7().matches(e))
+				else if (config.f7().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F7);
 					e.setKeyCode(KeyEvent.VK_F7);
 				}
-				else if (plugin.getF8().matches(e))
+				else if (config.f8().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F8);
 					e.setKeyCode(KeyEvent.VK_F8);
 				}
-				else if (plugin.getF9().matches(e))
+				else if (config.f9().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F9);
 					e.setKeyCode(KeyEvent.VK_F9);
 				}
-				else if (plugin.getF10().matches(e))
+				else if (config.f10().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F10);
 					e.setKeyCode(KeyEvent.VK_F10);
 				}
-				else if (plugin.getF11().matches(e))
+				else if (config.f11().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F11);
 					e.setKeyCode(KeyEvent.VK_F11);
 				}
-				else if (plugin.getF12().matches(e))
+				else if (config.f12().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_F12);
 					e.setKeyCode(KeyEvent.VK_F12);
 				}
-				else if (plugin.getEsc().matches(e))
+				else if (config.esc().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_ESCAPE);
 					e.setKeyCode(KeyEvent.VK_ESCAPE);
 				}
-				else if (plugin.getCtrl().matches(e))
+				else if (config.ctrl().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_CONTROL);
 					e.setKeyCode(KeyEvent.VK_CONTROL);
 				}
-				else if (plugin.getAlt().matches(e))
+				else if (config.alt().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_ALT);
 					e.setKeyCode(KeyEvent.VK_ALT);
 				}
-				else if (plugin.getShift().matches(e))
+				else if (config.shift().matches(e))
 				{
 					modified.put(e.getKeyCode(), KeyEvent.VK_SHIFT);
 					e.setKeyCode(KeyEvent.VK_SHIFT);
@@ -234,89 +236,89 @@ class KeyRemappingListener extends MouseAdapter implements KeyListener
 		{
 			modified.remove(e.getKeyCode());
 
-			if (plugin.isCameraRemap())
+			if (config.cameraRemap())
 			{
-				if (plugin.getUp().matches(e))
+				if (config.up().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_UP);
 				}
-				else if (plugin.getDown().matches(e))
+				else if (config.down().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_DOWN);
 				}
-				else if (plugin.getLeft().matches(e))
+				else if (config.left().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_LEFT);
 				}
-				else if (plugin.getRight().matches(e))
+				else if (config.right().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_RIGHT);
 				}
 			}
 
-			if (plugin.isFkeyRemap())
+			if (config.fkeyRemap())
 			{
-				if (plugin.getF1().matches(e))
+				if (config.f1().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F1);
 				}
-				else if (plugin.getF2().matches(e))
+				else if (config.f2().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F2);
 				}
-				else if (plugin.getF3().matches(e))
+				else if (config.f3().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F3);
 				}
-				else if (plugin.getF4().matches(e))
+				else if (config.f4().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F4);
 				}
-				else if (plugin.getF5().matches(e))
+				else if (config.f5().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F5);
 				}
-				else if (plugin.getF6().matches(e))
+				else if (config.f6().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F6);
 				}
-				else if (plugin.getF7().matches(e))
+				else if (config.f7().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F7);
 				}
-				else if (plugin.getF8().matches(e))
+				else if (config.f8().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F8);
 				}
-				else if (plugin.getF9().matches(e))
+				else if (config.f9().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F9);
 				}
-				else if (plugin.getF10().matches(e))
+				else if (config.f10().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F10);
 				}
-				else if (plugin.getF11().matches(e))
+				else if (config.f11().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F11);
 				}
-				else if (plugin.getF12().matches(e))
+				else if (config.f12().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_F12);
 				}
-				else if (plugin.getEsc().matches(e))
+				else if (config.esc().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_ESCAPE);
 				}
-				else if (plugin.getCtrl().matches(e))
+				else if (config.ctrl().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_CONTROL);
 				}
-				else if (plugin.getAlt().matches(e))
+				else if (config.alt().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_ALT);
 				}
-				else if (plugin.getShift().matches(e))
+				else if (config.shift().matches(e))
 				{
 					e.setKeyCode(KeyEvent.VK_SHIFT);
 				}

@@ -55,8 +55,10 @@ public class RaidsPointsOverlay extends Overlay
 	}
 
 	private final PanelComponent panel = new PanelComponent();
+
 	@Inject
 	private Client client;
+
 	@Inject
 	private RaidsPlugin plugin;
 

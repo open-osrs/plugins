@@ -58,6 +58,7 @@ class FishingSpotOverlay extends Overlay
 	private static final int ONE_TICK_AERIAL_FISHING = 3;
 
 	private final FishingPlugin plugin;
+	private final FishingConfig config;
 	private final Client client;
 	private final ItemManager itemManager;
 
@@ -65,11 +66,12 @@ class FishingSpotOverlay extends Overlay
 	private boolean hidden;
 
 	@Inject
-	private FishingSpotOverlay(final FishingPlugin plugin, final Client client, final ItemManager itemManager)
+	private FishingSpotOverlay(final FishingPlugin plugin, final FishingConfig config, final Client client, final ItemManager itemManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
 		this.itemManager = itemManager;
 	}
@@ -93,7 +95,7 @@ class FishingSpotOverlay extends Overlay
 				continue;
 			}
 
-			if (plugin.isOnlyCurrentSpot() && plugin.getCurrentSpot() != null && plugin.getCurrentSpot() != spot)
+			if (config.onlyCurrentSpot() && plugin.getCurrentSpot() != null && plugin.getCurrentSpot() != spot)
 			{
 				continue;
 			}
@@ -107,18 +109,18 @@ class FishingSpotOverlay extends Overlay
 			Color color;
 			if (npc.getSpotAnimation() == GraphicID.FLYING_FISH)
 			{
-				color = plugin.getMinnowsOverlayColor();
+				color = config.getMinnowsOverlayColor();
 			}
 			else if (spot == FishingSpot.COMMON_TENCH && npc.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) <= ONE_TICK_AERIAL_FISHING)
 			{
-				color = plugin.getAerialOverlayColor();
+				color = config.getAerialOverlayColor();
 			}
 			else
 			{
-				color = plugin.getOverlayColor();
+				color = config.getOverlayColor();
 			}
 
-			if (spot == FishingSpot.MINNOW && plugin.isShowMinnowOverlay())
+			if (spot == FishingSpot.MINNOW && config.showMinnowOverlay())
 			{
 				MinnowSpot minnowSpot = plugin.getMinnowSpots().get(npc.getIndex());
 				if (minnowSpot != null)
@@ -144,7 +146,7 @@ class FishingSpotOverlay extends Overlay
 				}
 			}
 
-			if (plugin.isShowSpotTiles())
+			if (config.showSpotTiles())
 			{
 				Polygon poly = npc.getCanvasTilePoly();
 
@@ -154,7 +156,7 @@ class FishingSpotOverlay extends Overlay
 				}
 			}
 
-			if (plugin.isShowSpotIcons())
+			if (config.showSpotIcons())
 			{
 				BufferedImage fishImage = itemManager.getImage(spot.getFishSpriteId());
 
@@ -174,7 +176,7 @@ class FishingSpotOverlay extends Overlay
 				}
 			}
 
-			if (plugin.isShowSpotNames())
+			if (config.showSpotNames())
 			{
 				String text = spot.getName();
 				Point textLocation = npc.getCanvasTextLocation(graphics, text, npc.getLogicalHeight() + 40);

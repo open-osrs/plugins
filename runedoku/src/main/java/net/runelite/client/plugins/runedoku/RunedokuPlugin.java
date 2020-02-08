@@ -25,15 +25,8 @@
 package net.runelite.client.plugins.runedoku;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -45,11 +38,8 @@ import org.pf4j.Extension;
 	name = "Runedoku Solver",
 	description = "Show solutions for current Runedoku puzzle.",
 	tags = {"overlay", "runedoku", "sudoku", "puzzle", "solving"},
-	type = PluginType.UTILITY
+	type = PluginType.MINIGAME
 )
-
-@Slf4j
-@Singleton
 public class RunedokuPlugin extends Plugin
 {
 	@Inject
@@ -57,30 +47,6 @@ public class RunedokuPlugin extends Plugin
 
 	@Inject
 	private RunedokuOverlay runedokuOverlay;
-
-	@Inject
-	private RunedokuConfig config;
-
-	@Getter(AccessLevel.PACKAGE)
-	private Color mindRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color fireRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color bodyRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color airRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color deathRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color waterRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color chaosRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color earthRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private Color lawRuneColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean onlyHighlightSelectedPiece;
 
 	@Provides
 	RunedokuConfig provideConfig(ConfigManager configManager)
@@ -91,8 +57,6 @@ public class RunedokuPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(runedokuOverlay);
 	}
 
@@ -100,30 +64,5 @@ public class RunedokuPlugin extends Plugin
 	protected void shutDown()
 	{
 		overlayManager.remove(runedokuOverlay);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("runedoku"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.mindRuneColor = config.mindRuneColor();
-		this.fireRuneColor = config.fireRuneColor();
-		this.bodyRuneColor = config.bodyRuneColor();
-		this.airRuneColor = config.airRuneColor();
-		this.deathRuneColor = config.deathRuneColor();
-		this.waterRuneColor = config.waterRuneColor();
-		this.chaosRuneColor = config.chaosRuneColor();
-		this.earthRuneColor = config.earthRuneColor();
-		this.lawRuneColor = config.lawRuneColor();
-		this.onlyHighlightSelectedPiece = config.onlyHighlightSelectedPiece();
 	}
 }

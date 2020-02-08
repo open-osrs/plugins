@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.inject.Inject;
 import lombok.Getter;
+import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -43,6 +44,12 @@ public class CustomClientResizingPlugin extends Plugin
 
 	@Getter
 	private final List<CustomClientResizingProfile> customclientresizingProfiles = new ArrayList<>();
+
+	@Inject
+	private Client client;
+
+	@Inject
+	private CustomClientResizingConfig config;
 
 	@Inject
 	private ClientToolbar clientToolbar;
@@ -86,7 +93,8 @@ public class CustomClientResizingPlugin extends Plugin
 			.icon(icon)
 			.onClick(() ->
 			{
-				ContainableFrame frame = ClientUI.getFrame();
+				ContainableFrame frame = clientUi.getFrame();
+
 
 				CustomClientResizingProfile active = customclientresizingProfiles.stream().filter(CustomClientResizingProfile::isVisible).findFirst().orElse(null);
 				if (active == null)
@@ -99,9 +107,9 @@ public class CustomClientResizingPlugin extends Plugin
 				);
 				if (!clientUi.isSidebarOpen())
 				{
-					bounds.width -= ClientUI.getPluginToolbar().getWidth();
+					bounds.width -= clientUi.getPluginToolbar().getWidth();
 				}
-				if (ClientUI.getPluginPanel() == null)
+				if (clientUi.getPluginPanel() == null)
 				{
 					bounds.width -= pluginPanel.getWrappedPanel().getPreferredSize().width;
 				}
@@ -132,6 +140,8 @@ public class CustomClientResizingPlugin extends Plugin
 		{
 			loadConfig(event.getNewValue()).forEach(customclientresizingProfiles::add);
 		}
+
+
 	}
 
 	public void updateConfig()
@@ -165,7 +175,7 @@ public class CustomClientResizingPlugin extends Plugin
 
 	public void addProfile()
 	{
-		ContainableFrame frame = ClientUI.getFrame();
+		ContainableFrame frame = clientUi.getFrame();
 		CustomClientResizingProfile profile = new CustomClientResizingProfile(
 			Instant.now().toEpochMilli(),
 			"Profile " + (customclientresizingProfiles.size() + 1),

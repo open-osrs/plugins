@@ -24,6 +24,7 @@ import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ProjectileMoved;
 import net.runelite.client.plugins.theatre.RoomHandler;
+import net.runelite.client.plugins.theatre.TheatreConfig;
 import net.runelite.client.plugins.theatre.TheatreConstant;
 import net.runelite.client.plugins.theatre.TheatrePlugin;
 import net.runelite.client.plugins.theatre.TheatreRoom;
@@ -45,9 +46,9 @@ public class VerzikHandler extends RoomHandler
 	private boolean tornados;
 	private long startTime = 0;
 
-	public VerzikHandler(final Client client, final TheatrePlugin plugin)
+	public VerzikHandler(final Client client, final TheatrePlugin plugin, final TheatreConfig config)
 	{
-		super(client, plugin);
+		super(client, plugin, config);
 	}
 
 	@Override
@@ -90,19 +91,19 @@ public class VerzikHandler extends RoomHandler
 		}
 
 		int id = npc.getId();
-		if (plugin.isVerzikRangeAttacks())
+		if (config.verzikRangeAttacks())
 		{
 			for (WorldPoint p : getVerzik_RangeProjectiles().values())
 			{
 				drawTile(graphics, p, Color.RED, 2, 180, 50);
 			}
 		}
-		if (plugin.isShowVerzikAttacks())
+		if (config.showVerzikAttacks())
 		{
 
 			if (id == TheatreConstant.VERZIK_ID_P1)
 			{
-				if (plugin.isP1attacks() && this.versikCounter >= 0)
+				if (config.p1attacks() && this.versikCounter >= 0)
 				{
 					String str = Integer.toString(versikCounter);
 
@@ -114,7 +115,7 @@ public class VerzikHandler extends RoomHandler
 			}
 			else if (id == TheatreConstant.VERZIK_ID_P2)
 			{
-				if (plugin.isP2attacks() && this.versikCounter >= 0)
+				if (config.p2attacks() && this.versikCounter >= 0)
 				{
 					String str = Integer.toString(versikCounter);
 
@@ -125,7 +126,7 @@ public class VerzikHandler extends RoomHandler
 				}
 			}
 
-			else if (id == TheatreConstant.VERZIK_ID_P3 && plugin.isP3attacks() && versikCounter > 0 && versikCounter < 8)
+			else if (id == TheatreConstant.VERZIK_ID_P3 && config.p3attacks() && versikCounter > 0 && versikCounter < 8)
 			{
 				String str = Math.max(versikCounter, 0) + "";// + " | " + model.getModelHeight();// + " | " + model.getRadius();
 
@@ -136,7 +137,7 @@ public class VerzikHandler extends RoomHandler
 			}
 		}
 
-		if (plugin.isVerzikTankTile() && id == TheatreConstant.VERZIK_ID_P3)
+		if (config.VerzikTankTile() && id == TheatreConstant.VERZIK_ID_P3)
 		{
 			WorldPoint wp = new WorldPoint(npc.getWorldLocation().getX() + 3, npc.getWorldLocation().getY() + 3, client.getPlane());
 			drawTile2(graphics, wp, new Color(75, 0, 130), 2, 255, 0);
@@ -144,7 +145,7 @@ public class VerzikHandler extends RoomHandler
 		}
 
 
-		if (plugin.isShowVerzikYellows() && this.yellows > 0)
+		if (config.showVerzikYellows() && this.yellows > 0)
 		{
 			String text = Integer.toString(this.yellows);
 
@@ -160,7 +161,7 @@ public class VerzikHandler extends RoomHandler
 			}
 		}
 
-		if (plugin.isShowCrabTargets())
+		if (config.showCrabTargets())
 		{
 			Player local = client.getLocalPlayer();
 			if (local != null && local.getName() != null)
@@ -369,7 +370,7 @@ public class VerzikHandler extends RoomHandler
 
 				long minutes = seconds / 60L;
 				seconds = seconds % 60;
-				if (plugin.isExtraTimers())
+				if (config.extraTimers())
 				{
 					this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'The Final Challenge - Part 1' completed! Duration: <col=ff0000>" + minutes + ":" + twoDigitString(seconds), null);
 				}
@@ -384,7 +385,7 @@ public class VerzikHandler extends RoomHandler
 
 				this.versikCounter = -1;
 				this.attacksLeft = 9;
-				if (plugin.isExtraTimers())
+				if (config.extraTimers())
 				{
 					this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Wave 'The Final Challenge - Part 2' completed! Duration: <col=ff0000>" + minutes + ":" + twoDigitString(seconds), null);
 				}

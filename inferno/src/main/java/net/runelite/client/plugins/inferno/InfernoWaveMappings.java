@@ -147,7 +147,7 @@ class InfernoWaveMappings
 		npcNameMappingComplex = nameMapBuilderComplex.build();
 	}
 
-	static void addWaveComponent(InfernoPlugin plugin, PanelComponent panelComponent, String header, int wave, Color titleColor, Color color)
+	static void addWaveComponent(InfernoConfig config, PanelComponent panelComponent, String header, int wave, Color titleColor, Color color)
 	{
 		int[] monsters = waveMapping.get(wave);
 
@@ -178,7 +178,7 @@ class InfernoWaveMappings
 
 			String npcNameText = "";
 
-			if (plugin.getNpcNaming() == InfernoNamingDisplayMode.SIMPLE)
+			if (config.npcNaming() == InfernoNamingDisplayMode.SIMPLE)
 			{
 				npcNameText += npcNameMappingSimple.get(monsterType);
 			}
@@ -187,7 +187,7 @@ class InfernoWaveMappings
 				npcNameText += npcNameMappingComplex.get(monsterType);
 			}
 
-			if (plugin.isNpcLevels())
+			if (config.npcLevels())
 			{
 				npcNameText += " (" + monsterType + ")";
 			}

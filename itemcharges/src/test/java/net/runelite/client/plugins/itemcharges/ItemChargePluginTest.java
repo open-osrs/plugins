@@ -135,6 +135,7 @@ public class ItemChargePluginTest
 		verify(config).ringOfForging(eq(140));
 		reset(config);
 
+		when(config.ringOfForging()).thenReturn(90);
 		// Create equipment inventory with ring of forging
 		ItemContainer equipmentItemContainer = mock(ItemContainer.class);
 		when(client.getItemContainer(eq(InventoryID.EQUIPMENT))).thenReturn(equipmentItemContainer);
@@ -145,7 +146,7 @@ public class ItemChargePluginTest
 		// Run message
 		chatMessage = new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", USED_RING_OF_FORGING, "", 0);
 		itemChargePlugin.onChatMessage(chatMessage);
-		verify(config).ringOfForging(eq(139));
+		verify(config).ringOfForging(eq(89));
 		reset(config);
 
 		chatMessage = new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", BREAK_RING_OF_FORGING, "", 0);

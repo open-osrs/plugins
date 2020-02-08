@@ -115,16 +115,6 @@ public class CannonPlugin extends Plugin
 	private ClientThread clientThread;
 
 	private boolean lock;
-	private boolean showEmptyCannonNotification;
-	private boolean showInfobox;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showDoubleHitSpot;
-	@Getter(AccessLevel.PACKAGE)
-	private Color highlightDoubleHitColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showCannonSpots;
-	private int ammoAmount;
-	private boolean notifyAmmoLeft;
 
 	@Provides
 	CannonConfig provideConfig(ConfigManager configManager)
@@ -135,8 +125,6 @@ public class CannonPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(cannonOverlay);
 		overlayManager.add(cannonSpotOverlay);
 		lock = false;
@@ -172,9 +160,7 @@ public class CannonPlugin extends Plugin
 	{
 		if (event.getGroup().equals("cannon"))
 		{
-			updateConfig();
-
-			if (!this.showInfobox)
+			if (!config.showInfobox())
 			{
 				removeCounter();
 			}
@@ -256,9 +242,9 @@ public class CannonPlugin extends Plugin
 		{
 			return Color.orange;
 		}
-		else if (cballsLeft <= this.ammoAmount && this.notifyAmmoLeft && !lock)
+		else if (cballsLeft <= config.ammoAmount() && config.notifyAmmoLeft() && !lock)
 		{
-			notifier.notify("Your cannon has " + this.ammoAmount + " balls left!");
+			notifier.notify("Your cannon has " + config.ammoAmount() + " balls left!");
 			lock = true;
 		}
 
@@ -267,7 +253,7 @@ public class CannonPlugin extends Plugin
 
 	private void addCounter()
 	{
-		if (!this.showInfobox || counter != null)
+		if (!config.showInfobox() || counter != null)
 		{
 			return;
 		}
@@ -287,16 +273,5 @@ public class CannonPlugin extends Plugin
 
 		infoBoxManager.removeInfoBox(counter);
 		counter = null;
-	}
-
-	private void updateConfig()
-	{
-		this.showEmptyCannonNotification = config.showEmptyCannonNotification();
-		this.showInfobox = config.showInfobox();
-		this.showDoubleHitSpot = config.showDoubleHitSpot();
-		this.highlightDoubleHitColor = config.highlightDoubleHitColor();
-		this.showCannonSpots = config.showCannonSpots();
-		this.ammoAmount = config.ammoAmount();
-		this.notifyAmmoLeft = config.notifyAmmoLeft();
 	}
 }

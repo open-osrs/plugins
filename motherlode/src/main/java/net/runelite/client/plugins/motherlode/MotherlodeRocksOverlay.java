@@ -56,6 +56,7 @@ class MotherlodeRocksOverlay extends Overlay
 
 	private final Client client;
 	private final MotherlodePlugin plugin;
+	private final MotherlodeConfig config;
 
 	private final BufferedImage miningIcon;
 	private final BufferedImage targetMiningIcon;
@@ -63,12 +64,13 @@ class MotherlodeRocksOverlay extends Overlay
 	private static final Color miningIconNewColor = new Color(0, 150, 0);
 
 	@Inject
-	MotherlodeRocksOverlay(final Client client, final MotherlodePlugin plugin, final SkillIconManager iconManager)
+	MotherlodeRocksOverlay(final Client client, final MotherlodePlugin plugin, final MotherlodeConfig config, final SkillIconManager iconManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 
 		miningIcon = iconManager.getSkillImage(Skill.MINING);
 		targetMiningIcon = ImageUtil.recolorImage(miningIcon, miningIconNewColor, Color -> Color.getRGB() == miningIconOldColor.getRGB());
@@ -77,7 +79,7 @@ class MotherlodeRocksOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if ((!plugin.isShowVeins() && !plugin.isShowRockFalls()) || !plugin.isInMlm())
+		if ((!config.showVeins() && !config.showRockFalls()) || !plugin.isInMlm())
 		{
 			return null;
 		}
@@ -92,7 +94,7 @@ class MotherlodeRocksOverlay extends Overlay
 	private void renderTiles(Graphics2D graphics, Player local)
 	{
 		LocalPoint localLocation = local.getLocalLocation();
-		if (plugin.isShowVeins())
+		if (config.showVeins())
 		{
 			for (WallObject vein : plugin.getVeins())
 			{
@@ -101,7 +103,7 @@ class MotherlodeRocksOverlay extends Overlay
 				{
 					if (WorldPoint.fromLocal(client, location).equals(plugin.getTargetVeinLocation())
 						&& plugin.isMining()
-						&& plugin.isShowTargetVein())
+						&& config.showTargetVein())
 					{
 						renderVein(graphics, vein, true);
 					}
@@ -113,7 +115,7 @@ class MotherlodeRocksOverlay extends Overlay
 			}
 		}
 
-		if (plugin.isShowRockFalls())
+		if (config.showRockFalls())
 		{
 			for (GameObject rock : plugin.getRocks())
 			{

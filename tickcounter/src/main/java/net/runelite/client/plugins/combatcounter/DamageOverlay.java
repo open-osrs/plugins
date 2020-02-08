@@ -49,11 +49,12 @@ class DamageOverlay extends Overlay
 	private final Client client;
 
 	private final CombatCounter plugin;
+	private final CombatCounterConfig config;
 
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	public DamageOverlay(final Client client, final CombatCounter plugin)
+	public DamageOverlay(final Client client, final CombatCounter plugin, final CombatCounterConfig config)
 	{
 		super(plugin);
 
@@ -63,6 +64,7 @@ class DamageOverlay extends Overlay
 
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Damage Counter Overlay"));
 	}
@@ -70,7 +72,7 @@ class DamageOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isShowDamageCounter())
+		if (config.showDamageCounter())
 		{
 			panelComponent.getChildren().clear();
 
@@ -79,8 +81,8 @@ class DamageOverlay extends Overlay
 			{
 				return null;
 			}
-			panelComponent.setBackgroundColor(plugin.getBgColor());
-			panelComponent.getChildren().add(TitleComponent.builder().text("Damage Counter").color(plugin.getTitleColor()).build());
+			panelComponent.setBackgroundColor(config.bgColor());
+			panelComponent.getChildren().add(TitleComponent.builder().text("Damage Counter").color(config.titleColor()).build());
 
 			TableComponent tableComponent = new TableComponent();
 			tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
@@ -102,17 +104,17 @@ class DamageOverlay extends Overlay
 					String val = String.format("%.1f", damage.getValue());
 					if (client.getLocalPlayer().getName().contains(damage.getKey()))
 					{
-						tableComponent.addRow(ColorUtil.prependColorTag(damage.getKey(), plugin.getSelfColor()), ColorUtil.prependColorTag(val, plugin.getSelfColor()));
+						tableComponent.addRow(ColorUtil.prependColorTag(damage.getKey(), config.selfColor()), ColorUtil.prependColorTag(val, config.selfColor()));
 					}
 					else
 					{
-						tableComponent.addRow(ColorUtil.prependColorTag(damage.getKey(), plugin.getOtherColor()), ColorUtil.prependColorTag(val, plugin.getOtherColor()));
+						tableComponent.addRow(ColorUtil.prependColorTag(damage.getKey(), config.otherColor()), ColorUtil.prependColorTag(val, config.otherColor()));
 					}
 				}
 
 				if (!map.containsKey(local.getName()))
 				{
-					tableComponent.addRow(ColorUtil.prependColorTag(local.getName(), plugin.getSelfColor()), ColorUtil.prependColorTag("0", plugin.getSelfColor()));
+					tableComponent.addRow(ColorUtil.prependColorTag(local.getName(), config.selfColor()), ColorUtil.prependColorTag("0", config.selfColor()));
 				}
 			}
 

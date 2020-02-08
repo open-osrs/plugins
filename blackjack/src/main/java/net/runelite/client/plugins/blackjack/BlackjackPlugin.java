@@ -28,8 +28,6 @@ package net.runelite.client.plugins.blackjack;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -41,7 +39,6 @@ import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.menus.AbstractComparableEntry;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
@@ -61,8 +58,6 @@ import org.pf4j.Extension;
 	tags = {"blackjack", "thieving"},
 	type = PluginType.SKILLING
 )
-@Singleton
-@Slf4j
 public class BlackjackPlugin extends Plugin
 {
 	private static final int POLLNIVNEACH_REGION = 13358;
@@ -92,8 +87,6 @@ public class BlackjackPlugin extends Plugin
 	@Inject
 	private MenuManager menuManager;
 
-	private boolean pickpocketOnAggro;
-	private boolean random;
 	private long nextKnockOutTick = 0;
 
 	@Provides
@@ -107,7 +100,6 @@ public class BlackjackPlugin extends Plugin
 	{
 		menuManager.addPriorityEntry(KNOCKOUT_BANDIT);
 		menuManager.addPriorityEntry(KNOCKOUT_MENAPHITE);
-		this.pickpocketOnAggro = config.pickpocketOnAggro();
 	}
 
 	@Override
@@ -133,16 +125,6 @@ public class BlackjackPlugin extends Plugin
 		eventBus.subscribe(ChatMessage.class, "poll", this::onChatMessage);
 	}
 
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("blackjack"))
-		{
-			this.pickpocketOnAggro = config.pickpocketOnAggro();
-			this.random = config.random();
-		}
-	}
-
 	private void onGameTick(GameTick event)
 	{
 		if (client.getTickCount() >= nextKnockOutTick)
@@ -158,13 +140,13 @@ public class BlackjackPlugin extends Plugin
 	{
 		final String msg = event.getMessage();
 
-		if (event.getType() == ChatMessageType.SPAM && (msg.equals(SUCCESS_BLACKJACK) || (msg.equals(FAILED_BLACKJACK) && this.pickpocketOnAggro)))
+		if (event.getType() == ChatMessageType.SPAM && (msg.equals(SUCCESS_BLACKJACK) || (msg.equals(FAILED_BLACKJACK) && config.pickpocketOnAggro())))
 		{
 			menuManager.removePriorityEntry(KNOCKOUT_BANDIT);
 			menuManager.removePriorityEntry(KNOCKOUT_MENAPHITE);
 			menuManager.addPriorityEntry(PICKPOCKET_BANDIT);
 			menuManager.addPriorityEntry(PICKPOCKET_MENAPHITE);
-			final int ticks = this.random ? RandomUtils.nextInt(3, 4) : 4;
+			final int ticks = config.random() ? RandomUtils.nextInt(3, 4) : 4;
 			nextKnockOutTick = client.getTickCount() + ticks;
 		}
 	}

@@ -45,13 +45,16 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 public class TimersOverlay extends Overlay
 {
 	private final TickTimersPlugin plugin;
+	private final TickTimersConfig config;
 	private final Client client;
 
 	@Inject
-	TimersOverlay(final TickTimersPlugin plugin, final Client client)
+	TimersOverlay(final TickTimersPlugin plugin, final TickTimersConfig config, final Client client)
 	{
 		this.plugin = plugin;
+		this.config = config;
 		this.client = client;
+
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.HIGHEST);
 		setLayer(OverlayLayer.ALWAYS_ON_TOP);
@@ -71,7 +74,7 @@ public class TimersOverlay extends Overlay
 			final List<WorldPoint> hitSquares = OverlayUtil.getHitSquares(npc.getNpc().getWorldLocation(), npc.getNpcSize(), 1, false);
 			final NPCContainer.AttackStyle attackStyle = npc.getAttackStyle();
 
-			if (plugin.isShowHitSquares() && attackStyle.getName().equals("Melee"))
+			if (config.showHitSquares() && attackStyle.getName().equals("Melee"))
 			{
 				for (WorldPoint p : hitSquares)
 				{
@@ -85,26 +88,26 @@ public class TimersOverlay extends Overlay
 			}
 
 			final String ticksLeftStr = String.valueOf(ticksLeft);
-			final int font = plugin.getFontStyle().getFont();
-			final boolean shadows = plugin.isShadows();
+			final int font = config.fontStyle().getFont();
+			final boolean shadows = config.shadows();
 			Color color = (ticksLeft <= 1 ? Color.WHITE : attackStyle.getColor());
 
-			if (!plugin.isChangeTickColor())
+			if (!config.changeTickColor())
 			{
 				color = attackStyle.getColor();
 			}
 
 			final Point canvasPoint = npc.getNpc().getCanvasTextLocation(graphics, Integer.toString(ticksLeft), 0);
 
-			OverlayUtil.renderTextLocation(graphics, ticksLeftStr, plugin.getTextSize(), font, color, canvasPoint, shadows, 0);
+			OverlayUtil.renderTextLocation(graphics, ticksLeftStr, config.textSize(), font, color, canvasPoint, shadows, 0);
 
-			if (plugin.isShowPrayerWidgetHelper() && attackStyle.getPrayer() != null)
+			if (config.showPrayerWidgetHelper() && attackStyle.getPrayer() != null)
 			{
 				Rectangle bounds = OverlayUtil.renderPrayerOverlay(graphics, client, attackStyle.getPrayer(), color);
 
 				if (bounds != null)
 				{
-					renderTextLocation(graphics, ticksLeftStr, 16, plugin.getFontStyle().getFont(), color, centerPoint(bounds), shadows);
+					renderTextLocation(graphics, ticksLeftStr, 16, config.fontStyle().getFont(), color, centerPoint(bounds), shadows);
 				}
 			}
 		}

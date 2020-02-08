@@ -35,7 +35,6 @@ import java.awt.Stroke;
 import java.awt.geom.Arc2D;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
@@ -46,7 +45,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.tooltip.Tooltip;
 import net.runelite.client.ui.overlay.tooltip.TooltipManager;
-import net.runelite.client.util.Graceful;
 import org.apache.commons.lang3.StringUtils;
 
 public class StatusOrbsOverlay extends Overlay
@@ -60,6 +58,7 @@ public class StatusOrbsOverlay extends Overlay
 
 	private final Client client;
 	private final StatusOrbsPlugin plugin;
+	private final StatusOrbsConfig config;
 	private final TooltipManager tooltipManager;
 
 	private long last = System.nanoTime();
@@ -78,12 +77,13 @@ public class StatusOrbsOverlay extends Overlay
 	}
 
 	@Inject
-	public StatusOrbsOverlay(Client client, StatusOrbsPlugin plugin, TooltipManager tooltipManager)
+	public StatusOrbsOverlay(Client client, StatusOrbsPlugin plugin, StatusOrbsConfig config, TooltipManager tooltipManager)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		this.tooltipManager = tooltipManager;
 	}
 
@@ -95,7 +95,7 @@ public class StatusOrbsOverlay extends Overlay
 		long current = System.nanoTime();
 		double ms = (current - last) / (double) 1000000;
 
-		if (plugin.isShowHitpoints())
+		if (config.showHitpoints())
 		{
 			if (lastHp == plugin.getHitpointsPercentage() && plugin.getHitpointsPercentage() != 0)
 			{
@@ -109,7 +109,7 @@ public class StatusOrbsOverlay extends Overlay
 			renderRegen(g, WidgetInfo.MINIMAP_HEALTH_ORB, percentHp, HITPOINTS_COLOR);
 		}
 
-		if (plugin.isShowSpecial())
+		if (config.showSpecial())
 		{
 			if (client.getVar(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1)
 			{
@@ -160,7 +160,7 @@ public class StatusOrbsOverlay extends Overlay
 			StringBuilder sb = new StringBuilder();
 			sb.append("Weight: ").append(client.getWeight()).append(" kg</br>");
 
-			if (plugin.isReplaceOrbText())
+			if (config.replaceOrbText())
 			{
 				sb.append("Run Energy: ").append(client.getEnergy()).append("%");
 			}
@@ -181,16 +181,13 @@ public class StatusOrbsOverlay extends Overlay
 			tooltipManager.add(new Tooltip(sb.toString()));
 		}
 
-		if (plugin.isShowRun())
+		if (config.showRun())
 		{
 			if (lastRun == plugin.getRunPercentage() && plugin.getRunPercentage() != 0)
 			{
 				double recoverRate = (48 + client.getBoostedSkillLevel(Skill.AGILITY)) / 360000.0;
 
-				if (Graceful.hasFullSet(client.getItemContainer(InventoryID.EQUIPMENT)))
-				{
-					recoverRate *= 1.3; // 30% recover rate increase from Graceful set effect
-				}
+				recoverRate *= plugin.getRecoverRate();
 
 				percentRun += ms * recoverRate;
 			}

@@ -24,37 +24,46 @@
  */
 package net.runelite.client.plugins.raids.solver;
 
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import net.runelite.client.plugins.raids.RaidRoom;
-import net.runelite.client.plugins.raids.RaidRoom.Boss;
+import static net.runelite.client.plugins.raids.RaidRoom.GUARDIANS;
+import static net.runelite.client.plugins.raids.RaidRoom.MUTTADILES;
+import static net.runelite.client.plugins.raids.RaidRoom.MYSTICS;
+import static net.runelite.client.plugins.raids.RaidRoom.SHAMANS;
+import static net.runelite.client.plugins.raids.RaidRoom.TEKTON;
+import static net.runelite.client.plugins.raids.RaidRoom.UNKNOWN_COMBAT;
+import static net.runelite.client.plugins.raids.RaidRoom.VANGUARDS;
+import static net.runelite.client.plugins.raids.RaidRoom.VASA;
+import static net.runelite.client.plugins.raids.RaidRoom.VESPULA;
+import net.runelite.client.plugins.raids.RoomType;
 
 public class RotationSolver
 {
-	private static final Rotation[] ROTATIONS =
-		{
-			new Rotation<>(Arrays.asList(Boss.TEKTON, Boss.VASA, Boss.GUARDIANS, Boss.MYSTICS, Boss.SHAMANS, Boss.MUTTADILES, Boss.VANGUARDS, Boss.VESPULA)),
-			new Rotation<>(Arrays.asList(Boss.TEKTON, Boss.MUTTADILES, Boss.GUARDIANS, Boss.VESPULA, Boss.SHAMANS, Boss.VASA, Boss.VANGUARDS, Boss.MYSTICS)),
-			new Rotation<>(Arrays.asList(Boss.VESPULA, Boss.VANGUARDS, Boss.MUTTADILES, Boss.SHAMANS, Boss.MYSTICS, Boss.GUARDIANS, Boss.VASA, Boss.TEKTON)),
-			new Rotation<>(Arrays.asList(Boss.MYSTICS, Boss.VANGUARDS, Boss.VASA, Boss.SHAMANS, Boss.VESPULA, Boss.GUARDIANS, Boss.MUTTADILES, Boss.TEKTON))
-		};
+	private static final ImmutableList<ImmutableList<RaidRoom>> ROTATIONS = ImmutableList.of
+	(
+			ImmutableList.of(TEKTON, VASA, GUARDIANS, MYSTICS, SHAMANS, MUTTADILES, VANGUARDS, VESPULA),
+			ImmutableList.of(TEKTON, MUTTADILES, GUARDIANS, VESPULA, SHAMANS, VASA, VANGUARDS, MYSTICS),
+			ImmutableList.of(VESPULA, VANGUARDS, MUTTADILES, SHAMANS, MYSTICS, GUARDIANS, VASA, TEKTON),
+			ImmutableList.of(MYSTICS, VANGUARDS, VASA, SHAMANS, VESPULA, GUARDIANS, MUTTADILES, TEKTON)
+	);
 
-	public static void solve(RaidRoom[] rooms)
+	public static boolean solve(RaidRoom[] rooms)
 	{
 		if (rooms == null)
 		{
-			return;
+			return false;
 		}
 
-		Rotation match = null;
+		List<ImmutableList<RaidRoom>> matches = new ArrayList<>();
 		Integer start = null;
 		Integer index = null;
 		int known = 0;
 
 		for (int i = 0; i < rooms.length; i++)
 		{
-			if (rooms[i] == null || rooms[i].getBoss() == null || rooms[i].getBoss() == Boss.UNKNOWN)
+			if (rooms[i] == null || rooms[i].getType() != RoomType.COMBAT || rooms[i] == UNKNOWN_COMBAT)
 			{
 				continue;
 			}
@@ -69,81 +78,59 @@ public class RotationSolver
 
 		if (known < 2)
 		{
-			return;
+			return false;
 		}
 
 		if (known == rooms.length)
 		{
-			return;
+			return true;
 		}
 
-		for (Rotation rotation : ROTATIONS)
+		//Iterate over each rotation
+		for (ImmutableList<RaidRoom> rotation : ROTATIONS)
 		{
-			COMPARE:
-			for (int i = 0; i < rotation.size(); i++)
+			//Determine the index of the first known combat room in this rotation
+			int rotationStart = rotation.indexOf(rooms[start]);
+
+			//Iterate over each room (except the starting room) and determine whether or not the rotation still matches
+			int roomStep = 1;
+			boolean doesNotMatch = false;
+			while (roomStep < rooms.length && !doesNotMatch)
 			{
-				if (rooms[start].getBoss() == rotation.get(i))
+				var roomIndex = (start + roomStep) % rooms.length;
+				var rotationRoomIndex = (rotationStart + roomStep) % rotation.size();
+				if (rooms[roomIndex] != UNKNOWN_COMBAT && rooms[roomIndex] != rotation.get(rotationRoomIndex))
 				{
-					for (int j = start + 1; j < rooms.length; j++)
-					{
-						if (rooms[j].getBoss() == null || rooms[j].getBoss() == Boss.UNKNOWN)
-						{
-							continue;
-						}
-
-						if (rooms[j].getBoss() != rotation.get(i + j - start))
-						{
-							break COMPARE;
-						}
-					}
-
-					if (match != null && match.equals(rotation))
-					{
-						return;
-					}
-
-					index = i - start;
-					match = rotation;
+					doesNotMatch = true;
 				}
+
+				++roomStep;
+			}
+
+			if (!doesNotMatch)
+			{
+				//Found a matching rotation!
+				matches.add(rotation);
+				index = rotationStart - start;
 			}
 		}
 
-		if (match == null)
+		if (matches.size() != 1)
 		{
-			return;
+			//Could not find a unique match!
+			return false;
 		}
+
+		List<RaidRoom> match = matches.get(0);
+
 
 		for (int i = 0; i < rooms.length; i++)
 		{
-			if (rooms[i] == null)
+			if (rooms[i].getType() != RoomType.COMBAT || rooms[i] == UNKNOWN_COMBAT)
 			{
-				continue;
-			}
-
-			if (rooms[i].getBoss() == null || rooms[i].getBoss() == Boss.UNKNOWN)
-			{
-				rooms[i].setBoss((Boss) match.get(index + i));
+				rooms[i] = match.get(Math.floorMod((index + i), match.size()));
 			}
 		}
-
-	}
-
-	private static class Rotation<E> extends ArrayList<E>
-	{
-		Rotation(final Collection<? extends E> bosses)
-		{
-			super(bosses);
-		}
-
-		@Override
-		public E get(int index)
-		{
-			if (index < 0)
-			{
-				index = index + size();
-			}
-
-			return super.get(index % size());
-		}
+		return true;
 	}
 }

@@ -44,20 +44,22 @@ class BurnerOverlay extends Overlay
 {
 	private final Client client;
 	private final PohPlugin plugin;
+	private final PohConfig config;
 
 	@Inject
-	private BurnerOverlay(final Client client, final PohPlugin plugin)
+	private BurnerOverlay(final Client client, final PohPlugin plugin, final PohConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isShowBurner())
+		if (!config.showBurner())
 		{
 			return null;
 		}

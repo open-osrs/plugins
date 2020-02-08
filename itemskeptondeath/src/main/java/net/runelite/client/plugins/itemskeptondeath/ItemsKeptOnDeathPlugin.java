@@ -37,7 +37,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -78,7 +77,6 @@ import org.pf4j.Extension;
 	type = PluginType.UTILITY
 )
 @Slf4j
-@Singleton
 public class ItemsKeptOnDeathPlugin extends Plugin
 {
 	private static final int DEEP_WILDY = 20;

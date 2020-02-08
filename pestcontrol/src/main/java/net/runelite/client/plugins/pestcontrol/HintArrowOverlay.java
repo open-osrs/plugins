@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.WorldPoint;
@@ -38,7 +37,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-@Singleton
 public class HintArrowOverlay extends Overlay
 {
 	private final PestControlPlugin plugin;

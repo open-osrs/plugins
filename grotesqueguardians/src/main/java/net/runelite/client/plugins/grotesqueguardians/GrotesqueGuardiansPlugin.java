@@ -27,7 +27,6 @@ package net.runelite.client.plugins.grotesqueguardians;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import static net.runelite.api.NpcID.DUSK_7888;
@@ -46,7 +45,6 @@ import org.pf4j.Extension;
 	tags = {"bosses", "combat", "gargs", "overlay", "grotesque", "pve", "pvm"},
 	type = PluginType.PVM
 )
-@Singleton
 public class GrotesqueGuardiansPlugin extends Plugin
 {
 	private static final int GARGOYLES_REGION = 6727;
@@ -81,7 +79,6 @@ public class GrotesqueGuardiansPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
 		overlayManager.add(overlay);
 		overlayManager.add(prayerOverlay);
 		dusk = null;

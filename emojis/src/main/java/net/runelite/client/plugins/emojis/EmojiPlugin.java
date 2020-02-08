@@ -30,7 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import joptsimple.internal.Strings;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -56,7 +55,6 @@ import org.pf4j.Extension;
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
-@Singleton
 public class EmojiPlugin extends Plugin
 {
 	private static final Pattern TAG_REGEXP = Pattern.compile("<[^>]*>");

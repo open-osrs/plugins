@@ -31,7 +31,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
@@ -44,7 +43,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 
-@Singleton
 public class MultiIndicatorsMinimapOverlay extends Overlay
 {
 	private final static int MAX_LOCAL_DRAW_LENGTH = 20 * Perspective.LOCAL_TILE_SIZE;
@@ -54,6 +52,9 @@ public class MultiIndicatorsMinimapOverlay extends Overlay
 
 	@Inject
 	private MultiIndicatorsPlugin plugin;
+
+	@Inject
+	private MultiIndicatorsConfig config;
 
 	@Inject
 	public MultiIndicatorsMinimapOverlay()
@@ -104,7 +105,7 @@ public class MultiIndicatorsMinimapOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isShowMinimapLines())
+		if (!config.showMinimapLines())
 		{
 			return null;
 		}
@@ -132,17 +133,17 @@ public class MultiIndicatorsMinimapOverlay extends Overlay
 		final GeneralPath pvpPath = plugin.getPvpPathToDisplay()[client.getPlane()];
 		final GeneralPath wildernessLevelLinesPath = plugin.getWildernessLevelLinesPathToDisplay()[client.getPlane()];
 
-		if (plugin.getMulticombatZoneVisibility() != ZoneVisibility.HIDE && multicombatPath != null)
+		if (config.multicombatZoneVisibility() != ZoneVisibility.HIDE && multicombatPath != null)
 		{
-			renderPath(graphics, multicombatPath, getTransparentColorVersion(plugin.getMulticombatColor()));
+			renderPath(graphics, multicombatPath, getTransparentColorVersion(config.multicombatColor()));
 		}
-		if ((plugin.isShowPvpSafeZones() || plugin.isShowDeadmanSafeZones()) && pvpPath != null)
+		if ((config.showPvpSafeZones() || config.showDeadmanSafeZones()) && pvpPath != null)
 		{
-			renderPath(graphics, pvpPath, getTransparentColorVersion(plugin.getSafeZoneColor()));
+			renderPath(graphics, pvpPath, getTransparentColorVersion(config.safeZoneColor()));
 		}
-		if (plugin.isShowWildernessLevelLines() && wildernessLevelLinesPath != null)
+		if (config.showWildernessLevelLines() && wildernessLevelLinesPath != null)
 		{
-			renderPath(graphics, wildernessLevelLinesPath, getTransparentColorVersion(plugin.getWildernessLevelLinesColor()));
+			renderPath(graphics, wildernessLevelLinesPath, getTransparentColorVersion(config.wildernessLevelLinesColor()));
 		}
 
 		return null;

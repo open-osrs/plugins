@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Actor;
@@ -42,7 +41,6 @@ import net.runelite.api.NPCDefinition;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -60,27 +58,33 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Status Bars",
-	description = "Draws HP/Pray/Stamina/Spec status bars next to inventory",
+	description = "Draws status bars next to players inventory showing currentValue and restore amounts",
 	type = PluginType.UTILITY
 )
-@Singleton
 @PluginDependency(ItemStatPlugin.class)
 public class StatusBarsPlugin extends Plugin
 {
-	@Getter
-	private final Map<BarMode, BarRenderer> barRenderers = Maps.newEnumMap(BarMode.class);
 	@Inject
 	private StatusBarsOverlay overlay;
+
 	@Inject
 	private OverlayManager overlayManager;
+
 	@Inject
 	private HitPointsRenderer hitPointsRenderer;
+
 	@Inject
 	private PrayerRenderer prayerRenderer;
+
 	@Inject
 	private EnergyRenderer energyRenderer;
+
 	@Inject
 	private SpecialAttackRenderer specialAttackRenderer;
+
+	@Getter(AccessLevel.PACKAGE)
+	private final Map<BarMode, BarRenderer> barRenderers = Maps.newEnumMap(BarMode.class);
+
 	@Inject
 	private Client client;
 
@@ -90,37 +94,15 @@ public class StatusBarsPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private Instant lastCombatAction;
 
-	@Getter(AccessLevel.PUBLIC)
-	private boolean enableCounter;
-	@Getter(AccessLevel.PUBLIC)
-	private boolean enableSkillIcon;
-	@Getter(AccessLevel.PUBLIC)
-	private boolean enableRestorationBars;
-	@Getter(AccessLevel.PACKAGE)
-	private BarMode leftBarMode;
-	@Getter(AccessLevel.PACKAGE)
-	private BarMode rightBarMode;
-	private boolean toggleRestorationBars;
-	private int hideStatusBarDelay;
-
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 		barRenderers.put(BarMode.DISABLED, null);
 		barRenderers.put(BarMode.HITPOINTS, hitPointsRenderer);
 		barRenderers.put(BarMode.PRAYER, prayerRenderer);
 		barRenderers.put(BarMode.RUN_ENERGY, energyRenderer);
 		barRenderers.put(BarMode.SPECIAL_ATTACK, specialAttackRenderer);
-	}
-
-	@Override
-	protected void shutDown() throws Exception
-	{
-		overlayManager.remove(overlay);
-		barRenderers.clear();
 	}
 
 	private void updateLastCombatAction()
@@ -131,7 +113,7 @@ public class StatusBarsPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick gameTick)
 	{
-		if (!this.toggleRestorationBars)
+		if (!config.toggleRestorationBars())
 		{
 			overlayManager.add(overlay);
 		}
@@ -145,50 +127,35 @@ public class StatusBarsPlugin extends Plugin
 	{
 		final Actor interacting = client.getLocalPlayer().getInteracting();
 		final boolean isNpc = interacting instanceof NPC;
-		final int combatTimeout = this.hideStatusBarDelay;
+		final int combatTimeout = config.hideStatusBarDelay();
 
 		if (isNpc)
 		{
 			final NPC npc = (NPC) interacting;
 			final NPCDefinition npcComposition = npc.getDefinition();
 			final List<String> npcMenuActions = Arrays.asList(npcComposition.getActions());
-			if (npcMenuActions.contains("Attack") && this.toggleRestorationBars)
+			if (npcMenuActions.contains("Attack") && config.toggleRestorationBars())
 			{
 				updateLastCombatAction();
 				overlayManager.add(overlay);
 			}
 		}
-		else if (lastCombatAction != null && Duration.between(getLastCombatAction(), Instant.now()).getSeconds() > combatTimeout)
+		else if (lastCombatAction == null || Duration.between(getLastCombatAction(), Instant.now()).getSeconds() > combatTimeout)
 		{
 			overlayManager.remove(overlay);
 		}
+	}
+
+	@Override
+	protected void shutDown()
+	{
+		overlayManager.remove(overlay);
+		barRenderers.clear();
 	}
 
 	@Provides
 	StatusBarsConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(StatusBarsConfig.class);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!"statusbars".equals(event.getGroup()))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.enableCounter = config.enableCounter();
-		this.enableSkillIcon = config.enableSkillIcon();
-		this.enableRestorationBars = config.enableRestorationBars();
-		this.leftBarMode = config.leftBarMode();
-		this.rightBarMode = config.rightBarMode();
-		this.toggleRestorationBars = config.toggleRestorationBars();
-		this.hideStatusBarDelay = config.hideStatusBarDelay();
 	}
 }

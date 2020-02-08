@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
@@ -50,9 +49,8 @@ import org.pf4j.Extension;
 	name = "Team Capes",
 	description = "Show the different team capes in your area and the amount of each",
 	tags = {"overlay", "players"},
-	type = PluginType.PVP
+	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class TeamCapesPlugin extends Plugin
 {
 	@Inject

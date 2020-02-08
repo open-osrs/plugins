@@ -85,6 +85,7 @@ public class GroundItemsOverlay extends Overlay
 
 	private final Client client;
 	private final GroundItemsPlugin plugin;
+	private final GroundItemsConfig config;
 	private final StringBuilder itemStringBuilder = new StringBuilder();
 	private final BackgroundComponent backgroundComponent = new BackgroundComponent();
 	private final TextComponent textComponent = new TextComponent();
@@ -92,20 +93,21 @@ public class GroundItemsOverlay extends Overlay
 	private final Map<WorldPoint, Integer> offsetMap = new HashMap<>();
 
 	@Inject
-	private GroundItemsOverlay(final Client client, final GroundItemsPlugin plugin)
+	private GroundItemsOverlay(final Client client, final GroundItemsPlugin plugin, final GroundItemsConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		final boolean dontShowOverlay = (plugin.getItemHighlightMode() == MENU || plugin.isHideAll()) && !plugin.isHotKeyPressed();
+		final boolean dontShowOverlay = (config.itemHighlightMode() == MENU || plugin.isHideAll()) && !plugin.isHotKeyPressed();
 
-		if (dontShowOverlay && !plugin.isHighlightTiles())
+		if (dontShowOverlay && !config.highlightTiles())
 		{
 			return null;
 		}
@@ -177,13 +179,13 @@ public class GroundItemsOverlay extends Overlay
 		plugin.setHiddenBoxBounds(null);
 		plugin.setHighlightBoxBounds(null);
 
-		final boolean onlyShowLoot = plugin.isOnlyShowLoot();
+		final boolean onlyShowLoot = config.onlyShowLoot();
 
 		List<GroundItem> groundItemListAsList = new ArrayList<>(groundItemList);  // make a copy so we can non-destructively modify the list
 
 		Comparator<GroundItem> compareByHaPrice = Comparator.comparingInt(GroundItem::getHaPrice);
 		Comparator<GroundItem> compareByGePrice = Comparator.comparingInt(GroundItem::getGePrice);
-		groundItemListAsList.sort(plugin.isSortByGEPrice() ? compareByGePrice : compareByHaPrice);
+		groundItemListAsList.sort(config.sortByGEPrice() ? compareByGePrice : compareByHaPrice);
 
 		for (GroundItem item : groundItemListAsList)
 		{
@@ -236,7 +238,7 @@ public class GroundItemsOverlay extends Overlay
 				}
 
 				// Do not display non-highlighted items
-				if (plugin.isShowHighlightedOnly())
+				if (config.showHighlightedOnly())
 				{
 					continue;
 				}
@@ -244,7 +246,7 @@ public class GroundItemsOverlay extends Overlay
 
 			final Color color = plugin.getItemColor(highlighted, hidden);
 
-			if (plugin.isHighlightTiles())
+			if (config.highlightTiles())
 			{
 				final Polygon poly = Perspective.getCanvasTilePoly(client, groundPoint);
 
@@ -275,7 +277,7 @@ public class GroundItemsOverlay extends Overlay
 				}
 			}
 
-			if (plugin.getPriceDisplayMode() == PriceDisplayMode.BOTH)
+			if (config.priceDisplayMode() == PriceDisplayMode.BOTH)
 			{
 				if (item.getGePrice() > 0)
 				{
@@ -291,9 +293,9 @@ public class GroundItemsOverlay extends Overlay
 						.append(" gp)");
 				}
 			}
-			else if (plugin.getPriceDisplayMode() != PriceDisplayMode.OFF)
+			else if (config.priceDisplayMode() != PriceDisplayMode.OFF)
 			{
-				final int price = plugin.getPriceDisplayMode() == PriceDisplayMode.GE
+				final int price = config.priceDisplayMode() == PriceDisplayMode.GE
 					? item.getGePrice()
 					: item.getHaPrice();
 
@@ -306,7 +308,7 @@ public class GroundItemsOverlay extends Overlay
 				}
 			}
 
-			if (item.getTicks() > 0 && plugin.isShowTimer())
+			if (item.getTicks() > 0 && config.showTimer())
 			{
 				itemStringBuilder
 					.append(" - ")
@@ -401,15 +403,15 @@ public class GroundItemsOverlay extends Overlay
 				drawRectangle(graphics, itemHighlightBox, topItem && mouseInHighlightBox ? Color.GREEN : color, highlighted != null, false);
 			}
 
-			if (plugin.getShowGroundItemDuration() == TimerDisplayMode.ALWAYS
-				|| (plugin.getShowGroundItemDuration() == TimerDisplayMode.HOTKEY_PRESSED && plugin.isHotKeyPressed()))
+			if (config.showGroundItemDuration() == TimerDisplayMode.ALWAYS
+				|| (config.showGroundItemDuration() == TimerDisplayMode.HOTKEY_PRESSED && plugin.isHotKeyPressed()))
 			{
 				drawTimerOverlay(graphics, new java.awt.Point(textX, textY), item);
 			}
 
-			if (plugin.isToggleOutline())
+			if (config.toggleOutline())
 			{
-				final Color bordercolor = plugin.getBordercolor();
+				final Color bordercolor = config.bordercolor();
 				graphics.setColor(bordercolor);
 				graphics.drawString(itemString, textX + 1, textY + 1);
 				graphics.drawString(itemString, textX - 1, textY - 1);

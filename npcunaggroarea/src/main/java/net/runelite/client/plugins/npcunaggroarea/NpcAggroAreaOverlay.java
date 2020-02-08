@@ -32,7 +32,6 @@ import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 import java.time.Instant;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
@@ -43,19 +42,20 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 
-@Singleton
 class NpcAggroAreaOverlay extends Overlay
 {
 	private static final int MAX_LOCAL_DRAW_LENGTH = 20 * Perspective.LOCAL_TILE_SIZE;
 
 	private final Client client;
 	private final NpcAggroAreaPlugin plugin;
+	private final NpcAggroAreaConfig config;
 
 	@Inject
-	private NpcAggroAreaOverlay(final Client client, final NpcAggroAreaPlugin plugin)
+	private NpcAggroAreaOverlay(final Client client, final NpcAggroAreaPlugin plugin, final NpcAggroAreaConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		setPriority(OverlayPriority.LOW);
@@ -76,7 +76,7 @@ class NpcAggroAreaOverlay extends Overlay
 			return null;
 		}
 
-		Color outlineColor = plugin.getAggroAreaColor();
+		Color outlineColor = config.aggroAreaColor();
 		AggressionTimer timer = plugin.getCurrentTimer();
 		if (timer == null || Instant.now().compareTo(timer.getEndTime()) < 0)
 		{

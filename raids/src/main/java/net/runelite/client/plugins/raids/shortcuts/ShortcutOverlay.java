@@ -23,15 +23,17 @@ public class ShortcutOverlay extends Overlay
 {
 	private final Client client;
 	private final ShortcutPlugin plugin;
+	private final ShortcutConfig config;
 	private final BufferedImage treeIcon;
 	private final BufferedImage strengthIcon;
 	private final BufferedImage miningIcon;
 
 	@Inject
-	ShortcutOverlay(final Client client, final ShortcutPlugin plugin, final SkillIconManager iconManager)
+	ShortcutOverlay(final Client client, final ShortcutPlugin plugin, final ShortcutConfig config, final SkillIconManager iconManager)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.LOW);
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -76,7 +78,7 @@ public class ShortcutOverlay extends Overlay
 						default:
 							name = "null";
 					}
-					if (plugin.isHighlightShortcuts())
+					if (config.highlightShortcuts())
 					{
 						if (name.equals("Tree"))
 						{

@@ -28,9 +28,6 @@ import com.google.inject.Provides;
 import java.util.EnumSet;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -45,13 +42,10 @@ import net.runelite.api.events.PlayerDeath;
 import net.runelite.api.events.SpotAnimationChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.multiindicators.MapLocations;
-import net.runelite.client.plugins.multiindicators.MultiIndicatorsPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.PvPUtil;
 import org.apache.commons.lang3.ArrayUtils;
@@ -64,8 +58,6 @@ import org.pf4j.Extension;
 	tags = {"freeze", "timers", "barrage", "teleblock", "pklite"},
 	type = PluginType.PVP
 )
-@PluginDependency(MultiIndicatorsPlugin.class)
-@Singleton
 public class FreezeTimersPlugin extends Plugin
 {
 	private static final int VORKATH_REGION = 9023;
@@ -85,32 +77,8 @@ public class FreezeTimersPlugin extends Plugin
 	@Inject
 	private FreezeTimersOverlay overlay;
 
-	@Inject
-	private FreezeTimersConfig config;
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showPlayers;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showNpcs;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean FreezeTimers;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean TB;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean Veng;
-	@Getter(AccessLevel.PACKAGE)
-	private int offset;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean noImage;
-	@Getter(AccessLevel.PACKAGE)
-	private FontStyle fontStyle;
-	@Getter(AccessLevel.PACKAGE)
-	private int textSize;
-
 	public void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 	}
 
@@ -258,27 +226,5 @@ public class FreezeTimersPlugin extends Plugin
 	private boolean isAtVorkath()
 	{
 		return ArrayUtils.contains(client.getMapRegions(), VORKATH_REGION);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("freezetimers"))
-		{
-			updateConfig();
-		}
-	}
-
-	private void updateConfig()
-	{
-		this.showPlayers = config.showPlayers();
-		this.showNpcs = config.showNpcs();
-		this.FreezeTimers = config.FreezeTimers();
-		this.TB = config.TB();
-		this.Veng = config.Veng();
-		this.offset = config.offset();
-		this.noImage = config.noImage();
-		this.fontStyle = config.fontStyle();
-		this.textSize = config.textSize();
 	}
 }

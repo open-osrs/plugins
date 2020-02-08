@@ -4,10 +4,6 @@ import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
@@ -21,29 +17,27 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Raids Shortcuts",
 	description = "Highlights Raid Shortcuts",
 	tags = {"boulder", "cox", "raids", "highlight"},
 	type = PluginType.PVM
 )
-@Slf4j
-@Singleton
 public class ShortcutPlugin extends Plugin
 {
 	private final List<TileObject> shortcut = new ArrayList<>();
+
 	@Inject
 	private Client client;
+
 	@Inject
 	private OverlayManager overlayManager;
+
 	@Inject
 	private ShortcutOverlay overlay;
-	@Inject
-	private ShortcutConfig config;
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean highlightShortcuts;
 
 	List<TileObject> getShortcut()
 	{
@@ -59,8 +53,6 @@ public class ShortcutPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
-		this.highlightShortcuts = config.highlightShortcuts();
 		overlayManager.add(overlay);
 	}
 
@@ -103,7 +95,5 @@ public class ShortcutPlugin extends Plugin
 		{
 			return;
 		}
-
-		this.highlightShortcuts = config.highlightShortcuts();
 	}
 }

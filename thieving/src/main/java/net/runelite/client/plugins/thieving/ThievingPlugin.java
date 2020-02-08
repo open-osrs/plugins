@@ -32,7 +32,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ChatMessageType;
@@ -61,7 +60,6 @@ import org.pf4j.Extension;
 	tags = {"overlay", "skilling", "thieving", "pickpocketing"},
 	type = PluginType.SKILLING
 )
-@Singleton
 @PluginDependency(XpTrackerPlugin.class)
 public class ThievingPlugin extends Plugin
 {
@@ -86,7 +84,6 @@ public class ThievingPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private final List<ChestRespawn> respawns = new ArrayList<>();
 
-	private int statTimeout;
 	private boolean recentlyLoggedIn = false;
 
 	@Provides
@@ -98,9 +95,6 @@ public class ThievingPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
-		this.statTimeout = config.statTimeout();
-
 		chestOverlay.setPieFillColor(config.respawnColor());
 		chestOverlay.setPieBorderColor(config.respawnColor().darker());
 		chestOverlay.setRespawnPieInverted(config.respawnPieInverted());
@@ -133,12 +127,12 @@ public class ThievingPlugin extends Plugin
 	{
 		recentlyLoggedIn = false;
 
-		if (session == null || this.statTimeout == 0)
+		if (session == null || config.statTimeout() == 0)
 		{
 			return;
 		}
 
-		Duration statTimeout = Duration.ofMinutes(this.statTimeout);
+		Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 		Duration sinceCut = Duration.between(session.getLastTheivingAction(), Instant.now());
 
 		if (sinceCut.compareTo(statTimeout) >= 0)
@@ -205,7 +199,6 @@ public class ThievingPlugin extends Plugin
 			return;
 		}
 
-		this.statTimeout = config.statTimeout();
 		chestOverlay.setPieFillColor(config.respawnColor());
 		chestOverlay.setPieBorderColor(config.respawnColor().darker());
 		chestOverlay.setRespawnPieInverted(config.respawnPieInverted());

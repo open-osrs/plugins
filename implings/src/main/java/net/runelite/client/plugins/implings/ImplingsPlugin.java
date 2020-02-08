@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.GameState;
@@ -44,7 +43,6 @@ import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -58,7 +56,6 @@ import org.pf4j.Extension;
 	tags = {"hunter", "minimap", "overlay", "imp"},
 	type = PluginType.SKILLING
 )
-@Singleton
 public class ImplingsPlugin extends Plugin
 {
 	private static final int DYNAMIC_SPAWN_NATURE_DRAGON = 1618;
@@ -92,39 +89,6 @@ public class ImplingsPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
-	private ImplingsConfig.ImplingMode showBaby;
-	private Color getBabyColor;
-	private ImplingsConfig.ImplingMode showYoung;
-	private Color getYoungColor;
-	private ImplingsConfig.ImplingMode showGourmet;
-	private Color getGourmetColor;
-	private ImplingsConfig.ImplingMode showEarth;
-	private Color getEarthColor;
-	private ImplingsConfig.ImplingMode showEssence;
-	private Color getEssenceColor;
-	private ImplingsConfig.ImplingMode showEclectic;
-	private Color getEclecticColor;
-	private ImplingsConfig.ImplingMode showNature;
-	private Color getNatureColor;
-	private ImplingsConfig.ImplingMode showMagpie;
-	private Color getMagpieColor;
-	private ImplingsConfig.ImplingMode showNinja;
-	private Color getNinjaColor;
-	private ImplingsConfig.ImplingMode showCrystal;
-	private Color getCrystalColor;
-	private ImplingsConfig.ImplingMode showDragon;
-	private Color getDragonColor;
-	private ImplingsConfig.ImplingMode showLucky;
-	private Color getLuckyColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showSpawn;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getSpawnColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showName;
-	@Getter(AccessLevel.PACKAGE)
-	private Color getDynamicSpawnColor;
-
 	@Provides
 	ImplingsConfig getConfig(ConfigManager configManager)
 	{
@@ -134,8 +98,6 @@ public class ImplingsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		dynamicSpawns.put(DYNAMIC_SPAWN_NATURE_DRAGON, "T3 Nature-Lucky Dynamic");
 		dynamicSpawns.put(DYNAMIC_SPAWN_ECLECTIC, "T2 Eclectic Dynamic");
 		dynamicSpawns.put(DYNAMIC_SPAWN_BABY_ESSENCE, "T1 Baby-Essence Dynamic");
@@ -253,29 +215,29 @@ public class ImplingsPlugin extends Plugin
 		switch (implingType)
 		{
 			case BABY:
-				return this.showBaby;
+				return config.showBaby();
 			case YOUNG:
-				return this.showYoung;
+				return config.showYoung();
 			case GOURMET:
-				return this.showGourmet;
+				return config.showGourmet();
 			case EARTH:
-				return this.showEarth;
+				return config.showEarth();
 			case ESSENCE:
-				return this.showEssence;
+				return config.showEssence();
 			case ECLECTIC:
-				return this.showEclectic;
+				return config.showEclectic();
 			case NATURE:
-				return this.showNature;
+				return config.showNature();
 			case MAGPIE:
-				return this.showMagpie;
+				return config.showMagpie();
 			case NINJA:
-				return this.showNinja;
+				return config.showNinja();
 			case CRYSTAL:
-				return this.showCrystal;
+				return config.showCrystal();
 			case DRAGON:
-				return this.showDragon;
+				return config.showDragon();
 			case LUCKY:
-				return this.showLucky;
+				return config.showLucky();
 			default:
 				return ImplingsConfig.ImplingMode.NONE;
 		}
@@ -298,75 +260,32 @@ public class ImplingsPlugin extends Plugin
 		{
 
 			case BABY:
-				return this.getBabyColor;
+				return config.getBabyColor();
 			case YOUNG:
-				return this.getYoungColor;
+				return config.getYoungColor();
 			case GOURMET:
-				return this.getGourmetColor;
+				return config.getGourmetColor();
 			case EARTH:
-				return this.getEarthColor;
+				return config.getEarthColor();
 			case ESSENCE:
-				return this.getEssenceColor;
+				return config.getEssenceColor();
 			case ECLECTIC:
-				return this.getEclecticColor;
+				return config.getEclecticColor();
 			case NATURE:
-				return this.getNatureColor;
+				return config.getNatureColor();
 			case MAGPIE:
-				return this.getMagpieColor;
+				return config.getMagpieColor();
 			case NINJA:
-				return this.getNinjaColor;
+				return config.getNinjaColor();
 			case CRYSTAL:
-				return this.getCrystalColor;
+				return config.getCrystalColor();
 
 			case DRAGON:
-				return this.getDragonColor;
+				return config.getDragonColor();
 			case LUCKY:
-				return this.getLuckyColor;
+				return config.getLuckyColor();
 			default:
 				return null;
 		}
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("implings"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.showBaby = config.showBaby();
-		this.getBabyColor = config.getBabyColor();
-		this.showYoung = config.showYoung();
-		this.getYoungColor = config.getYoungColor();
-		this.showGourmet = config.showGourmet();
-		this.getGourmetColor = config.getGourmetColor();
-		this.showEarth = config.showEarth();
-		this.getEarthColor = config.getEarthColor();
-		this.showEssence = config.showEssence();
-		this.getEssenceColor = config.getEssenceColor();
-		this.showEclectic = config.showEclectic();
-		this.getEclecticColor = config.getEclecticColor();
-		this.showNature = config.showNature();
-		this.getNatureColor = config.getNatureColor();
-		this.showMagpie = config.showMagpie();
-		this.getMagpieColor = config.getMagpieColor();
-		this.showNinja = config.showNinja();
-		this.getNinjaColor = config.getNinjaColor();
-		this.showCrystal = config.showCrystal();
-		this.getCrystalColor = config.getCrystalColor();
-		this.showDragon = config.showDragon();
-		this.getDragonColor = config.getDragonColor();
-		this.showLucky = config.showLucky();
-		this.getLuckyColor = config.getLuckyColor();
-		this.showSpawn = config.showSpawn();
-		this.getSpawnColor = config.getSpawnColor();
-		this.showName = config.showName();
-		this.getDynamicSpawnColor = config.getDynamicSpawnColor();
 	}
 }

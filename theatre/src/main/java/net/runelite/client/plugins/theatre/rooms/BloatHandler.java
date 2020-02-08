@@ -17,6 +17,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.plugins.theatre.RoomHandler;
+import net.runelite.client.plugins.theatre.TheatreConfig;
 import net.runelite.client.plugins.theatre.TheatrePlugin;
 import net.runelite.client.plugins.theatre.TheatreRoom;
 
@@ -32,9 +33,9 @@ public class BloatHandler extends RoomHandler
 	@Getter(AccessLevel.PUBLIC)
 	private BloatState bloatState;
 
-	public BloatHandler(final Client client, final TheatrePlugin plugin)
+	public BloatHandler(final Client client, final TheatrePlugin plugin, final TheatreConfig config)
 	{
-		super(client, plugin);
+		super(client, plugin, config);
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class BloatHandler extends RoomHandler
 			return;
 		}
 
-		if (plugin.isShowBloatIndicator())
+		if (config.showBloatIndicator())
 		{
 			switch (bloatState)
 			{
@@ -88,7 +89,7 @@ public class BloatHandler extends RoomHandler
 			}
 		}
 
-		if (plugin.isShowBloatHands())
+		if (config.showBloatHands())
 		{
 			for (GraphicsObject object : client.getGraphicsObjects())
 			{
@@ -96,7 +97,7 @@ public class BloatHandler extends RoomHandler
 				if (id >= 1560 && id <= 1590)
 				{
 					WorldPoint point = WorldPoint.fromLocal(client, object.getLocation());
-					if (!plugin.isBloatFeetIndicatorRaveEdition())
+					if (!config.BloatFeetIndicatorRaveEdition())
 					{
 						drawTile(graphics, point, new Color(36, 248, 229), 2, 255, 10);
 					}
@@ -109,7 +110,7 @@ public class BloatHandler extends RoomHandler
 			}
 		}
 
-		if (plugin.isShowBloatTimer())
+		if (config.showBloatTimer())
 		{
 			final String tickCounter = String.valueOf(bloatTimer);
 			int secondConversion = (int) (bloatTimer * .6);

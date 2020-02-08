@@ -26,13 +26,10 @@ package net.runelite.client.plugins.prayagainstplayer;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -47,28 +44,27 @@ import org.pf4j.Extension;
 	tags = {"highlight", "pvp", "overlay", "players"},
 	type = PluginType.PVP
 )
-@Singleton
 @Getter(AccessLevel.PACKAGE)
 public class PrayAgainstPlayerPlugin extends Plugin
 {
 	@Inject
 	private Client client;
+
 	@Inject
 	private SpriteManager spriteManager;
+
 	@Inject
 	private OverlayManager overlayManager;
+
 	@Inject
 	private PrayAgainstPlayerOverlay overlay;
+
 	@Inject
 	private PrayAgainstPlayerOverlayPrayerTab overlayPrayerTab;
+
 	@Inject
 	private PrayAgainstPlayerConfig config;
 
-	private boolean ignoreFriends;
-	private boolean ignoreClanMates;
-	private boolean drawTargetPrayAgainstPrayerTab;
-	private boolean highlightAttackers;
-	private int highlightWidth;
 
 	@Provides
 	PrayAgainstPlayerConfig provideConfig(ConfigManager configManager)
@@ -79,7 +75,6 @@ public class PrayAgainstPlayerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
 		overlayManager.add(overlay);
 		overlayManager.add(overlayPrayerTab);
 	}
@@ -89,34 +84,5 @@ public class PrayAgainstPlayerPlugin extends Plugin
 	{
 		overlayManager.remove(overlay);
 		overlayManager.remove(overlayPrayerTab);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("prayagainstplayer"))
-		{
-			return;
-		}
-
-		updateConfig();
-	}
-
-	private void updateConfig()
-	{
-		this.ignoreFriends = config.ignoreFriends();
-		this.ignoreClanMates = config.ignoreClanMates();
-		this.drawTargetPrayAgainstPrayerTab = config.drawTargetPrayAgainstPrayerTab();
-		this.highlightAttackers = config.highlightAttackers();
-		this.highlightWidth = config.highlightWidth();
-
-		if (this.drawTargetPrayAgainstPrayerTab)
-		{
-			overlayManager.add(overlayPrayerTab);
-		}
-		else
-		{
-			overlayManager.remove(overlayPrayerTab);
-		}
 	}
 }

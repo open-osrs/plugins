@@ -45,12 +45,14 @@ class WorldHopperPingOverlay extends Overlay
 
 	private final Client client;
 	private final WorldHopperPlugin worldHopperPlugin;
+	private final WorldHopperConfig worldHopperConfig;
 
 	@Inject
-	private WorldHopperPingOverlay(Client client, WorldHopperPlugin worldHopperPlugin)
+	private WorldHopperPingOverlay(Client client, WorldHopperPlugin worldHopperPlugin, WorldHopperConfig worldHopperConfig)
 	{
 		this.client = client;
 		this.worldHopperPlugin = worldHopperPlugin;
+		this.worldHopperConfig = worldHopperConfig;
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		setPriority(OverlayPriority.HIGH);
 		setPosition(OverlayPosition.DYNAMIC);
@@ -59,7 +61,7 @@ class WorldHopperPingOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!worldHopperPlugin.isDisplayPing())
+		if (!worldHopperConfig.displayPing())
 		{
 			return null;
 		}

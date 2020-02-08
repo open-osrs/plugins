@@ -26,7 +26,6 @@ package net.runelite.client.plugins.animsmoothing;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -43,7 +42,6 @@ import org.pf4j.Extension;
 	tags = {"npcs", "objects", "players"},
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class AnimationSmoothingPlugin extends Plugin
 {
 	static final String CONFIG_GROUP = "animationSmoothing";

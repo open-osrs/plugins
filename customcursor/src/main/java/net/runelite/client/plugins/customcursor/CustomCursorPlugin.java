@@ -27,7 +27,6 @@ package net.runelite.client.plugins.customcursor;
 import com.google.inject.Provides;
 import java.io.IOException;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -42,16 +41,13 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientUI;
-import org.pf4j.Extension;
 
-@Extension
 @Slf4j
 @PluginDescriptor(
 	name = "Custom Cursor",
 	description = "Replaces your mouse cursor image",
 	type = PluginType.MISCELLANEOUS
 )
-@Singleton
 public class CustomCursorPlugin extends Plugin
 {
 	@Inject

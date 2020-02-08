@@ -10,9 +10,7 @@
 package net.runelite.client.plugins.wildernesslocations;
 
 import com.google.inject.Provides;
-import java.awt.Color;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +26,7 @@ import net.runelite.api.events.VarClientStrChanged;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.Keybind;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.WorldLocation;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -40,15 +36,14 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.HotkeyListener;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
-	name = "Wilderness Locations",
+	name = "Wild Locations",
 	description = "Indicates the players current location in the wild",
 	tags = {"Wildy", "Wilderness Location", "location", "loc", "pvp", "pklite"},
 	type = PluginType.PVP
 )
-@Singleton
+@Slf4j
 public class WildernessLocationsPlugin extends Plugin
 {
 	@Inject
@@ -56,9 +51,6 @@ public class WildernessLocationsPlugin extends Plugin
 
 	@Inject
 	OverlayManager overlayManager;
-
-	@Inject
-	private WildernessLocationsOverlay overlay = new WildernessLocationsOverlay(this);
 
 	@Getter(AccessLevel.PACKAGE)
 	private boolean renderLocation;
@@ -70,7 +62,10 @@ public class WildernessLocationsPlugin extends Plugin
 	private ClientThread clientThread;
 
 	@Inject
-	private WildernessLocationsConfig wildyConfig;
+	private WildernessLocationsConfig config;
+
+	@Inject
+	private WildernessLocationsOverlay overlay = new WildernessLocationsOverlay(this, config);
 
 	@Inject
 	private KeyManager keyManager;
@@ -82,7 +77,7 @@ public class WildernessLocationsPlugin extends Plugin
 	private int currentCooldown = 0;
 	private WorldPoint worldPoint = null;
 
-	private final HotkeyListener hotkeyListener = new HotkeyListener(() -> this.keybind)
+	private final HotkeyListener hotkeyListener = new HotkeyListener(() -> config.keybind())
 	{
 		@Override
 		public void hotkeyPressed()
@@ -90,19 +85,6 @@ public class WildernessLocationsPlugin extends Plugin
 			sendLocToCC();
 		}
 	};
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean drawOverlay;
-	private boolean pvpWorld;
-	private Keybind keybind;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean worldMapNames;
-	@Getter(AccessLevel.PACKAGE)
-	private Color mapOverlayColor;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean outlineLocations;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean worldMapOverlay;
 
 
 	@Provides
@@ -114,34 +96,9 @@ public class WildernessLocationsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
-		updateConfig();
-
 		overlayManager.add(overlay);
 		overlayManager.add(wildernessLocationsMapOverlay);
 		keyManager.registerKeyListener(hotkeyListener);
-	}
-
-	private void updateConfig()
-	{
-		this.drawOverlay = wildyConfig.drawOverlay();
-		this.pvpWorld = wildyConfig.pvpWorld();
-		this.keybind = wildyConfig.keybind();
-		this.worldMapNames = wildyConfig.worldMapOverlay();
-		this.mapOverlayColor = wildyConfig.mapOverlayColor();
-		this.outlineLocations = wildyConfig.outlineLocations();
-		this.worldMapOverlay = this.worldMapNames || this.outlineLocations;
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("wildernesslocations"))
-		{
-			return;
-		}
-
-		updateConfig();
 	}
 
 	@Override
@@ -160,7 +117,7 @@ public class WildernessLocationsPlugin extends Plugin
 			currentCooldown--;
 		}
 
-		renderLocation = (client.getVar(Varbits.IN_WILDERNESS) == 1 || (this.pvpWorld && WorldType.isAllPvpWorld(client.getWorldType())));
+		renderLocation = (client.getVar(Varbits.IN_WILDERNESS) == 1 || (config.pvpWorld() && WorldType.isAllPvpWorld(client.getWorldType())));
 
 		if (renderLocation)
 		{

@@ -70,17 +70,16 @@ public class ChatFilterPluginTest
 	{
 		Guice.createInjector(BoundFieldModule.of(this)).injectMembers(this);
 
-		chatFilterPlugin.setFilterType(ChatFilterType.CENSOR_WORDS);
-		chatFilterPlugin.setFilteredWords("");
-		chatFilterPlugin.setFilteredRegex("");
-
+		when(chatFilterConfig.filterType()).thenReturn(ChatFilterType.CENSOR_WORDS);
+		when(chatFilterConfig.filteredWords()).thenReturn("");
+		when(chatFilterConfig.filteredRegex()).thenReturn("");
 		when(client.getLocalPlayer()).thenReturn(localPlayer);
 	}
 
 	@Test
 	public void testCensorWords()
 	{
-		chatFilterPlugin.setFilteredWords("hat");
+		when(chatFilterConfig.filteredWords()).thenReturn("hat");
 
 		chatFilterPlugin.updateFilteredPatterns();
 		assertEquals("w***s up", chatFilterPlugin.censorMessage("whats up"));
@@ -89,8 +88,8 @@ public class ChatFilterPluginTest
 	@Test
 	public void testCensorRegex()
 	{
-		chatFilterPlugin.setFilterType(ChatFilterType.REMOVE_MESSAGE);
-		chatFilterPlugin.setFilteredRegex("5[0-9]x2\n(");
+		when(chatFilterConfig.filterType()).thenReturn(ChatFilterType.REMOVE_MESSAGE);
+		when(chatFilterConfig.filteredRegex()).thenReturn("5[0-9]x2\n(");
 
 		chatFilterPlugin.updateFilteredPatterns();
 		assertNull(chatFilterPlugin.censorMessage("55X2 Dicing | Trusted Ranks | Huge Pay Outs!"));
@@ -99,7 +98,7 @@ public class ChatFilterPluginTest
 	@Test
 	public void testBrokenRegex()
 	{
-		chatFilterPlugin.setFilteredRegex("Test\n)\n73");
+		when(chatFilterConfig.filteredRegex()).thenReturn("Test\n)\n73");
 
 		chatFilterPlugin.updateFilteredPatterns();
 		assertEquals("** isn't funny", chatFilterPlugin.censorMessage("73 isn't funny"));
@@ -108,8 +107,8 @@ public class ChatFilterPluginTest
 	@Test
 	public void testCaseSensitivity()
 	{
-		chatFilterPlugin.setFilterType(ChatFilterType.CENSOR_MESSAGE);
-		chatFilterPlugin.setFilteredWords("ReGeX!!!");
+		when(chatFilterConfig.filterType()).thenReturn(ChatFilterType.CENSOR_MESSAGE);
+		when(chatFilterConfig.filteredWords()).thenReturn("ReGeX!!!");
 
 		chatFilterPlugin.updateFilteredPatterns();
 		assertEquals("Hey, everyone, I just tried to say something very silly!",
@@ -119,8 +118,8 @@ public class ChatFilterPluginTest
 	@Test
 	public void testNonPrintableCharacters()
 	{
-		chatFilterPlugin.setFilterType(ChatFilterType.REMOVE_MESSAGE);
-		chatFilterPlugin.setFilteredWords("test");
+		when(chatFilterConfig.filterType()).thenReturn(ChatFilterType.REMOVE_MESSAGE);
+		when(chatFilterConfig.filteredWords()).thenReturn("test");
 
 		chatFilterPlugin.updateFilteredPatterns();
 		assertNull(chatFilterPlugin.censorMessage("te\u008Cst"));
@@ -129,8 +128,8 @@ public class ChatFilterPluginTest
 	@Test
 	public void testReplayedMessage()
 	{
-		chatFilterPlugin.setFilterType(ChatFilterType.REMOVE_MESSAGE);
-		chatFilterPlugin.setFilteredWords("hello osrs");
+		when(chatFilterConfig.filterType()).thenReturn(ChatFilterType.REMOVE_MESSAGE);
+		when(chatFilterConfig.filteredWords()).thenReturn("hello osrs");
 
 		chatFilterPlugin.updateFilteredPatterns();
 		assertNull(chatFilterPlugin.censorMessage("hello\u00A0osrs"));
@@ -139,8 +138,8 @@ public class ChatFilterPluginTest
 	@Test
 	public void testMessageFromFriendIsFiltered()
 	{
-		chatFilterPlugin.setFilterFriends(true);
 		when(client.isClanMember("Iron Mammal")).thenReturn(false);
+		when(chatFilterConfig.filterFriends()).thenReturn(true);
 		assertTrue(chatFilterPlugin.shouldFilterPlayerMessage("Iron Mammal"));
 	}
 
@@ -148,7 +147,7 @@ public class ChatFilterPluginTest
 	public void testMessageFromFriendIsNotFiltered()
 	{
 		when(client.isFriended("Iron Mammal", false)).thenReturn(true);
-		chatFilterPlugin.setFilterFriends(false);
+		when(chatFilterConfig.filterFriends()).thenReturn(false);
 		assertFalse(chatFilterPlugin.shouldFilterPlayerMessage("Iron Mammal"));
 	}
 
@@ -163,7 +162,7 @@ public class ChatFilterPluginTest
 	public void testMessageFromClanIsNotFiltered()
 	{
 		lenient().when(client.isClanMember("B0aty")).thenReturn(true);
-		chatFilterPlugin.setFilterClan(false);
+		when(chatFilterConfig.filterClan()).thenReturn(false);
 		assertFalse(chatFilterPlugin.shouldFilterPlayerMessage("B0aty"));
 	}
 
