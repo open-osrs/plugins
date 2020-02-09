@@ -30,8 +30,7 @@ jobs:
 
       - uses: actions/checkout@v1
         with:
-          repository: Owain94/runelite-extended
-          ref: externals-rework
+          repository: open-osrs/runelite
 
       - uses: actions/cache@v1
         with:
@@ -80,8 +79,7 @@ jobs:
 
       - uses: actions/checkout@v1
         with:
-          repository: Owain94/runelite-extended
-          ref: externals-rework
+          repository: open-osrs/runelite
 
       - uses: actions/cache@v1
         with:
@@ -129,8 +127,7 @@ jobs:
 
       - uses: actions/checkout@v1
         with:
-          repository: Owain94/runelite-extended
-          ref: externals-rework
+          repository: open-osrs/runelite
 
       - uses: actions/cache@v1
         with:
