@@ -54,36 +54,36 @@ public class PlayerIndicatorsService
 		this.config = config;
 
 		self = (player) -> (client.getLocalPlayer().equals(player)
-			&& plugin.getLocationHashMap().containsKey(PlayerRelation.SELF));
+			&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.SELF));
 
 		friend = (player) -> (!player.equals(client.getLocalPlayer())
 			&& client.isFriended(player.getName(), false)
-			&& plugin.getLocationHashMap().containsKey(PlayerRelation.FRIEND));
+			&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.FRIEND));
 
 		clan = (player) -> (player.isClanMember() && !client.getLocalPlayer().equals(player) && !client.isFriended(player.getName(), false)
-			&& plugin.getLocationHashMap().containsKey(PlayerRelation.CLAN));
+			&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.CLAN));
 
 		team = (player) -> (Objects.requireNonNull(client.getLocalPlayer()).getTeam() != 0 && !player.isClanMember()
 			&& !client.isFriended(player.getName(), false)
 			&& client.getLocalPlayer().getTeam() == player.getTeam()
-			&& plugin.getLocationHashMap().containsKey(PlayerRelation.TEAM));
+			&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.TEAM));
 
 		target = (player) -> (!team.test(player) && !clan.test(player)
 			&& !client.isFriended(player.getName(), false) && PvPUtil.isAttackable(client, player)
-			&& !client.getLocalPlayer().equals(player) && !clan.test(player) && plugin.getLocationHashMap().containsKey(PlayerRelation.TARGET));
+			&& !client.getLocalPlayer().equals(player) && !clan.test(player) && plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.TARGET));
 
-		caller = (player) -> (plugin.isCaller(player) && plugin.getLocationHashMap().containsKey(PlayerRelation.CALLER));
+		caller = (player) -> (plugin.isCaller(player) && plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.CALLER));
 
-		callerTarget = (player) -> (plugin.isPile(player) && plugin.getLocationHashMap().containsKey(PlayerRelation.CALLER_TARGET));
+		callerTarget = (player) -> (plugin.isPile(player) && plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.CALLER_TARGET));
 
 		other = (player) ->
 			(!PvPUtil.isAttackable(client, player) && !client.getLocalPlayer().equals(player)
 				&& !team.test(player) && !clan.test(player) && !client.isFriended(player.getName(), false)
-				&& plugin.getLocationHashMap().containsKey(PlayerRelation.OTHER));
+				&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.OTHER));
 
 	}
 
-	public void forEachPlayer(final BiConsumer<Player, PlayerRelation> consumer)
+	public void forEachPlayer(final BiConsumer<Player, PlayerIndicatorsPlugin.PlayerRelation> consumer)
 	{
 		if (!highlight())
 		{
@@ -95,42 +95,42 @@ public class PlayerIndicatorsService
 		{
 			if (caller.test(p))
 			{
-				consumer.accept(p, PlayerRelation.CALLER);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.CALLER);
 				continue;
 			}
 			if (callerTarget.test(p))
 			{
-				consumer.accept(p, PlayerRelation.CALLER_TARGET);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.CALLER_TARGET);
 				continue;
 			}
 			if (other.test(p))
 			{
-				consumer.accept(p, PlayerRelation.OTHER);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.OTHER);
 				continue;
 			}
 			if (self.test(p))
 			{
-				consumer.accept(p, PlayerRelation.SELF);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.SELF);
 				continue;
 			}
 			if (friend.test(p))
 			{
-				consumer.accept(p, PlayerRelation.FRIEND);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.FRIEND);
 				continue;
 			}
 			if (clan.test(p))
 			{
-				consumer.accept(p, PlayerRelation.CLAN);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.CLAN);
 				continue;
 			}
 			if (team.test(p))
 			{
-				consumer.accept(p, PlayerRelation.TEAM);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.TEAM);
 				continue;
 			}
 			if (target.test(p))
 			{
-				consumer.accept(p, PlayerRelation.TARGET);
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.TARGET);
 			}
 		}
 	}

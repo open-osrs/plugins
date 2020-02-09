@@ -568,4 +568,16 @@ public class PlayerIndicatorsPlugin extends Plugin
 		 */
 		TILE
 	}
+
+	public enum PlayerRelation
+	{
+		SELF,
+		FRIEND,
+		CLAN,
+		TEAM,
+		TARGET,
+		OTHER,
+		CALLER,
+		CALLER_TARGET
+	}
 }
