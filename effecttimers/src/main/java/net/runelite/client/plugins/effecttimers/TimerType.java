@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, pklite <https://github.com/pklite/pklite>
+ * Copyright (c) 2020 ThatGamerBlue
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,6 +10,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -21,23 +22,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.freezetimers;
+package net.runelite.client.plugins.effecttimers;
 
-import lombok.AccessLevel;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.util.ImageUtil;
 
+@Getter
+@RequiredArgsConstructor
 public enum TimerType
 {
-	FREEZE(3000),
-	VENG(0),
-	TELEBLOCK(45000),
-	THIS_SHIT_BROKE(-1);
+	FREEZE(5, loadImage("freeze"), loadImage("freezeimmune"), "freezeTimers", Color.CYAN), // 3 seconds
+	TELEBLOCK(100, loadImage("teleblock"), loadImage("teleblockimmune"), "teleblockTimers", new Color(0x5254ae)), // this is 60 seconds, might be wrong
+	VENG(0, loadImage("veng"), null, "vengTimers", Color.RED.brighter()),
+	SOTD(0, loadImage("sotd"), null, "sotdTimers", Color.YELLOW);
 
-	@Getter(AccessLevel.PACKAGE)
-	private final int immunityTime;
+	private final int immunityLength;
+	private final BufferedImage icon;
+	private final BufferedImage cooldownIcon;
+	private final String renderConfig;
+	private final Color defaultColor;
 
-	TimerType(int immunityTime)
+	private static BufferedImage loadImage(String name)
 	{
-		this.immunityTime = immunityTime;
+		return ImageUtil.getResourceStreamFromClass(EffectTimersPlugin.class, name + ".png");
+	}
+
+	public boolean shouldRender(ConfigManager configManager)
+	{
+		return configManager.getConfiguration("effecttimers", renderConfig, Boolean.class);
 	}
 }

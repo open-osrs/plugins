@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.2"
+version = "0.0.1"
 
-project.extra["PluginName"] = "Freeze Timers"
-project.extra["PluginDescription"] = "Shows a freeze timer overlay on players"
+project.extra["PluginName"] = "Effect Timers"
+project.extra["PluginDescription"] = "Effect timer overlay on players"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -44,6 +44,15 @@ dependencies {
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
+
+    testImplementation("com.openosrs:runelite-api:$rlVersion")
+    testImplementation("com.openosrs:runelite-client:$rlVersion")
+
+    testImplementation(Libraries.pf4j)
+    testImplementation(Libraries.guiceTestlib)
+    testImplementation(Libraries.junit)
+    testImplementation(Libraries.mockitoCore)
+    testImplementation(Libraries.mockitoInline)
 }
 
 tasks {

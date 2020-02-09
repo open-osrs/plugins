@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, pklite <https://github.com/pklite/pklite>
+ * Copyright (c) 2020 ThatGamerBlue
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,6 +10,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -21,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.freezetimers;
+package net.runelite.client.plugins.effecttimers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,10 +38,8 @@ import net.runelite.api.Player;
 @Singleton
 class PrayerTracker
 {
-
 	@Inject
 	private Client client;
-
 	private final Map<Actor, HashMap<String, Integer>> lastTick = new HashMap<>();
 	private final Map<Actor, HashMap<String, Integer>> newTick = new HashMap<>();
 
@@ -67,7 +66,8 @@ class PrayerTracker
 		}
 		if (actor instanceof Player)
 		{
-			newTick.get(actor).put("PrayerIcon", ((Player) actor).getOverheadIcon() == null ? -1 : ((Player) actor).getOverheadIcon().ordinal());
+			newTick.get(actor).put("PrayerIcon",
+				((Player) actor).getOverheadIcon() == null ? -1 : ((Player) actor).getOverheadIcon().ordinal());
 		}
 		newTick.get(actor).put("SpotAnim", actor.getSpotAnimation());
 	}
