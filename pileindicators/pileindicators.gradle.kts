@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.1"
 
-project.extra["PluginName"] = "Skill Calculator"
-project.extra["PluginDescription"] = "Enable the Skill Calculator panel"
+project.extra["PluginName"] = "Pile Indicators"
+project.extra["PluginDescription"] = "Highlight and count how many npcs/players are stacked on each other"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -37,12 +37,11 @@ dependencies {
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
 
-    compileOnly(Libraries.apacheCommonsLang)
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.gson)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
+    compileOnly(Libraries.rxjava)
 }
 
 tasks {
