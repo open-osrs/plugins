@@ -105,6 +105,8 @@ public class ClueScrollOverlay extends Overlay
 		panelComponent.getChildren().clear();
 		panelComponent.setPreferredSize(new Dimension(ComponentConstants.STANDARD_WIDTH, 0));
 
+		clue.makeOverlayHint(panelComponent, plugin);
+
 		final Item[] inventoryItems = plugin.getInventoryItems();
 		final Item[] equippedItems = plugin.getEquippedItems();
 
