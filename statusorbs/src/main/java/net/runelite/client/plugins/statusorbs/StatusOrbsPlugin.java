@@ -60,7 +60,9 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Graceful;
 import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Status Orbs",
 	description = "Configure settings for the Minimap orbs",
