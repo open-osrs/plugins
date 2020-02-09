@@ -45,13 +45,15 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientUI;
+import org.pf4j.Extension;
 
-@Slf4j
+@Extension
 @PluginDescriptor(
 	name = "Custom Cursor",
 	description = "Replaces your mouse cursor image",
 	type = PluginType.MISCELLANEOUS
 )
+@Slf4j
 public class CustomCursorPlugin extends Plugin
 {
 	private static final File CUSTOM_IMAGE_FILE = new File(RuneLite.RUNELITE_DIR, "cursor.png");

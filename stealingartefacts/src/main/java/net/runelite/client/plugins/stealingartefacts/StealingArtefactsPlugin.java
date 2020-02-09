@@ -62,7 +62,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Stealing Artefacts",
 	description = "A plugin for the Stealing Artefacts minigame.",
