@@ -37,7 +37,7 @@ import net.runelite.client.config.Title;
 @ConfigGroup("playerindicators")
 public interface PlayerIndicatorsConfig extends Config
 {
-	EnumSet<PlayerIndicationLocation> defaultPlayerIndicatorMode = EnumSet.complementOf(EnumSet.of(PlayerIndicationLocation.HULL));
+	EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> defaultPlayerIndicatorMode = EnumSet.complementOf(EnumSet.of(PlayerIndicatorsPlugin.PlayerIndicationLocation.HULL));
 
 	@ConfigSection(
 		name = "Yourself",
@@ -157,9 +157,9 @@ public interface PlayerIndicatorsConfig extends Config
 		name = "Indicator Mode",
 		description = "Location(s) of the overlay",
 		section = "yourselfSection",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 	)
-	default EnumSet<PlayerIndicationLocation> selfIndicatorModes()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> selfIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -194,10 +194,10 @@ public interface PlayerIndicatorsConfig extends Config
 		name = "Indicator Mode",
 		description = "Location(s) of the overlay",
 		section = "friendsSection",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicationLocation> friendIndicatorMode()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> friendIndicatorMode()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -232,10 +232,10 @@ public interface PlayerIndicatorsConfig extends Config
 		name = "Indicator Mode",
 		description = "Location(s) of the overlay",
 		section = "clanSection",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicationLocation> clanIndicatorModes()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> clanIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -282,10 +282,10 @@ public interface PlayerIndicatorsConfig extends Config
 		name = "Indicator Mode",
 		description = "Location(s) of the overlay",
 		section = "teamSection",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicationLocation> teamIndicatorModes()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> teamIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -320,10 +320,10 @@ public interface PlayerIndicatorsConfig extends Config
 		name = "Indicator Mode",
 		description = "Location(s) of the overlay",
 		section = "targetSection",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicationLocation> targetsIndicatorModes()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> targetsIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -454,10 +454,10 @@ public interface PlayerIndicatorsConfig extends Config
 		name = "Indicator Mode",
 		description = "Location(s) of the overlay",
 		section = "otherSection",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicationLocation> otherIndicatorModes()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> otherIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -559,9 +559,9 @@ public interface PlayerIndicatorsConfig extends Config
 		description = "Location(s) of the overlay",
 		section = "callersSection",
 		titleSection = "callerIndicators",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 	)
-	default EnumSet<PlayerIndicationLocation> callerHighlightOptions()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> callerHighlightOptions()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -611,9 +611,9 @@ public interface PlayerIndicatorsConfig extends Config
 		description = "How to highlight the callers' target",
 		section = "callersSection",
 		titleSection = "callerTargetIndicators",
-		enumClass = PlayerIndicationLocation.class
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 	)
-	default EnumSet<PlayerIndicationLocation> callerTargetHighlightOptions()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> callerTargetHighlightOptions()
 	{
 		return defaultPlayerIndicatorMode;
 	}
