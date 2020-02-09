@@ -60,7 +60,9 @@ import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Ban List",
 	description = "Displays warning in chat when you join a" +
