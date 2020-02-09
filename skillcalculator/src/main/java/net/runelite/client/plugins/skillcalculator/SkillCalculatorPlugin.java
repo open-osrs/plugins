@@ -33,6 +33,7 @@ import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
@@ -42,7 +43,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Skill Calculator",
 	description = "Enable the Skill Calculator panel",
-	tags = {"panel", "skilling"}
+	tags = {"panel", "skilling"},
+	type = PluginType.UTILITY
 )
 public class SkillCalculatorPlugin extends Plugin
 {
