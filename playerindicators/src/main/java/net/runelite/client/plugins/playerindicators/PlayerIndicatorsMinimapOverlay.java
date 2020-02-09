@@ -71,7 +71,7 @@ public class PlayerIndicatorsMinimapOverlay extends Overlay
 		final List indicationLocations = Arrays.asList(plugin.getLocationHashMap().get(relation));
 		final Color color = plugin.getRelationColorHashMap().get(relation);
 
-		if (indicationLocations.contains(PlayerIndicationLocation.MINIMAP))
+		if (indicationLocations.contains(PlayerIndicatorsPlugin.PlayerIndicationLocation.MINIMAP))
 		{
 			String name = actor.getName().replace('\u00A0', ' ');
 			String tag = "";

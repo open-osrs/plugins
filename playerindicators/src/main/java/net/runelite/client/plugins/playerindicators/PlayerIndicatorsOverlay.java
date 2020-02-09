@@ -101,7 +101,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 		final int zOffset = actor.getLogicalHeight() + ACTOR_OVERHEAD_TEXT_MARGIN;
 		final Point textLocation = actor.getCanvasTextLocation(graphics, name, zOffset);
 
-		if (indicationLocations.contains(PlayerIndicationLocation.ABOVE_HEAD))
+		if (indicationLocations.contains(PlayerIndicatorsPlugin.PlayerIndicationLocation.ABOVE_HEAD))
 		{
 			final StringBuilder nameSb = new StringBuilder(name);
 
@@ -145,12 +145,12 @@ public class PlayerIndicatorsOverlay extends Overlay
 				OverlayUtil.renderActorTextOverlay(graphics, actor, builtString, color);
 			}
 		}
-		if (actor.getConvexHull() != null && indicationLocations.contains(PlayerIndicationLocation.HULL))
+		if (actor.getConvexHull() != null && indicationLocations.contains(PlayerIndicatorsPlugin.PlayerIndicationLocation.HULL))
 		{
 			OverlayUtil.renderPolygon(graphics, actor.getConvexHull(), color);
 		}
 
-		if (indicationLocations.contains(PlayerIndicationLocation.TILE))
+		if (indicationLocations.contains(PlayerIndicatorsPlugin.PlayerIndicationLocation.TILE))
 		{
 			if (actor.getCanvasTilePoly() != null)
 			{
