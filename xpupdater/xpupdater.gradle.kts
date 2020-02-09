@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.1"
+version = "0.0.2"
 
-project.extra["PluginName"] = "TempleOSRS"
-project.extra["PluginDescription"] = "Automatically updates your stats on TempleOSRS when you log out"
+project.extra["PluginName"] = "XP Updater"
+project.extra["PluginDescription"] = "Automatically updates your stats on external xptrackers when you log out"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
