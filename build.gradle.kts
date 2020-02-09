@@ -11,6 +11,12 @@ plugins {
 apply<BootstrapPlugin>()
 apply<VersionPlugin>()
 
+allprojects {
+    group = "com.openosrs"
+    version = ProjectVersions.rlVersion
+    apply<MavenPublishPlugin>()
+}
+
 subprojects {
     group = "com.openosrs.externals"
 
@@ -33,6 +39,19 @@ subprojects {
         toolVersion = "8.25"
         isShowViolations = true
         isIgnoreFailures = false
+    }
+
+    configure<PublishingExtension> {
+        repositories {
+            maven {
+                url = uri("$buildDir/repo")
+            }
+        }
+        publications {
+            register("mavenJava", MavenPublication::class) {
+                from(components["java"])
+            }
+        }
     }
 
     configure<JavaPluginConvention> {
