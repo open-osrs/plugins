@@ -87,7 +87,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 		return null;
 	}
 
-	private void drawSceneOverlays(Graphics2D graphics, Player actor, PlayerRelation relation)
+	private void drawSceneOverlays(Graphics2D graphics, Player actor, PlayerIndicatorsPlugin.PlayerRelation relation)
 	{
 		if (actor.getName() == null || !plugin.getLocationHashMap().containsKey(relation))
 		{
@@ -122,7 +122,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 			final int x = graphics.getFontMetrics().stringWidth(builtString);
 			final int y = graphics.getFontMetrics().getHeight();
 
-			if (config.highlightClan() && actor.isClanMember() && config.showClanRanks() && relation == PlayerRelation.CLAN)
+			if (config.highlightClan() && actor.isClanMember() && config.showClanRanks() && relation == PlayerIndicatorsPlugin.PlayerRelation.CLAN)
 			{
 				if (clanManager.getRank(actor.getName()) != null)
 				{
@@ -134,7 +134,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 					}
 				}
 			}
-			else if (skulls && actor.getSkullIcon() != null && relation.equals(PlayerRelation.TARGET))
+			else if (skulls && actor.getSkullIcon() != null && relation.equals(PlayerIndicatorsPlugin.PlayerRelation.TARGET))
 			{
 
 				OverlayUtil.renderActorTextAndImage(graphics, actor, builtString, color,
@@ -158,7 +158,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 			}
 		}
 
-		if (relation.equals(PlayerRelation.TARGET))
+		if (relation.equals(PlayerIndicatorsPlugin.PlayerRelation.TARGET))
 		{
 			if (config.showAgilityLevel() && checkWildy() && plugin.getResultCache().containsKey(actor.getName()))
 			{
