@@ -55,7 +55,10 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.alchemicalhydra.AlchemicalHydra.AttackStyle;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
+
+@Extension
 @PluginDescriptor(
 	name = "Alchemical Hydra",
 	description = "Show what to pray against hydra",
