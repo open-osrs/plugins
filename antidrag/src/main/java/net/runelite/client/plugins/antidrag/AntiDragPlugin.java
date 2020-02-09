@@ -43,7 +43,9 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.HotkeyListener;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Anti Drag",
 	description = "Prevent dragging an item for a specified delay",
