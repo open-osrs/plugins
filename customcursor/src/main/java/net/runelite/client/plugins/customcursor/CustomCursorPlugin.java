@@ -25,7 +25,10 @@
 package net.runelite.client.plugins.customcursor;
 
 import com.google.inject.Provides;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -34,6 +37,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.RuneLite;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -50,6 +54,8 @@ import net.runelite.client.ui.ClientUI;
 )
 public class CustomCursorPlugin extends Plugin
 {
+	private static final File CUSTOM_IMAGE_FILE = new File(RuneLite.RUNELITE_DIR, "cursor.png");
+
 	@Inject
 	private ClientUI clientUI;
 
@@ -122,7 +128,33 @@ public class CustomCursorPlugin extends Plugin
 				skillSpecsRage.start();
 			}
 		}
+		else if (selectedCursor == CustomCursor.CUSTOM_IMAGE)
+		{
+			if (CUSTOM_IMAGE_FILE.exists())
+			{
+				try
+				{
+					BufferedImage image;
+					synchronized (ImageIO.class)
+					{
+						image = ImageIO.read(CUSTOM_IMAGE_FILE);
+					}
+					clientUI.setCursor(image, selectedCursor.getName());
+				}
+				catch (Exception e)
+				{
+					log.error("error setting custom cursor", e);
+					clientUI.resetCursor();
+				}
+			}
+			else
+			{
+				clientUI.resetCursor();
+			}
+			return;
+		}
 
-		clientUI.setCursor(selectedCursor.getCursorImage(), selectedCursor.toString());
+		assert selectedCursor.getCursorImage() != null;
+		clientUI.setCursor(selectedCursor.getCursorImage(), selectedCursor.getName());
 	}
 }

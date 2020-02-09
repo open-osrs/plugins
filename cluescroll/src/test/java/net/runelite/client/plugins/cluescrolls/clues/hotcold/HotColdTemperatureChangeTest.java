@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, Jordan Atwood <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,34 +22,47 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.cluescrolls.clues.hotcold;
 
-version = "0.0.3"
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
-project.extra["PluginName"] = "Inventory Grid"
-project.extra["PluginDescription"] = "Shows a grid over the inventory and a preview of where items will be dragged"
+public class HotColdTemperatureChangeTest
+{
+	private static final String[] VALID_MESSAGES = {
+		"The device is warm, and warmer than last time.",
+		"The device is cold, but colder than last time.",
+		"The device is very hot, and the same temperature as last time.",
+	};
+	private static final String[] INVALID_MESSAGES = {
+		"The device is cold.",
+		"The device is ice cold.",
+		"The device is very cold.",
+		"The device is hot.",
+		"The device is incredibly hot.",
+		"The device is an octopus, and is wetter than last time",
+		"foobar",
+		"a q p w",
+		"My feet are cold, I should put them in some lukewarm water, or run hot water over them.",
+		"and warmer than and colder than and the same temperature",
+	};
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+	@Test
+	public void testValidTemperatureChangeMessages()
+	{
+		for (final String message : VALID_MESSAGES)
+		{
+			assertNotNull(message, HotColdTemperatureChange.of(message));
+		}
+	}
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Test
+	public void testInvalidTemperatureChangeMessages()
+	{
+		for (final String message : INVALID_MESSAGES)
+		{
+			assertNull(message, HotColdTemperatureChange.of(message));
+		}
+	}
 }

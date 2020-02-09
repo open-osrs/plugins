@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, Jordan Atwood <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,34 +22,29 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.cluescrolls.clues.hotcold;
 
-version = "0.0.3"
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-project.extra["PluginName"] = "Inventory Grid"
-project.extra["PluginDescription"] = "Shows a grid over the inventory and a preview of where items will be dragged"
+public class BeginnerHotColdLocationTest
+{
+	private static final Set<HotColdLocation> BEGINNER_HOT_COLD_LOCATIONS = Arrays.stream(HotColdLocation.values())
+		.filter(HotColdLocation::isBeginnerClue)
+		.collect(Collectors.toSet());
+	private static final int EXPECTED_DIMENSION_SIZE = 7;
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+	@Test
+	public void beginnerHotColdLocationAreaTest()
+	{
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+		for (final HotColdLocation location : BEGINNER_HOT_COLD_LOCATIONS)
+		{
+			assertEquals(EXPECTED_DIMENSION_SIZE, location.getRect().height);
+			assertEquals(EXPECTED_DIMENSION_SIZE, location.getRect().width);
+		}
+	}
 }
