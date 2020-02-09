@@ -31,8 +31,9 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.Keybind;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyManager;
@@ -72,12 +73,8 @@ public class AntiDragPlugin extends Plugin
 	private KeyManager keyManager;
 
 	private boolean toggleDrag;
-	private boolean configOverlay;
-	private boolean changeCursor;
-	private CustomCursor selectedCursor;
-	private Keybind key;
 
-	private final HotkeyListener toggleListener = new HotkeyListener(() -> this.key)
+	private final HotkeyListener toggleListener = new HotkeyListener(() -> config.key())
 	{
 		@Override
 		public void hotkeyPressed()
@@ -85,41 +82,47 @@ public class AntiDragPlugin extends Plugin
 			toggleDrag = !toggleDrag;
 			if (toggleDrag)
 			{
-				if (configOverlay)
+				if (config.overlay())
 				{
 					overlayManager.add(overlay);
 				}
-				if (changeCursor)
+				if (config.changeCursor())
 				{
-					clientUI.setCursor(selectedCursor.getCursorImage(), selectedCursor.toString());
+					clientUI.setCursor(config.selectedCursor().getCursorImage(), config.selectedCursor().toString());
 				}
 
-				client.setInventoryDragDelay(config.dragDelay());
+				final int delay = config.dragDelay();
+				client.setInventoryDragDelay(delay);
+				setBankDragDelay(delay);
 			}
 			else
 			{
 				overlayManager.remove(overlay);
 				client.setInventoryDragDelay(DEFAULT_DELAY);
+				// In this case, 0 is the default for bank item widgets.
+				setBankDragDelay(0);
 				clientUI.resetCursor();
 			}
 		}
 	};
 
-	private final HotkeyListener holdListener = new HotkeyListener(() -> this.key)
+	private final HotkeyListener holdListener = new HotkeyListener(() -> config.key())
 	{
 		@Override
 		public void hotkeyPressed()
 		{
-			if (configOverlay)
+			if (config.overlay())
 			{
 				overlayManager.add(overlay);
 			}
-			if (changeCursor)
+			if (config.changeCursor())
 			{
-				clientUI.setCursor(selectedCursor.getCursorImage(), selectedCursor.toString());
+				clientUI.setCursor(config.selectedCursor().getCursorImage(), config.selectedCursor().toString());
 			}
 
-			client.setInventoryDragDelay(config.dragDelay());
+			final int delay = config.dragDelay();
+			client.setInventoryDragDelay(delay);
+			setBankDragDelay(delay);
 		}
 
 		@Override
@@ -127,6 +130,8 @@ public class AntiDragPlugin extends Plugin
 		{
 			overlayManager.remove(overlay);
 			client.setInventoryDragDelay(DEFAULT_DELAY);
+			// In this case, 0 is the default for bank item widgets.
+			setBankDragDelay(0);
 			clientUI.resetCursor();
 		}
 	};
@@ -141,7 +146,6 @@ public class AntiDragPlugin extends Plugin
 	protected void startUp()
 	{
 		overlay.setColor(config.color());
-		updateConfig();
 		updateKeyListeners();
 
 		if (config.alwaysOn())
@@ -166,8 +170,6 @@ public class AntiDragPlugin extends Plugin
 	{
 		if (event.getGroup().equals("antiDrag"))
 		{
-			updateConfig();
-
 			switch (event.getKey())
 			{
 				case "toggleKeyBind":
@@ -207,14 +209,6 @@ public class AntiDragPlugin extends Plugin
 		}
 	}
 
-	private void updateConfig()
-	{
-		this.key = config.key();
-		this.configOverlay = config.overlay();
-		this.changeCursor = config.changeCursor();
-		this.selectedCursor = config.selectedCursor();
-	}
-
 	@Subscribe
 	private void onFocusChanged(FocusChanged focusChanged)
 	{
@@ -243,6 +237,19 @@ public class AntiDragPlugin extends Plugin
 		else
 		{
 			keyManager.unregisterKeyListener(toggleListener);
+		}
+	}
+
+	private void setBankDragDelay(int delay)
+	{
+		final Widget bankItemContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+		if (bankItemContainer != null)
+		{
+			Widget[] items = bankItemContainer.getDynamicChildren();
+			for (Widget item : items)
+			{
+				item.setDragDeadTime(delay);
+			}
 		}
 	}
 }
