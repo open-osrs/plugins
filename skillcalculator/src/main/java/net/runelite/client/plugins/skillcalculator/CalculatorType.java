@@ -24,13 +24,12 @@
  */
 package net.runelite.client.plugins.skillcalculator;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.Skill;
 
 @AllArgsConstructor
-@Getter(AccessLevel.PACKAGE)
+@Getter
 enum CalculatorType
 {
 	MINING(Skill.MINING, "skill_mining.json"),
