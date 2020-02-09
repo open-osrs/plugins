@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2019, ganom <https://github.com/Ganom>
- * Copyright (c) 2019, pklite <https://github.com/pklite/pklite>
+ * Copyright (c) 2020 ThatGamerBlue
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -11,6 +10,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.freezetimers;
+package net.runelite.client.plugins.effecttimers;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,17 +31,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PlayerSpellEffect
 {
-	BIND("Bind", 181, 4800, false, 0, TimerType.FREEZE),
-	SNARE("Snare", 180, 9600, false, 1, TimerType.FREEZE),
-	ENTANGLE("Entangle", 179, 14400, false, 2, TimerType.FREEZE),
-	RUSH("Ice Rush", 361, 4800, false, 3, TimerType.FREEZE),
-	BURST("Ice Burst", 363, 9600, false, 4, TimerType.FREEZE),
-	BLITZ("Ice Blitz", 367, 14400, false, 5, TimerType.FREEZE),
-	BARRAGE("Ice Barrage", 369, 19200, false, 6, TimerType.FREEZE),
-	TELEBLOCK("Teleblock", 345, 300000, true, 7, TimerType.TELEBLOCK),
-	VENG("Vengeance", 726, 30000, false, 8, TimerType.VENG),
-	VENG_OTHER("Vengeance Other", 725, 30000, false, 9, TimerType.VENG),
-	NONE("Nothing", -69, 420, true, 9999, TimerType.THIS_SHIT_BROKE);
+	BIND("Bind", 181, 8, false, TimerType.FREEZE),
+	SNARE("Snare", 180, 16, false, TimerType.FREEZE),
+	ENTANGLE("Entangle", 179, 24, false, TimerType.FREEZE),
+	RUSH("Ice Rush", 361, 8, false, TimerType.FREEZE),
+	BURST("Ice Burst", 363, 16, false, TimerType.FREEZE),
+	BLITZ("Ice Blitz", 367, 24, false, TimerType.FREEZE),
+	BARRAGE("Ice Barrage", 369, 32, false, TimerType.FREEZE),
+	TELEBLOCK("Teleblock", 345, 500, true, TimerType.TELEBLOCK),
+	VENG("Vengeance", 726, 50, false, TimerType.VENG),
+	VENG_OTHER("Vengeance Other", 725, 50, false, TimerType.VENG),
+	STAFF_OF_THE_DEAD("Staff of the Dead", 1288, 100, false, TimerType.SOTD);
 
 	@Getter(AccessLevel.PACKAGE)
 	private final String name;
@@ -51,8 +51,6 @@ public enum PlayerSpellEffect
 	private final int timerLengthTicks;
 	@Getter(AccessLevel.PACKAGE)
 	private boolean halvable;
-	@Getter(AccessLevel.PACKAGE)
-	private final int spriteIdx;
 	@Getter(AccessLevel.PACKAGE)
 	private final TimerType type;
 
@@ -65,7 +63,6 @@ public enum PlayerSpellEffect
 				return effect;
 			}
 		}
-		return NONE;
+		return null;
 	}
-
 }
