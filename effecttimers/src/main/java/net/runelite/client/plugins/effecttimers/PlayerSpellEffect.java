@@ -41,7 +41,7 @@ public enum PlayerSpellEffect
 	TELEBLOCK("Teleblock", 345, 500, true, TimerType.TELEBLOCK),
 	VENG("Vengeance", 726, 50, false, TimerType.VENG),
 	VENG_OTHER("Vengeance Other", 725, 50, false, TimerType.VENG),
-	STAFF_OF_THE_DEAD("Staff of the Dead", 1288, 100, false, TimerType.SOTD);
+	STAFF_OF_THE_DEAD("Staff of the Dead", 1228, 100, false, TimerType.SOTD);
 
 	@Getter(AccessLevel.PACKAGE)
 	private final String name;
