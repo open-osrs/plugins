@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, TheStonedTurtle <https://github.com/TheStonedTurtle>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,14 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.loottracker.localstorage.events;
+package net.runelite.client.plugins.loottracker;
 
+import java.util.Collection;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.runelite.api.events.Event;
-import net.runelite.client.plugins.loottracker.localstorage.LTRecord;
+import net.runelite.client.game.ItemStack;
+import net.runelite.http.api.loottracker.LootRecordType;
 
+/**
+ * Event published by the loottracker plugin when new loot is received
+ */
 @Data
-public class LTRecordStored implements Event
+@AllArgsConstructor
+public class LootReceived implements Event
 {
-	private final LTRecord record;
+	private String name;
+	private int combatLevel;
+	private LootRecordType type;
+	private Collection<ItemStack> items;
 }
