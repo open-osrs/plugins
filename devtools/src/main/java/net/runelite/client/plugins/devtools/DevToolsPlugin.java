@@ -137,6 +137,7 @@ public class DevToolsPlugin extends Plugin
 	private DevToolsButton varInspector;
 	private DevToolsButton logMenuActions;
 	private DevToolsButton soundEffects;
+	private DevToolsButton scriptInspector;
 	private NavigationButton navButton;
 
 	@Provides
@@ -185,6 +186,7 @@ public class DevToolsPlugin extends Plugin
 
 		soundEffects = new DevToolsButton("Sound Effects");
 		logMenuActions = new DevToolsButton("Menu Actions");
+		scriptInspector = new DevToolsButton("Script Inspector");
 
 		overlayManager.add(overlay);
 		overlayManager.add(locationOverlay);

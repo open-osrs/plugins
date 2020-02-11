@@ -27,6 +27,7 @@ package net.runelite.client.plugins.loottracker;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import lombok.Value;
+import net.runelite.http.api.loottracker.LootRecordType;
 
 @Value
 class LootTrackerRecord
@@ -34,6 +35,7 @@ class LootTrackerRecord
 	private final String title;
 	private String localUsername;
 	private final String subTitle;
+	private final LootRecordType type;
 	@SerializedName("item_records")
 	private final LootTrackerItem[] items;
 	private final Instant timestamp;
