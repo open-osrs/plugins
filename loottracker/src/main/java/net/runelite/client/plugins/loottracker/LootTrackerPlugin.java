@@ -101,6 +101,7 @@ import static net.runelite.client.database.data.Tables.LOOTTRACKEREVENTS;
 import static net.runelite.client.database.data.Tables.LOOTTRACKERLINK;
 import static net.runelite.client.database.data.Tables.LOOTTRACKERLOOT;
 import static net.runelite.client.database.data.Tables.USER;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
@@ -113,9 +114,6 @@ import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.loottracker.localstorage.LTItemEntry;
-import net.runelite.client.plugins.loottracker.localstorage.LTRecord;
-import net.runelite.client.plugins.loottracker.localstorage.LootRecordWriter;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -233,10 +231,10 @@ public class LootTrackerPlugin extends Plugin
 	private ScheduledExecutorService executor;
 
 	@Inject
-	private LootRecordWriter writer;
+	private DatabaseManager databaseManager;
 
 	@Inject
-	private DatabaseManager databaseManager;
+	private EventBus eventBus;
 
 	private LootTrackerPanel panel;
 	private NavigationButton navButton;
@@ -520,7 +518,6 @@ public class LootTrackerPlugin extends Plugin
 				String name = client.getLocalPlayer().getName();
 				if (name != null)
 				{
-					writer.setPlayerUsername(name);
 					userUuid(name);
 
 					return true;
@@ -598,8 +595,7 @@ public class LootTrackerPlugin extends Plugin
 			saveLocalLootRecord(lootRecord);
 		}
 
-		LTRecord record = new LTRecord(npc.getId(), npc.getName(), combat, killCount, convertToLTItemEntries(items));
-		writer.addLootTrackerRecord(record);
+		eventBus.post(LootReceived.class, new LootReceived(name, combat, LootRecordType.NPC, items));
 	}
 
 	@Subscribe
@@ -660,8 +656,7 @@ public class LootTrackerPlugin extends Plugin
 			saveLocalLootRecord(lootRecord);
 		}
 
-		LTRecord record = new LTRecord(-1, name, combat, -1, convertToLTItemEntries(items));
-		writer.addLootTrackerRecord(record);
+		eventBus.post(LootReceived.class, new LootReceived(name, combat, LootRecordType.PLAYER, items));
 	}
 
 	@Subscribe
@@ -785,8 +780,7 @@ public class LootTrackerPlugin extends Plugin
 			saveLocalLootRecord(lootRecord);
 		}
 
-		LTRecord record = new LTRecord(-1, eventType, -1, eventType == null ? -1 : killCountMap.getOrDefault(eventType.toUpperCase(), -1), convertToLTItemEntries(items));
-		writer.addLootTrackerRecord(record);
+		eventBus.post(LootReceived.class, new LootReceived(eventType, -1, LootRecordType.EVENT, items));
 	}
 
 	@Subscribe
@@ -1179,9 +1173,7 @@ public class LootTrackerPlugin extends Plugin
 				saveLocalLootRecord(lootRecord);
 			}
 
-			LTRecord record = new LTRecord(-1, chestType, -1, -1, convertToLTItemEntries(items));
-			writer.addLootTrackerRecord(record);
-
+			eventBus.post(LootReceived.class, new LootReceived(chestType, -1, LootRecordType.EVENT, items));
 			inventorySnapshot = null;
 		}
 	}
@@ -1289,17 +1281,6 @@ public class LootTrackerPlugin extends Plugin
 					"", drops, record.getTime());
 			})
 			.collect(Collectors.toCollection(ArrayList::new));
-	}
-
-	private Collection<LTItemEntry> convertToLTItemEntries(Collection<ItemStack> stacks)
-	{
-		return stacks.stream().map(i ->
-		{
-			final ItemDefinition c = itemManager.getItemDefinition(i.getId());
-			final int id = c.getNote() == -1 ? c.getId() : c.getLinkedNoteId();
-			final int price = itemManager.getItemPrice(id);
-			return new LTItemEntry(c.getName(), i.getId(), i.getQuantity(), price);
-		}).collect(Collectors.toList());
 	}
 
 	/**
