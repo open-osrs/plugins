@@ -28,7 +28,9 @@ package net.runelite.client.plugins.loottracker;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.gson.reflect.TypeToken;
@@ -125,6 +127,7 @@ import net.runelite.http.api.loottracker.LootRecord;
 import net.runelite.http.api.loottracker.LootRecordType;
 import net.runelite.http.api.loottracker.LootTrackerClient;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Record1;
@@ -169,8 +172,6 @@ public class LootTrackerPlugin extends Plugin
 	private static final String GAUNTLET_EVENT = "The Gauntlet";
 	private static final int GAUNTLET_LOBBY_REGION = 12127;
 
-	private static final String MASTER_FARMER_EVENT = "Master farmer";
-
 	// Chest loot handling
 	private static final String CHEST_LOOTED_MESSAGE = "You find some treasure in the chest!";
 	private static final Pattern LARRAN_LOOTED_PATTERN = Pattern.compile("You have opened Larran's (big|small) chest .*");
@@ -206,6 +207,18 @@ public class LootTrackerPlugin extends Plugin
 	// Last man standing map regions
 	private static final Set<Integer> LAST_MAN_STANDING_REGIONS = ImmutableSet.of(13658, 13659, 13914, 13915, 13916);
 
+	private static final Pattern PICKPOCKET_REGEX = Pattern.compile("You pick (the )?(?<target>.+)'s? pocket.*");
+
+	/*
+	 * This map is used when a pickpocket target has a different name in the chat message than their in-game name.
+	 * Note that if the two NPCs can be found in the same place, there is a chance of race conditions
+	 * occurring when changing targets mid-pickpocket, in which case a different solution may need to be considered.
+	 */
+	private static final Multimap<String, String> PICKPOCKET_DISAMBIGUATION_MAP = ImmutableMultimap.of(
+		"H.A.M. Member", "Man",
+		"H.A.M. Member", "Woman"
+	);
+
 	@Inject
 	private ClientToolbar clientToolbar;
 
@@ -239,7 +252,9 @@ public class LootTrackerPlugin extends Plugin
 	private LootTrackerPanel panel;
 	private NavigationButton navButton;
 	private String eventType;
+	private LootRecordType lootRecordType;
 	private boolean chestLooted;
+	private String lastPickpocketTarget;
 
 	private List<String> ignoredItems = new ArrayList<>();
 	private List<String> ignoredNPCs = new ArrayList<>();
@@ -579,9 +594,9 @@ public class LootTrackerPlugin extends Plugin
 			}
 		}
 
-		SwingUtilities.invokeLater(() -> panel.add(name, localUsername, combat, entries));
 		LootRecord lootRecord = new LootRecord(name, localUsername, LootRecordType.NPC,
 			toGameItems(items), Instant.now());
+		SwingUtilities.invokeLater(() -> panel.add(name, localUsername, lootRecord.getType(), combat, entries));
 
 		if (config.saveLoot())
 		{
@@ -641,9 +656,9 @@ public class LootTrackerPlugin extends Plugin
 		final int combat = player.getCombatLevel();
 		final LootTrackerItem[] entries = buildEntries(stack(items));
 		String localUsername = client.getLocalPlayer().getName();
-		SwingUtilities.invokeLater(() -> panel.add(name, localUsername, combat, entries));
 		LootRecord lootRecord = new LootRecord(name, localUsername, LootRecordType.PLAYER,
 			toGameItems(items), Instant.now());
+		SwingUtilities.invokeLater(() -> panel.add(name, localUsername, lootRecord.getType(), combat, entries));
 		if (config.saveLoot())
 		{
 			synchronized (queuedLoots)
@@ -660,18 +675,19 @@ public class LootTrackerPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onWidgetLoaded(WidgetLoaded event)
+	private void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
 		if (client.getLocalPlayer() == null)
 		{
 			return;
 		}
 
+		final String event;
 		final ItemContainer container;
-		switch (event.getGroupId())
+		switch (widgetLoaded.getGroupId())
 		{
 			case (WidgetID.BARROWS_REWARD_GROUP_ID):
-				eventType = "Barrows";
+				event = "Barrows";
 				container = client.getItemContainer(InventoryID.BARROWS_REWARD);
 				break;
 			case (WidgetID.CHAMBERS_OF_XERIC_REWARD_GROUP_ID):
@@ -679,7 +695,7 @@ public class LootTrackerPlugin extends Plugin
 				{
 					return;
 				}
-				eventType = "Chambers of Xeric";
+				event = "Chambers of Xeric";
 				container = client.getItemContainer(InventoryID.CHAMBERS_OF_XERIC_CHEST);
 				chestLooted = true;
 				break;
@@ -696,21 +712,22 @@ public class LootTrackerPlugin extends Plugin
 					return;
 				}
 
-				eventType = "Theatre of Blood";
+				event = "Theatre of Blood";
 				container = client.getItemContainer(InventoryID.THEATRE_OF_BLOOD_CHEST);
 				chestLooted = true;
 				break;
 			case (WidgetID.CLUE_SCROLL_REWARD_GROUP_ID):
 				// event opcode should be set via ChatMessage for clue scrolls.
 				// Clue Scrolls use same InventoryID as Barrows
+				event = eventType;
 				container = client.getItemContainer(InventoryID.BARROWS_REWARD);
 				break;
 			case (WidgetID.KINGDOM_GROUP_ID):
-				eventType = "Kingdom of Miscellania";
+				event = "Kingdom of Miscellania";
 				container = client.getItemContainer(InventoryID.KINGDOM_OF_MISCELLANIA);
 				break;
 			case (WidgetID.FISHING_TRAWLER_REWARD_GROUP_ID):
-				eventType = "Fishing Trawler";
+				event = "Fishing Trawler";
 				container = client.getItemContainer(InventoryID.FISHING_TRAWLER_REWARD);
 				break;
 			default:
@@ -722,7 +739,7 @@ public class LootTrackerPlugin extends Plugin
 			return;
 		}
 
-		if (!(event.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) && config.chestLootChat())
+		if (!(widgetLoaded.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) && config.chestLootChat())
 		{
 			Item[] items = container.getItems();
 			long chestPrice = 0;
@@ -745,7 +762,7 @@ public class LootTrackerPlugin extends Plugin
 				.build());
 		}
 
-		if (event.getGroupId() == WidgetID.CHATBOX_GROUP_ID)
+		if (widgetLoaded.getGroupId() == WidgetID.CHATBOX_GROUP_ID)
 		{
 			panel.rebuild();
 		}
@@ -758,15 +775,15 @@ public class LootTrackerPlugin extends Plugin
 
 		if (items.isEmpty())
 		{
-			log.debug("No items to find for Event: {} | Container: {}", eventType, container);
+			log.debug("No items to find for Event: {} | Container: {}", event, container);
 			return;
 		}
 
 		final LootTrackerItem[] entries = buildEntries(stack(items));
 
-		SwingUtilities.invokeLater(() -> panel.add(eventType, client.getLocalPlayer().getName(), -1, entries));
-		LootRecord lootRecord = new LootRecord(eventType, client.getLocalPlayer().getName(), LootRecordType.EVENT,
+		LootRecord lootRecord = new LootRecord(event, client.getLocalPlayer().getName(), LootRecordType.EVENT,
 			toGameItems(items), Instant.now());
+		SwingUtilities.invokeLater(() -> panel.add(event, client.getLocalPlayer().getName(), lootRecord.getType(), -1, entries));
 
 		if (config.saveLoot())
 		{
@@ -780,7 +797,7 @@ public class LootTrackerPlugin extends Plugin
 			saveLocalLootRecord(lootRecord);
 		}
 
-		eventBus.post(LootReceived.class, new LootReceived(eventType, -1, LootRecordType.EVENT, items));
+		eventBus.post(LootReceived.class, new LootReceived(event, -1, LootRecordType.EVENT, items));
 	}
 
 	@Subscribe
@@ -812,6 +829,7 @@ public class LootTrackerPlugin extends Plugin
 			}
 
 			eventType = CHEST_EVENT_TYPES.get(regionID);
+			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
 
 			return;
@@ -820,6 +838,7 @@ public class LootTrackerPlugin extends Plugin
 		if (message.equals(HERBIBOAR_LOOTED_MESSAGE))
 		{
 			eventType = HERBIBOAR_EVENT;
+			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
 
 			return;
@@ -832,6 +851,7 @@ public class LootTrackerPlugin extends Plugin
 		if (HESPORI_REGION == regionID && message.equals(HESPORI_LOOTED_MESSAGE))
 		{
 			eventType = HESPORI_EVENT;
+			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
 			return;
 		}
@@ -839,6 +859,27 @@ public class LootTrackerPlugin extends Plugin
 		if (GAUNTLET_LOBBY_REGION == regionID && message.equals(GAUNTLET_LOOTED_MESSAGE))
 		{
 			eventType = GAUNTLET_EVENT;
+			lootRecordType = LootRecordType.EVENT;
+			takeInventorySnapshot();
+			return;
+		}
+
+		final Matcher pickpocketMatcher = PICKPOCKET_REGEX.matcher(message);
+		if (pickpocketMatcher.matches())
+		{
+			// Get the target's name as listed in the chat box
+			String pickpocketTarget = WordUtils.capitalize(pickpocketMatcher.group("target"));
+
+			// Occasional edge case where the pickpocket message doesn't list the correct name of the NPC (e.g. H.A.M. Members)
+			if (PICKPOCKET_DISAMBIGUATION_MAP.get(lastPickpocketTarget).contains(pickpocketTarget))
+			{
+				eventType = lastPickpocketTarget;
+			}
+			else
+			{
+				eventType = pickpocketTarget;
+			}
+			lootRecordType = LootRecordType.PICKPOCKET;
 			takeInventorySnapshot();
 			return;
 		}
@@ -852,21 +893,27 @@ public class LootTrackerPlugin extends Plugin
 			{
 				case "beginner":
 					eventType = "Clue Scroll (Beginner)";
+					lootRecordType = LootRecordType.EVENT;
 					break;
 				case "easy":
 					eventType = "Clue Scroll (Easy)";
+					lootRecordType = LootRecordType.EVENT;
 					break;
 				case "medium":
 					eventType = "Clue Scroll (Medium)";
+					lootRecordType = LootRecordType.EVENT;
 					break;
 				case "hard":
 					eventType = "Clue Scroll (Hard)";
+					lootRecordType = LootRecordType.EVENT;
 					break;
 				case "elite":
 					eventType = "Clue Scroll (Elite)";
+					lootRecordType = LootRecordType.EVENT;
 					break;
 				case "master":
 					eventType = "Clue Scroll (Master)";
+					lootRecordType = LootRecordType.EVENT;
 					break;
 			}
 
@@ -921,19 +968,13 @@ public class LootTrackerPlugin extends Plugin
 			int killCount = Integer.parseInt(boss.group(2));
 			killCountMap.put(bossName.toUpperCase(), killCount);
 		}
-
-		if (chatMessage.equals("You pick the Master Farmer's pocket."))
-		{
-			eventType = MASTER_FARMER_EVENT;
-			takeInventorySnapshot();
-		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
-		if (client.getLocalPlayer() == null)
+		if (client.getLocalPlayer() == null || event.getContainerId() != InventoryID.INVENTORY.getId())
 		{
 			return;
 		}
@@ -964,10 +1005,10 @@ public class LootTrackerPlugin extends Plugin
 
 					final LootTrackerItem[] entries = buildEntries(stack(itemsLost));
 					String name = "Death: " + client.getLocalPlayer().getName();
-					SwingUtilities.invokeLater(() -> panel.add(name, client.getLocalPlayer().getName(),
-						client.getLocalPlayer().getCombatLevel(), entries));
 					LootRecord lootRecord = new LootRecord(name, client.getLocalPlayer().getName(), LootRecordType.DEATH,
 						toGameItems(itemsLost), Instant.now());
+					SwingUtilities.invokeLater(() -> panel.add(name, client.getLocalPlayer().getName(),
+						lootRecord.getType(), client.getLocalPlayer().getCombatLevel(), entries));
 					if (config.saveLoot())
 					{
 						synchronized (queuedLoots)
@@ -991,21 +1032,24 @@ public class LootTrackerPlugin extends Plugin
 			|| HESPORI_EVENT.equals(eventType)
 			|| GAUNTLET_EVENT.equals(eventType)
 			|| WINTERTODT_EVENT.equals(eventType)
-			|| MASTER_FARMER_EVENT.equals(eventType))
+			|| lootRecordType == LootRecordType.PICKPOCKET)
 		{
-			if (event.getItemContainer() != client.getItemContainer(InventoryID.INVENTORY))
-			{
-				return;
-			}
-
-			processChestLoot(eventType, event.getItemContainer());
+			processInventoryLoot(eventType, lootRecordType, event.getItemContainer());
 			eventType = null;
+			lootRecordType = null;
 		}
 	}
 
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
+		// There are some pickpocket targets who show up in the chat box with a different name (e.g. H.A.M. members -> man/woman)
+		// We use the value selected from the right-click menu as a fallback for the event lookup in those cases.
+		if (event.getOption().equals("Pickpocket"))
+		{
+			lastPickpocketTarget = Text.removeTags(event.getTarget());
+		}
+
 		if (event.getParam1() != WidgetInfo.INVENTORY.getId())
 		{
 			return;
@@ -1110,7 +1154,7 @@ public class LootTrackerPlugin extends Plugin
 		}
 	}
 
-	private void processChestLoot(String chestType, ItemContainer inventoryContainer)
+	private void processInventoryLoot(String event, LootRecordType lootRecordType, ItemContainer inventoryContainer)
 	{
 		if (client.getLocalPlayer() == null)
 		{
@@ -1132,7 +1176,7 @@ public class LootTrackerPlugin extends Plugin
 			if (gotPet)
 			{
 				ItemStack pet = null;
-				switch (chestType)
+				switch (event)
 				{
 					case HERBIBOAR_EVENT:
 						pet = handlePet("Herbiboar");
@@ -1156,10 +1200,11 @@ public class LootTrackerPlugin extends Plugin
 			}
 
 			final LootTrackerItem[] entries = buildEntries(stack(items));
-			SwingUtilities.invokeLater(() -> panel.add(chestType, client.getLocalPlayer().getName(), -1, entries));
 
-			LootRecord lootRecord = new LootRecord(chestType, client.getLocalPlayer().getName(),
+			LootRecord lootRecord = new LootRecord(event, client.getLocalPlayer().getName(),
 				LootRecordType.EVENT, toGameItems(items), Instant.now());
+
+			SwingUtilities.invokeLater(() -> panel.add(event, client.getLocalPlayer().getName(), lootRecord.getType(), -1, entries));
 			if (config.saveLoot())
 			{
 				synchronized (queuedLoots)
@@ -1173,7 +1218,7 @@ public class LootTrackerPlugin extends Plugin
 				saveLocalLootRecord(lootRecord);
 			}
 
-			eventBus.post(LootReceived.class, new LootReceived(chestType, -1, LootRecordType.EVENT, items));
+			eventBus.post(LootReceived.class, new LootReceived(event, -1, LootRecordType.EVENT, items));
 			inventorySnapshot = null;
 		}
 	}
@@ -1278,7 +1323,7 @@ public class LootTrackerPlugin extends Plugin
 					buildLootTrackerItem(itemStack.getId(), itemStack.getQty())
 				).toArray(LootTrackerItem[]::new);
 				return new LootTrackerRecord(record.getEventId(), record.getUsername(),
-					"", drops, record.getTime());
+					"", record.getType(), drops, record.getTime());
 			})
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
