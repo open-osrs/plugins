@@ -66,7 +66,7 @@ public class RemindersPlugin extends Plugin
 
 	private Instant loginTime;
 	private boolean ready;
-	private int seconds;
+	private int seconds = 60;
 	private int minutes;
 	private int hours;
 	private int ounces;
@@ -114,7 +114,6 @@ public class RemindersPlugin extends Plugin
 		{
 			return;
 		}
-		seconds = 60;
 		minutes = (int) floor(between(loginTime, Instant.now()).getSeconds() / seconds);
 		hours = minutes / seconds;
 		ounces = 4 * hours;
@@ -220,7 +219,6 @@ public class RemindersPlugin extends Plugin
 	)
 	public void reminders()
 	{
-
 		timers();
 		if (minutes % seconds == 0 && minutes > 0)
 		{
@@ -233,15 +231,15 @@ public class RemindersPlugin extends Plugin
 				hydrationReminders();
 			}
 		}
-		if (minutes % config.personalReminderTime1() == 0 && minutes > 0 && !config.personalReminderText1().isEmpty())
+		if (config.personalReminderTime1() > 0 && minutes % config.personalReminderTime1() == 0 && minutes > 0 && !config.personalReminderText1().isEmpty())
 		{
 			personalReminder1();
 		}
-		if (minutes % config.personalReminderTime2() == 0 && minutes > 0 && !config.personalReminderText2().isEmpty())
+		if (config.personalReminderTime2() > 0 && minutes % config.personalReminderTime2() == 0 && minutes > 0 && !config.personalReminderText2().isEmpty())
 		{
 			personalReminder2();
 		}
-		if (minutes % config.personalReminderTime3() == 0 && minutes > 0 && !config.personalReminderText3().isEmpty())
+		if (config.personalReminderTime3() > 0 && minutes % config.personalReminderTime3() == 0 && minutes > 0 && !config.personalReminderText3().isEmpty())
 		{
 			personalReminder3();
 		}
