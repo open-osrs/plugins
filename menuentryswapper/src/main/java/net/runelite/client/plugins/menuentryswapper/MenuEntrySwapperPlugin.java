@@ -494,11 +494,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			
 			if (option.contains("restore"))
 			{
-				if (config.hideRestoreTanzaniteHelm() && entry.getTarget().contains("Tanzanite Helm"))
+				if (config.hideRestoreTanzaniteHelm() && entry.getTarget().contains("Tanzanite helm"))
 				{
 					continue;
 				}
-				if (config.hideRestoreMagmaHelm() && entry.getTarget().contains("Magma Helm"))
+				if (config.hideRestoreMagmaHelm() && entry.getTarget().contains("Magma helm"))
 				{
 					continue;
 				}
