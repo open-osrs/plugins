@@ -1875,6 +1875,30 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
+	
+	@ConfigItem(
+		keyName = "hideRestoreTanzaniteHelm",
+		name = "Restore on Tanzanite Helm",
+		description = "Hides the 'Restore' option when right clicking a Tanzanite Helm.",
+		position = 7,
+		section = "untradeablesSection"
+	)
+	default boolean hideRestoreTanzaniteHelm()
+	{
+		return false;
+	}
+	
+	@ConfigItem(
+		keyName = "hideRestoreMagmaHelm",
+		name = "Restore on Magma Helm",
+		description = "Hides the 'Restore' option when right clicking a Magma Helm.",
+		position = 8,
+		section = "untradeablesSection"
+	)
+	default boolean hideRestoreMagmaHelm()
+	{
+		return false;
+	}
 
 	//------------------------------------------------------------//
 	// PVM
