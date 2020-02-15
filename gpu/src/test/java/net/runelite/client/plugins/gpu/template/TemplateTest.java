@@ -22,10 +22,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package client.plugins.gpu.template;
+package net.runelite.client.plugins.gpu.template;
 
 import java.util.function.Function;
-import net.runelite.client.plugins.gpu.template.Template;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -51,13 +50,17 @@ public class TemplateTest
 	{
 		Function<String, String> func = (String resource) ->
 		{
-			if ("file2".equals(resource))
+			switch (resource)
 			{
-				return FILE2;
+				case "file2":
+					return FILE2;
+				default:
+					throw new RuntimeException("unknown resource");
 			}
-			throw new RuntimeException("unknown resource");
 		};
-		String out = new Template(func).process(FILE1);
+		String out = new Template()
+			.add(func)
+			.process(FILE1);
 		assertEquals(RESULT, out);
 	}
 }

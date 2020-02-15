@@ -25,13 +25,10 @@
 package net.runelite.client.plugins.gpu;
 
 import com.jogamp.opengl.GL4;
-import java.io.InputStream;
-import java.util.Scanner;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public
-class GLUtil
+public class GLUtil
 {
 	private static final int ERR_LEN = 1024;
 
@@ -50,32 +47,32 @@ class GLUtil
 		return fbuf[0];
 	}
 
-	private static int glGetShader(GL4 gl, int shader)
+	static int glGetShader(GL4 gl, int shader, int pname)
 	{
-		gl.glGetShaderiv(shader, com.jogamp.opengl.GL2ES2.GL_COMPILE_STATUS, buf, 0);
+		gl.glGetShaderiv(shader, pname, buf, 0);
 		assert buf[0] > -1;
 		return buf[0];
 	}
 
-	private static int glGetProgram(GL4 gl, int program, int pname)
+	static int glGetProgram(GL4 gl, int program, int pname)
 	{
 		gl.glGetProgramiv(program, pname, buf, 0);
 		assert buf[0] > -1;
 		return buf[0];
 	}
 
-	private static String glGetShaderInfoLog(GL4 gl, int shader)
+	static String glGetShaderInfoLog(GL4 gl, int shader)
 	{
 		byte[] err = new byte[ERR_LEN];
 		gl.glGetShaderInfoLog(shader, ERR_LEN, buf, 0, err, 0);
-		return new String(err);
+		return new String(err, 0, buf[0]);
 	}
 
 	static String glGetProgramInfoLog(GL4 gl, int program)
 	{
 		byte[] err = new byte[ERR_LEN];
 		gl.glGetProgramInfoLog(program, ERR_LEN, buf, 0, err, 0);
-		return new String(err);
+		return new String(err, 0, buf[0]);
 	}
 
 	static int glGenVertexArrays(GL4 gl)
@@ -136,78 +133,5 @@ class GLUtil
 	{
 		buf[0] = renderBuffer;
 		gl.glDeleteRenderbuffers(1, buf, 0);
-	}
-
-	public static void loadShaders(GL4 gl, int glProgram, int glVertexShader, int glGeometryShader, int glFragmentShader,
-								String vertexShaderStr, String geomShaderStr, String fragShaderStr) throws ShaderException
-	{
-		compileAndAttach(gl, glProgram, glVertexShader, vertexShaderStr);
-
-		if (glGeometryShader != -1)
-		{
-			compileAndAttach(gl, glProgram, glGeometryShader, geomShaderStr);
-		}
-
-		compileAndAttach(gl, glProgram, glFragmentShader, fragShaderStr);
-
-		gl.glLinkProgram(glProgram);
-
-		if (glGetProgram(gl, glProgram, gl.GL_LINK_STATUS) == gl.GL_FALSE)
-		{
-			String err = glGetProgramInfoLog(gl, glProgram);
-			throw new ShaderException(err);
-		}
-
-		gl.glValidateProgram(glProgram);
-
-		if (glGetProgram(gl, glProgram, gl.GL_VALIDATE_STATUS) == gl.GL_FALSE)
-		{
-			String err = glGetProgramInfoLog(gl, glProgram);
-			throw new ShaderException(err);
-		}
-	}
-
-	public static void loadComputeShader(GL4 gl, int glProgram, int glComputeShader, String str) throws ShaderException
-	{
-		compileAndAttach(gl, glProgram, glComputeShader, str);
-
-		gl.glLinkProgram(glProgram);
-
-		if (glGetProgram(gl, glProgram, gl.GL_LINK_STATUS) == gl.GL_FALSE)
-		{
-			String err = glGetProgramInfoLog(gl, glProgram);
-			throw new ShaderException(err);
-		}
-
-		gl.glValidateProgram(glProgram);
-
-		if (glGetProgram(gl, glProgram, gl.GL_VALIDATE_STATUS) == gl.GL_FALSE)
-		{
-			String err = glGetProgramInfoLog(gl, glProgram);
-			throw new ShaderException(err);
-		}
-	}
-
-	private static void compileAndAttach(GL4 gl, int program, int shader, String source) throws ShaderException
-	{
-		gl.glShaderSource(shader, 1, new String[]{source}, null);
-		gl.glCompileShader(shader);
-
-		if (glGetShader(gl, shader) == gl.GL_TRUE)
-		{
-			gl.glAttachShader(program, shader);
-		}
-		else
-		{
-			String err = glGetShaderInfoLog(gl, shader);
-			log.info(String.valueOf(program));
-			throw new ShaderException(err);
-		}
-	}
-
-	public static String inputStreamToString(InputStream in)
-	{
-		Scanner scanner = new Scanner(in).useDelimiter("\\A");
-		return scanner.next();
 	}
 }

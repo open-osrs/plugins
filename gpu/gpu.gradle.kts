@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.4"
 
 project.extra["PluginName"] = "GPU"
 project.extra["PluginDescription"] = "Utilizes the GPU"
@@ -44,10 +44,15 @@ dependencies {
     compileOnly(Libraries.jogampJogl)
     compileOnly(Libraries.jogampGluegen)
 
+    testAnnotationProcessor(Libraries.lombok)
+
     testImplementation(Libraries.jogampJogl)
     testImplementation(Libraries.jogampGluegen)
+    testImplementation(Libraries.jopt)
     testImplementation(Libraries.junit)
+    testImplementation(Libraries.lombok)
     testImplementation(Libraries.hamcrest)
+    testImplementation(Libraries.slf4jApi)
 }
 
 tasks {
