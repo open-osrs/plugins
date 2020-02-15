@@ -71,7 +71,7 @@ import java.util.Optional;
 		name = "Cerberus",
 		description = "Show Cerberus' attacks and what to pray against the summoned souls",
 		tags = {"bosses", "combat", "ghosts", "prayer", "pve", "overlay", "souls"},
-		type = PluginType.EXTERNAL
+		type = PluginType.PVM
 )
 
 @Slf4j
