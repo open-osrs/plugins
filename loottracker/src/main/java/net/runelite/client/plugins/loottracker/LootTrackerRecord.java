@@ -26,12 +26,14 @@ package net.runelite.client.plugins.loottracker;
 
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
+import lombok.NonNull;
 import lombok.Value;
 import net.runelite.http.api.loottracker.LootRecordType;
 
 @Value
 class LootTrackerRecord
 {
+	@NonNull
 	private final String title;
 	private String localUsername;
 	private final String subTitle;

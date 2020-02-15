@@ -44,7 +44,6 @@ void main() {
   uint groupId = gl_WorkGroupID.x;
   uint localId = gl_LocalInvocationID.x * 4;
   modelinfo minfo = ol[groupId];
-  int length = minfo.length;
 
   if (localId == 0) {
     min10 = 1600;

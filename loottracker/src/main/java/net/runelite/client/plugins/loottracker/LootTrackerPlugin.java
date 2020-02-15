@@ -148,7 +148,7 @@ import org.pf4j.Extension;
 public class LootTrackerPlugin extends Plugin
 {
 	// Activity/Event loot handling
-	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed ([0-9]+) ([a-z]+) Treasure Trails.");
+	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed [0-9]+ ([a-z]+) Treasure Trails?\\.");
 	private static final int THEATRE_OF_BLOOD_REGION = 12867;
 
 	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is: ([0-9]*).");
@@ -721,6 +721,13 @@ public class LootTrackerPlugin extends Plugin
 				// Clue Scrolls use same InventoryID as Barrows
 				event = eventType;
 				container = client.getItemContainer(InventoryID.BARROWS_REWARD);
+
+				if (event == null)
+				{
+					log.debug("Clue scroll reward interface with no event!");
+					return;
+				}
+
 				break;
 			case (WidgetID.KINGDOM_GROUP_ID):
 				event = "Kingdom of Miscellania";
