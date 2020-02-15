@@ -491,6 +491,18 @@ public class MenuEntrySwapperPlugin extends Plugin
 					continue;
 				}
 			}
+			
+			if (option.contains("restore"))
+			{
+				if (config.hideRestoreTanzaniteHelm() && entry.getTarget().contains("Tanzanite helm"))
+				{
+					continue;
+				}
+				if (config.hideRestoreMagmaHelm() && entry.getTarget().contains("Magma helm"))
+				{
+					continue;
+				}
+			}
 
 			if (option.contains("drop"))
 			{

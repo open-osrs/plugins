@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
- * Copyright (c) 2018, TheStonedTurtle <www.github.com/TheStonedTurtle>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,48 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.loottracker.localstorage;
+package net.runelite.client.plugins.loottracker;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.runelite.api.events.Event;
+import net.runelite.client.game.ItemStack;
+import net.runelite.http.api.loottracker.LootRecordType;
 
+/**
+ * Event published by the loottracker plugin when new loot is received
+ */
 @Data
 @AllArgsConstructor
-public class LTItemEntry
+public class LootReceived implements Event
 {
-	private final String name;
-	private final int id;
-	private int quantity;
-	private long price;
-
-	public long getTotal()
-	{
-		return this.quantity * this.price;
-	}
-
-	public static Map<Integer, LTItemEntry> consolidateItemEntires(final Collection<LTItemEntry> drops)
-	{
-		// Store LootTrackerItemEntry by ItemID
-		final Map<Integer, LTItemEntry> itemMap = new HashMap<>();
-		for (final LTItemEntry e : drops)
-		{
-			final LTItemEntry oldEntry = itemMap.get(e.getId());
-			if (oldEntry != null)
-			{
-				// Use the most recent price
-				oldEntry.setPrice(e.getPrice());
-				oldEntry.setQuantity(oldEntry.getQuantity() + e.getQuantity());
-			}
-			else
-			{
-				// Create a new instance for consolidated records
-				itemMap.put(e.getId(), new LTItemEntry(e.getName(), e.getId(), e.getQuantity(), e.getPrice()));
-			}
-		}
-
-		return itemMap;
-	}
+	private String name;
+	private int combatLevel;
+	private LootRecordType type;
+	private Collection<ItemStack> items;
 }
