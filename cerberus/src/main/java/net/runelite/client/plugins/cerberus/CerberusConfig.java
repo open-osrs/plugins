@@ -27,10 +27,12 @@
 
 package net.runelite.client.plugins.cerberus;
 
+import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.plugins.cerberus.Util.CerberusReadMeButton;
 
 @ConfigGroup("cerberus")
 
@@ -167,6 +169,18 @@ public interface CerberusConfig extends Config
 	)
 	default boolean showAttackNumber()
 	{
-		return false;
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "readMeButton",
+			name = "READ ME BEFORE USING",
+			description = "Read this first if you don't know how Cerberus or the plugin works!",
+			position = 0,
+			clazz = CerberusReadMeButton.class
+	)
+	default Button readMeButton()
+	{
+		return new Button();
 	}
 }

@@ -72,7 +72,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 		name = "Cerberus",
 		description = "Show Cerberus' attacks and what to pray against the summoned souls",
-		tags = {"bosses", "combat", "ghosts", "prayer", "pve", "overlay", "souls"},
+		tags = {"bosses", "combat", "ghosts", "prayer", "pve", "overlay", "souls", "guitar", "hero"},
 		type = PluginType.PVM
 )
 
@@ -255,11 +255,11 @@ public class CerberusPlugin extends Plugin
 				}
 				else if (cerberus.getLastTripleAttack() == null)
 				{
-					if (lastCerberusAttackTick + tickDelay + 1 == tick)
+					if (lastCerberusAttackTick + tickDelay + 2 == tick)
 					{
 						upcomingAttacks.add(new CerberusAttack(tick, CerberusNPC.Attack.MAGIC));
 					}
-					else if (lastCerberusAttackTick + tickDelay + 4 == tick)
+					else if (lastCerberusAttackTick + tickDelay + 5 == tick)
 					{
 						upcomingAttacks.add(new CerberusAttack(tick, CerberusNPC.Attack.RANGED));
 					}
