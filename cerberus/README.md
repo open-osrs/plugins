@@ -1,5 +1,5 @@
-# Cerberus Plugin
-#### Created by [Im2be](https://github.com/Im2be)
+# READ ME: Cerberus Plugin
+#### Made by [Im2be](https://github.com/Im2be)
 
 ## General:
 
