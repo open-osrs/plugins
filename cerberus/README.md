@@ -8,7 +8,7 @@
 This plugin was written to help you pray against the several attacks from Cerberus and its summoned souls. 
 If you find a bug, have any questions or generally just wanna tell me how awesome this plugin is: feel free to DM me on discord @Im2be#1742.
 
-Video of an earlier version: https://www.youtube.com/watch?v=4wj9kgIVIfY
+Video: https://www.youtube.com/watch?v=4wj9kgIVIfY
 
 ### If this is your FIRST time learing cerb:
 
