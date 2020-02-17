@@ -45,6 +45,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Friend Tagging",
+	enabledByDefault = false,
 	description = "Tag people on your friends list.",
 	tags = {"PVP", "friend", "finder", "pk", "pklite"},
 	type = PluginType.UTILITY

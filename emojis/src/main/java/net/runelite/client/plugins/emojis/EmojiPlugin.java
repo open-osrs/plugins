@@ -51,6 +51,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Emojis",
+	enabledByDefault = false,
 	description = "Replaces common emoticons such as :) with their corresponding emoji in the chat",
 	type = PluginType.MISCELLANEOUS
 )

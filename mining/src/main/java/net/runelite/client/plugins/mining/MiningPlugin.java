@@ -74,6 +74,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Mining",
+	enabledByDefault = false,
 	description = "Show ore respawn timers and coal bag overlay",
 	tags = {"overlay", "skilling", "timers", "coal", "coalbag", "coal bag"},
 	type = PluginType.SKILLING

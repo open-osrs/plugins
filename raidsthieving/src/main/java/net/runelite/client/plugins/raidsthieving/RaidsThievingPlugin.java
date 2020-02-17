@@ -58,6 +58,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Raids Bat Finder",
+	enabledByDefault = false,
 	description = "Tracks which chests need to be searched for bats and which poison",
 	tags = {"overlay", "skilling", "raid"},
 	type = PluginType.PVM

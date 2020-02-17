@@ -87,6 +87,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "GPU",
+	enabledByDefault = false,
 	description = "Utilizes the GPU",
 	tags = {"fog", "draw distance"},
 	type = PluginType.MISCELLANEOUS

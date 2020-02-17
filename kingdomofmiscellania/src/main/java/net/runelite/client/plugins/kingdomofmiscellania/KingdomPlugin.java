@@ -57,6 +57,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Kingdom of Miscellania",
+	enabledByDefault = false,
 	description = "Show various informations about your Kingdom of Miscellania",
 	tags = {"favor", "favour", "managing", "overlay", "indication", "notification"},
 	type = PluginType.UTILITY

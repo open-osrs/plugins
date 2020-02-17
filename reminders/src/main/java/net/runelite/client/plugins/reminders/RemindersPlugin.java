@@ -50,6 +50,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Reminders",
+	enabledByDefault = false,
 	description = "various reminders",
 	tags = {"session", "reminder", "hydrate", "hydration"},
 	type = PluginType.MISCELLANEOUS

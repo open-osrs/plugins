@@ -69,6 +69,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Performance Stats",
+	enabledByDefault = false,
 	description = "Displays your current performance stats",
 	tags = {"performance", "stats", "dps", "damage", "combat"},
 	type = PluginType.UTILITY

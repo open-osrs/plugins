@@ -58,6 +58,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Status Bars",
+	enabledByDefault = false,
 	description = "Draws status bars next to players inventory showing currentValue and restore amounts",
 	type = PluginType.UTILITY
 )

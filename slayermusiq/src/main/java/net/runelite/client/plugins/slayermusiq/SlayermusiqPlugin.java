@@ -72,6 +72,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Slayermusiq1 Guides",
+	enabledByDefault = false,
 	description = "Adds a right-click option to go to Slayermusiq1's guides from the quest tab",
 	tags = {"quest", "guide", "slayermusiq"},
 	type = PluginType.MISCELLANEOUS

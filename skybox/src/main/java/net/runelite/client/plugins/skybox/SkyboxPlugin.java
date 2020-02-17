@@ -44,6 +44,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Skybox",
+	enabledByDefault = false,
 	description = "Draws an oldschool styled skybox",
 	tags = {"sky"},
 	type = PluginType.MISCELLANEOUS

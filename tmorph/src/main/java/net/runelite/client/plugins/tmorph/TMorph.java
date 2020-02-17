@@ -66,6 +66,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "TMorph",
+	enabledByDefault = false,
 	description = "Want to wear a infernal cape? well now you can!",
 	tags = {"transform", "model", "item", "morph"},
 	type = PluginType.UTILITY

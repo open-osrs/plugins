@@ -51,6 +51,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Metronome",
+	enabledByDefault = false,
 	description = "Play sounds in a customisable pattern",
 	tags = {"skilling", "tick", "timers"},
 	type = PluginType.MISCELLANEOUS

@@ -140,6 +140,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Loot Tracker",
+	enabledByDefault = false,
 	description = "Tracks loot from monsters and minigames",
 	tags = {"drops"},
 	type = PluginType.UTILITY

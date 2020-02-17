@@ -56,6 +56,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Chat Notifications",
+	enabledByDefault = false,
 	description = "Highlight and notify you of chat messages",
 	tags = {"duel", "messages", "notifications", "trade", "username"},
 	type = PluginType.MISCELLANEOUS

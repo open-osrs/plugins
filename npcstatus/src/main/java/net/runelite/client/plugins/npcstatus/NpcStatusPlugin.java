@@ -55,6 +55,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "NPC Status Timer",
+	enabledByDefault = false,
 	description = "Adds a timer on NPC's for their attacks and flinching.",
 	tags = {"flinch", "npc"},
 	type = PluginType.PVM

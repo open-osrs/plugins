@@ -54,6 +54,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "High Alchemy",
+	enabledByDefault = false,
 	description = "Highlights items that yield a profit from casting the High Alchemy spell.",
 	tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"},
 	type = PluginType.UTILITY

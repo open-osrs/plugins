@@ -41,6 +41,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Stretched Mode",
+	enabledByDefault = false,
 	description = "Stretches the game in fixed and resizable modes.",
 	tags = {"resize", "ui", "interface", "stretch", "scaling", "fixed"},
 	type = PluginType.MISCELLANEOUS

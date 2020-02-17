@@ -50,6 +50,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "XP Globes",
+	enabledByDefault = false,
 	description = "Show XP globes for the respective skill when gaining XP",
 	tags = {"experience", "levels", "overlay"},
 	type = PluginType.UTILITY

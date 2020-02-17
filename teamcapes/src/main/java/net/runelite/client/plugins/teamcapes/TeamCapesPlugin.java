@@ -47,6 +47,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Team Capes",
+	enabledByDefault = false,
 	description = "Show the different team capes in your area and the amount of each",
 	tags = {"overlay", "players"},
 	type = PluginType.MISCELLANEOUS

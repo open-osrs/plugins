@@ -56,6 +56,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Thieving",
+	enabledByDefault = false,
 	description = "Show thieving overlay",
 	tags = {"overlay", "skilling", "thieving", "pickpocketing"},
 	type = PluginType.SKILLING
@@ -205,4 +206,3 @@ public class ThievingPlugin extends Plugin
 		chestOverlay.setRespawnPieDiameter(config.respawnPieDiameter());
 	}
 }
-

@@ -66,6 +66,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "PyramidPlunder",
+	enabledByDefault = false,
 	description = "Highlights doors and spear traps in pyramid plunder and adds a numerical timer",
 	tags = {"pyramidplunder", "pyramid", "plunder", "overlay", "skilling", "thieving"},
 	type = PluginType.MINIGAME

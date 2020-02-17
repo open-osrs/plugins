@@ -80,6 +80,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Supplies Used Tracker",
+	enabledByDefault = false,
 	description = "Tracks supplies used during the session",
 	tags = {"cost"},
 	type = PluginType.MISCELLANEOUS

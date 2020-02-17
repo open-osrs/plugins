@@ -51,6 +51,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Chat Timestamps",
+	enabledByDefault = false,
 	description = "Add timestamps to chat messages",
 	tags = {"timestamp"},
 	type = PluginType.UTILITY

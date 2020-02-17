@@ -54,6 +54,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Key Remapping",
+	enabledByDefault = false,
 	description = "Allows use of WASD keys for camera movement with 'Press Enter to Chat', and remapping number keys to F-keys",
 	tags = {"enter", "chat", "wasd", "camera"},
 	type = PluginType.MISCELLANEOUS

@@ -27,6 +27,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Spawn Timer",
+	enabledByDefault = false,
 	description = "Shows NPC'S time since spawned",
 	tags = {"highlight", "minimap", "npcs", "overlay", "spawn", "tags", "lyzrd"},
 	type = PluginType.PVM

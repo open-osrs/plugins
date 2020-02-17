@@ -44,6 +44,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Account Switcher",
+	enabledByDefault = false,
 	description = "Allow for a allows you to easily switch between multiple OSRS Accounts",
 	tags = {"profile", "account", "login", "log in", "pklite"},
 	type = PluginType.MISCELLANEOUS

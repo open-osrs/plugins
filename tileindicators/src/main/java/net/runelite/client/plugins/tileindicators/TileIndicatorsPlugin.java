@@ -36,6 +36,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Tile Indicators",
+	enabledByDefault = false,
 	description = "Highlight the tile you are currently moving to",
 	tags = {"highlight", "overlay"},
 	type = PluginType.UTILITY

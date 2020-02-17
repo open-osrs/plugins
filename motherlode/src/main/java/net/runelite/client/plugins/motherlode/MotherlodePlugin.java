@@ -97,6 +97,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Motherlode Mine",
+	enabledByDefault = false,
 	description = "Show helpful information inside the Motherload Mine",
 	tags = {"pay", "dirt", "mining", "mlm", "skilling", "overlay"},
 	type = PluginType.SKILLING

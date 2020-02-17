@@ -51,6 +51,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Boss Time Tracker",
+	enabledByDefault = false,
 	description = "Display elapsed time in the Fight Caves and Inferno",
 	tags = {"inferno", "fight", "caves", "cape", "timer", "tzhaar", "pvm"},
 	type = PluginType.PVM
