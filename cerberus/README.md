@@ -34,7 +34,7 @@ The number next to each attack, e.g. **7** in **GHOSTS (7)**, shows you what att
 
 
 Below the icon, there may be some text similar to **GHO: +30hp**. This means this attack will switch to **GHOSTS** if you do ~30 more damage to Cerb.
-In practice, this means you will want to keep Cerb above **400HP** until he has done attack 7. That way, attack 7 will be an **AUTO** instead of a devastating prayer drain by **GHOSTS**.
+In practice, this means you will want to keep Cerb above **400HP** until he has done attack 7. That way, attack 7 will be an **AUTO** instead of a devastating prayer drain by **GHOSTS** (I do this in the video around 0:30).
 
 
 ### [Guitar Hero](https://imgur.com/a/9AkrobA)
