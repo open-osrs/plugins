@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Cerberus"
-project.extra["PluginDescription"] = "Helps you pray against Cerberus (à la Guitar Hero)"
+project.extra["PluginDescription"] = "Show Cerberus' attacks and what to pray against the summoned souls"
 
 dependencies {
     annotationProcessor(Libraries.lombok)

@@ -27,6 +27,11 @@ package net.runelite.client.plugins.cerberus;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.inject.Provides;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -61,12 +66,9 @@ import net.runelite.client.plugins.cerberus.overlays.CerberusPhaseOverlay;
 import net.runelite.client.plugins.cerberus.overlays.CerberusPrayerOverlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.http.api.item.ItemStats;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 		name = "Cerberus",
 		description = "Show Cerberus' attacks and what to pray against the summoned souls",
