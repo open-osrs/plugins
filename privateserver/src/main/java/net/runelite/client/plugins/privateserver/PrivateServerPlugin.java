@@ -45,6 +45,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Private Server",
+	enabledByDefault = false,
 	description = "Settings for connecting to non official servers",
 	tags = {"RSPS", "Server", "Private"},
 	type = PluginType.MISCELLANEOUS

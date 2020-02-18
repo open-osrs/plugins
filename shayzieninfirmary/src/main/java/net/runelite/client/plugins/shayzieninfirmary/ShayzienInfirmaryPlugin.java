@@ -42,6 +42,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Shayzien Infirmary",
+	enabledByDefault = false,
 	description = "Shows the status of wounded soldiers",
 	tags = {"shayzien", "infirmary", "soldiers"},
 	type = PluginType.UTILITY

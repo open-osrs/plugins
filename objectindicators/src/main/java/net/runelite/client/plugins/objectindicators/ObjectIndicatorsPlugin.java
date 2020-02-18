@@ -81,6 +81,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Object Markers",
+	enabledByDefault = false,
 	description = "Enable marking of objects using the Shift key",
 	tags = {"overlay", "objects", "mark", "marker"},
 	type = PluginType.UTILITY

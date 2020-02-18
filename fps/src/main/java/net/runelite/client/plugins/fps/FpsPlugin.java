@@ -50,6 +50,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Performance",
+	enabledByDefault = false,
 	description = "Show current FPS or set an FPS limit",
 	tags = {"frames", "framerate", "limit", "overlay"},
 	type = PluginType.MISCELLANEOUS

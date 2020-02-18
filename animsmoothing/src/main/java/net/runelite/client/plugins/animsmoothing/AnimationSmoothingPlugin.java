@@ -38,6 +38,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Animation Smoothing",
+	enabledByDefault = false,
 	description = "Makes animations appear smoother",
 	tags = {"npcs", "objects", "players"},
 	type = PluginType.MISCELLANEOUS

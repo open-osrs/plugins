@@ -55,6 +55,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Bronze Man Mode",
+	enabledByDefault = false,
 	description = "Restrict yourself as an Iron Meme with GE use for items you have unlocked.",
 	tags = {"Bronze", "pve", "restrict", "game", "challenge", "bronzeman", "ironman"},
 	type = PluginType.GAMEMODE

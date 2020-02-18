@@ -50,6 +50,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Custom Cursor",
+	enabledByDefault = false,
 	description = "Replaces your mouse cursor image",
 	type = PluginType.MISCELLANEOUS
 )

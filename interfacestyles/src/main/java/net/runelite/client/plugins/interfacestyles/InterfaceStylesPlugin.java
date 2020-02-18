@@ -56,6 +56,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Interface Styles",
+	enabledByDefault = false,
 	description = "Change the interface style to the 2005/2010 interface",
 	tags = {"2005", "2010", "skin", "theme", "ui"},
 	type = PluginType.MISCELLANEOUS

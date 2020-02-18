@@ -36,6 +36,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Inventory Viewer",
+	enabledByDefault = false,
 	description = "Add an overlay showing the contents of your inventory",
 	tags = {"alternate", "items", "overlay", "second"},
 	type = PluginType.UTILITY

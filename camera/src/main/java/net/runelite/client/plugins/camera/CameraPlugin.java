@@ -58,6 +58,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Camera Zoom",
+	enabledByDefault = false,
 	description = "Expands zoom limit, provides vertical camera, and remaps mouse input keys",
 	tags = {"zoom", "limit", "vertical", "click", "mouse"},
 	type = PluginType.MISCELLANEOUS

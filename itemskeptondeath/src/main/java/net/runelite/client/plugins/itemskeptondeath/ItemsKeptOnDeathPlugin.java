@@ -73,6 +73,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Items Kept on Death",
+	enabledByDefault = false,
 	description = "Updates the Items Kept on Death interface to be more accurate",
 	type = PluginType.UTILITY
 )

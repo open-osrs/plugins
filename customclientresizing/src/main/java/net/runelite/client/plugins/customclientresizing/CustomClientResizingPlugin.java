@@ -31,6 +31,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Custom Client Resizing",
+	enabledByDefault = false,
 	description = "Resize the window to saved profiles",
 	tags = {"resize", "window", "position", "layout", "manage"},
 	type = PluginType.MISCELLANEOUS

@@ -68,6 +68,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Virtual Levels",
+	enabledByDefault = false,
 	description = "Shows virtual levels (beyond 99) and virtual skill total on the skills tab.",
 	tags = {"skill", "total", "max"},
 	type = PluginType.UTILITY

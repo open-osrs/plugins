@@ -36,6 +36,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Item Prices",
+	enabledByDefault = false,
 	description = "Show prices on hover for items in your inventory and bank",
 	tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"},
 	type = PluginType.UTILITY

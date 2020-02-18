@@ -38,6 +38,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Low Detail",
+	enabledByDefault = false,
 	description = "Turn off ground decorations and certain textures, reducing memory usage",
 	tags = {"memory", "usage", "ground", "decorations"},
 	type = PluginType.MISCELLANEOUS

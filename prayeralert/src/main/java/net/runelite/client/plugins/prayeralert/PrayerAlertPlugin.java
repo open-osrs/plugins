@@ -28,6 +28,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Prayer Alerter",
+	enabledByDefault = false,
 	description = "Alert the player when prayer is low",
 	tags = {"prayer", "overlay"},
 	type = PluginType.UTILITY

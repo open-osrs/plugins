@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "Pyramid Plunder"
 project.extra["PluginDescription"] = "Highlights doors and spear traps in pyramid plunder and adds a numerical timer"

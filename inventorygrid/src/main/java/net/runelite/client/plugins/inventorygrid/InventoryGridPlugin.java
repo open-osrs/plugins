@@ -37,6 +37,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Inventory Grid",
+	enabledByDefault = false,
 	description = "Shows a grid over the inventory and a preview of where items will be dragged",
 	tags = {"items", "overlay"},
 	type = PluginType.UTILITY

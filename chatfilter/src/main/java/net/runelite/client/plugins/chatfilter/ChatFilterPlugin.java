@@ -54,6 +54,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Chat Filter",
+	enabledByDefault = false,
 	description = "Censor user configurable words or patterns from chat",
 	type = PluginType.MISCELLANEOUS
 )

@@ -51,6 +51,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Inventory Tags",
+	enabledByDefault = false,
 	description = "Add the ability to tag items in your inventory",
 	tags = {"highlight", "items", "overlay", "tagging"},
 	type = PluginType.UTILITY

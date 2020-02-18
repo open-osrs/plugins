@@ -64,6 +64,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Special Attack Counter",
+	enabledByDefault = false,
 	description = "Track DWH, Arclight, Darklight, and BGS special attacks used on NPCs",
 	tags = {"combat", "npcs", "overlay"},
 	type = PluginType.UTILITY

@@ -48,6 +48,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Entity Hider",
+	enabledByDefault = false,
 	description = "Hide players, NPCs, and/or projectiles",
 	tags = {"npcs", "players", "projectiles"},
 	type = PluginType.UTILITY

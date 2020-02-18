@@ -68,6 +68,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Woodcutting",
+	enabledByDefault = false,
 	description = "Show woodcutting statistics and/or bird nest notifications",
 	tags = {"birds", "nest", "notifications", "overlay", "skilling", "wc"},
 	type = PluginType.SKILLING

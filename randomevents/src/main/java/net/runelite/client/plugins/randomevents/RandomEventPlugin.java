@@ -51,6 +51,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Random Events",
+	enabledByDefault = false,
 	description = "Notify when random events appear and remove talk/dismiss options on events that aren't yours.",
 	type = PluginType.UTILITY
 )

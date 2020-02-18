@@ -32,6 +32,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Learn to Click",
+	enabledByDefault = false,
 	description = "A few modifications to prevent misclicks",
 	tags = {"pk", "misclick", "compass", "map", "auto retaliate"},
 	type = PluginType.PVP

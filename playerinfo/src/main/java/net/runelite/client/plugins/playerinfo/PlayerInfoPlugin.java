@@ -43,6 +43,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Player Information",
+	enabledByDefault = false,
 	description = "An alternative to the Minimap Orbs",
 	tags = {"combat", "overlay"},
 	type = PluginType.UTILITY

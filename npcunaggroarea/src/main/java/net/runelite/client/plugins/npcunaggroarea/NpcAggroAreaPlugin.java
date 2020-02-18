@@ -69,6 +69,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "NPC Aggression Timer",
+	enabledByDefault = false,
 	description = "Highlights the unaggressive area of NPCs nearby and timer until it becomes active",
 	tags = {"highlight", "lines", "unaggro", "aggro", "aggressive", "npcs", "area", "slayer"},
 	type = PluginType.UTILITY

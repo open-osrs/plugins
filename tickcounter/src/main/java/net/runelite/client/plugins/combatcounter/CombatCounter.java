@@ -63,6 +63,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Tick Counter",
+	enabledByDefault = false,
 	description = "Count the amount of perfect combat ticks performed by each player.",
 	tags = {"combat", "counter", "tick"},
 	type = PluginType.UTILITY

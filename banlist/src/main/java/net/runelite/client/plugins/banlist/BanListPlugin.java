@@ -65,6 +65,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Ban List",
+	enabledByDefault = false,
 	description = "Displays warning in chat when you join a" +
 		"clan chat/new member join your clan chat and he is in a WDR/RuneWatch/Manual List",
 	tags = {"PVM", "WDR", "RuneWatch"},

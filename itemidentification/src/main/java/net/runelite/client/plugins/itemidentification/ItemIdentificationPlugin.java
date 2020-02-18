@@ -36,6 +36,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Item Identification",
+	enabledByDefault = false,
 	description = "Show identifying text over items with difficult to distinguish sprites",
 	type = PluginType.UTILITY
 )

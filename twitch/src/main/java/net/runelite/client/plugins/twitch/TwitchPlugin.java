@@ -51,6 +51,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Twitch",
+	enabledByDefault = false,
 	description = "Integrates Twitch chat",
 	type = PluginType.MISCELLANEOUS
 )

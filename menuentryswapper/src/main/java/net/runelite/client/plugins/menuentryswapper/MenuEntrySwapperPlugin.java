@@ -96,6 +96,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Menu Entry Swapper",
+	enabledByDefault = false,
 	description = "Change the default option that is displayed when hovering over objects",
 	tags = {"npcs", "inventory", "items", "objects"},
 	type = PluginType.UTILITY
