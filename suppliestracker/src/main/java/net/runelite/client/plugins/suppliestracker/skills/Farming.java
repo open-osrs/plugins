@@ -52,7 +52,7 @@ public class Farming
 		}
 		String name = itemManager.getItemDefinition(bucketId).getName().toLowerCase();
 
-		if (name.contains(" compost") || name.contains("plant cure"))
+		if (name.contains("compost") || name.contains("plant cure"))
 		{
 			if (bucketId == BOTTOMLESS_COMPOST_BUCKET || bucketId == BOTTOMLESS_COMPOST_BUCKET_22997)
 			{

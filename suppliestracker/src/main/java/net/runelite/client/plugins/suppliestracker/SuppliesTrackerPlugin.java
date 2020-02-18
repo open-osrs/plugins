@@ -234,7 +234,7 @@ public class SuppliesTrackerPlugin extends Plugin
 	protected void startUp()
 	{
 
-		panel = new SuppliesTrackerPanel(itemManager, this);
+		panel = new SuppliesTrackerPanel(itemManager, this, config);
 		farming = new Farming(this, itemManager);
 		prayer = new Prayer(this, itemManager);
 		final BufferedImage header = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
@@ -505,7 +505,7 @@ public class SuppliesTrackerPlugin extends Plugin
 					// ensure that only positive quantities are added since it is reported
 					// that sometimes checkUsedRunes is called on the same tick that a player
 					// gains runes in their inventory
-					if (quantity > 0)
+					if (quantity > 0 && quantity < 35)
 					{
 						buildEntries(oldItem.getId(), quantity);
 					}
@@ -840,6 +840,10 @@ public class SuppliesTrackerPlugin extends Plugin
 			if (old.getItems() != null)
 			{
 				int pushItem = old.getItems()[event.getParam0()].getId();
+				if (pushItem == PURPLE_SWEETS || pushItem == PURPLE_SWEETS_10476)
+				{
+					return;
+				}
 				MenuAction newAction = new MenuAction.ItemAction(CONSUMABLE, old.getItems(), pushItem, slot);
 				actionStack.push(newAction);
 			}
@@ -984,6 +988,10 @@ public class SuppliesTrackerPlugin extends Plugin
 			else if (message.toLowerCase().contains("you bury the bones"))
 			{
 				prayer.OnChat(message);
+			}
+			else if (message.toLowerCase().contains("you eat the sweets."))
+			{
+				buildEntries(PURPLE_SWEETS_10476);
 			}
 			else if (message.toLowerCase().contains("dark lord"))
 			{
