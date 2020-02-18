@@ -53,7 +53,7 @@ jobs:
         working-directory: /home/runner/work/plugins/runelite
 
       - name: Upload client artifacts to local maven
-        run: ./gradlew publishToMavenLocal --console=plain
+        run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
         working-directory: /home/runner/work/plugins/runelite
 
       - name: Make gradlew executable (plugins)
@@ -103,7 +103,7 @@ jobs:
         working-directory: /home/runner/work/plugins/runelite
 
       - name: Upload client artifacts to local maven
-        run: ./gradlew publishToMavenLocal --console=plain
+        run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
         working-directory: /home/runner/work/plugins/runelite
 
       - name: Make gradlew executable (plugins)
@@ -152,7 +152,7 @@ jobs:
         working-directory: /home/runner/work/plugins/runelite
 
       - name: Upload client artifacts to local maven
-        run: ./gradlew publishToMavenLocal --console=plain
+        run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
         working-directory: /home/runner/work/plugins/runelite
 
       - name: Make gradlew executable (plugins)
