@@ -44,6 +44,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.suppliestracker.ItemType;
+import net.runelite.client.plugins.suppliestracker.SuppliesTrackerConfig;
 import net.runelite.client.plugins.suppliestracker.SuppliesTrackerItem;
 import net.runelite.client.plugins.suppliestracker.SuppliesTrackerPlugin;
 import net.runelite.client.ui.ColorScheme;
@@ -76,7 +77,7 @@ public class SuppliesTrackerPanel extends PluginPanel
 	private int overallSuppliesUsed;
 	private int overallCost;
 
-	public SuppliesTrackerPanel(final ItemManager itemManager, SuppliesTrackerPlugin plugin)
+	public SuppliesTrackerPanel(final ItemManager itemManager, SuppliesTrackerPlugin plugin, SuppliesTrackerConfig config)
 	{
 		setBorder(new EmptyBorder(6, 6, 6, 6));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
@@ -140,11 +141,11 @@ public class SuppliesTrackerPanel extends PluginPanel
 		layoutPanel.add(overallPanel);
 		layoutPanel.add(logsContainer);
 
-		errorPanel.setContent("Supply trackers", "You have not used any supplies yet.");
 		add(updatePanel);
-		updatePanel.setVisible(true);
+		updatePanel.setVisible(false);
 		overallPanel.setVisible(false);
-		logsContainer.setVisible(false);
+		logsContainer.setVisible(true);
+
 		info = new JButton("Info");
 		info.addActionListener(e ->
 		{
@@ -158,8 +159,21 @@ public class SuppliesTrackerPanel extends PluginPanel
 			updatePanel.setVisible(true);
 			info.setVisible(false);
 		});
+
 		layoutPanel.add(info);
-		info.setVisible(false);
+
+		errorPanel.setContent("Supply trackers", "You have not used any supplies yet.");
+		if (!config.infoBox())
+		{
+			logsContainer.setVisible(false);
+			updatePanel.setVisible(true);
+			info.setVisible(false);
+		}
+		else
+		{
+			info.setVisible(true);
+			add(errorPanel);
+		}
 	}
 
 	/**

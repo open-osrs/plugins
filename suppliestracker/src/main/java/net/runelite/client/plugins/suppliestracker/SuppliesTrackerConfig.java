@@ -76,4 +76,14 @@ public interface SuppliesTrackerConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		keyName = "infoBox",
+		name = "Disable info box on startup?",
+		description = "Only shows info box when the info button is pressed"
+	)
+	default boolean infoBox()
+	{
+		return false;
+	}
 }
