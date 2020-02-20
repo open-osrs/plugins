@@ -252,7 +252,8 @@ public interface EntityHiderConfig extends Config
 		position = 19,
 		keyName = "hidePets",
 		name = "Hide Pets",
-		description = "Configures whether or not other player pets are hidden"
+		description = "Configures whether or not other player pets are hidden",
+		titleSection = "npcsTitle"
 	)
 	default boolean hidePets()
 	{

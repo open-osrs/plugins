@@ -136,7 +136,6 @@ public class NpcAggroAreaPlugin extends Plugin
 	private WorldPoint previousUnknownCenter;
 	private boolean loggingIn;
 	private List<String> npcNamePatterns;
-	private boolean notWorkingOverlayShown = false;
 	private boolean hasSentNotification = false;
 
 	@Provides
@@ -149,11 +148,7 @@ public class NpcAggroAreaPlugin extends Plugin
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
-		if (config.showNotWorkingOverlay())
-		{
-			overlayManager.add(notWorkingOverlay);
-			notWorkingOverlayShown = true;
-		}
+		overlayManager.add(notWorkingOverlay);
 
 		npcNamePatterns = NAME_SPLITTER.splitToList(config.npcNamePatterns());
 		recheckActive();
@@ -164,10 +159,7 @@ public class NpcAggroAreaPlugin extends Plugin
 	{
 		removeTimer();
 		overlayManager.remove(overlay);
-		if (notWorkingOverlayShown)
-		{
-			overlayManager.remove(notWorkingOverlay);
-		}
+		overlayManager.remove(notWorkingOverlay);
 
 		Arrays.fill(safeCenters, null);
 		lastPlayerLocation = null;

@@ -28,15 +28,78 @@ package net.runelite.client.plugins.motherlode;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("motherlode")
 public interface MotherlodeConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "sessionTitle",
+		name = "Session",
+		description = "",
+		position = 1
+	)
+	default Title sessionTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "statTimeout",
+		name = "Reset stats",
+		description = "Configures the time until statistics are reset",
+		titleSection = "sessionTitle",
+		position = 2
+	)
+	@Units(Units.MINUTES)
+	default int statTimeout()
+	{
+		return 5;
+	}
+
+	@ConfigItem(
+		keyName = "showMiningStats",
+		name = "Show mining session stats",
+		description = "Configures whether to display mining session stats",
+		titleSection = "sessionTitle",
+		position = 3
+	)
+	default boolean showMiningStats()
+	{
+		return true;
+	}
+
+	@ConfigTitleSection(
+		keyName = "overlayTitle",
+		name = "Overlay",
+		description = "",
+		position = 4
+	)
+	default Title overlayTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "showMiningState",
+		name = "Show current mining state",
+		description = "Shows current mining state. 'You are currently mining' / 'You are currently NOT mining'",
+		titleSection = "overlayTitle",
+		position = 5
+	)
+	default boolean showMiningState()
+	{
+		return true;
+	}
+
 	@ConfigItem(
 		keyName = "showVeins",
 		name = "Show pay-dirt mining spots",
-		description = "Configures whether or not the pay-dirt mining spots are displayed."
+		description = "Configures whether or not the pay-dirt mining spots are displayed.",
+		titleSection = "overlayTitle",
+		position = 6
 	)
 	default boolean showVeins()
 	{
@@ -46,7 +109,9 @@ public interface MotherlodeConfig extends Config
 	@ConfigItem(
 		keyName = "showRocks",
 		name = "Show rocks obstacles",
-		description = "Configures whether or not the fallen rocks obstacles are displayed."
+		description = "Configures whether or not the fallen rocks obstacles are displayed.",
+		titleSection = "overlayTitle",
+		position = 7
 	)
 	default boolean showRockFalls()
 	{
@@ -54,20 +119,11 @@ public interface MotherlodeConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "statTimeout",
-		name = "Reset stats",
-		description = "Configures the time until statistics are reset"
-	)
-	@Units(Units.MINUTES)
-	default int statTimeout()
-	{
-		return 5;
-	}
-
-	@ConfigItem(
 		keyName = "showSack",
 		name = "Show pay-dirt sack",
-		description = "Configures whether the pay-dirt sack is displayed or not."
+		description = "Configures whether the pay-dirt sack is displayed or not.",
+		titleSection = "overlayTitle",
+		position = 8
 	)
 	default boolean showSack()
 	{
@@ -75,19 +131,11 @@ public interface MotherlodeConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "showMiningStats",
-		name = "Show mining session stats",
-		description = "Configures whether to display mining session stats"
-	)
-	default boolean showMiningStats()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "showDepositsLeft",
 		name = "Show deposits left",
-		description = "Displays deposits left before sack is full"
+		description = "Displays deposits left before sack is full",
+		titleSection = "overlayTitle",
+		position = 9
 	)
 	default boolean showDepositsLeft()
 	{
@@ -95,19 +143,11 @@ public interface MotherlodeConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "showMiningState",
-		name = "Show current mining state",
-		description = "Shows current mining state. 'You are currently mining' / 'You are currently NOT mining'"
-	)
-	default boolean showMiningState()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "showGemsFound",
 		name = "Show gems found",
-		description = "Shows gems found during current mining session"
+		description = "Shows gems found during current mining session",
+		titleSection = "overlayTitle",
+		position = 10
 	)
 	default boolean showGemsFound()
 	{
@@ -117,7 +157,9 @@ public interface MotherlodeConfig extends Config
 	@ConfigItem(
 		keyName = "showOresFound",
 		name = "Show ores found",
-		description = "Shows the ores found during current mining session"
+		description = "Shows the ores found during current mining session",
+		titleSection = "overlayTitle",
+		position = 11
 	)
 	default boolean showOresFound()
 	{
@@ -125,30 +167,57 @@ public interface MotherlodeConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "notifyOnIdle",
-		name = "Idle notification",
-		description = "Sends a notification when the player stops mining"
-	)
-	default boolean notifyOnIdle()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		keyName = "showTargetVein",
 		name = "Show vein currently being mined",
-		description = "Highlights the vein currently being mined"
+		description = "Highlights the vein currently being mined",
+		titleSection = "overlayTitle",
+		position = 12
 	)
 	default boolean showTargetVein()
 	{
 		return false;
 	}
 
+	@ConfigTitleSection(
+		keyName = "notificationTitle",
+		name = "Notification",
+		description = "",
+		position = 13
+	)
+	default Title notificationTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "notifyOnIdle",
+		name = "Idle notification",
+		description = "Sends a notification when the player stops mining",
+		titleSection = "notificationTitle",
+		position = 14
+	)
+	default boolean notifyOnIdle()
+	{
+		return false;
+	}
+
+	@ConfigTitleSection(
+		keyName = "weirdTitle",
+		name = "Weird",
+		description = "",
+		position = 15
+	)
+	default Title weirdTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "payDirtMsg",
 		name = "Pay-dirt!",
 		description = "Send a public message saying \"Pay-dirt!\" every time a dwarf says \"Pay-dirt!\"",
-		position = 99
+		position = 16,
+		titleSection = "weirdTitle"
 	)
 	default boolean payDirtMsg()
 	{

@@ -29,20 +29,112 @@ import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
+import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("mining")
 public interface MiningConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "coalBagTitle",
+		name = "Coal bag",
+		description = "",
+		position = 1
+	)
+	default Title coalBagTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "showCoalBagOverlay",
 		name = "Show coal bag overlay",
-		description = "Overlays how much coal is inside of your coal bag"
+		description = "Overlays how much coal is inside of your coal bag",
+		titleSection = "coalBagTitle",
+		position = 2
 	)
 	default boolean showCoalBagOverlay()
 	{
 		return true;
+	}
+
+	@ConfigTitleSection(
+		keyName = "progressTitle",
+		name = "Progress",
+		description = "",
+		position = 3
+	)
+	default Title progressTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "progressPieInverted",
+		name = "Invert progress pie",
+		description = "Configures whether the progress pie goes from empty to full or the other way around",
+		titleSection = "progressTitle",
+		position = 4
+	)
+	default boolean progressPieInverted()
+	{
+		return false;
+	}
+
+	@Range(
+		min = 1,
+		max = 50
+	)
+	@ConfigItem(
+		keyName = "progressPieDiameter",
+		name = "Progress pie diameter",
+		description = "Configures how big the progress pie is",
+		titleSection = "progressTitle",
+		position = 5
+	)
+	@Units(Units.PIXELS)
+	default int progressPieDiameter()
+	{
+		return 30;
+	}
+
+	@ConfigTitleSection(
+		keyName = "colorsTitle",
+		name = "Colors",
+		description = "",
+		position = 6
+	)
+	default Title colorsTitle()
+	{
+		return new Title();
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "progressPieColor",
+		name = "Main progress pie color",
+		description = "Configures the color of the main progress pie",
+		titleSection = "colorsTitle",
+		position = 7
+	)
+	default Color progressPieColor()
+	{
+		return Color.YELLOW;
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "progressPieColorMotherlode",
+		name = "Motherlode random respawn threshold progress pie color",
+		description = "Configures the color of the progress pie after Motherlode respawn threshold",
+		titleSection = "colorsTitle",
+		position = 8
+	)
+	default Color progressPieColorMotherlode()
+	{
+		return Color.GREEN;
 	}
 
 	@ConfigItem(
@@ -63,51 +155,4 @@ public interface MiningConfig extends Config
 		hidden = true
 	)
 	void amountOfCoalInCoalBag(int amount);
-
-	@Alpha
-	@ConfigItem(
-		keyName = "progressPieColor",
-		name = "Main progress pie color",
-		description = "Configures the color of the main progress pie"
-	)
-	default Color progressPieColor()
-	{
-		return Color.YELLOW;
-	}
-
-	@Alpha
-	@ConfigItem(
-		keyName = "progressPieColorMotherlode",
-		name = "Motherlode random respawn threshold progress pie color",
-		description = "Configures the color of the progress pie after Motherlode respawn threshold"
-	)
-	default Color progressPieColorMotherlode()
-	{
-		return Color.GREEN;
-	}
-
-	@ConfigItem(
-		keyName = "progressPieInverted",
-		name = "Invert progress pie",
-		description = "Configures whether the progress pie goes from empty to full or the other way around"
-	)
-	default boolean progressPieInverted()
-	{
-		return false;
-	}
-
-	@Range(
-		min = 1,
-		max = 50
-	)
-	@ConfigItem(
-		keyName = "progressPieDiameter",
-		name = "Progress pie diameter",
-		description = "Configures how big the progress pie is"
-	)
-	@Units(Units.PIXELS)
-	default int progressPieDiameter()
-	{
-		return 30;
-	}
 }

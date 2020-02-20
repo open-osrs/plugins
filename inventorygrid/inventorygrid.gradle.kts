@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Inventory Grid"
-project.extra["PluginDescription"] = "Shows a grid over the inventory and a preview of where items will be dragged"
+project.extra["PluginDescription"] = "Shows a grid over the inventory, bank and a preview of where items will be dragged"
 
 dependencies {
     annotationProcessor(Libraries.lombok)

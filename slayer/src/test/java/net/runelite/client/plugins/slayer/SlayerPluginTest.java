@@ -640,7 +640,6 @@ public class SlayerPluginTest
 		assertEquals(34, slayerPlugin.getCurrentTask().getAmount());
 	}
 
-	@Test
 	public void infoboxNotAddedOnLogin()
 	{
 		GameStateChanged loggingIn = new GameStateChanged();

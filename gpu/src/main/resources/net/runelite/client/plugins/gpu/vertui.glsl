@@ -28,6 +28,7 @@
 #define SAMPLING_MITCHELL 1
 #define SAMPLING_CATROM 2
 #define SAMPLING_XBR 3
+
 uniform int samplingMode;
 uniform ivec2 sourceDimensions;
 uniform ivec2 targetDimensions;
@@ -46,5 +47,7 @@ void main()
     TexCoord = aTexCoord;
 
     if (samplingMode == SAMPLING_XBR)
+    {
         xbrTable = xbr_vert(TexCoord, sourceDimensions);
+    }
 }

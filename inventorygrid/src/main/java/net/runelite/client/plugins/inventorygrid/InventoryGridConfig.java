@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018, Jeremy Plsek <https://github.com/jplsek>
+ * Copyright (c) 2019, gregg1494 <https://github.com/gregg1494>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,30 +30,69 @@ import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
+import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("inventorygrid")
 public interface InventoryGridConfig extends Config
 {
-	@ConfigItem(
-		keyName = "showItem",
-		name = "Show item",
-		description = "Show a preview of the item in the new slot",
+	@ConfigTitleSection(
+		keyName = "gridsTitle",
+		name = "Grids",
+		description = "",
 		position = 1
 	)
-	default boolean showItem()
+
+	default Title gridsTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "showInventoryGrid",
+		name = "Show inventory grid",
+		description = "Show a grid on the inventory while dragging",
+		position = 2,
+		titleSection = "gridsTitle"
+	)
+	default boolean showInventoryGrid()
 	{
 		return true;
 	}
 
 	@ConfigItem(
-		keyName = "showGrid",
-		name = "Show grid",
-		description = "Show a grid on the inventory while dragging",
-		position = 2
+		keyName = "showBankGrid",
+		name = "Show bank grid",
+		description = "Show a grid on the bank while dragging",
+		position = 3,
+		titleSection = "gridsTitle"
 	)
-	default boolean showGrid()
+	default boolean showBankGrid()
+	{
+		return true;
+	}
+
+	@ConfigTitleSection(
+		keyName = "overlayTitle",
+		name = "Overlay",
+		description = "",
+		position = 4
+	)
+	default Title overlayTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "showItem",
+		name = "Show item",
+		description = "Show a preview of the item in the new slot",
+		position = 5,
+		titleSection = "overlayTitle"
+	)
+	default boolean showItem()
 	{
 		return true;
 	}
@@ -61,7 +101,8 @@ public interface InventoryGridConfig extends Config
 		keyName = "showHighlight",
 		name = "Highlight background",
 		description = "Show a background highlight on the new slot",
-		position = 3
+		position = 6,
+		titleSection = "overlayTitle"
 	)
 	default boolean showHighlight()
 	{
@@ -72,7 +113,8 @@ public interface InventoryGridConfig extends Config
 		keyName = "dragDelay",
 		name = "Drag Delay",
 		description = "Time in ms to wait after item press before showing grid",
-		position = 4
+		position = 7,
+		titleSection = "overlayTitle"
 	)
 	@Range(min = 100)
 	@Units(Units.MILLISECONDS)
@@ -81,12 +123,24 @@ public interface InventoryGridConfig extends Config
 		return 100;
 	}
 
+	@ConfigTitleSection(
+		keyName = "colorsTitle",
+		name = "Colors",
+		description = "",
+		position = 8
+	)
+	default Title colorsTitle()
+	{
+		return new Title();
+	}
+
 	@Alpha
 	@ConfigItem(
 		keyName = "gridColor",
 		name = "Grid color",
 		description = "The color of the grid",
-		position = 5
+		position = 9,
+		titleSection = "colorsTitle"
 	)
 	default Color gridColor()
 	{
@@ -98,7 +152,8 @@ public interface InventoryGridConfig extends Config
 		keyName = "highlightColor",
 		name = "Highlight color",
 		description = "The color of the new inventory slot highlight",
-		position = 6
+		position = 10,
+		titleSection = "colorsTitle"
 	)
 	default Color highlightColor()
 	{
