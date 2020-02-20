@@ -29,7 +29,7 @@ import lombok.Data;
 public class TmorphSet
 {
 	private String name;
-	private int head;
+	private int helmet;
 	private int cape;
 	private int amulet;
 	private int weapon;
