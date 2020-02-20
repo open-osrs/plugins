@@ -56,7 +56,7 @@ import static net.runelite.api.kit.KitType.AMULET;
 import static net.runelite.api.kit.KitType.BOOTS;
 import static net.runelite.api.kit.KitType.CAPE;
 import static net.runelite.api.kit.KitType.HANDS;
-import static net.runelite.api.kit.KitType.HELMET;
+import static net.runelite.api.kit.KitType.HEAD;
 import static net.runelite.api.kit.KitType.LEGS;
 import static net.runelite.api.kit.KitType.SHIELD;
 import static net.runelite.api.kit.KitType.TORSO;
@@ -81,7 +81,7 @@ import org.jooq.impl.SQLDataType;
 @Slf4j
 public class TPanel extends PluginPanel
 {
-	private static final Set<KitType> BLACKLIST = ImmutableSet.of(KitType.AMMUNITION, KitType.RING, KitType.HEAD, KitType.JAW);
+	private static final Set<KitType> BLACKLIST = ImmutableSet.of(KitType.AMMUNITION, KitType.RING, KitType.HAIR, KitType.JAW);
 
 	private final Client client;
 	private final DatabaseManager databaseManager;
@@ -329,7 +329,7 @@ public class TPanel extends PluginPanel
 			{
 				databaseManager.getDsl().insertInto(TMORPH_SETS)
 					.set(TMORPH_SETS.SET_NAME, s)
-					.set(TMORPH_SETS.HELMET, kitToId.getOrDefault(HELMET, -1))
+					.set(TMORPH_SETS.HELMET, kitToId.getOrDefault(HEAD, -1))
 					.set(TMORPH_SETS.CAPE, kitToId.getOrDefault(CAPE, -1))
 					.set(TMORPH_SETS.AMULET, kitToId.getOrDefault(AMULET, -1))
 					.set(TMORPH_SETS.WEAPON, kitToId.getOrDefault(WEAPON, -1))
@@ -344,7 +344,7 @@ public class TPanel extends PluginPanel
 			else
 			{
 				databaseManager.getDsl().update(TMORPH_SETS)
-					.set(TMORPH_SETS.HELMET, kitToId.getOrDefault(HELMET, -1))
+					.set(TMORPH_SETS.HELMET, kitToId.getOrDefault(HEAD, -1))
 					.set(TMORPH_SETS.CAPE, kitToId.getOrDefault(CAPE, -1))
 					.set(TMORPH_SETS.AMULET, kitToId.getOrDefault(AMULET, -1))
 					.set(TMORPH_SETS.WEAPON, kitToId.getOrDefault(WEAPON, -1))
@@ -428,7 +428,7 @@ public class TPanel extends PluginPanel
 	{
 		switch (kitType)
 		{
-			case HELMET:
+			case HEAD:
 				return TMORPH_SETS.HELMET;
 			case CAPE:
 				return TMORPH_SETS.CAPE;
