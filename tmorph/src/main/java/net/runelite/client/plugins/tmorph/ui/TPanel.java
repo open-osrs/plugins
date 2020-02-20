@@ -205,7 +205,7 @@ public class TPanel extends PluginPanel
 		{
 			databaseManager.getDsl().createTable(TMORPH_SETS)
 				.column(TMORPH_SETS.SET_NAME, SQLDataType.VARCHAR(255).nullable(false))
-				.column(TMORPH_SETS.HEAD, SQLDataType.INTEGER.nullable(false))
+				.column(TMORPH_SETS.HELMET, SQLDataType.INTEGER.nullable(false))
 				.column(TMORPH_SETS.CAPE, SQLDataType.INTEGER.nullable(false))
 				.column(TMORPH_SETS.AMULET, SQLDataType.INTEGER.nullable(false))
 				.column(TMORPH_SETS.WEAPON, SQLDataType.INTEGER.nullable(false))
@@ -228,7 +228,7 @@ public class TPanel extends PluginPanel
 			TmorphSet tmo = new TmorphSet();
 			String name = record.getValue(TMORPH_SETS.SET_NAME);
 			tmo.setName(name);
-			tmo.setHead(record.getValue(TMORPH_SETS.HEAD));
+			tmo.setHelmet(record.getValue(TMORPH_SETS.HELMET));
 			tmo.setCape(record.getValue(TMORPH_SETS.CAPE));
 			tmo.setAmulet(record.getValue(TMORPH_SETS.AMULET));
 			tmo.setWeapon(record.getValue(TMORPH_SETS.WEAPON));
@@ -329,7 +329,7 @@ public class TPanel extends PluginPanel
 			{
 				databaseManager.getDsl().insertInto(TMORPH_SETS)
 					.set(TMORPH_SETS.SET_NAME, s)
-					.set(TMORPH_SETS.HEAD, kitToId.getOrDefault(HEAD, -1))
+					.set(TMORPH_SETS.HELMET, kitToId.getOrDefault(HEAD, -1))
 					.set(TMORPH_SETS.CAPE, kitToId.getOrDefault(CAPE, -1))
 					.set(TMORPH_SETS.AMULET, kitToId.getOrDefault(AMULET, -1))
 					.set(TMORPH_SETS.WEAPON, kitToId.getOrDefault(WEAPON, -1))
@@ -344,7 +344,7 @@ public class TPanel extends PluginPanel
 			else
 			{
 				databaseManager.getDsl().update(TMORPH_SETS)
-					.set(TMORPH_SETS.HEAD, kitToId.getOrDefault(HEAD, -1))
+					.set(TMORPH_SETS.HELMET, kitToId.getOrDefault(HEAD, -1))
 					.set(TMORPH_SETS.CAPE, kitToId.getOrDefault(CAPE, -1))
 					.set(TMORPH_SETS.AMULET, kitToId.getOrDefault(AMULET, -1))
 					.set(TMORPH_SETS.WEAPON, kitToId.getOrDefault(WEAPON, -1))
@@ -429,7 +429,7 @@ public class TPanel extends PluginPanel
 		switch (kitType)
 		{
 			case HEAD:
-				return TMORPH_SETS.HEAD;
+				return TMORPH_SETS.HELMET;
 			case CAPE:
 				return TMORPH_SETS.CAPE;
 			case AMULET:
