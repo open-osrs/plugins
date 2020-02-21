@@ -6,14 +6,7 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import static net.runelite.api.ItemID.ABYSSAL_TENTACLE;
-import static net.runelite.api.ItemID.ABYSSAL_WHIP;
-import static net.runelite.api.ItemID.GRANITE_CLAMP;
-import static net.runelite.api.ItemID.GRANITE_MAUL;
-import static net.runelite.api.ItemID.GRANITE_MAUL_24225;
-import static net.runelite.api.ItemID.GRANITE_MAUL_24227;
-import static net.runelite.api.ItemID.KRAKEN_TENTACLE;
-import static net.runelite.api.ItemID.ORNATE_MAUL_HANDLE;
+import static net.runelite.api.ItemID.*;
 
 @Getter(AccessLevel.PACKAGE)
 @RequiredArgsConstructor
