@@ -62,6 +62,7 @@ import net.runelite.api.widgets.WidgetID;
 import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.plugins.Plugin;
@@ -101,6 +102,11 @@ public class XpTrackerPlugin extends Plugin
 		Skill.RANGED,
 		Skill.HITPOINTS,
 		Skill.MAGIC);
+
+	public static final String OPTION_RESET = "Reset";
+	public static final String OPTION_REMOVE = "Remove";
+	public static final String OPTION_PAUSE = "Pause";
+	public static final String OPTION_RESUME = "Resume";
 
 	@Inject
 	private ClientToolbar clientToolbar;
@@ -253,7 +259,7 @@ public class XpTrackerPlugin extends Plugin
 	void addOverlay(Skill skill)
 	{
 		removeOverlay(skill);
-		overlayManager.add(new XpInfoBoxOverlay(this, xpTrackerConfig, skill, skillIconManager.getSkillImage(skill)));
+		overlayManager.add(new XpInfoBoxOverlay(this, xpTrackerConfig, xpPauseState, skill, skillIconManager.getSkillImage(skill)));
 	}
 
 	/**
@@ -735,6 +741,32 @@ public class XpTrackerPlugin extends Plugin
 		for (Skill skill : Skill.values())
 		{
 			pauseSkill(skill, pause);
+		}
+	}
+
+	@Subscribe
+	public void onOverlayMenuClicked(OverlayMenuClicked event)
+	{
+		final Skill skill = Skill.valueOf(Text.removeTags(event.getEntry().getTarget()).toUpperCase());
+
+		if (event.getEntry().getMenuOpcode() == MenuOpcode.RUNELITE_OVERLAY &&
+			event.getEntry().getTarget() != null )
+		{
+			String option = event.getEntry().getOption();
+			switch (option)
+			{
+				case OPTION_RESET:
+					resetSkillState(skill);
+					break;
+				case OPTION_PAUSE:
+				case OPTION_RESUME:
+					pauseSkill(skill, !xpPauseState.isPaused(skill));
+					break;
+				case OPTION_REMOVE:
+					xpPanel.toggleCanvasItemText(skill);
+					removeOverlay(skill);
+					break;
+			}
 		}
 	}
 }

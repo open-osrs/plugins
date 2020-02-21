@@ -28,15 +28,53 @@ package net.runelite.client.plugins.stretchedmode;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("stretchedmode")
 public interface StretchedModeConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "modeTitle",
+		name = "Mode",
+		description = "",
+		position = 1
+	)
+	default Title modeTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "increasedPerformance",
+		name = "Increased performance mode",
+		description = "Uses a fast algorithm when stretching, lowering quality but increasing performance.",
+		titleSection = "modeTitle",
+		position = 2
+	)
+	default boolean increasedPerformance()
+	{
+		return false;
+	}
+
+	@ConfigTitleSection(
+		keyName = "scalingTitle",
+		name = "Scaling",
+		description = "",
+		position = 3
+	)
+	default Title scalingTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "keepAspectRatio",
 		name = "Keep aspect ratio",
-		description = "Keeps the aspect ratio when stretching."
+		description = "Keeps the aspect ratio when stretching.",
+		titleSection = "scalingTitle",
+		position = 4
 	)
 	default boolean keepAspectRatio()
 	{
@@ -44,19 +82,11 @@ public interface StretchedModeConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "increasedPerformance",
-		name = "Increased performance mode",
-		description = "Uses a fast algorithm when stretching, lowering quality but increasing performance."
-	)
-	default boolean increasedPerformance()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		keyName = "integerScaling",
 		name = "Integer Scaling",
-		description = "Forces use of a whole number scale factor when stretching."
+		description = "Forces use of a whole number scale factor when stretching.",
+		titleSection = "scalingTitle",
+		position = 5
 	)
 	default boolean integerScaling()
 	{
@@ -66,7 +96,9 @@ public interface StretchedModeConfig extends Config
 	@ConfigItem(
 		keyName = "scalingFactor",
 		name = "Resizable Scaling",
-		description = "In resizable mode, the game is reduced in size this much before it's stretched."
+		description = "In resizable mode, the game is reduced in size this much before it's stretched.",
+		titleSection = "scalingTitle",
+		position = 6
 	)
 	@Units(Units.PERCENT)
 	default int scalingFactor()
