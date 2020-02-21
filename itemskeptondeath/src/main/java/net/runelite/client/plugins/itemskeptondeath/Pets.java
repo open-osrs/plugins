@@ -126,6 +126,7 @@ final class Pets
 		VETION_JR_13180,
 		VORKI,
 		YOUNGLLEF,
+		LITTLE_NIGHTMARE,
 
 		//Skilling Pets
 		BABY_CHINCHOMPA,
