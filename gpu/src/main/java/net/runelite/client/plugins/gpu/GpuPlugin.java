@@ -800,11 +800,14 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			log.warn("Canvas invalidated!");
 			try
 			{
-				shutDown();
-				startUp();
+				SwingUtil.syncExec(() -> {
+					shutDown();
+					startUp();
+				});
 			}
-			catch (Exception ignored)
+			catch (InvocationTargetException | InterruptedException e)
 			{
+				log.error("{}", e);
 			}
 			return;
 		}
