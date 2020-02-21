@@ -29,17 +29,30 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("slayer")
 public interface SlayerConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "infoBoxTitle",
+		name = "InfoBox",
+		description = "",
+		position = 1
+	)
+	default Title infoBoxTitle()
+	{
+		return new Title();
+	}
 
 	@ConfigItem(
-		position = 1,
+		position = 2,
 		keyName = "infobox",
 		name = "Task InfoBox",
-		description = "Display task information in an InfoBox"
+		description = "Display task information in an InfoBox",
+		titleSection = "infoBoxTitle"
 	)
 	default boolean showInfobox()
 	{
@@ -47,32 +60,11 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 2,
-		keyName = "itemoverlay",
-		name = "Count on Items",
-		description = "Display task count remaining on slayer items"
-	)
-	default boolean showItemOverlay()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		position = 3,
-		keyName = "superiornotification",
-		name = "Superior foe notification",
-		description = "Toggles notifications on superior foe encounters"
-	)
-	default boolean showSuperiorNotification()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 4,
 		keyName = "statTimeout",
 		name = "InfoBox Expiry",
-		description = "Set the time until the InfoBox expires"
+		description = "Set the time until the InfoBox expires",
+		titleSection = "infoBoxTitle"
 	)
 	@Units(Units.MINUTES)
 	default int statTimeout()
@@ -80,11 +72,23 @@ public interface SlayerConfig extends Config
 		return 5;
 	}
 
+	@ConfigTitleSection(
+		keyName = "highlightTitle",
+		name = "Highlight",
+		description = "",
+		position = 4
+	)
+	default Title highlightTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		position = 5,
 		keyName = "highlightTargets",
 		name = "Highlight Targets",
-		description = "Highlight monsters you can kill for your current slayer assignment"
+		description = "Highlight monsters you can kill for your current slayer assignment",
+		titleSection = "highlightTitle"
 	)
 	default boolean highlightTargets()
 	{
@@ -92,21 +96,34 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
+		position = 6,
 		keyName = "highlightStyle",
 		name = "Highlight Style",
-		description = "Highlight setting"
+		description = "Highlight setting",
+		titleSection = "highlightTitle"
 	)
 	default RenderStyle renderStyle()
 	{
 		return RenderStyle.THIN_OUTLINE;
 	}
 
+	@ConfigTitleSection(
+		keyName = "colorsTitle",
+		name = "Colors",
+		description = "",
+		position = 7
+	)
+	default Title colorsTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 7,
+		position = 8,
 		keyName = "targetColor",
 		name = "Target Color",
-		description = "Color of the highlighted targets"
+		description = "Color of the highlighted targets",
+		titleSection = "colorsTitle"
 	)
 	default Color getTargetColor()
 	{
@@ -114,21 +131,69 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 8,
+		position = 9,
 		keyName = "superiorColor",
 		name = "Superior Color",
-		description = "Color of the highlighted superior slayer creatures"
+		description = "Color of the highlighted superior slayer creatures",
+		titleSection = "colorsTitle"
 	)
 	default Color getSuperiorColor()
 	{
 		return Color.MAGENTA;
 	}
 
+	@ConfigTitleSection(
+		keyName = "notificationTitle",
+		name = "Notification",
+		description = "",
+		position = 10
+	)
+	default Title notificationTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 9,
+		position = 11,
+		keyName = "superiornotification",
+		name = "Superior foe notification",
+		description = "Toggles notifications on superior foe encounters",
+		titleSection = "notificationTitle"
+	)
+	default boolean showSuperiorNotification()
+	{
+		return true;
+	}
+
+	@ConfigTitleSection(
+		keyName = "overlayTitle",
+		name = "Overlay",
+		description = "",
+		position = 12
+	)
+	default Title overlayTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 13,
+		keyName = "itemoverlay",
+		name = "Count on Items",
+		description = "Display task count remaining on slayer items",
+		titleSection = "overlayTitle"
+	)
+	default boolean showItemOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 14,
 		keyName = "drawNames",
 		name = "Draw names above NPC",
-		description = "Configures whether or not NPC names should be drawn above the NPC"
+		description = "Configures whether or not NPC names should be drawn above the NPC",
+		titleSection = "overlayTitle"
 	)
 	default boolean drawNames()
 	{
@@ -136,10 +201,11 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 10,
+		position = 15,
 		keyName = "drawMinimapNames",
 		name = "Draw names on minimap",
-		description = "Configures whether or not NPC names should be drawn on the minimap"
+		description = "Configures whether or not NPC names should be drawn on the minimap",
+		titleSection = "overlayTitle"
 	)
 	default boolean drawMinimapNames()
 	{
@@ -147,21 +213,34 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 12,
+		position = 16,
 		keyName = "weaknessPrompt",
 		name = "Show Monster Weakness",
-		description = "Show an overlay on a monster when it is weak enough to finish off (Only Lizards, Gargoyles & Rockslugs)"
+		description = "Show an overlay on a monster when it is weak enough to finish off (Only Lizards, Gargoyles & Rockslugs)",
+		titleSection = "overlayTitle"
 	)
 	default boolean weaknessPrompt()
 	{
 		return true;
 	}
 
+	@ConfigTitleSection(
+		keyName = "commandsTitle",
+		name = "Commands",
+		description = "",
+		position = 17
+	)
+	default Title commandsTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 13,
+		position = 18,
 		keyName = "taskCommand",
 		name = "Task Command",
-		description = "Configures whether the slayer task command is enabled<br> !task"
+		description = "Configures whether the slayer task command is enabled<br> !task",
+		titleSection = "commandsTitle"
 	)
 	default boolean taskCommand()
 	{
@@ -169,10 +248,11 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 19,
 		keyName = "pointsCommand",
 		name = "Points Command",
-		description = "Configures whether the slayer points command is enabled<br> !points"
+		description = "Configures whether the slayer points command is enabled<br> !points",
+		titleSection = "commandsTitle"
 	)
 	default boolean pointsCommand()
 	{

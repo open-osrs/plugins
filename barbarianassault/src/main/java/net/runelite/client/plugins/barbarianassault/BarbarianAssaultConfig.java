@@ -35,11 +35,23 @@ import net.runelite.client.config.Range;
 @ConfigGroup("barbarianAssault")
 public interface BarbarianAssaultConfig extends Config
 {
+	@ConfigSection(
+		name = "General",
+		description = "",
+		position = 1,
+		keyName = "generalSection"
+	)
+	default boolean generalSection()
+	{
+		return false;
+	}
+
 	@ConfigItem(
 		keyName = "swapLadder",
 		name = "Swap quick-start",
 		description = "Enables swapping of 'Climb-down' and 'Quick-start' in the wave lobby",
-		position = 0
+		position = 2,
+		section = "generalSection"
 	)
 	default boolean swapLadder()
 	{
@@ -50,7 +62,8 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showTimer",
 		name = "Show call change timer",
 		description = "Shows time to next call change",
-		position = 1
+		position = 3,
+		section = "generalSection"
 	)
 	default boolean showTimer()
 	{
@@ -61,7 +74,8 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "removeIncorrectCalls",
 		name = "Remove incorrect calls",
 		description = "Removes incorrect 'Tell' menu options from horn",
-		position = 2
+		position = 4,
+		section = "generalSection"
 	)
 	default boolean removeIncorrectCalls()
 	{
@@ -73,7 +87,8 @@ public interface BarbarianAssaultConfig extends Config
 		name = "Remove unused menus",
 		description = "Removes unnecessary menu options" +
 			"<br>Example: Attack options are removed when not attacker",
-		position = 3
+		position = 5,
+		section = "generalSection"
 	)
 	default boolean removeUnusedMenus()
 	{
@@ -84,7 +99,8 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "prayerMetronome",
 		name = "Enable prayer metronome",
 		description = "Turns on a metronome sync'd to the game's tick rate when any prayer is active",
-		position = 4
+		position = 6,
+		section = "generalSection"
 	)
 	default boolean prayerMetronome()
 	{
@@ -99,9 +115,10 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "prayerMetronomeVolume",
 		name = "Metronome volume",
 		description = "Adjusts the metronome's volume",
-		position = 5,
+		position = 7,
 		hidden = true,
-		unhide = "prayerMetronome"
+		unhide = "prayerMetronome",
+		section = "generalSection"
 	)
 	default int prayerMetronomeVolume()
 	{
@@ -112,7 +129,8 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showDeathTimes",
 		name = "Show death times",
 		description = "Shows the time all penance monsters of a certain type are killed in the chat box, an info box, or both",
-		position = 6
+		position = 8,
+		section = "generalSection"
 	)
 	default boolean showDeathTimes()
 	{
@@ -123,9 +141,10 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showDeathTimesMode",
 		name = "Mode",
 		description = "",
-		position = 7,
+		position = 9,
 		hidden = true,
-		unhide = "showDeathTimes"
+		unhide = "showDeathTimes",
+		section = "generalSection"
 	)
 	default DeathTimesMode showDeathTimesMode()
 	{
@@ -136,7 +155,8 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "waveTimes",
 		name = "Show wave and game duration",
 		description = "Displays wave duration after each wave and total game time after wave 10",
-		position = 8
+		position = 10,
+		section = "generalSection"
 	)
 	default boolean waveTimes()
 	{
@@ -147,7 +167,8 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showTotalRewards",
 		name = "Summarize total reward points",
 		description = "Gives summary of advanced points breakdown in chat log",
-		position = 9
+		position = 11,
+		section = "generalSection"
 	)
 	default boolean showTotalRewards()
 	{
@@ -162,7 +183,7 @@ public interface BarbarianAssaultConfig extends Config
 	@ConfigSection(
 		name = "Attacker",
 		description = "",
-		position = 10,
+		position = 12,
 		keyName = "attackerSection"
 	)
 	default boolean attackerSection()
@@ -174,7 +195,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightArrows",
 		name = "Highlight called arrows",
 		description = "Highlights arrows called by your teammate",
-		position = 0,
+		position = 13,
 		section = "attackerSection"
 	)
 	default boolean highlightArrows()
@@ -186,7 +207,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightArrowColor",
 		name = "Arrow color",
 		description = "Configures the color to highlight the called arrows",
-		position = 1,
+		position = 14,
 		section = "attackerSection",
 		hidden = true,
 		unhide = "highlightArrows"
@@ -200,7 +221,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "removeIncorrectAttackStyles",
 		name = "Remove incorrect attack styles",
 		description = "Hides wrong attack styles for dragon claws and crystal halberd",
-		position = 2,
+		position = 15,
 		section = "attackerSection"
 	)
 	default boolean removeIncorrectAttackStyles()
@@ -212,7 +233,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "tagging",
 		name = "Enable tagging",
 		description = "Highlights the menu entry of an attacker/ranger that has not been tagged.",
-		position = 3,
+		position = 16,
 		section = "attackerSection"
 	)
 	default boolean tagging()
@@ -228,7 +249,7 @@ public interface BarbarianAssaultConfig extends Config
 	@ConfigSection(
 		name = "Defender",
 		description = "",
-		position = 11,
+		position = 17,
 		keyName = "defenderSection"
 	)
 	default boolean defenderSection()
@@ -240,7 +261,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightBait",
 		name = "Highlight called bait",
 		description = "Highlights bait called by your teammate",
-		position = 0,
+		position = 18,
 		section = "defenderSection"
 	)
 	default boolean highlightBait()
@@ -252,7 +273,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightBaitColor",
 		name = "Bait color",
 		description = "Configures the color to highlight the called bait",
-		position = 1,
+		position = 19,
 		section = "defenderSection",
 		hidden = true,
 		unhide = "highlightBait"
@@ -266,7 +287,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showDefTimer",
 		name = "Show defender tick timer",
 		description = "Shows the current cycle tick of runners",
-		position = 2,
+		position = 20,
 		section = "defenderSection"
 	)
 	default boolean showDefTimer()
@@ -278,7 +299,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "deprioritizeBait",
 		name = "Deprioritize bait",
 		description = "Moves 'Take' menu option for all bait below 'Walk Here'",
-		position = 3,
+		position = 21,
 		section = "defenderSection"
 	)
 	default boolean deprioritizeBait()
@@ -290,7 +311,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "removePenanceCave",
 		name = "Remove penance cave",
 		description = "Removes 'Block' menu option from penance cave",
-		position = 4,
+		position = 22,
 		section = "defenderSection"
 	)
 	default boolean removePenanceCave()
@@ -306,7 +327,7 @@ public interface BarbarianAssaultConfig extends Config
 	@ConfigSection(
 		name = "Healer",
 		description = "",
-		position = 12,
+		position = 23,
 		keyName = "healerSection"
 	)
 	default boolean healerSection()
@@ -318,7 +339,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightPoison",
 		name = "Highlight called poison",
 		description = "Highlights poison called by your teammate",
-		position = 0,
+		position = 24,
 		section = "healerSection"
 	)
 	default boolean highlightPoison()
@@ -330,7 +351,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightPoisonColor",
 		name = "Poison color",
 		description = "Configures the color to highlight the called poison",
-		position = 1,
+		position = 25,
 		section = "healerSection",
 		hidden = true,
 		unhide = "highlightPoison"
@@ -344,7 +365,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightNotification",
 		name = "Highlight incorrect notification",
 		description = "Highlights incorrect poison chat notification",
-		position = 2,
+		position = 26,
 		section = "healerSection"
 	)
 	default boolean highlightNotification()
@@ -356,7 +377,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightNotificationColor",
 		name = "Notification color",
 		description = "Configures the color to highlight the notification text",
-		position = 3,
+		position = 27,
 		section = "healerSection",
 		hidden = true,
 		unhide = "highlightNotification"
@@ -370,7 +391,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showHpCountOverlay",
 		name = "Show number of hitpoints healed",
 		description = "Displays current number of hitpoints healed",
-		position = 4,
+		position = 28,
 		section = "healerSection"
 	)
 	default boolean showHpCountOverlay()
@@ -382,7 +403,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showTeammateHealthbars",
 		name = "Show health bars",
 		description = "Displays a health bar where a teammate's remaining health is located",
-		position = 5,
+		position = 29,
 		section = "healerSection"
 	)
 	default boolean showTeammateHealthbars()
@@ -394,7 +415,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "healerCodes",
 		name = "Show healer codes",
 		description = "Overlay to show healer codes",
-		position = 6,
+		position = 30,
 		section = "healerSection"
 	)
 	default boolean healerCodes()
@@ -406,7 +427,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "healerMenuOption",
 		name = "Show healer menu options",
 		description = "Shows tick count in healer menu options",
-		position = 7,
+		position = 31,
 		section = "healerSection"
 	)
 	default boolean healerMenuOption()
@@ -418,7 +439,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "shiftOverstock",
 		name = "Enable shift overstock",
 		description = "Enables overstocking by pressing shift",
-		position = 8,
+		position = 32,
 		section = "healerSection"
 	)
 	default boolean shiftOverstock()
@@ -430,7 +451,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "controlHealer",
 		name = "Control Healer",
 		description = "Hold ctrl to put last healer clicked on top",
-		position = 9,
+		position = 33,
 		section = "healerSection"
 	)
 	default boolean controlHealer()
@@ -446,7 +467,7 @@ public interface BarbarianAssaultConfig extends Config
 	@ConfigSection(
 		name = "Collector",
 		description = "",
-		position = 13,
+		position = 34,
 		keyName = "collectorSection"
 	)
 	default boolean collectorSection()
@@ -458,7 +479,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "swapCollectorBag",
 		name = "Swap empty",
 		description = "Enables swapping of 'Look-in' and 'Empty' on the collector's bag",
-		position = 0,
+		position = 35,
 		section = "collectorSection"
 	)
 	default boolean swapCollectorBag()
@@ -470,7 +491,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "swapDestroyEggs",
 		name = "Swap destroy",
 		description = "Enables swapping of 'Use' and 'Destroy' on collector eggs; this does not affect yellow/omega eggs",
-		position = 1,
+		position = 36,
 		section = "collectorSection"
 	)
 	default boolean swapDestroyEggs()
@@ -482,7 +503,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "highlightCollectorEggs",
 		name = "Highlight collector eggs",
 		description = "Highlight called egg colors",
-		position = 2,
+		position = 37,
 		section = "collectorSection"
 	)
 	default boolean highlightCollectorEggs()
@@ -494,7 +515,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "deprioritizeIncorrectEggs",
 		name = "Deprioritize incorrect eggs",
 		description = "Moves 'Take' menu option for incorrect eggs below 'Walk Here'",
-		position = 3,
+		position = 38,
 		section = "collectorSection"
 	)
 	default boolean deprioritizeIncorrectEggs()
@@ -506,7 +527,7 @@ public interface BarbarianAssaultConfig extends Config
 		keyName = "showEggCountOverlay",
 		name = "Show number of eggs collected",
 		description = "Displays current number of eggs collected",
-		position = 4,
+		position = 39,
 		section = "collectorSection"
 	)
 	default boolean showEggCountOverlay()

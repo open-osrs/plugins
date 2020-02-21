@@ -206,4 +206,8 @@ class XpPanel extends PluginPanel
 		overallExpHour.setText(XpInfoBox.htmlLabel("Per hour: ", xpSnapshotTotal.getXpPerHour()));
 	}
 
+	void toggleCanvasItemText(Skill skill)
+	{
+		infoBoxes.get(skill).toggleCanvasItemText();
+	}
 }

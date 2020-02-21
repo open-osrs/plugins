@@ -27,16 +27,30 @@ package net.runelite.client.plugins.smelting;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("smelting")
 public interface SmeltingConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "sessionTitle",
+		name = "Session",
+		description = "",
+		position = 1
+	)
+	default Title sessionTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 1,
+		position = 2,
 		keyName = "statTimeout",
 		name = "Reset stats",
-		description = "The time it takes for the current smelting session to be reset"
+		description = "The time it takes for the current smelting session to be reset",
+		titleSection = "sessionTitle"
 	)
 	@Units(Units.MINUTES)
 	default int statTimeout()

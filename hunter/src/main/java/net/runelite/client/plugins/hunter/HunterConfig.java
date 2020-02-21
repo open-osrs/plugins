@@ -28,15 +28,29 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 
 @ConfigGroup("hunterplugin")
 public interface HunterConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "colorsTitle",
+		name = "Colors",
+		description = "",
+		position = 1
+	)
+	default Title colorsTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 1,
+		position = 2,
 		keyName = "hexColorOpenTrap",
 		name = "Open trap",
-		description = "Color of open trap timer"
+		description = "Color of open trap timer",
+		titleSection = "colorsTitle"
 	)
 	default Color getOpenTrapColor()
 	{
@@ -44,10 +58,11 @@ public interface HunterConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 2,
+		position = 3,
 		keyName = "hexColorFullTrap",
 		name = "Full trap",
-		description = "Color of full trap timer"
+		description = "Color of full trap timer",
+		titleSection = "colorsTitle"
 	)
 	default Color getFullTrapColor()
 	{
@@ -55,10 +70,11 @@ public interface HunterConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 3,
+		position = 4,
 		keyName = "hexColorEmptyTrap",
 		name = "Empty trap",
-		description = "Color of empty trap timer"
+		description = "Color of empty trap timer",
+		titleSection = "colorsTitle"
 	)
 	default Color getEmptyTrapColor()
 	{
@@ -66,21 +82,34 @@ public interface HunterConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
+		position = 5,
 		keyName = "hexColorTransTrap",
 		name = "Transitioning trap",
-		description = "Color of transitioning trap timer"
+		description = "Color of transitioning trap timer",
+		titleSection = "colorsTitle"
 	)
 	default Color getTransTrapColor()
 	{
 		return Color.ORANGE;
 	}
 
+	@ConfigTitleSection(
+		keyName = "notificationsTitle",
+		name = "Notifications",
+		description = "",
+		position = 6
+	)
+	default Title notificationsTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 5,
+		position = 7,
 		keyName = "maniacalMonkeyNotify",
 		name = "Maniacal monkey notification",
-		description = "Send notification when maniacal monkey is caught or you fail to catch."
+		description = "Send notification when maniacal monkey is caught or you fail to catch.",
+		titleSection = "notificationsTitle"
 	)
 	default boolean maniacalMonkeyNotify()
 	{

@@ -27,7 +27,15 @@ package net.runelite.client.plugins.inventorygrid;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
+import lombok.AccessLevel;
+import lombok.Getter;
+import net.runelite.api.Client;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -38,28 +46,56 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Inventory Grid",
 	enabledByDefault = false,
-	description = "Shows a grid over the inventory and a preview of where items will be dragged",
+	description = "Shows a grid over the inventory, bank and a preview of where items will be dragged",
 	tags = {"items", "overlay"},
 	type = PluginType.UTILITY
 )
 public class InventoryGridPlugin extends Plugin
 {
 	@Inject
-	private InventoryGridOverlay overlay;
+	private BankGridOverlay BankOverlay;
+
+	@Inject
+	private InventoryGridOverlay InventoryOverlay;
 
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Inject
+	private Client client;
+
+	@Getter(AccessLevel.PACKAGE)
+	private Widget bankWidget;
+
+	@Getter(AccessLevel.PACKAGE)
+	private Widget bankInventoryWidget;
+
 	@Override
 	public void startUp()
 	{
-		overlayManager.add(overlay);
+		overlayManager.add(BankOverlay);
+		overlayManager.add(InventoryOverlay);
 	}
 
 	@Override
 	public void shutDown()
 	{
-		overlayManager.remove(overlay);
+		overlayManager.remove(BankOverlay);
+		overlayManager.remove(InventoryOverlay);
+	}
+
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded event)
+	{
+		if (event.getGroupId() == WidgetID.BANK_GROUP_ID)
+		{
+			bankWidget = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+		}
+
+		if (event.getGroupId() == WidgetID.BANK_INVENTORY_GROUP_ID)
+		{
+			bankInventoryWidget = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
+		}
 	}
 
 	@Provides

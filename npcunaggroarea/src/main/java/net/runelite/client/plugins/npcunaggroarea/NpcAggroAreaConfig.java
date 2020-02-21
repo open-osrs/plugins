@@ -28,6 +28,8 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 
 @ConfigGroup("npcUnaggroArea")
 public interface NpcAggroAreaConfig extends Config
@@ -39,11 +41,23 @@ public interface NpcAggroAreaConfig extends Config
 	String CONFIG_DURATION = "duration";
 	String CONFIG_NOT_WORKING_OVERLAY = "overlay";
 
+	@ConfigTitleSection(
+		keyName = "activeTitle",
+		name = "Active",
+		description = "",
+		position = 1
+	)
+	default Title activeTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "npcUnaggroAlwaysActive",
 		name = "Always active",
 		description = "Always show this plugins overlays<br>Otherwise, they will only be shown when any NPC name matches the list",
-		position = 1
+		position = 2,
+		titleSection = "activeTitle"
 	)
 	default boolean alwaysActive()
 	{
@@ -54,18 +68,32 @@ public interface NpcAggroAreaConfig extends Config
 		keyName = "npcUnaggroNames",
 		name = "NPC names",
 		description = "Enter names of NPCs where you wish to use this plugin",
-		position = 2
+		position = 3,
+		titleSection = "activeTitle",
+		hide = "npcUnaggroAlwaysActive"
 	)
 	default String npcNamePatterns()
 	{
 		return "";
 	}
 
+	@ConfigTitleSection(
+		keyName = "overlayTitle",
+		name = "Overlay",
+		description = "",
+		position = 4
+	)
+	default Title overlayTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "npcUnaggroShowTimer",
 		name = "Show timer",
 		description = "Display a timer until NPCs become unaggressive",
-		position = 3
+		position = 5,
+		titleSection = "overlayTitle"
 	)
 	default boolean showTimer()
 	{
@@ -76,7 +104,8 @@ public interface NpcAggroAreaConfig extends Config
 		keyName = "npcUnaggroShowAreaLines",
 		name = "Show area lines",
 		description = "Display lines, when walked past, the unaggressive timer resets",
-		position = 4
+		position = 6,
+		titleSection = "overlayTitle"
 	)
 	default boolean showAreaLines()
 	{
@@ -87,7 +116,8 @@ public interface NpcAggroAreaConfig extends Config
 		keyName = "npcUnaggroAreaColor",
 		name = "Area lines colour",
 		description = "Choose colour to use for marking NPC unaggressive area",
-		position = 5
+		position = 7,
+		titleSection = "overlayTitle"
 	)
 	default Color aggroAreaColor()
 	{
@@ -95,32 +125,34 @@ public interface NpcAggroAreaConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "npcUnaggroShowNotWorkingOverlay",
-		name = "Show not working hint",
-		description = "Show hint if plugin is enabled in unsupported area",
-		position = 6
-	)
-	default boolean showNotWorkingOverlay()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "hideOverlayHint",
 		name = "Hide overlay hint",
 		description = "Hide overlay hint if plugin is enabled in unsupported area",
-		position = 6
+		position = 8,
+		titleSection = "overlayTitle"
 	)
 	default boolean hideOverlayHint()
 	{
 		return false;
 	}
 
+	@ConfigTitleSection(
+		keyName = "notificationsTitle",
+		name = "Notifications",
+		description = "",
+		position = 9
+	)
+	default Title notificationsTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "sendNotification",
 		name = "Send notification",
 		description = "Send a notification when the timer runs out",
-		position = 7
+		position = 10,
+		titleSection = "notificationsTitle"
 	)
 	default boolean sendNotification()
 	{

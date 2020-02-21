@@ -28,15 +28,29 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 
 @ConfigGroup("raidsthievingplugin")
 public interface RaidsThievingConfig extends Config
 {
-	@ConfigItem(
+	@ConfigTitleSection(
+		keyName = "colorsTitle",
 		position = 1,
+		name = "Colors",
+		description = ""
+	)
+	default Title colorsTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 2,
 		keyName = "hexColorPotentialBat",
 		name = "Potential Bat",
-		description = "Color of marker for chests which could have bat"
+		description = "Color of marker for chests which could have bat",
+		titleSection = "colorsTitle"
 	)
 	default Color getPotentialBatColor()
 	{
@@ -44,21 +58,34 @@ public interface RaidsThievingConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 2,
+		position = 3,
 		keyName = "hexColorPoison",
 		name = "Poison trap",
-		description = "Color of chest with poison"
+		description = "Color of chest with poison",
+		titleSection = "colorsTitle"
 	)
 	default Color getPoisonTrapColor()
 	{
 		return Color.GREEN;
 	}
 
+	@ConfigTitleSection(
+		keyName = "notificationTitle",
+		position = 4,
+		name = "Notification",
+		description = ""
+	)
+	default Title notificationTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 3,
+		position = 5,
 		keyName = "batNotify",
 		name = "Notify when found",
-		description = "Send notification if you see bats being found."
+		description = "Send notification if you see bats being found.",
+		titleSection = "notificationTitle"
 	)
 	default boolean batFoundNotify()
 	{

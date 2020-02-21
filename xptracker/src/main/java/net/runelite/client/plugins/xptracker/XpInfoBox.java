@@ -367,4 +367,16 @@ class XpInfoBox extends JPanel
 		String valueStr = QuantityFormatter.quantityToRSDecimalStack(value, true);
 		return String.format(HTML_LABEL_TEMPLATE, ColorUtil.toHexColor(ColorScheme.LIGHT_GRAY_COLOR), key, valueStr);
 	}
+
+	public void toggleCanvasItemText()
+	{
+		if (canvasItem.getText().equals(ADD_STATE))
+		{
+			canvasItem.setText(REMOVE_STATE);
+		}
+		else
+		{
+			canvasItem.setText(ADD_STATE);
+		}
+	}
 }

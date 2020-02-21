@@ -28,6 +28,8 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 
 /**
  * @author robin
@@ -42,275 +44,23 @@ public interface ImplingsConfig extends Config
 		NOTIFY
 	}
 
-	@ConfigItem(
-		position = 1,
-		keyName = "showbaby",
-		name = "Show Baby implings",
-		description = "Configures whether or not Baby impling tags are displayed"
+	@ConfigTitleSection(
+		keyName = "puropuroTitle",
+		name = "Puro puro",
+		description = "",
+		position = 1
 	)
-	default ImplingMode showBaby()
+	default Title puropuroTitle()
 	{
-		return ImplingMode.NONE;
+		return new Title();
 	}
 
 	@ConfigItem(
 		position = 2,
-		keyName = "babyColor",
-		name = "Baby impling color",
-		description = "Text color for Baby implings"
-	)
-	default Color getBabyColor()
-	{
-		return new Color(177, 143, 179);
-	}
-
-	@ConfigItem(
-		position = 3,
-		keyName = "showyoung",
-		name = "Show Young implings",
-		description = "Configures whether or not Young impling tags are displayed"
-	)
-	default ImplingMode showYoung()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 4,
-		keyName = "youngColor",
-		name = "Young impling color",
-		description = "Text color for Young implings"
-	)
-	default Color getYoungColor()
-	{
-		return new Color(175, 164, 136);
-	}
-
-	@ConfigItem(
-		position = 5,
-		keyName = "showgourmet",
-		name = "Show Gourmet implings",
-		description = "Configures whether or not Gourmet impling tags are displayed"
-	)
-	default ImplingMode showGourmet()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 6,
-		keyName = "gourmetColor",
-		name = "Gourmet impling color",
-		description = "Text color for Gourmet implings"
-	)
-	default Color getGourmetColor()
-	{
-		return new Color(169, 131, 98);
-	}
-
-	@ConfigItem(
-		position = 7,
-		keyName = "showearth",
-		name = "Show Earth implings",
-		description = "Configures whether or not Earth impling tags are displayed"
-	)
-	default ImplingMode showEarth()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 8,
-		keyName = "earthColor",
-		name = "Earth impling color",
-		description = "Text color for Earth implings"
-	)
-	default Color getEarthColor()
-	{
-		return new Color(62, 86, 64);
-	}
-
-	@ConfigItem(
-		position = 9,
-		keyName = "showessence",
-		name = "Show Essence implings",
-		description = "Configures whether or not Essence impling tags are displayed"
-	)
-	default ImplingMode showEssence()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 10,
-		keyName = "essenceColor",
-		name = "Essence impling color",
-		description = "Text color for Essence implings"
-	)
-	default Color getEssenceColor()
-	{
-		return new Color(32, 89, 90);
-	}
-
-	@ConfigItem(
-		position = 11,
-		keyName = "showeclectic",
-		name = "Show Eclectic implings",
-		description = "Configures whether or not Eclectic impling tags are displayed"
-	)
-	default ImplingMode showEclectic()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 12,
-		keyName = "eclecticColor",
-		name = "Eclectic impling color",
-		description = "Text color for Eclectic implings"
-	)
-	default Color getEclecticColor()
-	{
-		return new Color(145, 155, 69);
-	}
-
-	@ConfigItem(
-		position = 13,
-		keyName = "shownature",
-		name = "Show Nature implings",
-		description = "Configures whether or not Nature impling tags are displayed"
-	)
-	default ImplingMode showNature()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 14,
-		keyName = "natureColor",
-		name = "Nature impling color",
-		description = "Text color for Nature implings"
-	)
-	default Color getNatureColor()
-	{
-		return new Color(92, 138, 95);
-	}
-
-	@ConfigItem(
-		position = 15,
-		keyName = "showmagpie",
-		name = "Show Magpie implings",
-		description = "Configures whether or not Magpie impling tags are displayed"
-	)
-	default ImplingMode showMagpie()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 16,
-		keyName = "magpieColor",
-		name = "Magpie impling color",
-		description = "Text color for Magpie implings"
-	)
-	default Color getMagpieColor()
-	{
-		return new Color(142, 142, 19);
-	}
-
-	@ConfigItem(
-		position = 17,
-		keyName = "showninja",
-		name = "Show Ninja implings",
-		description = "Configures whether or not Ninja impling tags are displayed"
-	)
-	default ImplingMode showNinja()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 18,
-		keyName = "ninjaColor",
-		name = "Ninja impling color",
-		description = "Text color for Ninja implings"
-	)
-	default Color getNinjaColor()
-	{
-		return new Color(71, 70, 75);
-	}
-
-	@ConfigItem(
-		position = 19,
-		keyName = "showCrystal",
-		name = "Show Crystal implings",
-		description = "Configures whether or not Crystal impling tags are displayed"
-	)
-	default ImplingMode showCrystal()
-	{
-		return ImplingMode.NONE;
-	}
-
-	@ConfigItem(
-		position = 20,
-		keyName = "crystalColor",
-		name = "Crystal impling color",
-		description = "Text color for Crystal implings"
-	)
-	default Color getCrystalColor()
-	{
-		return new Color(93, 188, 210);
-	}
-
-	@ConfigItem(
-		position = 21,
-		keyName = "showdragon",
-		name = "Show Dragon implings",
-		description = "Configures whether or not Dragon impling tags are displayed"
-	)
-	default ImplingMode showDragon()
-	{
-		return ImplingMode.HIGHLIGHT;
-	}
-
-	@ConfigItem(
-		position = 22,
-		keyName = "dragonColor",
-		name = "Dragon impling color",
-		description = "Text color for Dragon implings"
-	)
-	default Color getDragonColor()
-	{
-		return new Color(210, 85, 75);
-	}
-
-	@ConfigItem(
-		position = 23,
-		keyName = "showlucky",
-		name = "Show Lucky implings",
-		description = "Configures whether or not Lucky impling tags are displayed"
-	)
-	default ImplingMode showLucky()
-	{
-		return ImplingMode.HIGHLIGHT;
-	}
-
-	@ConfigItem(
-		position = 24,
-		keyName = "luckyColor",
-		name = "Lucky impling color",
-		description = "Text color for Lucky implings"
-	)
-	default Color getLuckyColor()
-	{
-		return new Color(102, 7, 101);
-	}
-
-	@ConfigItem(
-		position = 25,
 		keyName = "showspawn",
 		name = "Show Spawn locations",
-		description = "Configures whether or not spawn locations are displayed in Puro Puro"
+		description = "Configures whether or not spawn locations are displayed in Puro Puro",
+		titleSection = "puropuroTitle"
 	)
 	default boolean showSpawn()
 	{
@@ -318,10 +68,11 @@ public interface ImplingsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 26,
+		position = 3,
 		keyName = "spawnColor",
 		name = "Impling spawn color",
-		description = "Text color for impling spawns in Puro Puro"
+		description = "Text color for impling spawns in Puro Puro",
+		titleSection = "puropuroTitle"
 	)
 	default Color getSpawnColor()
 	{
@@ -329,24 +80,493 @@ public interface ImplingsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 27,
+		position = 4,
+		keyName = "spawnColorDynamic",
+		name = "Impling dynamic spawn color",
+		description = "Text color for dynamic impling spawns in Puro Puro",
+		titleSection = "puropuroTitle"
+	)
+	default Color getDynamicSpawnColor()
+	{
+		return Color.WHITE;
+	}
+
+	@ConfigTitleSection(
+		keyName = "minimapTitle",
+		name = "Minimap",
+		description = "",
+		position = 5
+	)
+	default Title minimapTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 6,
 		keyName = "showname",
 		name = "Show name on minimap",
-		description = "Configures whether or not impling names are displayed on minimap"
+		description = "Configures whether or not impling names are displayed on minimap",
+		titleSection = "minimapTitle"
 	)
 	default boolean showName()
 	{
 		return false;
 	}
 
-	@ConfigItem(
-		position = 28,
-		keyName = "spawnColorDynamic",
-		name = "Impling dynamic spawn color",
-		description = "Text color for dynamic impling spawns in Puro Puro"
+	@ConfigTitleSection(
+		keyName = "babyTitle",
+		name = "Baby implings",
+		description = "",
+		position = 7
 	)
-	default Color getDynamicSpawnColor()
+	default Title babyTitle()
 	{
-		return Color.WHITE;
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 8,
+		keyName = "showbaby",
+		name = "Show Baby implings",
+		description = "Configures whether or not Baby impling tags are displayed",
+		titleSection = "babyTitle"
+	)
+	default ImplingMode showBaby()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 9,
+		keyName = "babyColor",
+		name = "Baby impling color",
+		description = "Text color for Baby implings",
+		titleSection = "babyTitle",
+		hidden = true,
+		unhide = "showBaby",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getBabyColor()
+	{
+		return new Color(177, 143, 179);
+	}
+
+	@ConfigTitleSection(
+		keyName = "youngTitle",
+		name = "Young implings",
+		description = "",
+		position = 10
+	)
+	default Title youngTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 11,
+		keyName = "showyoung",
+		name = "Show Young implings",
+		description = "Configures whether or not Young impling tags are displayed",
+		titleSection = "youngTitle"
+	)
+	default ImplingMode showYoung()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 12,
+		keyName = "youngColor",
+		name = "Young impling color",
+		description = "Text color for Young implings",
+		titleSection = "youngTitle",
+		hidden = true,
+		unhide = "showyoung",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getYoungColor()
+	{
+		return new Color(175, 164, 136);
+	}
+
+	@ConfigTitleSection(
+		keyName = "gourmetTitle",
+		name = "Gourmet implings",
+		description = "",
+		position = 13
+	)
+	default Title gourmetTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 14,
+		keyName = "showgourmet",
+		name = "Show Gourmet implings",
+		description = "Configures whether or not Gourmet impling tags are displayed",
+		titleSection = "gourmetTitle"
+	)
+	default ImplingMode showGourmet()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 15,
+		keyName = "gourmetColor",
+		name = "Gourmet impling color",
+		description = "Text color for Gourmet implings",
+		titleSection = "gourmetTitle",
+		hidden = true,
+		unhide = "showgourmet",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getGourmetColor()
+	{
+		return new Color(169, 131, 98);
+	}
+
+	@ConfigTitleSection(
+		keyName = "earthTitle",
+		name = "Earth implings",
+		description = "",
+		position = 16
+	)
+	default Title earthTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 17,
+		keyName = "showearth",
+		name = "Show Earth implings",
+		description = "Configures whether or not Earth impling tags are displayed",
+		titleSection = "earthTitle"
+	)
+	default ImplingMode showEarth()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 18,
+		keyName = "earthColor",
+		name = "Earth impling color",
+		description = "Text color for Earth implings",
+		titleSection = "earthTitle",
+		hidden = true,
+		unhide = "showearth",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getEarthColor()
+	{
+		return new Color(62, 86, 64);
+	}
+
+	@ConfigTitleSection(
+		keyName = "essenceTitle",
+		name = "Essence implings",
+		description = "",
+		position = 19
+	)
+	default Title essenceTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 20,
+		keyName = "showessence",
+		name = "Show Essence implings",
+		description = "Configures whether or not Essence impling tags are displayed",
+		titleSection = "essenceTitle"
+	)
+	default ImplingMode showEssence()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 21,
+		keyName = "essenceColor",
+		name = "Essence impling color",
+		description = "Text color for Essence implings",
+		titleSection = "essenceTitle",
+		hidden = true,
+		unhide = "showessence",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getEssenceColor()
+	{
+		return new Color(32, 89, 90);
+	}
+
+	@ConfigTitleSection(
+		keyName = "eclecticTitle",
+		name = "Eclectic implings",
+		description = "",
+		position = 22
+	)
+	default Title eclecticTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 23,
+		keyName = "showeclectic",
+		name = "Show Eclectic implings",
+		description = "Configures whether or not Eclectic impling tags are displayed",
+		titleSection = "eclecticTitle"
+	)
+	default ImplingMode showEclectic()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 24,
+		keyName = "eclecticColor",
+		name = "Eclectic impling color",
+		description = "Text color for Eclectic implings",
+		titleSection = "eclecticTitle",
+		hidden = true,
+		unhide = "showeclectic",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getEclecticColor()
+	{
+		return new Color(145, 155, 69);
+	}
+
+	@ConfigTitleSection(
+		keyName = "natureTitle",
+		name = "Nature implings",
+		description = "",
+		position = 25
+	)
+	default Title natureTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 26,
+		keyName = "shownature",
+		name = "Show Nature implings",
+		description = "Configures whether or not Nature impling tags are displayed",
+		titleSection = "natureTitle"
+	)
+	default ImplingMode showNature()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 27,
+		keyName = "natureColor",
+		name = "Nature impling color",
+		description = "Text color for Nature implings",
+		titleSection = "natureTitle",
+		hidden = true,
+		unhide = "shownature",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getNatureColor()
+	{
+		return new Color(92, 138, 95);
+	}
+
+	@ConfigTitleSection(
+		keyName = "magpieTitle",
+		name = "Magpie implings",
+		description = "",
+		position = 28
+	)
+	default Title magpieTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 29,
+		keyName = "showmagpie",
+		name = "Show Magpie implings",
+		description = "Configures whether or not Magpie impling tags are displayed",
+		titleSection = "magpieTitle"
+	)
+	default ImplingMode showMagpie()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 30,
+		keyName = "magpieColor",
+		name = "Magpie impling color",
+		description = "Text color for Magpie implings",
+		titleSection = "magpieTitle",
+		hidden = true,
+		unhide = "showmagpie",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getMagpieColor()
+	{
+		return new Color(142, 142, 19);
+	}
+
+	@ConfigTitleSection(
+		keyName = "ninjaTitle",
+		name = "Ninja implings",
+		description = "",
+		position = 31
+	)
+	default Title ninjaTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 32,
+		keyName = "showninja",
+		name = "Show Ninja implings",
+		description = "Configures whether or not Ninja impling tags are displayed",
+		titleSection = "ninjaTitle"
+	)
+	default ImplingMode showNinja()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 33,
+		keyName = "ninjaColor",
+		name = "Ninja impling color",
+		description = "Text color for Ninja implings",
+		titleSection = "ninjaTitle",
+		hidden = true,
+		unhide = "showninja",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getNinjaColor()
+	{
+		return new Color(71, 70, 75);
+	}
+
+	@ConfigTitleSection(
+		keyName = "crystalTitle",
+		name = "Crystal implings",
+		description = "",
+		position = 34
+	)
+	default Title crystalTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 35,
+		keyName = "showCrystal",
+		name = "Show Crystal implings",
+		description = "Configures whether or not Crystal impling tags are displayed",
+		titleSection = "crystalTitle"
+	)
+	default ImplingMode showCrystal()
+	{
+		return ImplingMode.NONE;
+	}
+
+	@ConfigItem(
+		position = 36,
+		keyName = "crystalColor",
+		name = "Crystal impling color",
+		description = "Text color for Crystal implings",
+		titleSection = "crystalTitle",
+		hidden = true,
+		unhide = "showCrystal",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getCrystalColor()
+	{
+		return new Color(93, 188, 210);
+	}
+
+	@ConfigTitleSection(
+		keyName = "dragonTitle",
+		name = "Dragon implings",
+		description = "",
+		position = 37
+	)
+	default Title dragonTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 38,
+		keyName = "showdragon",
+		name = "Show Dragon implings",
+		description = "Configures whether or not Dragon impling tags are displayed",
+		titleSection = "dragonTitle"
+	)
+	default ImplingMode showDragon()
+	{
+		return ImplingMode.HIGHLIGHT;
+	}
+
+	@ConfigItem(
+		position = 39,
+		keyName = "dragonColor",
+		name = "Dragon impling color",
+		description = "Text color for Dragon implings",
+		titleSection = "dragonTitle",
+		hidden = true,
+		unhide = "showdragon",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getDragonColor()
+	{
+		return new Color(210, 85, 75);
+	}
+
+	@ConfigTitleSection(
+		keyName = "luckyTitle",
+		name = "Lucky implings",
+		description = "",
+		position = 40
+	)
+	default Title luckyTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 41,
+		keyName = "showlucky",
+		name = "Show Lucky implings",
+		description = "Configures whether or not Lucky impling tags are displayed",
+		titleSection = "luckyTitle"
+	)
+	default ImplingMode showLucky()
+	{
+		return ImplingMode.HIGHLIGHT;
+	}
+
+	@ConfigItem(
+		position = 42,
+		keyName = "luckyColor",
+		name = "Lucky impling color",
+		description = "Text color for Lucky implings",
+		titleSection = "luckyTitle",
+		hidden = true,
+		unhide = "showlucky",
+		unhideValue = "HIGHLIGHT || NOTIFY"
+	)
+	default Color getLuckyColor()
+	{
+		return new Color(102, 7, 101);
 	}
 }
