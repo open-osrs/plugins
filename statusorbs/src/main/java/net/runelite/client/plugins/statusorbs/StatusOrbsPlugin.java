@@ -243,7 +243,7 @@ public class StatusOrbsPlugin extends Plugin
 
 		int currentHP = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		int maxHP = client.getRealSkillLevel(Skill.HITPOINTS);
-		if (currentHP == maxHP && !config.showWhenNoChangeHP())
+		if (currentHP == maxHP && !config.showWhenNoChange())
 		{
 			hitpointsPercentage = 0;
 		}
