@@ -71,13 +71,13 @@ public interface StatusOrbsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "showWhenNoChangeHP",
+		keyName = "showWhenNoChange",
 		name = "Show hitpoints regen at full hitpoints",
 		description = "Always show the hitpoints regen orb, even if there will be no stat change",
 		titleSection = "hp",
 		position = 3
 	)
-	default boolean showWhenNoChangeHP()
+	default boolean showWhenNoChange()
 	{
 		return false;
 	}
