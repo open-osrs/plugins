@@ -1301,7 +1301,7 @@ public class LootTrackerPlugin extends Plugin
 		else
 		{
 			gePrice = (long) itemManager.getItemPrice(realItemId) * (long) quantity;
-			haPrice = (long) Math.round(itemManager.getItemPrice(realItemId) * Constants.HIGH_ALCHEMY_MULTIPLIER) * (long) quantity;
+			haPrice = (long) itemManager.getAlchValue(realItemId) * (long) quantity;
 		}
 		final boolean ignored = ignoredItems.contains(itemDefinition.getName());
 
