@@ -219,7 +219,7 @@ public class StatusOrbsPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if (client.getVar(VarPlayer.SPECIAL_ATTACK_PERCENT) == 1000)
+		if ((client.getVar(VarPlayer.SPECIAL_ATTACK_PERCENT) == 1000) && !config.showWhenNoChangeSpec())
 		{
 			// The recharge doesn't tick when at 100%
 			ticksSinceSpecRegen = 0;
@@ -243,7 +243,7 @@ public class StatusOrbsPlugin extends Plugin
 
 		int currentHP = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		int maxHP = client.getRealSkillLevel(Skill.HITPOINTS);
-		if (currentHP == maxHP && !config.showWhenNoChange())
+		if (currentHP == maxHP && !config.showWhenNoChangeHP())
 		{
 			hitpointsPercentage = 0;
 		}
