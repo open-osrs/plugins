@@ -27,6 +27,9 @@
 package net.runelite.client.plugins.entityhider;
 
 import com.google.inject.Provides;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -66,6 +69,7 @@ public class EntityHiderPlugin extends Plugin
 	protected void startUp()
 	{
 		updateConfig();
+		Text.fromCSV(config.hideNPCsNames()).forEach(client::addHiddenNpcName);
 	}
 
 	@Subscribe
@@ -76,6 +80,23 @@ public class EntityHiderPlugin extends Plugin
 			return;
 		}
 		updateConfig();
+		
+		if (event.getOldValue() == null || event.getNewValue() == null)
+			{
+				return;
+			}
+
+		if (event.getKey().equals("hideNPCsNames"))
+			{
+				List<String> oldList = Text.fromCSV(event.getOldValue());
+				List<String> newList = Text.fromCSV(event.getNewValue());
+
+				List<String> removed = oldList.stream().filter(s -> !newList.contains(s)).collect(Collectors.toCollection(ArrayList::new));
+				List<String> added = newList.stream().filter(s -> !oldList.contains(s)).collect(Collectors.toCollection(ArrayList::new));
+
+				removed.forEach(client::removeHiddenNpcName);
+				added.forEach(client::addHiddenNpcName);
+			}
 	}
 
 	@Subscribe
@@ -119,5 +140,6 @@ public class EntityHiderPlugin extends Plugin
 		client.setPetsHidden(false);
 		client.setAttackersHidden(false);
 		client.setProjectilesHidden(false);
+		Text.fromCSV(config.hideNPCsNames()).forEach(client::removeHiddenNpcName);
 	}
 }
