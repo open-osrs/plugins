@@ -56,7 +56,6 @@ import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import static net.runelite.api.Varbits.BUILDING_MODE;
 import static net.runelite.api.Varbits.WITHDRAW_X_AMOUNT;
-import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.FocusChanged;
@@ -82,13 +81,10 @@ import net.runelite.client.menus.MenuManager;
 import net.runelite.client.menus.ShopComparableEntry;
 import net.runelite.client.menus.WithdrawComparableEntry;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.menuentryswapper.comparables.GrimyHerbComparableEntry;
-import net.runelite.client.plugins.pvptools.PvpToolsConfig;
-import net.runelite.client.plugins.pvptools.PvpToolsPlugin;
 import net.runelite.client.util.HotkeyListener;
 import static net.runelite.client.util.MenuUtil.swap;
 import org.pf4j.Extension;
@@ -101,7 +97,6 @@ import org.pf4j.Extension;
 	tags = {"npcs", "inventory", "items", "objects"},
 	type = PluginType.UTILITY
 )
-@PluginDependency(PvpToolsPlugin.class)
 public class MenuEntrySwapperPlugin extends Plugin
 {
 	private static final Object HOTKEY = new Object();
@@ -227,12 +222,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	@Inject
 	private EventBus eventBus;
-
-	@Inject
-	private PvpToolsPlugin pvpTools;
-
-	@Inject
-	private PvpToolsConfig pvpToolsConfig;
 
 	private boolean buildingMode;
 	private boolean inTobRaid = false;
@@ -1633,15 +1622,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 	{
 		clientThread.invoke(() ->
 		{
-			if (client.getVar(Varbits.IN_WILDERNESS) == 1 || WorldType.isAllPvpWorld(client.getWorldType()) && pluginManager.isPluginEnabled(pvpTools) && pvpToolsConfig.hideCast())
-			{
-				pvpTools.setCastOptions();
-			}
-			else
-			{
-				client.setHideFriendCastOptions(false);
-				client.setHideClanmateCastOptions(false);
-			}
+			client.setHideFriendCastOptions(false);
+			client.setHideClanmateCastOptions(false);
 		});
 	}
 
