@@ -27,11 +27,6 @@
 package net.runelite.client.plugins.entityhider;
 
 import com.google.inject.Provides;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -71,63 +66,16 @@ public class EntityHiderPlugin extends Plugin
 	protected void startUp()
 	{
 		updateConfig();
-
-		Text.fromCSV(config.hideNPCsNames()).forEach(client::addHiddenNpcName);
-		Text.fromCSV(config.hideNPCsOnDeath()).forEach(client::addHiddenNpcDeath);
 	}
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
-		if (event.getGroup().equals("entityhider"))
+		if (!event.getGroup().equals("entityhider"))
 		{
-			updateConfig();
-
-			final Set<Integer> blacklist = new HashSet<>();
-
-			for (String s : Text.COMMA_SPLITTER.split(config.blacklistDeadNpcs()))
-			{
-				try
-				{
-					blacklist.add(Integer.parseInt(s));
-				}
-				catch (NumberFormatException ignored)
-				{
-				}
-
-			}
-
-			client.setBlacklistDeadNpcs(blacklist);
-
-			if (event.getOldValue() == null || event.getNewValue() == null)
-			{
-				return;
-			}
-
-			if (event.getKey().equals("hideNPCsNames"))
-			{
-				List<String> oldList = Text.fromCSV(event.getOldValue());
-				List<String> newList = Text.fromCSV(event.getNewValue());
-
-				List<String> removed = oldList.stream().filter(s -> !newList.contains(s)).collect(Collectors.toCollection(ArrayList::new));
-				List<String> added = newList.stream().filter(s -> !oldList.contains(s)).collect(Collectors.toCollection(ArrayList::new));
-
-				removed.forEach(client::removeHiddenNpcName);
-				added.forEach(client::addHiddenNpcName);
-			}
-
-			if (event.getKey().equals("hideNPCsOnDeath"))
-			{
-				List<String> oldList = Text.fromCSV(event.getOldValue());
-				List<String> newList = Text.fromCSV(event.getNewValue());
-
-				ArrayList<String> removed = oldList.stream().filter(s -> !newList.contains(s)).collect(Collectors.toCollection(ArrayList::new));
-				ArrayList<String> added = newList.stream().filter(s -> !oldList.contains(s)).collect(Collectors.toCollection(ArrayList::new));
-
-				removed.forEach(client::removeHiddenNpcDeath);
-				added.forEach(client::addHiddenNpcDeath);
-			}
+			return;
 		}
+		updateConfig();
 	}
 
 	@Subscribe
@@ -154,7 +102,6 @@ public class EntityHiderPlugin extends Plugin
 		client.setPetsHidden(config.hidePets());
 		client.setAttackersHidden(config.hideAttackers());
 		client.setProjectilesHidden(config.hideProjectiles());
-		client.setDeadNPCsHidden(config.hideDeadNPCs());
 	}
 
 	@Override
@@ -172,8 +119,5 @@ public class EntityHiderPlugin extends Plugin
 		client.setPetsHidden(false);
 		client.setAttackersHidden(false);
 		client.setProjectilesHidden(false);
-		client.setDeadNPCsHidden(false);
-		Text.fromCSV(config.hideNPCsNames()).forEach(client::removeHiddenNpcName);
-		Text.fromCSV(config.hideNPCsOnDeath()).forEach(client::removeHiddenNpcDeath);
 	}
 }
