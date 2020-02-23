@@ -209,12 +209,24 @@ public interface EntityHiderConfig extends Config
 	{
 		return false;
 	}
+	
+	@ConfigItem(
+		position = 16,
+		keyName = "hideNPCsNames",
+		name = "Hide NPCs Names",
+		description = "Configures which NPCs to hide",
+		titleSection = "npcsTitle"
+	)
+	default String hideNPCsNames()
+	{
+		return "";
+	}
 
 	@ConfigTitleSection(
 		keyName = "miscTitle",
 		name = "Miscellaneous",
 		description = "",
-		position = 16
+		position = 17
 	)
 	default Title miscTitle()
 	{
@@ -222,7 +234,7 @@ public interface EntityHiderConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 18,
 		keyName = "hideProjectiles",
 		name = "Hide Projectiles",
 		description = "Configures whether or not projectiles are hidden",
