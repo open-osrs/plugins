@@ -200,6 +200,18 @@ public interface EntityHiderConfig extends Config
 
 	@ConfigItem(
 		position = 15,
+		keyName = "hidePets",
+		name = "Hide Pets",
+		description = "Configures whether or not other player pets are hidden",
+		titleSection = "npcsTitle"
+	)
+	default boolean hidePets()
+	{
+		return false;
+	}
+	
+	@ConfigItem(
+		position = 16,
 		keyName = "hideNPCsNames",
 		name = "Hide NPCs Names",
 		description = "Configures which NPCs to hide",
@@ -210,61 +222,11 @@ public interface EntityHiderConfig extends Config
 		return "";
 	}
 
-	@ConfigItem(
-		position = 16,
-		keyName = "hideDeadNPCs",
-		name = "Hide Dead NPCs",
-		description = "Configures whether or not NPCs that just died are hidden",
-		titleSection = "npcsTitle"
-	)
-	default boolean hideDeadNPCs()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		position = 17,
-		keyName = "hideNPCsOnDeath",
-		name = "Hide NPCs On Death",
-		description = "Configures which NPCs to hide when they die",
-		titleSection = "npcsTitle"
-	)
-	default String hideNPCsOnDeath()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		position = 18,
-		keyName = "blacklistDeadNpcs",
-		name = "Hide on Death Blacklist",
-		description = "Configures which NPCs NOT to hide when they die",
-		titleSection = "npcsTitle",
-		hidden = true,
-		unhide = "hideDeadNPCs"
-	)
-	default String blacklistDeadNpcs()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		position = 19,
-		keyName = "hidePets",
-		name = "Hide Pets",
-		description = "Configures whether or not other player pets are hidden",
-		titleSection = "npcsTitle"
-	)
-	default boolean hidePets()
-	{
-		return false;
-	}
-
 	@ConfigTitleSection(
 		keyName = "miscTitle",
 		name = "Miscellaneous",
 		description = "",
-		position = 20
+		position = 17
 	)
 	default Title miscTitle()
 	{
@@ -272,7 +234,7 @@ public interface EntityHiderConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 21,
+		position = 18,
 		keyName = "hideProjectiles",
 		name = "Hide Projectiles",
 		description = "Configures whether or not projectiles are hidden",
