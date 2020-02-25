@@ -235,6 +235,6 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.Owain }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           directory: /home/runner/work/plugins/plugin-hosting
           repository: ben93riggs/plugin-hosting

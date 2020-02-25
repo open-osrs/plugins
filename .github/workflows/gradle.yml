@@ -17,7 +17,7 @@ jobs:
       - name: Create Gradle wrapper update Pull Request
         uses: Owain94/create-pull-request@master
         env:
-          GITHUB_TOKEN: ${{ secrets.OpenOSRS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_BRANCH: GRADLE-WRAPPER-UPDATE
           PULL_REQUEST_TITLE: 'project: Update gradle wrapper'
           PULL_REQUEST_BODY: This is an auto-generated PR with an updated gradle version
