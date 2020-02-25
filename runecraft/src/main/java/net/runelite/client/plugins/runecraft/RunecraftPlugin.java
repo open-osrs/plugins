@@ -24,16 +24,10 @@
  */
 package net.runelite.client.plugins.runecraft;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-import static java.lang.Math.min;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -54,7 +48,6 @@ import net.runelite.api.events.DecorativeObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.Notifier;
@@ -93,8 +86,6 @@ public class RunecraftPlugin extends Plugin
 	private static final BaseComparableEntry EMPTY_MEDIUM = newBaseComparableEntry("empty", "medium pouch");
 	private static final BaseComparableEntry EMPTY_LARGE = newBaseComparableEntry("empty", "large pouch");
 	private static final BaseComparableEntry EMPTY_GIANT = newBaseComparableEntry("empty", "giant pouch");
-	private static final EquipmentComparableEntry CASTLE_WARS = new EquipmentComparableEntry("castle wars", "ring of dueling");
-	private static final EquipmentComparableEntry DUEL_ARENA = new EquipmentComparableEntry("duel arena", "ring of dueling");
 	private static final String POUCH_DECAYED_MESSAGE = "Your pouch has decayed through use.";
 	private static final String POUCH_DECAYED_NOTIFICATION_MESSAGE = "Your rune pouch has decayed.";
 	private static final int FIRE_ALTAR = 10315;
@@ -103,23 +94,7 @@ public class RunecraftPlugin extends Plugin
 		ItemID.LARGE_POUCH_5513,
 		ItemID.GIANT_POUCH_5515
 	);
-	private static final int INVENTORY_SIZE = 28;
-	private static final Pattern POUCH_CHECK_MESSAGE = Pattern.compile("^There (?:is|are) ([a-z]+)(?: pure)? essences? in this pouch\\.$");
-	private static final ImmutableMap<String, Integer> TEXT_TO_NUMBER = ImmutableMap.<String, Integer>builder()
-		.put("no", 0)
-		.put("one", 1)
-		.put("two", 2)
-		.put("three", 3)
-		.put("four", 4)
-		.put("five", 5)
-		.put("six", 6)
-		.put("seven", 7)
-		.put("eight", 8)
-		.put("nine", 9)
-		.put("ten", 10)
-		.put("eleven", 11)
-		.put("twelve", 12)
-		.build();
+
 
 	private final Deque<ClickOperation> clickedItems = new ArrayDeque<>();
 	private final Deque<ClickOperation> checkedPouches = new ArrayDeque<>();
@@ -142,9 +117,6 @@ public class RunecraftPlugin extends Plugin
 
 	@Inject
 	private RunecraftOverlay runecraftOverlay;
-
-	@Inject
-	private EssencePouchOverlay essencePouchOverlay;
 
 	@Inject
 	private PouchOverlay pouchOverlay;
@@ -184,17 +156,7 @@ public class RunecraftPlugin extends Plugin
 		overlayManager.add(abyssOverlay);
 		overlayManager.add(abyssMinimapOverlay);
 		overlayManager.add(runecraftOverlay);
-		overlayManager.add(essencePouchOverlay);
 		handleSwaps();
-
-		for (Pouch pouch : Pouch.values())
-		{
-			pouch.setHolding(0);
-			pouch.setUnknown(true);
-			pouch.degrade(false);
-		}
-
-		lastEssence = lastSpace = -1;
 	}
 
 	@Override
@@ -289,154 +251,6 @@ public class RunecraftPlugin extends Plugin
 			}
 		}
 
-		if (InventoryID.INVENTORY.getId() != event.getContainerId())
-		{
-			return;
-		}
-
-		final Item[] items = event.getItemContainer().getItems();
-
-		int newEss = 0;
-		int newSpace = 0;
-
-		// Count ess/space, and change pouch states
-		for (Item item : items)
-		{
-			switch (item.getId())
-			{
-				case ItemID.PURE_ESSENCE:
-					newEss += 1;
-					break;
-				case -1:
-					newSpace += 1;
-					break;
-				case ItemID.MEDIUM_POUCH:
-				case ItemID.LARGE_POUCH:
-				case ItemID.GIANT_POUCH:
-					Pouch pouch = Pouch.forItem(item.getId());
-					pouch.degrade(false);
-					break;
-				case ItemID.MEDIUM_POUCH_5511:
-				case ItemID.LARGE_POUCH_5513:
-				case ItemID.GIANT_POUCH_5515:
-					pouch = Pouch.forItem(item.getId());
-					pouch.degrade(true);
-					break;
-			}
-		}
-		if (items.length < INVENTORY_SIZE)
-		{
-			// Pad newSpace for unallocated inventory slots
-			newSpace += INVENTORY_SIZE - items.length;
-		}
-
-		if (clickedItems.isEmpty())
-		{
-			lastSpace = newSpace;
-			lastEssence = newEss;
-			return;
-		}
-
-		if (lastEssence == -1 || lastSpace == -1)
-		{
-			lastSpace = newSpace;
-			lastEssence = newEss;
-			clickedItems.clear();
-			return;
-		}
-
-		final int tick = client.getTickCount();
-
-		int essence = lastEssence;
-		int space = lastSpace;
-
-
-		while (essence != newEss)
-		{
-			ClickOperation op = clickedItems.poll();
-			if (op == null)
-			{
-				break;
-			}
-
-			if (tick > op.tick)
-			{
-				continue;
-			}
-
-			Pouch pouch = op.pouch;
-
-			final boolean fill = op.delta > 0;
-			// How much ess can either be deposited or withdrawn
-			final int required = fill ? pouch.getRemaining() : pouch.getHolding();
-			// Bound to how much ess or free space we actually have, and optionally negate
-			final int essenceGot = op.delta * min(required, fill ? essence : space);
-
-			// if we have enough essence or space to fill or empty the entire pouch, it no
-			// longer becomes unknown
-			if (pouch.isUnknown() && (fill ? essence : space) >= pouch.getHoldAmount())
-			{
-				pouch.setUnknown(false);
-			}
-
-
-			essence -= essenceGot;
-			space += essenceGot;
-
-			pouch.addHolding(essenceGot);
-		}
-
-		if (!clickedItems.isEmpty())
-		{
-			return;
-		}
-
-		lastSpace = newSpace;
-		lastEssence = newEss;
-	}
-
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		switch (event.getMenuOpcode())
-		{
-			case ITEM_FIRST_OPTION:
-			case ITEM_SECOND_OPTION:
-			case ITEM_THIRD_OPTION:
-			case ITEM_FOURTH_OPTION:
-			case ITEM_FIFTH_OPTION:
-			case GROUND_ITEM_THIRD_OPTION: // Take
-				break;
-			default:
-				return;
-		}
-
-		final int id = event.getIdentifier();
-		final Pouch pouch = Pouch.forItem(id);
-		if (pouch == null)
-		{
-			return;
-		}
-
-		final int tick = client.getTickCount() + 3;
-		switch (event.getOption())
-		{
-			case "Fill":
-				clickedItems.add(new ClickOperation(pouch, tick, 1));
-				break;
-			case "Empty":
-				clickedItems.add(new ClickOperation(pouch, tick, -1));
-				break;
-			case "Check":
-				checkedPouches.add(new ClickOperation(pouch, tick));
-				break;
-			case "Take":
-				// Dropping pouches clears them, so clear when picked up
-				pouch.setHolding(0);
-				break;
-		}
-	}
-
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
@@ -465,28 +279,6 @@ public class RunecraftPlugin extends Plugin
 		if (config.degradingNotification() && event.getMessage().contains(POUCH_DECAYED_MESSAGE))
 		{
 			notifier.notify(POUCH_DECAYED_NOTIFICATION_MESSAGE);
-		}
-
-		if (!checkedPouches.isEmpty())
-		{
-			Matcher matcher = POUCH_CHECK_MESSAGE.matcher(event.getMessage());
-			if (matcher.matches())
-			{
-				final int num = TEXT_TO_NUMBER.get(matcher.group(1));
-				// Keep getting operations until we get a valid one
-				do
-				{
-					final ClickOperation op = checkedPouches.pop();
-					if (op.tick >= client.getTickCount())
-					{
-						Pouch pouch = op.pouch;
-						pouch.setHolding(num);
-						pouch.setUnknown(false);
-						break;
-					}
-				}
-				while (!checkedPouches.isEmpty());
-			}
 		}
 	}
 
@@ -581,15 +373,11 @@ public class RunecraftPlugin extends Plugin
 		{
 			menuManager.removeHiddenEntry("craft", "altar", false, false);
 			menuManager.removeHiddenEntry("use", "Pure essence", false, true);
-			menuManager.addPriorityEntry(DUEL_ARENA).setPriority(100);
-			menuManager.removePriorityEntry(CASTLE_WARS);
 		}
 		else if (client.getLocalPlayer().getWorldLocation().getRegionID() == FIRE_ALTAR)
 		{
 			menuManager.addHiddenEntry("craft", "altar", false, false);
 			menuManager.addHiddenEntry("use", "Pure essence", false, true);
-			menuManager.addPriorityEntry(CASTLE_WARS).setPriority(100);
-			menuManager.removePriorityEntry(DUEL_ARENA);
 		}
 	}
 
@@ -602,20 +390,10 @@ public class RunecraftPlugin extends Plugin
 		menuManager.removePriorityEntry(EMPTY_MEDIUM);
 		menuManager.removePriorityEntry(EMPTY_LARGE);
 		menuManager.removePriorityEntry(EMPTY_GIANT);
-		menuManager.removePriorityEntry(CASTLE_WARS);
-		menuManager.removePriorityEntry(DUEL_ARENA);
 	}
 
 	private void updateConfig()
 	{
-		if (config.essenceOverlay())
-		{
-			overlayManager.add(essencePouchOverlay);
-		}
-		else
-		{
-			overlayManager.remove(essencePouchOverlay);
-		}
 
 		if (config.degradeOverlay())
 		{
