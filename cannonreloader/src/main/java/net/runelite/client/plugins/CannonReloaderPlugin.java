@@ -15,7 +15,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ProjectileMoved;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -62,29 +62,22 @@ public class CannonReloaderPlugin extends Plugin {
 	@Inject
 	private Client client;
 	
-	@Inject
-	private EventBus eventBus;
-	
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 	private final ReentrantLock lock = new ReentrantLock();
 	
 	@Override
 	protected void startUp() throws Exception {
-		eventBus.subscribe(GameObjectSpawned.class, this, this::onGameObjectSpawned);
-		eventBus.subscribe(ProjectileMoved.class, this, this::onProjectileMoved);
-		eventBus.subscribe(ChatMessage.class, this, this::onChatMessage);
-		eventBus.subscribe(GameTick.class, this, this::onGameTick);
 	}
 	
 	@Override
 	protected void shutDown() throws Exception {
-		eventBus.unregister(this);
 		cannonPlaced = false;
 		cannonPosition = null;
 		cballsLeft = 0;
 		skipProjectileCheckThisTick = false;
 	}
-	
+
+	@Subscribe
 	public void onGameObjectSpawned(GameObjectSpawned event) {
 		GameObject gameObject = event.getGameObject();
 		
@@ -97,7 +90,8 @@ public class CannonReloaderPlugin extends Plugin {
 			}
 		}
 	}
-	
+
+	@Subscribe
 	private void onProjectileMoved(ProjectileMoved event) {
 		Projectile projectile = event.getProjectile();
 		
@@ -117,7 +111,8 @@ public class CannonReloaderPlugin extends Plugin {
 			}
 		}
 	}
-	
+
+	@Subscribe
 	public void onChatMessage(ChatMessage event) {
 		if (event.getType() != ChatMessageType.SPAM && event.getType() != ChatMessageType.GAMEMESSAGE) {
 			return;
@@ -178,7 +173,8 @@ public class CannonReloaderPlugin extends Plugin {
 			cballsLeft = 0;
 		}
 	}
-	
+
+	@Subscribe
 	public void onGameTick(GameTick event) {
 		skipProjectileCheckThisTick = false;
 		

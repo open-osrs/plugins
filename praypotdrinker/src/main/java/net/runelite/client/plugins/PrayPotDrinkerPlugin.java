@@ -8,7 +8,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.Notifier;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.flexo.Flexo;
 import net.runelite.client.flexo.FlexoMouse;
 import net.runelite.client.plugins.Plugin;
@@ -34,9 +34,6 @@ public class PrayPotDrinkerPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private EventBus eventBus;
-
-	@Inject
 	private Notifier notifier;
 
 	private final ExecutorService executor = Executors.newCachedThreadPool();
@@ -48,7 +45,6 @@ public class PrayPotDrinkerPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		Flexo.client = client;
-		eventBus.subscribe(GameTick.class, this, this::onGameTick);
 		
 		try {
 			flexo = new Flexo();
@@ -60,9 +56,9 @@ public class PrayPotDrinkerPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
-		eventBus.unregister(this);
 	}
 
+	@Subscribe
 	public void onGameTick(GameTick event)
 	{
 		this.executor.submit(() ->

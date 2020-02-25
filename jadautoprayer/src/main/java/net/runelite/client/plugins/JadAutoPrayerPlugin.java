@@ -14,7 +14,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -34,9 +34,6 @@ public class JadAutoPrayerPlugin extends Plugin
 {
 	@Inject
 	private Client client;
-
-	@Inject
-	private EventBus eventBus;
 
 	@Inject
 	ConfigManager configManager;
@@ -73,22 +70,18 @@ public class JadAutoPrayerPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		this.eventBus.subscribe(VarbitChanged.class, this, this::onVarbitChanged);
-		this.eventBus.subscribe(NpcSpawned.class, this, this::onNpcSpawned);
-		this.eventBus.subscribe(NpcDespawned.class, this, this::onNpcDespawned);
-		this.eventBus.subscribe(AnimationChanged.class, this, this::onAnimationChanged);
 		this.overlayManager.add(this.overlay);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		this.eventBus.unregister(this);
 		this.overlayManager.remove(this.overlay);
 		this.jad = null;
 		this.attack = null;
 	}
 
+	@Subscribe
 	public void onVarbitChanged(final VarbitChanged event)
 	{
 		if (this.client.getGameState() != GameState.LOGGED_IN)
@@ -113,6 +106,7 @@ public class JadAutoPrayerPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
 	public void onNpcSpawned(NpcSpawned event)
 	{
 		int id = event.getNpc().getId();
@@ -123,6 +117,7 @@ public class JadAutoPrayerPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
 	public void onNpcDespawned(NpcDespawned event)
 	{
 		if (this.jad == event.getNpc())
@@ -132,6 +127,7 @@ public class JadAutoPrayerPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
 	public void onAnimationChanged(AnimationChanged event)
 	{
 		if (event.getActor() != this.jad)

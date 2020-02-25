@@ -8,8 +8,8 @@ import net.runelite.api.GameObject;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -31,9 +31,6 @@ public class ItemUserPlugin extends Plugin
 
 	@Inject
 	private Client client;
-
-	@Inject
-	private EventBus eventBus;
 
 	@Inject
 	private ConfigManager configManager;
@@ -59,19 +56,16 @@ public class ItemUserPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		this.eventBus.subscribe(GameObjectSpawned.class, this, this::onGameObjectSpawned);
-		this.eventBus.subscribe(GameObjectDespawned.class, this, this::onGameObjectDespawned);
-		this.eventBus.subscribe(ConfigChanged.class, this, this::onConfigChanged);
 		this.keyManager.registerKeyListener(this.itemUserHotkeyListener);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		this.eventBus.unregister(this);
 		this.keyManager.unregisterKeyListener(this.itemUserHotkeyListener);
 	}
 
+	@Subscribe
 	private void onGameObjectSpawned(final GameObjectSpawned event)
 	{
 		GameObject gameObject = event.getGameObject();
@@ -81,6 +75,7 @@ public class ItemUserPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
 	private void onGameObjectDespawned(final GameObjectDespawned event)
 	{
 		GameObject gameObject = event.getGameObject();
@@ -90,6 +85,7 @@ public class ItemUserPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
 	private void onConfigChanged(final ConfigChanged event)
 	{
 		this.objectList.removeIf(object -> (object.getId() != this.config.objectId()));

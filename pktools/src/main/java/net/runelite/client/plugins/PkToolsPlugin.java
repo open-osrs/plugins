@@ -13,7 +13,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -59,9 +59,6 @@ public class PkToolsPlugin extends Plugin
 	public Client client;
 
 	@Inject
-	private EventBus eventBus;
-
-	@Inject
 	private PkToolsConfig config;
 
 	@Inject
@@ -93,9 +90,6 @@ public class PkToolsPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		eventBus.subscribe(VarbitChanged.class, this, this::onVarbitChanged);
-		eventBus.subscribe(InteractingChanged.class, this, this::onInteractingChanged);
-		eventBus.subscribe(GameTick.class, this, this::onGameTick);
 		overlayManager.add(pkToolsOverlay);
 		keyManager.registerKeyListener(pkToolsHotkeyListener);
 	}
@@ -103,12 +97,12 @@ public class PkToolsPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
-		eventBus.unregister(this);
 		lastTime = null;
 		overlayManager.remove(pkToolsOverlay);
 		keyManager.unregisterKeyListener(pkToolsHotkeyListener);
 	}
 
+	@Subscribe
 	public void onVarbitChanged(final VarbitChanged event)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
@@ -134,6 +128,7 @@ public class PkToolsPlugin extends Plugin
 		setIncredibleReflexesVarbit((client.getVar(Prayer.INCREDIBLE_REFLEXES.getVarbit()) == 1) ? 1 : 0);
 	}
 
+	@Subscribe
 	public void onInteractingChanged(final InteractingChanged event)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
@@ -164,6 +159,7 @@ public class PkToolsPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
 	public void onGameTick(final GameTick gameTick)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)

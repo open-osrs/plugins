@@ -10,7 +10,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -37,9 +37,6 @@ public class FoodEaterPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private EventBus eventBus;
-
-	@Inject
 	private ItemManager itemManager;
 
 	@Inject
@@ -60,15 +57,14 @@ public class FoodEaterPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		this.eventBus.subscribe(GameTick.class, this, this::onGameTick);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		this.eventBus.unregister(this);
 	}
 
+	@Subscribe
 	public void onGameTick(final GameTick event)
 	{
 		int health = this.client.getBoostedSkillLevel(Skill.HITPOINTS);

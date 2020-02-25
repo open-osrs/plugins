@@ -6,7 +6,7 @@ import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -50,13 +50,9 @@ public class PrayerFlickPlugin extends Plugin
 	@Inject
 	private PrayerFlickOverlay flickOverlay;
 
-	@Inject
-	private EventBus eventBus;
-
 	@Override
 	protected void startUp()
 	{
-		this.eventBus.subscribe(GameTick.class, this, this::onGameTick);
 		this.overlayManager.add(this.flickOverlay);
 		this.keyManager.registerKeyListener(this.prayerHotkeyListener);
 	}
@@ -64,11 +60,11 @@ public class PrayerFlickPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		this.eventBus.unregister(this);
 		this.overlayManager.remove(this.flickOverlay);
 		this.keyManager.unregisterKeyListener(this.prayerHotkeyListener);
 	}
 
+	@Subscribe
 	public void onGameTick(final GameTick tick)
 	{
 		this.prayersActive = this.isAnyPrayerActive();
