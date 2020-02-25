@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2017, Devin French <https://github.com/devinfrench>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,25 +22,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.jadautoprayer;
 
-rootProject.name = "ben93riggs Plugins"
+import net.runelite.api.AnimationID;
+import net.runelite.api.Prayer;
 
-include(":cannonreloader")
-include(":foodeater")
-include(":itemcombiner")
-include(":itemdropper")
-include(":itemuser")
-include(":jadautoprayer")
-include(":pktools")
-include(":prayerflick")
-include(":praypotdrinker")
+public enum JadAttack
+{
+	MAGIC(AnimationID.TZTOK_JAD_MAGIC_ATTACK, Prayer.PROTECT_FROM_MAGIC),
+	RANGE(AnimationID.TZTOK_JAD_RANGE_ATTACK, Prayer.PROTECT_FROM_MISSILES);
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	private final int animation;
+	private final Prayer prayer;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	JadAttack(final int animation, final Prayer prayer)
+	{
+		this.animation = animation;
+		this.prayer = prayer;
+	}
+
+	public int getAnimation()
+	{
+		return this.animation;
+	}
+
+	public Prayer getPrayer()
+	{
+		return this.prayer;
+	}
 }
