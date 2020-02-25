@@ -28,7 +28,7 @@ import ProjectVersions.rlVersion
 version = "0.0.1"
 
 project.extra["PluginName"] = "Prayer Pot Drinker"
-project.extra["PluginDescription"] = "Automatically drink pray pots"
+project.extra["PluginDescription"] = "Automatically drink pray potions as needed"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
