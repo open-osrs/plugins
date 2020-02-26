@@ -65,7 +65,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "XP Drop",
 	description = "Enable customization of the way XP drops are displayed",
-	tags = {"experience", "levels", "tick"},
+	tags = {"experience", "levels", "tick", "prayer"},
 	type = PluginType.UTILITY
 )
 public class XpDropPlugin extends Plugin
