@@ -65,9 +65,6 @@ public class CustomCursorPlugin extends Plugin
 	@Inject
 	private CustomCursorConfig config;
 
-	private Clip skillSpecsRage;
-	private int volume = 35;
-
 	@Provides
 	CustomCursorConfig provideConfig(ConfigManager configManager)
 	{
@@ -78,20 +75,6 @@ public class CustomCursorPlugin extends Plugin
 	protected void startUp()
 	{
 		updateCursor();
-
-		try (AudioInputStream ais = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream("specs-rage.wav")))
-		{
-			skillSpecsRage = AudioSystem.getClip();
-			skillSpecsRage.open(ais);
-			FloatControl gain = (FloatControl) skillSpecsRage.getControl(FloatControl.Type.MASTER_GAIN);
-			float gainVal = (((float) volume) * 40f / 100f) - 35f;
-			gain.setValue(gainVal);
-		}
-		catch (UnsupportedAudioFileException | IOException | LineUnavailableException e)
-		{
-			log.warn("Error opening audiostream from specs-rage.wav", e);
-			skillSpecsRage = null;
-		}
 	}
 
 	@Override
@@ -118,20 +101,7 @@ public class CustomCursorPlugin extends Plugin
 	{
 		CustomCursor selectedCursor = config.selectedCursor();
 
-		if (selectedCursor == CustomCursor.SKILL_SPECS)
-		{
-			if (skillSpecsRage != null)
-			{
-				if (skillSpecsRage.isRunning())
-				{
-					skillSpecsRage.stop();
-				}
-
-				skillSpecsRage.setFramePosition(0);
-				skillSpecsRage.start();
-			}
-		}
-		else if (selectedCursor == CustomCursor.CUSTOM_IMAGE)
+		if (selectedCursor == CustomCursor.CUSTOM_IMAGE)
 		{
 			if (CUSTOM_IMAGE_FILE.exists())
 			{
