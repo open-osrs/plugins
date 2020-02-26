@@ -317,6 +317,21 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			String option = Text.removeTags(entry.getOption()).toLowerCase();
 
+			if (option.contains("examine") && config.hideExamine())
+			{
+				continue;
+			}
+
+			if (option.contains("net") && config.hideNet())
+			{
+				continue;
+			}
+
+			if (option.contains("bait") && config.hideBait())
+			{
+				continue;
+			}
+			
 			if (option.contains("destroy"))
 			{
 				if (config.hideDestroyRunepouch() && entry.getTarget().contains("Rune pouch"))

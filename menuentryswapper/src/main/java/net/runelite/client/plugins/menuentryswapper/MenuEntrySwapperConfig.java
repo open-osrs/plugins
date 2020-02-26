@@ -123,6 +123,17 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
+	
+	@ConfigSection(
+		name = "Right Click Options",
+		description = "",
+		position = 1,
+		keyName = "rightClickOptionsSection"
+	)
+	default boolean rightClickOptionsSection()
+	{
+		return false;
+	}
 
 	@ConfigSection(
 		name = "Untradeables",
@@ -1337,6 +1348,46 @@ public interface MenuEntrySwapperConfig extends Config
 		section = "teleportationSection"
 	)
 	default boolean swapJewelleryBox()
+	{
+		return false;
+	}
+	
+	//------------------------------------------------------------//
+	// Right Click Options
+	//------------------------------------------------------------//
+
+	@ConfigItem(
+		keyName = "hideExamine",
+		name = "Examine",
+		description = "Hides the 'Examine' option from the right click menu.",
+		position = 0,
+		section = "rightClickOptionsSection"
+	)
+	default boolean hideExamine()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "hideNet",
+		name = "Net",
+		description = "Hides the 'Net' option from the right click menu.",
+		position = 1,
+		section = "rightClickOptionsSection"
+	)
+	default boolean hideNet()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "hideBait",
+		name = "Bait",
+		description = "Hides the 'Bait' option from the right click menu.",
+		position = 2,
+		section = "rightClickOptionsSection"
+	)
+	default boolean hideBait()
 	{
 		return false;
 	}
