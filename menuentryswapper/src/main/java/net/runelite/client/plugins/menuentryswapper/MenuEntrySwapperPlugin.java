@@ -1108,6 +1108,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry("Transport");
 		menuManager.removePriorityEntry("Travel");
 		menuManager.removePriorityEntry("Travel", "Trapdoor");
+		menuManager.removePriorityEntry(config.ardougneCloakMode().toString());
+		menuManager.removePriorityEntry(config.ardougneCloakMode().toString2());
 		menuManager.removePriorityEntry(new BankComparableEntry("collect", "", false));
 		menuManager.removePriorityEntry(new InventoryComparableEntry("Rub", "", false));
 		menuManager.removePriorityEntry(new InventoryComparableEntry("Teleport", "", false));
