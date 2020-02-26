@@ -124,16 +124,4 @@ public interface BronzeManConfig extends Config
 	{
 		return false;
 	}
-
-	@ConfigItem(
-		keyName = "hideTradeOption",
-		name = "Hide trade with option",
-		description = "Hides the trade with option from the player menu",
-		position = 0,
-		titleSection = "gameModeOptions"
-	)
-	default boolean hideTradeOption()
-	{
-		return true;
-	}
 }

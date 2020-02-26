@@ -20,15 +20,11 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Player;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -419,32 +415,6 @@ public class BronzemanPlugin extends Plugin
 			return;
 		}
 		sendMessage("Current Unlock file succesfully deleted!");
-	}
-
-	@Subscribe
-	private void onMenuOpened(MenuOpened event)
-	{
-		Player localPlayer = client.getLocalPlayer();
-
-		if (localPlayer == null)
-		{
-			return;
-		}
-
-		List<MenuEntry> menu_entries = new ArrayList<>();
-
-		for (MenuEntry entry : event.getMenuEntries())
-		{
-			String option = Text.removeTags(entry.getOption()).toLowerCase();
-
-			if (option.contains("trade with") && config.hideTradeOption())
-			{
-				continue;
-			}
-			menu_entries.add(entry);
-		}
-		event.setMenuEntries(menu_entries.toArray(new MenuEntry[0]));
-		event.setModified();
 	}
 
 	private void sendMessage(String text)
