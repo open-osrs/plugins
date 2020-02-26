@@ -86,6 +86,7 @@ public enum Emoji
 	WAVE("(^_^)/"),
 	HEART_EYES("(*.*)"),
 	FACEPALM("M-)"),
+	PENSIVE("V_V"),
 	;
 
 	public static final Map<String, Emoji> emojiMap;

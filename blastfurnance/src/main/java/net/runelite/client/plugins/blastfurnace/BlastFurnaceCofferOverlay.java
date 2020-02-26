@@ -41,21 +41,26 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.QuantityFormatter;
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 
 @Singleton
 class BlastFurnaceCofferOverlay extends Overlay
 {
+	private static final float COST_PER_HOUR = 72000.0f;
+
 	private final Client client;
 	private final BlastFurnacePlugin plugin;
+	private final BlastFurnaceConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
-	private BlastFurnaceCofferOverlay(final Client client, final BlastFurnacePlugin plugin)
+	private BlastFurnaceCofferOverlay(final Client client, final BlastFurnacePlugin plugin, final BlastFurnaceConfig config)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Coffer overlay"));
 	}
 
@@ -76,9 +81,18 @@ class BlastFurnaceCofferOverlay extends Overlay
 
 		if (sack != null)
 		{
+			final int coffer = client.getVar(BLAST_FURNACE_COFFER);
+
 			sack.setHidden(true);
 
-			tableComponent.addRow("Coffer:", QuantityFormatter.quantityToStackSize(client.getVar(BLAST_FURNACE_COFFER)) + " gp");
+			tableComponent.addRow("Coffer:", QuantityFormatter.quantityToStackSize(coffer) + " gp");
+
+			if (config.showCofferTime())
+			{
+				final long millis = (long) (coffer / COST_PER_HOUR * 60 * 60 * 1000);
+
+				tableComponent.addRow("Time:", formatDuration(millis, "H'h' m'm' s's'", true));
+			}
 		}
 
 		if (!tableComponent.isEmpty())
