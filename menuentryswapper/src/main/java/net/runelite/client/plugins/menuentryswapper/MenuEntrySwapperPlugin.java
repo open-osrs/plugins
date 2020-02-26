@@ -31,7 +31,6 @@ package net.runelite.client.plugins.menuentryswapper;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,10 +50,9 @@ import net.runelite.api.Item;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import static net.runelite.api.MenuOpcode.MENU_ACTION_DEPRIORITIZE_OFFSET;
+import static net.runelite.api.MenuOpcode.WALK;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import net.runelite.api.Varbits;
-import static net.runelite.api.Varbits.BUILDING_MODE;
 import static net.runelite.api.Varbits.WITHDRAW_X_AMOUNT;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ClientTick;
@@ -75,7 +73,6 @@ import net.runelite.client.menus.AbstractComparableEntry;
 import net.runelite.client.menus.BankComparableEntry;
 import static net.runelite.client.menus.ComparableEntries.newBankComparableEntry;
 import static net.runelite.client.menus.ComparableEntries.newBaseComparableEntry;
-import net.runelite.client.menus.EquipmentComparableEntry;
 import net.runelite.client.menus.InventoryComparableEntry;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.menus.ShopComparableEntry;
@@ -121,74 +118,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		"murphy", "cyrisus", "smoggy", "ginea", "watson", "barbarian guard", "random"
 	);
 
-	private static final AbstractComparableEntry WALK = new AbstractComparableEntry()
-	{
-		private final int hash = "WALK".hashCode() * 79 + getPriority();
-
-		@Override
-		public int hashCode()
-		{
-			return hash;
-		}
-
-		@Override
-		public boolean equals(Object entry)
-		{
-			return entry.getClass() == this.getClass() && entry.hashCode() == this.hashCode();
-		}
-
-		@Override
-		public int getPriority()
-		{
-			return 99;
-		}
-
-		@Override
-		public boolean matches(MenuEntry entry)
-		{
-			return
-				entry.getOpcode() == MenuOpcode.WALK.getId() ||
-					entry.getOpcode() == MenuOpcode.WALK.getId() + MenuOpcode.MENU_ACTION_DEPRIORITIZE_OFFSET;
-		}
-	};
-
-	private static final AbstractComparableEntry TAKE = new AbstractComparableEntry()
-	{
-		private final int hash = "TAKE".hashCode() * 79 + getPriority();
-
-		@Override
-		public int hashCode()
-		{
-			return hash;
-		}
-
-		@Override
-		public boolean equals(Object entry)
-		{
-			return entry.getClass() == this.getClass() && entry.hashCode() == this.hashCode();
-		}
-
-		@Override
-		public int getPriority()
-		{
-			return 100;
-		}
-
-		@Override
-		public boolean matches(MenuEntry entry)
-		{
-			int opcode = entry.getOpcode();
-			if (opcode > MenuOpcode.MENU_ACTION_DEPRIORITIZE_OFFSET)
-			{
-				opcode -= MenuOpcode.MENU_ACTION_DEPRIORITIZE_OFFSET;
-			}
-
-			return
-				opcode >= MenuOpcode.GROUND_ITEM_FIRST_OPTION.getId() &&
-					opcode <= MenuOpcode.GROUND_ITEM_FIFTH_OPTION.getId();
-		}
-	};
-
 	private static final Splitter NEWLINE_SPLITTER = Splitter
 		.on("\n")
 		.omitEmptyStrings()
@@ -223,9 +152,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 	@Inject
 	private EventBus eventBus;
 
-	private boolean buildingMode;
-	private boolean inTobRaid = false;
-	private boolean inCoxRaid = false;
 	@Setter(AccessLevel.PRIVATE)
 	private boolean hotkeyActive;
 	@Setter(AccessLevel.PRIVATE)
@@ -277,7 +203,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 	public void startUp()
 	{
 		addSwaps();
-		loadConstructionItems();
 		loadCustomSwaps(config.customSwaps(), customSwaps);
 
 		updateBuySellEntries();
@@ -292,7 +217,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			keyManager.registerKeyListener(ctrlHotkey);
 			keyManager.registerKeyListener(hotkey);
-			setCastOptions(true);
 		}
 	}
 
@@ -308,10 +232,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 		keyManager.unregisterKeyListener(ctrlHotkey);
 		keyManager.unregisterKeyListener(hotkey);
-		if (client.getGameState() == GameState.LOGGED_IN)
-		{
-			resetCastOptions();
-		}
 	}
 
 	@Subscribe
@@ -334,34 +254,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 		removeSwaps();
 		addSwaps();
-		loadConstructionItems();
 
 		switch (event.getKey())
 		{
 			case "customSwaps":
 				loadCustomSwaps(config.customSwaps(), customSwaps);
-				return;
-			case "hideCastToB":
-			case "hideCastIgnoredToB":
-				if (config.hideCastToB())
-				{
-					setCastOptions(true);
-				}
-				else
-				{
-					resetCastOptions();
-				}
-				return;
-			case "hideCastCoX":
-			case "hideCastIgnoredCoX":
-				if (config.hideCastCoX())
-				{
-					setCastOptions(true);
-				}
-				else
-				{
-					resetCastOptions();
-				}
 				return;
 			case "removeObjects":
 			case "removedObjects":
@@ -394,7 +291,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			return;
 		}
 
-		loadConstructionItems();
 		keyManager.registerKeyListener(ctrlHotkey);
 		keyManager.registerKeyListener(hotkey);
 	}
@@ -402,10 +298,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged event)
 	{
-		buildingMode = client.getVar(BUILDING_MODE) == 1;
 		WithdrawComparableEntry.setX(client.getVar(WITHDRAW_X_AMOUNT));
-
-		setCastOptions(false);
 	}
 
 	@Subscribe
@@ -423,36 +316,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		for (MenuEntry entry : event.getMenuEntries())
 		{
 			String option = Text.removeTags(entry.getOption()).toLowerCase();
-
-			if (option.contains("trade with") && config.hideTradeWith())
-			{
-				continue;
-			}
-
-			if (option.contains("lookup") && config.hideLookup())
-			{
-				continue;
-			}
-
-			if (option.contains("report") && config.hideReport())
-			{
-				continue;
-			}
-
-			if (option.contains("examine") && config.hideExamine())
-			{
-				continue;
-			}
-
-			if (option.contains("net") && config.hideNet())
-			{
-				continue;
-			}
-
-			if (option.contains("bait") && config.hideBait())
-			{
-				continue;
-			}
 
 			if (option.contains("destroy"))
 			{
@@ -481,7 +344,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 					continue;
 				}
 			}
-			
+
 			if (option.contains("restore"))
 			{
 				if (config.hideRestoreTanzaniteHelm() && entry.getTarget().contains("Tanzanite helm"))
@@ -810,11 +673,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Teleport", "Explorer's ring 4");
 		}
 
-		if (config.swapPickpocket())
-		{
-			menuManager.addPriorityEntry("Pickpocket").setPriority(1);
-		}
-
 		if (config.swapHardWoodGrove())
 		{
 			menuManager.addPriorityEntry("Send-parcel", "Rionasta");
@@ -985,11 +843,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Private");
 		}
 
-		if (config.swapPick())
-		{
-			menuManager.addPriorityEntry("Pick-lots");
-		}
-
 		if (config.swapSearch())
 		{
 			menuManager.addPriorityEntry("Search").setPriority(1);
@@ -1101,61 +954,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Quick-pay(100)", "Hardwood grove doors");
 		}
 
-		if (config.getBurningAmulet())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getBurningAmuletMode().toString(), "burning amulet"));
-		}
-
-		if (config.getCombatBracelet())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getCombatBraceletMode().toString(), "combat bracelet"));
-		}
-
-		if (config.getGamesNecklace())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getGamesNecklaceMode().toString(), "games necklace"));
-		}
-
-		if (config.getDuelingRing())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getDuelingRingMode().toString(), "ring of dueling"));
-		}
-
-		if (config.getGlory())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getGloryMode().toString(), "glory"));
-		}
-
-		if (config.getSkillsNecklace())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getSkillsNecklaceMode().toString(), "skills necklace"));
-		}
-
-		if (config.getNecklaceofPassage())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getNecklaceofPassageMode().toString(), "necklace of passage"));
-		}
-
-		if (config.getDigsitePendant())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getDigsitePendantMode().toString(), "digsite pendant"));
-		}
-
-		if (config.getSlayerRing())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getSlayerRingMode().toString(), "slayer ring"));
-		}
-
-		if (config.getXericsTalisman())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getXericsTalismanMode().toString(), "talisman"));
-		}
-
-		if (config.getRingofWealth())
-		{
-			menuManager.addPriorityEntry(new EquipmentComparableEntry(config.getRingofWealthMode().toString(), "ring of wealth"));
-		}
-
 		if (config.swapMax())
 		{
 			menuManager.addPriorityEntry(config.maxMode().toString(), "max cape");
@@ -1242,7 +1040,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry("Pay-toll(2-ecto)", "Energy barrier");
 		menuManager.removePriorityEntry("Perks", "Mounted Max Cape");
 		menuManager.removePriorityEntry("Pick-lots");
-		menuManager.removePriorityEntry("Pickpocket");
 		menuManager.removePriorityEntry("Private");
 		menuManager.removePriorityEntry("Quick-enter");
 		menuManager.removePriorityEntry("Quick-leave");
@@ -1292,25 +1089,12 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry("Travel");
 		menuManager.removePriorityEntry("Travel", "Trapdoor");
 		menuManager.removePriorityEntry(new BankComparableEntry("collect", "", false));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getBurningAmuletMode().toString(), "burning amulet"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getCombatBraceletMode().toString(), "combat bracelet"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getDigsitePendantMode().toString(), "digsite pendant"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getDuelingRingMode().toString(), "ring of dueling"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getGamesNecklaceMode().toString(), "games necklace"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getGloryMode().toString(), "glory"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getNecklaceofPassageMode().toString(), "necklace of passage"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getRingofWealthMode().toString(), "ring of wealth"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getSkillsNecklaceMode().toString(), "skills necklace"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getSlayerRingMode().toString(), "slayer ring"));
-		menuManager.removePriorityEntry(new EquipmentComparableEntry(config.getXericsTalismanMode().toString(), "talisman"));
 		menuManager.removePriorityEntry(new InventoryComparableEntry("Rub", "", false));
 		menuManager.removePriorityEntry(new InventoryComparableEntry("Teleport", "", false));
 		menuManager.removePriorityEntry(new GrimyHerbComparableEntry(config.swapGrimyHerbMode(), client));
 		menuManager.removePriorityEntry(newBankComparableEntry("Empty", "Coal bag"));
 		menuManager.removePriorityEntry(config.constructionCapeMode().toString(), "Construct. cape");
 		menuManager.removePriorityEntry(config.constructionCapeMode().toString(), "Construct. cape(t)");
-		menuManager.removePriorityEntry(config.getConstructionMode().getBuild());
-		menuManager.removePriorityEntry(config.getConstructionMode().getRemove());
 		menuManager.removePriorityEntry(config.maxMode().toString(), "max cape");
 		menuManager.removePriorityEntry(config.questCapeMode().toString(), "quest point cape");
 		menuManager.removePriorityEntry(config.swapHouseAdMode().getEntry());
@@ -1407,27 +1191,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		}
 	}
 
-	private void loadConstructionItems()
-	{
-		if (client.getGameState() != GameState.LOGGED_IN)
-		{
-			return;
-		}
-
-		if (!buildingMode)
-		{
-			menuManager.removePriorityEntry(config.getConstructionMode().getBuild());
-			menuManager.removePriorityEntry(config.getConstructionMode().getRemove());
-			return;
-		}
-
-		if (config.getEasyConstruction())
-		{
-			menuManager.addPriorityEntry(config.getConstructionMode().getBuild()).setPriority(100);
-			menuManager.addPriorityEntry(config.getConstructionMode().getRemove()).setPriority(100);
-		}
-	}
-
 	private void startHotkey()
 	{
 		eventBus.subscribe(ClientTick.class, HOTKEY, this::addHotkey);
@@ -1466,14 +1229,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			menuManager.addPriorityEntry("climb-up").setPriority(100);
 		}
-		if (config.hotKeyLoot())
-		{
-			menuManager.addPriorityEntry(TAKE);
-		}
-		if (config.hotKeyWalk())
-		{
-			menuManager.addPriorityEntry(WALK);
-		}
+
 		if (config.swapNpcContact())
 		{
 			for (String npccontact : npcContact)
@@ -1499,8 +1255,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
 		menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
 		menuManager.removePriorityEntry("climb-up");
-		menuManager.removePriorityEntry(TAKE);
-		menuManager.removePriorityEntry(WALK);
 
 		for (String npccontact : npcContact)
 		{
@@ -1579,52 +1333,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 				eventBus.unregister(CONTROL_CHECK);
 			}
 		}
-	}
-
-	private void setCastOptions(boolean force)
-	{
-		clientThread.invoke(() ->
-		{
-			boolean tmpInCoxRaid = client.getVar(Varbits.IN_RAID) == 1;
-			if (tmpInCoxRaid != inCoxRaid || force)
-			{
-				if (tmpInCoxRaid && config.hideCastCoX())
-				{
-					client.setHideFriendCastOptions(true);
-					client.setHideClanmateCastOptions(true);
-					client.setUnhiddenCasts(Sets.newHashSet(Text.fromCSV(config.hideCastIgnoredCoX().toLowerCase())));
-				}
-
-				inCoxRaid = tmpInCoxRaid;
-			}
-
-			boolean tmpInTobRaid = client.getVar(Varbits.THEATRE_OF_BLOOD) == 2;
-			if (tmpInTobRaid != inTobRaid || force)
-			{
-				if (tmpInTobRaid && config.hideCastToB())
-				{
-					client.setHideFriendCastOptions(true);
-					client.setHideClanmateCastOptions(true);
-					client.setUnhiddenCasts(Sets.newHashSet(Text.fromCSV(config.hideCastIgnoredToB().toLowerCase())));
-				}
-
-				inTobRaid = tmpInTobRaid;
-			}
-
-			if (!inCoxRaid && !inTobRaid)
-			{
-				resetCastOptions();
-			}
-		});
-	}
-
-	private void resetCastOptions()
-	{
-		clientThread.invoke(() ->
-		{
-			client.setHideFriendCastOptions(false);
-			client.setHideClanmateCastOptions(false);
-		});
 	}
 
 	private void addBuySellEntries()
