@@ -50,8 +50,6 @@ public interface RunecraftConfig extends Config
 		name = "Lavas",
 		description = "Swaps Ring of dueling menu entry depending on location, requires fire tiara or RC cape to be worn.",
 		titleSection = "utilTitle",
-		warning = "<html><center>This config option is incompatible with menu-entry-swapper equipment swaps." +
-			"<br>Expect bugs if you use them together.</html></center>",
 		position = 2
 	)
 	default boolean lavas()
