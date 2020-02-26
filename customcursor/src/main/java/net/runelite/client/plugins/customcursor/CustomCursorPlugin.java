@@ -90,11 +90,6 @@ public class CustomCursorPlugin extends Plugin
 		{
 			updateCursor();
 		}
-
-		if (event.getGroup().equals("metronome") && event.getKey().equals("volume"))
-		{
-			this.volume = Integer.parseInt(event.getNewValue());
-		}
 	}
 
 	private void updateCursor()
