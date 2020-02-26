@@ -552,7 +552,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		}
 	}
 	
-		private void loadCustomSwaps(String config, Map<AbstractComparableEntry, Integer> map)
+	private void loadCustomSwaps(String config, Map<AbstractComparableEntry, Integer> map)
 	{
 		final Map<AbstractComparableEntry, Integer> tmp = new HashMap<>();
 
@@ -599,6 +599,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				tmp.put(prioEntry, priority);
 			}
 		}
+	}
 
 	private void addSwaps()
 	{
