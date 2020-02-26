@@ -857,6 +857,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			menuManager.addPriorityEntry("Private");
 		}
+		
+		if (config.swapPick())
+		{
+			menuManager.addPriorityEntry("Pick-lots");
+		}
 
 		if (config.swapSearch())
 		{

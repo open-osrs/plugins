@@ -646,6 +646,18 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
+	
+	@ConfigItem(
+		keyName = "swapPick",
+		name = "Pick",
+		description = "Swap 'Pick' with 'Pick-lots' of the Gourd tree in the Chambers of Xeric.",
+		position = 15,
+		section = "miscellaneousSection"
+	)
+	default boolean swapPick()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "swapQuick",
