@@ -466,25 +466,7 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return "";
 	}
-
-	@ConfigItem(
-		keyName = "prioEntry",
-		name = "Prioritize Entry",
-		description = "This section is mainly for prioritizing entries. For example" +
-			"<br>ignoring attack on snakelings at zulrah." +
-			"<br>Example Syntax: teleport, aubury" +
-			"<br>It's important to note that these will not take precedent over other swaps.",
-		position = 2,
-		section = "miscellaneousSection",
-		parse = true,
-		clazz = PrioParse.class,
-		method = "parse"
-	)
-	default String prioEntry()
-	{
-		return "";
-	}
-
+	
 	@ConfigItem(
 		keyName = "getSwapOffer",
 		name = "Offer-All",
