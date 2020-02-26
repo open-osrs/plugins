@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.4"
 
 project.extra["PluginName"] = "Wiki"
 project.extra["PluginDescription"] = "Adds a Wiki button that takes you to the OSRS Wiki"
