@@ -421,32 +421,6 @@ public class BronzemanPlugin extends Plugin
 		sendMessage("Current Unlock file succesfully deleted!");
 	}
 
-	@Subscribe
-	private void onMenuOpened(MenuOpened event)
-	{
-		Player localPlayer = client.getLocalPlayer();
-
-		if (localPlayer == null)
-		{
-			return;
-		}
-
-		List<MenuEntry> menu_entries = new ArrayList<>();
-
-		for (MenuEntry entry : event.getMenuEntries())
-		{
-			String option = Text.removeTags(entry.getOption()).toLowerCase();
-
-			if (option.contains("trade with") && config.hideTradeOption())
-			{
-				continue;
-			}
-			menu_entries.add(entry);
-		}
-		event.setMenuEntries(menu_entries.toArray(new MenuEntry[0]));
-		event.setModified();
-	}
-
 	private void sendMessage(String text)
 	{
 		final ChatMessageBuilder message = new ChatMessageBuilder()
