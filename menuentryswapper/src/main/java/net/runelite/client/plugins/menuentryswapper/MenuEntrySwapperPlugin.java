@@ -124,7 +124,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		.trimResults();
 	private final Map<AbstractComparableEntry, Integer> customSwaps = new HashMap<>();
 	private final Map<AbstractComparableEntry, Integer> customShiftSwaps = new HashMap<>();
-	private final Map<AbstractComparableEntry, AbstractComparableEntry> dePrioSwaps = new HashMap<>();
 	// 1, 5, 10, 50
 	private final AbstractComparableEntry[][] buyEntries = new AbstractComparableEntry[4][];
 	private final AbstractComparableEntry[][] sellEntries = new AbstractComparableEntry[4][];
@@ -974,13 +973,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	private void removeSwaps()
 	{
-		final Iterator<Map.Entry<AbstractComparableEntry, AbstractComparableEntry>> dePrioIter = dePrioSwaps.entrySet().iterator();
-		dePrioIter.forEachRemaining((e) ->
-		{
-			menuManager.removeSwap(e.getKey(), e.getValue());
-			dePrioIter.remove();
-		});
-
 		menuManager.removePriorityEntry("Activate", "Box trap");
 		menuManager.removePriorityEntry("Assignment");
 		menuManager.removePriorityEntry("Bank");
