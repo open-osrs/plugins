@@ -58,7 +58,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.menus.BankComparableEntry;
 import net.runelite.client.menus.BaseComparableEntry;
 import static net.runelite.client.menus.ComparableEntries.newBaseComparableEntry;
-import net.runelite.client.menus.EquipmentComparableEntry;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -94,10 +93,7 @@ public class RunecraftPlugin extends Plugin
 		ItemID.LARGE_POUCH_5513,
 		ItemID.GIANT_POUCH_5515
 	);
-
-
-	private final Deque<ClickOperation> clickedItems = new ArrayDeque<>();
-	private final Deque<ClickOperation> checkedPouches = new ArrayDeque<>();
+	
 	private final Set<AbyssRifts> rifts = new HashSet<>();
 	private final Set<DecorativeObject> abyssObjects = new HashSet<>();
 	private int lastEssence;
@@ -250,6 +246,7 @@ public class RunecraftPlugin extends Plugin
 				}
 			}
 		}
+	}
 
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
