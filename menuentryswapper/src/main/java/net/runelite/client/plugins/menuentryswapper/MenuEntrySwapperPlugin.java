@@ -35,6 +35,7 @@ import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -93,6 +94,7 @@ import org.pf4j.Extension;
 	tags = {"npcs", "inventory", "items", "objects"},
 	type = PluginType.UTILITY
 )
+
 public class MenuEntrySwapperPlugin extends Plugin
 {
 	private static final Object HOTKEY = new Object();
@@ -123,6 +125,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		.trimResults();
 	private final Map<AbstractComparableEntry, Integer> customSwaps = new HashMap<>();
 	private final Map<AbstractComparableEntry, Integer> customShiftSwaps = new HashMap<>();
+	private final Map<AbstractComparableEntry, AbstractComparableEntry> dePrioSwaps = new HashMap<>();
 	// 1, 5, 10, 50
 	private final AbstractComparableEntry[][] buyEntries = new AbstractComparableEntry[4][];
 	private final AbstractComparableEntry[][] sellEntries = new AbstractComparableEntry[4][];
@@ -189,8 +192,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			setControlActive(false);
 		}
 	};
-
-
+	
 	@Provides
 	MenuEntrySwapperConfig provideConfig(ConfigManager configManager)
 	{
@@ -329,7 +331,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				continue;
 			}
-			
+
 			if (option.contains("destroy"))
 			{
 				if (config.hideDestroyRunepouch() && entry.getTarget().contains("Rune pouch"))
@@ -549,7 +551,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 	}
-	
+
 	private void loadCustomSwaps(String config, Map<AbstractComparableEntry, Integer> map)
 	{
 		final Map<AbstractComparableEntry, Integer> tmp = new HashMap<>();
@@ -597,10 +599,27 @@ public class MenuEntrySwapperPlugin extends Plugin
 				tmp.put(prioEntry, priority);
 			}
 		}
+
+		for (Map.Entry<AbstractComparableEntry, Integer> e : map.entrySet())
+		{
+			final AbstractComparableEntry key = e.getKey();
+			menuManager.removePriorityEntry(key);
+		}
+
+		map.clear();
+		map.putAll(tmp);
+
+		for (Map.Entry<AbstractComparableEntry, Integer> entry : map.entrySet())
+		{
+			AbstractComparableEntry a1 = entry.getKey();
+			int a2 = entry.getValue();
+			menuManager.addPriorityEntry(a1).setPriority(a2);
+		}
 	}
 
 	private void addSwaps()
 	{
+
 		if (config.getSwapTanning())
 		{
 			menuManager.addPriorityEntry("Tan <col=ff7000>All");
@@ -822,7 +841,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			menuManager.addPriorityEntry("Private");
 		}
-		
+
 		if (config.swapPick())
 		{
 			menuManager.addPriorityEntry("Pick-lots");
@@ -972,6 +991,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	private void removeSwaps()
 	{
+		final Iterator<Map.Entry<AbstractComparableEntry, AbstractComparableEntry>> dePrioIter = dePrioSwaps.entrySet().iterator();
+		dePrioIter.forEachRemaining((e) ->
+		{
+			menuManager.removeSwap(e.getKey(), e.getValue());
+			dePrioIter.remove();
+		});
+
 		menuManager.removePriorityEntry("Activate", "Box trap");
 		menuManager.removePriorityEntry("Assignment");
 		menuManager.removePriorityEntry("Bank");
