@@ -30,10 +30,10 @@ include(":foodeater")
 include(":itemcombiner")
 include(":itemdropper")
 include(":itemuser")
-//include(":jadautoprayer")
-//include(":pktools")
+//include(":jadautoprayer") plz fix
+//include(":pktools") plz fix
 include(":prayerflick")
-include(":praypotdrinker")
+//include(":praypotdrinker") plz fix
 
 for (project in rootProject.children) {
     project.apply {
