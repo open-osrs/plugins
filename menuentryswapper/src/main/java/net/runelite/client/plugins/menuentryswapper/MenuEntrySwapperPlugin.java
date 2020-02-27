@@ -1044,7 +1044,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry("Pay-toll(2-ecto)", "Energy barrier");
 		menuManager.removePriorityEntry("Perks", "Mounted Max Cape");
 		menuManager.removePriorityEntry("Pick-lots");
-		menuManager.removePriorityEntry("Pickpocket");
 		menuManager.removePriorityEntry("Private");
 		menuManager.removePriorityEntry("Quick-enter");
 		menuManager.removePriorityEntry("Quick-leave");
