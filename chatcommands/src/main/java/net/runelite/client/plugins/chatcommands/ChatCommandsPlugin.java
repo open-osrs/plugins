@@ -678,7 +678,8 @@ public class ChatCommandsPlugin extends Plugin
 			case LOADING:
 			case HOPPING:
 				pohOwner = null;
-		
+		}
+	}
 
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged varbitChanged)

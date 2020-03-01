@@ -61,10 +61,10 @@ enum Rock
 			}
 		},
 	SILVER(Duration.of(100, GAME_TICKS), 0, ROCKS_11368, ROCKS_11369, ROCKS_36205),
-	SANDSTONE(Duration.of(9, GAME_TICKS)), 0, ROCKS_11386),
+	SANDSTONE(Duration.of(9, GAME_TICKS), 0, ROCKS_11386),
 	GOLD(Duration.of(100, GAME_TICKS), 0, ROCKS_11370, ROCKS_11371, ROCKS_36206),
 	GRANITE(Duration.of(9, GAME_TICKS), 0, ROCKS_11387),
-	MITHRIL(Duration.of(200, GAME_TICKS)), 0, ROCKS_11372, ROCKS_11373, ROCKS_36207)
+	MITHRIL(Duration.of(200, GAME_TICKS), 0, ROCKS_11372, ROCKS_11373, ROCKS_36207)
 		{
 			@Override
 			Duration getRespawnTime(int region)
@@ -72,7 +72,7 @@ enum Rock
 				return region == MINING_GUILD ? Duration.of(100, GAME_TICKS) : super.respawnTime;
 			}
 		},
-	ADAMANTITE(of(400, GAME_TICKS), 0, ROCKS_11374, ROCKS_11375, ROCKS_36208)
+	ADAMANTITE(Duration.of(400, GAME_TICKS), 0, ROCKS_11374, ROCKS_11375, ROCKS_36208)
 		{
 			@Override
 			Duration getRespawnTime(int region)

@@ -89,7 +89,6 @@ import net.runelite.client.util.HotkeyListener;
 import net.runelite.client.util.ImageCapture;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.LinkBrowser;
-import org.jetbrains.annotations.Nullable;
 import org.pf4j.Extension;
 
 @Extension
@@ -281,7 +280,8 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	private void onPlayerDeath(PlayerDeath event)
 	{
-		if (event.getPlayer() == client.getLocalPlayer() && config.screenshotPlayerDeath())
+		Player player = event.getPlayer();
+		if (player == client.getLocalPlayer() && config.screenshotPlayerDeath())
 		{
 			takeScreenshot("Death", "Deaths");
 		}
@@ -574,9 +574,8 @@ public class ScreenshotPlugin extends Plugin
 	 * and optionally uploads it to an image-hosting service.
 	 *
 	 * @param fileName Filename to use, without file extension.
-	 * @param subDir      Subdirectory to store the captured screenshot in.
 	 */
-	private void takeScreenshot(String fileName, String subDir)
+	private void takeScreenshot(String fileName)
 	{
 		if (client.getGameState() == GameState.LOGIN_SCREEN)
 		{
@@ -588,7 +587,7 @@ public class ScreenshotPlugin extends Plugin
 		Consumer<Image> imageCallback = (img) ->
 		{
 			// This callback is on the game thread, move to executor thread
-			executor.submit(() -> takeScreenshot(fileName, subDir, img));
+			executor.submit(() -> takeScreenshot(fileName, null, img));
 		};
 
 		if (config.displayDate())
@@ -620,7 +619,7 @@ public class ScreenshotPlugin extends Plugin
 		Consumer<Image> imageCallback = (img) ->
 		{
 			// This callback is on the game thread, move to executor thread
-			executor.submit(() -> takeScreenshot(fileName, img, subdirectory));
+			executor.submit(() -> takeScreenshot(fileName, subdirectory, img));
 
 		};
 
