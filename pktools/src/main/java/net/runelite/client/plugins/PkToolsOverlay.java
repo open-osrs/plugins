@@ -16,13 +16,13 @@ import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.SpriteManager;
-import net.runelite.client.plugins.InputHandler;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
+import net.runelite.client.plugins.pktools.ScriptCommand.InputHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

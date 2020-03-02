@@ -19,6 +19,7 @@ import javax.inject.Inject;
 )
 public class ItemCombinerPlugin extends Plugin
 {
+
 	@Inject
 	private Client client;
 

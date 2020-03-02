@@ -1,4 +1,4 @@
-package net.runelite.client.plugins;
+package net.runelite.client.plugins.praypotdrinker;
 
 import net.runelite.api.Client;
 import net.runelite.api.Point;

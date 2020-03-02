@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 @PluginDescriptor(
 		name = "Jad Auto Prayer",
-		description = "Auto click proper prayers against Jad",
+		description = "Auto click proper prayers against Jad.",
 		tags = {"bosses", "combat", "minigame", "overlay", "prayer", "pve", "pvm", "jad", "firecape", "fight", "cave", "caves"},
 		enabledByDefault = false,
 		type = PluginType.EXTERNAL

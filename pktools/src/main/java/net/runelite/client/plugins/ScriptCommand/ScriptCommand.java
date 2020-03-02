@@ -7,15 +7,11 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.plugins.InputHandler;
 import net.runelite.client.plugins.pktools.PkToolsConfig;
 import net.runelite.client.plugins.pktools.PkToolsOverlay;
 import net.runelite.client.plugins.pktools.PkToolsPlugin;
-import net.runelite.client.util.MiscUtils;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.time.Duration;
 import java.time.Instant;
 

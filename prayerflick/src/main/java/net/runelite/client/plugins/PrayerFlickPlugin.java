@@ -19,7 +19,7 @@ import java.time.Instant;
 
 @PluginDescriptor(
 		name = "Prayer Flick",
-		description = "Automatically Flicks Auto-Prayer and drinks Prayer potions (for training, not PvP)",
+		description = "Automatically Flicks Auto-Prayer and drinks Prayer potions (for training, not PvP).",
 		tags = {"combat", "flicking", "overlay", "prayer"},
 		enabledByDefault = false,
 		type = PluginType.EXTERNAL

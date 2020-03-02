@@ -8,7 +8,6 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.input.KeyListener;
-import net.runelite.client.plugins.InputHandler;
 
 import javax.inject.Inject;
 import java.awt.*;

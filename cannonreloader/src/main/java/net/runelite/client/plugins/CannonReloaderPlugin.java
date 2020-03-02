@@ -19,7 +19,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.InputHandler;
 
 import javax.inject.Inject;
 import java.util.concurrent.ExecutorService;

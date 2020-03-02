@@ -4,7 +4,6 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.input.KeyListener;
-import net.runelite.client.plugins.inventorytags.InventoryTagsConfig;
 import net.runelite.client.plugins.pktools.ScriptCommand.ScriptCommandFactory;
 
 import javax.inject.Inject;
@@ -132,7 +131,7 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener
 
 	public static String getTag(final ConfigManager configManager, final int itemId)
 	{
-		final String tag = configManager.getConfiguration(InventoryTagsConfig.GROUP, "item_" + itemId);
+		final String tag = configManager.getConfiguration("inventorytags", "item_" + itemId);
 		if (tag == null || tag.isEmpty())
 		{
 			return null;

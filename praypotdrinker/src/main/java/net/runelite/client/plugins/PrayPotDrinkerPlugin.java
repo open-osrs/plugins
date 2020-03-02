@@ -4,13 +4,12 @@ import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.Notifier;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.flexo.Flexo;
-import net.runelite.client.flexo.FlexoMouse;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -38,19 +37,10 @@ public class PrayPotDrinkerPlugin extends Plugin
 
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 	private final ReentrantLock lock = new ReentrantLock();
-	
-	private Flexo flexo;
 
 	@Override
 	protected void startUp() throws Exception
 	{
-		Flexo.client = client;
-		
-		try {
-			flexo = new Flexo();
-		} catch (AWTException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -91,12 +81,11 @@ public class PrayPotDrinkerPlugin extends Plugin
 
 					if (itemid == ItemID.PRAYER_POTION1 || itemid == ItemID.PRAYER_POTION2 || itemid == ItemID.PRAYER_POTION3 || itemid == ItemID.PRAYER_POTION4)
 					{
-						flexo.keyPress(KeyEvent.VK_ESCAPE);
-						flexo.delay(50);
-						Point p = FlexoMouse.getClickPoint(item.getCanvasBounds());
-						flexo.mouseMove(p);
-						flexo.mousePressAndRelease(1);
-						flexo.delay(50);
+						InputHandler.pressKey(client.getCanvas(), KeyEvent.VK_ESCAPE);
+						Thread.sleep(50);
+						Point p = InputHandler.getClickPoint(item.getCanvasBounds());
+						InputHandler.leftClick(client, p);
+						Thread.sleep(50);
 						return;
 					}
 				}

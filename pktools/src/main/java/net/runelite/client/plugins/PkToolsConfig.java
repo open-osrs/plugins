@@ -6,6 +6,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Keybind;
 import net.runelite.client.config.Title;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 @ConfigGroup("pktools")
