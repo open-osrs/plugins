@@ -21,9 +21,10 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 
 import javax.inject.Inject;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,9 +61,10 @@ public class CannonReloaderPlugin extends Plugin {
 	
 	@Inject
 	private Client client;
-	
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final ReentrantLock lock = new ReentrantLock();
+
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
 	
 	@Override
 	protected void startUp() throws Exception {
@@ -180,8 +182,6 @@ public class CannonReloaderPlugin extends Plugin {
 		this.executor.submit(() ->
 		{
 			try {
-				this.lock.lock();
-				
 				if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
 					return;
 				
@@ -212,8 +212,6 @@ public class CannonReloaderPlugin extends Plugin {
 				InputHandler.leftClick(client, p);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
-			} finally {
-				lock.unlock();
 			}
 		});
 	}

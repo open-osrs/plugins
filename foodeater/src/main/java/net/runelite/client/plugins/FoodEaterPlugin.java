@@ -19,9 +19,10 @@ import net.runelite.client.plugins.PluginType;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @PluginDescriptor(
 		name = "Food Eater",
@@ -50,8 +51,9 @@ public class FoodEaterPlugin extends Plugin
 		return configManager.getConfig(FoodEaterConfig.class);
 	}
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final ReentrantLock lock = new ReentrantLock();
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Override
 	protected void startUp() throws Exception
@@ -94,16 +96,12 @@ public class FoodEaterPlugin extends Plugin
 				executor.submit(() -> {
 					try
 					{
-						lock.lock();
 						final Point p = InputHandler.getClickPoint(item.getCanvasBounds());
 						InputHandler.leftClick(this.client, p);
 						Thread.sleep(50);
 					} catch (final Throwable e)
 					{
 						System.out.println(e.getMessage());
-					} finally
-					{
-						this.lock.unlock();
 					}
 				});
 				return;

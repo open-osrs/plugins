@@ -14,9 +14,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListener
 {
@@ -28,8 +29,9 @@ public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListe
 
 	private Instant lastPress;
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final ReentrantLock lock = new ReentrantLock();
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Inject
 	private ItemCombinerHotkeyListener(final Client client, final ItemCombinerConfig config, final ItemCombinerPlugin plugin)
@@ -51,7 +53,7 @@ public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListe
 		if (this.client.getGameState() != GameState.LOGGED_IN)
 			return;
 
-		if (this.executor == null || this.lock == null)
+		if (this.executor == null)
 			return;
 
 		if (this.lastPress != null && Duration.between(this.lastPress, Instant.now()).getNano() > 1000)
@@ -67,12 +69,10 @@ public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListe
 		if (e.getExtendedKeyCode() == this.config.useItemsKeybind().getKeyCode())
 		{
 			executor.submit(() -> {
-				lock.lock();
 				for (int i = this.config.iterations(); i > 0; i--)
 				{
 					this.dropItems();
 				}
-				lock.unlock();
 			});
 		}
 	}

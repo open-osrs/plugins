@@ -10,15 +10,14 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyListener;
 
 import javax.inject.Inject;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ItemDropperHotkeyListener extends MouseAdapter implements KeyListener
 {
@@ -36,8 +35,9 @@ public class ItemDropperHotkeyListener extends MouseAdapter implements KeyListen
 	@Inject
 	private ItemManager itemManager;
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final ReentrantLock lock = new ReentrantLock();
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Inject
 	private ItemDropperHotkeyListener(final Client client, final ItemDropperConfig config, final ItemDropperPlugin plugin)
@@ -72,9 +72,7 @@ public class ItemDropperHotkeyListener extends MouseAdapter implements KeyListen
 		if (e.getExtendedKeyCode() == this.config.dropItemsKeybind().getKeyCode())
 		{
 			executor.submit(() -> {
-				lock.lock();
 				this.dropItems();
-				lock.unlock();
 			});
 		}
 	}

@@ -11,9 +11,10 @@ import net.runelite.client.ui.overlay.OverlayPriority;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 class PrayerFlickOverlay extends Overlay
 {
@@ -24,8 +25,9 @@ class PrayerFlickOverlay extends Overlay
 	private long time;
 	private long initiate;
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final ReentrantLock lock = new ReentrantLock();
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Inject
 	private PrayerFlickOverlay(final Client client, final PrayerFlickPlugin plugin)
@@ -44,7 +46,6 @@ class PrayerFlickOverlay extends Overlay
 		{
 			try
 			{
-				lock.lock();
 
 				final Widget prayerOrb = this.client.getWidget(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB);
 
@@ -99,9 +100,6 @@ class PrayerFlickOverlay extends Overlay
 			} catch (final Exception e)
 			{
 				System.out.println(e.getMessage());
-			} finally
-			{
-				this.lock.unlock();
 			}
 		});
 

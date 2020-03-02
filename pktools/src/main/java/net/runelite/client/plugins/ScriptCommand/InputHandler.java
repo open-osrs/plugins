@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 public class InputHandler {
 	public static void leftClick(Client client, int x, int y)
 	{
-		Point pos = new Point(x, y);
+		assert !client.isClientThread();Point pos = new Point(x, y);
 		moveMouse(client, pos);
 		double xx = ((double) pos.getX() / (double) client.getMouseCanvasPosition().getX());
 		double yy = ((double) pos.getY() / (double) client.getMouseCanvasPosition().getY());
@@ -21,6 +21,7 @@ public class InputHandler {
 	
 	public static void leftClick(Client client, Point pos)
 	{
+		assert !client.isClientThread();
 		moveMouse(client, pos);
 		double xx = ((double) pos.getX() / (double) client.getMouseCanvasPosition().getX());
 		double yy = ((double) pos.getY() / (double) client.getMouseCanvasPosition().getY());
@@ -51,6 +52,14 @@ public class InputHandler {
 		client.getCanvas().dispatchEvent(createEvent(client, p, 504));
 		client.getCanvas().dispatchEvent(createEvent(client, p, 505));
 		client.getCanvas().dispatchEvent(createEvent(client, p, 503));
+
+		try
+		{
+			//sleep for 2 frames (just to be sure we get the menu option loaded)
+			Thread.sleep(client.getFPS() / 5);
+		} catch (InterruptedException e) {
+			//e.printStackTrace();
+		}
 	}
 	
 	public static Point getClickPoint(Rectangle rect)

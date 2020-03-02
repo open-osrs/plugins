@@ -35,8 +35,9 @@ public class PrayPotDrinkerPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final ReentrantLock lock = new ReentrantLock();
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Override
 	protected void startUp() throws Exception
@@ -55,7 +56,6 @@ public class PrayPotDrinkerPlugin extends Plugin
 		{
 			try
 			{
-				this.lock.lock();
 				
 				//7 + 25%
 				int currentPrayerPoints = client.getBoostedSkillLevel(Skill.PRAYER);
@@ -95,10 +95,6 @@ public class PrayPotDrinkerPlugin extends Plugin
 			catch (Throwable e)
 			{
 				System.out.println(e.getMessage());
-			}
-			finally
-			{
-				lock.unlock();
 			}
 		});
 	}

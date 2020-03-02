@@ -11,9 +11,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener
 {
@@ -39,8 +40,9 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener
 	@Inject
 	private ConfigManager configManager;
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final ReentrantLock lock = new ReentrantLock();
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Inject
 	private PkToolsHotkeyListener(final Client client, final PkToolsConfig config, final PkToolsPlugin plugin, final PkToolsOverlay overlay)
@@ -64,7 +66,6 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener
 		executor.submit(() -> {
 			try
 			{
-				lock.lock();
 
 				if (this.lastPress != null && Duration.between(this.lastPress, Instant.now()).getNano() > 1000)
 				{
@@ -113,10 +114,6 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener
 			catch (final Throwable ex)
 			{
 				ex.printStackTrace();
-			}
-			finally
-			{
-				lock.unlock();
 			}
 		});
 	}
