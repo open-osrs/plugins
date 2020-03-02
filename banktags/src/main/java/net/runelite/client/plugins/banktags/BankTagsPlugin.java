@@ -319,6 +319,8 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 		String[] stringStack = client.getStringStack();
 		int intStackSize = client.getIntStackSize();
 		int stringStackSize = client.getStringStackSize();
+		
+		tabInterface.handleScriptEvent(event);
 
 		switch (eventName)
 		{

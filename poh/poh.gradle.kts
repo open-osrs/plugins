@@ -24,8 +24,7 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "Player-owned House"
 project.extra["PluginDescription"] = "Show minimap icons and mark unlit/lit burners"
