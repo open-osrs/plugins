@@ -15,7 +15,7 @@ subprojects {
     group = "com.ben93riggs.externals"
 
     project.extra["PluginProvider"] = "ben93riggs"
-    project.extra["ProjectUrl"] = "https://discord.gg/OpenOSRS"
+    project.extra["ProjectUrl"] = "https://discord.gg/7qrYdaC"
     project.extra["PluginLicense"] = "3-Clause BSD License"
 
     repositories {
