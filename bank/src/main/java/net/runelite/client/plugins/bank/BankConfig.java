@@ -209,4 +209,14 @@ public interface BankConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+			keyName = "ctrlfSearch",
+			name = "Ctrl + F search",
+			description = "Enables Ctrl + F hotkey to open search box"
+	)
+	default boolean ctrlfSearch()
+	{
+		return false;
+	}
 }
