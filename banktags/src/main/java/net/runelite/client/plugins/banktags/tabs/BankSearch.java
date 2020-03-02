@@ -119,6 +119,4 @@ public class BankSearch
 			client.runScript(searchToggleArgs);
 		});
 	}
-
-
 }
