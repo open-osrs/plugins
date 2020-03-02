@@ -3,7 +3,6 @@ package net.runelite.client.plugins.jadautoprayer;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.plugins.pktools.PkToolsHotkeys;
 
 @ConfigGroup("jadautoprayerplugin")
 public interface JadAutoPrayerConfig extends Config
@@ -25,8 +24,8 @@ public interface JadAutoPrayerConfig extends Config
 			name = "Prayer Tab Key",
 			description = "Hotkey in settings that activates the prayer tab"
 	)
-	default PkToolsHotkeys prayerTabKey()
+	default JadAutoPrayerHotkey prayerTabKey()
 	{
-		return PkToolsHotkeys.F5;
+		return JadAutoPrayerHotkey.F5;
 	}
 }
