@@ -42,6 +42,7 @@ import javax.inject.Inject;
 import net.runelite.api.Client;
 import static net.runelite.api.Constants.HIGH_ALCHEMY_MULTIPLIER;
 import net.runelite.api.FontID;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -52,6 +53,7 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuShouldLeftClick;
@@ -163,7 +165,10 @@ public class BankPlugin extends Plugin implements KeyListener
 	@Override
 	protected void startUp()
 	{
+		if (client.getGameState() == GameState.LOGGED_IN)
+		{
 		keyManager.registerKeyListener(this);
+		}
 		searchString = "";
 	}
 
@@ -174,6 +179,18 @@ public class BankPlugin extends Plugin implements KeyListener
 		clientThread.invokeLater(() -> bankSearch.reset(false));
 		forceRightClickFlag = false;
 		itemQuantities = null;
+	}
+	
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() != GameState.LOGGED_IN)
+		{
+			keyManager.unregisterKeyListener(this);
+			return;
+		}
+
+		keyManager.registerKeyListener(this);
 	}
 
 	@Subscribe
