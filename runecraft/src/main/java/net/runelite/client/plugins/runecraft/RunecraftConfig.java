@@ -48,7 +48,7 @@ public interface RunecraftConfig extends Config
 	@ConfigItem(
 		keyName = "lavas",
 		name = "Lavas",
-		description = "Swaps Ring of dueling menu entry depending on location, requires fire tiara or RC cape to be worn.",
+		description = "Menu entry hides craft and use so you don't misclick, requires fire tiara or RC cape to be worn.",
 		titleSection = "utilTitle",
 		position = 2
 	)
@@ -101,18 +101,6 @@ public interface RunecraftConfig extends Config
 		titleSection = "utilTitle"
 	)
 	default boolean degradeOverlay()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "essenceOverlay",
-		name = "Show essence in pouch",
-		description = "This will show how many essence are in your pouch.",
-		position = 7,
-		titleSection = "utilTitle"
-	)
-	default boolean essenceOverlay()
 	{
 		return true;
 	}
