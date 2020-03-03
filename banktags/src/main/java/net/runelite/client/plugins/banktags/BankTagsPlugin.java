@@ -397,7 +397,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 				// set the index to our remembered value instead of 0
 				intStack[intStackSize - 1] = nextRowIndex;
 				break;
-			case "bankLayoutInit":
+			case "beforeBankLayout":
 				// reset the row index if the bank is rebuilt
 				nextRowIndex = 0;
 				break;
