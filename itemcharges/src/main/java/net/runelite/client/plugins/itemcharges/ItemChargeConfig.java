@@ -511,8 +511,8 @@ public interface ItemChargeConfig extends Config
 	@ConfigItem(
 		keyName = "ringOfForgingNotification",
 		name = "Ring of Forging Notification",
-		description26= "Configures if the Ring of Forging breaking notification is enabled",
-		position = 24
+		description = "Configures if the Ring of Forging breaking notification is enabled",
+		position = 26
 	)
 	default boolean ringOfForgingNotification()
 	{
