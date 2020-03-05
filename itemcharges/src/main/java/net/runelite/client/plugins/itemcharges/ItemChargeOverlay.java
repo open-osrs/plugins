@@ -190,7 +190,7 @@ class ItemChargeOverlay extends WidgetItemOverlay
 				|| (type == SACK && !config.showSackCharges())
 				|| (type == ABYSSAL_BRACELET && !config.showAbyssalBraceletCharges())
 				|| (type == AMULET_OF_CHEMISTRY && !config.showAmuletOfChemistryCharges())
-				|| (type == AMULET_OF_BOUNTY && !config.showAmuletOfBountyCharges())))
+				|| (type == AMULET_OF_BOUNTY && !config.showAmuletOfBountyCharges()))
 			{
 				return;
 			}
