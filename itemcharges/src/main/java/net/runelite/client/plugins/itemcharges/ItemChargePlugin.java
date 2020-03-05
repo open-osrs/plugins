@@ -129,6 +129,21 @@ public class ItemChargePlugin extends Plugin
 		"You can smelt ([0-9+]+|one) more pieces? of iron ore before a ring melts\\.");
 	private static final String RING_OF_FORGING_USED_TEXT = "You retrieve a bar of iron.";
 	private static final String RING_OF_FORGING_BREAK_TEXT = "<col=7f007f>Your Ring of Forging has melted.</col>";
+	private static final Pattern AMULET_OF_CHEMISTRY_CHECK_PATTERN = Pattern.compile(
+		"Your amulet of chemistry has (\\d) charges? left\\."
+	);
+	private static final Pattern AMULET_OF_CHEMISTRY_USED_PATTERN = Pattern.compile(
+		"Your amulet of chemistry helps you create a 4-dose potion\\. (?:<col=ff0000>)?It has (\\d|one) charges? left\\."
+	);
+	private static final String AMULET_OF_CHEMISTRY_BREAK_TEXT = "Your amulet of chemistry helps you create a 4-dose potion. <col=ff0000>It then crumbles to dust.</col>";
+	private static final Pattern AMULET_OF_BOUNTY_CHECK_PATTERN = Pattern.compile(
+		"Your amulet of bounty has (\\d+) charges? left\\."
+	);
+	private static final Pattern AMULET_OF_BOUNTY_USED_PATTERN = Pattern.compile(
+		"Your amulet of bounty saves some seeds for you\\. (?:<col=ff0000>)?It has (\\d) charges? left\\."
+	);
+	private static final String AMULET_OF_BOUNTY_BREAK_TEXT = "Your amulet of bounty saves some seeds for you. <col=ff0000>It then crumbles to dust.</col>";
+
 
 	private static final int MAX_DODGY_CHARGES = 10;
 	private static final int MAX_SLAUGHTER_CHARGES = 30;
@@ -136,6 +151,8 @@ public class ItemChargePlugin extends Plugin
 	private static final int MAX_BINDING_CHARGES = 16;
 	private static final int MAX_EXPLORER_RING_CHARGES = 30;
 	private static final int MAX_RING_OF_FORGING_CHARGES = 140;
+	private static final int MAX_AMULET_OF_CHEMISTRY_CHARGES = 5;
+	private static final int MAX_AMULET_OF_BOUNTY_CHARGES = 10;
 
 	@Getter(AccessLevel.PACKAGE)
 	private boolean ringOfRecoilAvailable = false;
@@ -214,6 +231,16 @@ public class ItemChargePlugin extends Plugin
 		{
 			removeInfobox(ItemWithSlot.TELEPORT);
 		}
+		
+		if (!config.showAmuletOfChemistryCharges())
+		{
+			removeInfobox(ItemWithSlot.AMULET_OF_CHEMISTY);
+		}
+
+		if (!config.showAmuletOfBountyCharges())
+		{
+			removeInfobox(ItemWithSlot.AMULET_OF_BOUNTY);
+		}
 
 		if (!config.showAbyssalBraceletCharges())
 		{
@@ -250,27 +277,31 @@ public class ItemChargePlugin extends Plugin
 	@Subscribe
 	void onChatMessage(ChatMessage event)
 	{
-		String message = event.getMessage();
-		Matcher dodgyCheckMatcher = DODGY_CHECK_PATTERN.matcher(message);
-		Matcher dodgyProtectMatcher = DODGY_PROTECT_PATTERN.matcher(message);
-		Matcher dodgyBreakMatcher = DODGY_BREAK_PATTERN.matcher(message);
-		Matcher bindingNecklaceCheckMatcher = BINDING_CHECK_PATTERN.matcher(event.getMessage());
-		Matcher bindingNecklaceUsedMatcher = BINDING_USED_PATTERN.matcher(event.getMessage());
-		Matcher xericRechargeMatcher = XERIC_CHECK_CHARGE_PATTERN.matcher(message);
-		Matcher xericOutOfChargesMatcher = XERIC_OUT_OF_CHARGES.matcher(message);
-		Matcher soulbearerCheckMatcher = SOULBEARER_CHECK_CHARGE_PATTERN.matcher(message);
-		Matcher chronicleCheckMatcher = CHRONICLE_CHECK_CHARGE_PATTERN.matcher(message);
-		Matcher chronicleRechargeMatcher = CHRONICLE_ADD_CHARGE_PATTERN.matcher(message);
-		Matcher chronicleLastChargeMatcher = CHRONICLE_LAST_CHARGE_PATTERN.matcher(message);
-		Matcher chronicleOutOfChargesMatcher = CHRONICLE_OUT_OF_CHARGES_PATTERN.matcher(message);
-		Matcher ringOfForgingCheckMatcher = RING_OF_FORGING_CHECK_PATTERN.matcher(message);
-		Matcher slaughterMatcher = CHAT_BRACELET_SLAUGHTER_REGEX.matcher(Text.removeTags(message));
-		Matcher expeditiousMatcher = CHAT_BRACELET_EXPEDITIOUS_REGEX.matcher(Text.removeTags(message));
-		Matcher slaughterChargeMatcher = CHAT_BRACELET_SLAUGHTER_CHARGE_REGEX.matcher(Text.removeTags(message));
-		Matcher expeditiousChargeMatcher = CHAT_BRACELET_EXPEDITIOUS_CHARGE_REGEX.matcher(Text.removeTags(message));
-
 		if (event.getType() == ChatMessageType.GAMEMESSAGE || event.getType() == ChatMessageType.SPAM)
 		{
+			String message = event.getMessage();
+			Matcher dodgyCheckMatcher = DODGY_CHECK_PATTERN.matcher(message);
+			Matcher dodgyProtectMatcher = DODGY_PROTECT_PATTERN.matcher(message);
+			Matcher dodgyBreakMatcher = DODGY_BREAK_PATTERN.matcher(message);
+			Matcher bindingNecklaceCheckMatcher = BINDING_CHECK_PATTERN.matcher(event.getMessage());
+			Matcher bindingNecklaceUsedMatcher = BINDING_USED_PATTERN.matcher(event.getMessage());
+			Matcher xericRechargeMatcher = XERIC_CHECK_CHARGE_PATTERN.matcher(message);
+			Matcher xericOutOfChargesMatcher = XERIC_OUT_OF_CHARGES.matcher(message);
+			Matcher soulbearerCheckMatcher = SOULBEARER_CHECK_CHARGE_PATTERN.matcher(message);
+			Matcher chronicleCheckMatcher = CHRONICLE_CHECK_CHARGE_PATTERN.matcher(message);
+			Matcher chronicleRechargeMatcher = CHRONICLE_ADD_CHARGE_PATTERN.matcher(message);
+			Matcher chronicleLastChargeMatcher = CHRONICLE_LAST_CHARGE_PATTERN.matcher(message);
+			Matcher chronicleOutOfChargesMatcher = CHRONICLE_OUT_OF_CHARGES_PATTERN.matcher(message);
+			Matcher ringOfForgingCheckMatcher = RING_OF_FORGING_CHECK_PATTERN.matcher(message);
+			Matcher slaughterMatcher = CHAT_BRACELET_SLAUGHTER_REGEX.matcher(Text.removeTags(message));
+			Matcher expeditiousMatcher = CHAT_BRACELET_EXPEDITIOUS_REGEX.matcher(Text.removeTags(message));
+			Matcher slaughterChargeMatcher = CHAT_BRACELET_SLAUGHTER_CHARGE_REGEX.matcher(Text.removeTags(message));
+			Matcher expeditiousChargeMatcher = CHAT_BRACELET_EXPEDITIOUS_CHARGE_REGEX.matcher(Text.removeTags(message));
+			Matcher amuletOfChemistryCheckMatcher = AMULET_OF_CHEMISTRY_CHECK_PATTERN.matcher(message);
+			Matcher amuletOfChemistryUsedMatcher = AMULET_OF_CHEMISTRY_USED_PATTERN.matcher(message);
+			Matcher amuletOfBountyCheckMatcher = AMULET_OF_BOUNTY_CHECK_PATTERN.matcher(message);
+			Matcher amuletOfBountyUsedMatcher = AMULET_OF_BOUNTY_USED_PATTERN.matcher(message);
+			
 			if (config.recoilNotification() && message.contains(RING_OF_RECOIL_BREAK_MESSAGE))
 			{
 				notifier.notify("Your Ring of Recoil has shattered");
@@ -307,6 +338,38 @@ public class ItemChargePlugin extends Plugin
 				}
 
 				updateDodgyNecklaceCharges(MAX_DODGY_CHARGES);
+			}
+			else if (amuletOfChemistryCheckMatcher.find())
+			{
+				updateAmuletOfChemistyCharges(Integer.parseInt(amuletOfChemistryCheckMatcher.group(1)));
+			}
+			else if (amuletOfChemistryUsedMatcher.find())
+			{
+				final String match = amuletOfChemistryUsedMatcher.group(1);
+
+				int charges = 1;
+				if (!match.equals("one"))
+				{
+					charges = Integer.parseInt(match);
+				}
+
+				updateAmuletOfChemistyCharges(charges);
+			}
+			else if (message.equals(AMULET_OF_CHEMISTRY_BREAK_TEXT))
+			{
+				updateAmuletOfChemistyCharges(MAX_AMULET_OF_CHEMISTRY_CHARGES);
+			}
+			else if (amuletOfBountyCheckMatcher.find())
+			{
+				updateAmuletOfBountyCharges(Integer.parseInt(amuletOfBountyCheckMatcher.group(1)));
+			}
+			else if (amuletOfBountyUsedMatcher.find())
+			{
+				updateAmuletOfBountyCharges(Integer.parseInt(amuletOfBountyUsedMatcher.group(1)));
+			}
+			else if (message.equals(AMULET_OF_BOUNTY_BREAK_TEXT))
+			{
+				updateAmuletOfBountyCharges(MAX_AMULET_OF_BOUNTY_CHARGES);
 			}
 			else if (message.contains(BINDING_BREAK_TEXT))
 			{
@@ -454,6 +517,16 @@ public class ItemChargePlugin extends Plugin
 		if (config.showRingOfForgingCount())
 		{
 			updateJewelleryInfobox(ItemWithSlot.RING_OF_FORGING, items);
+		}
+		
+		if (config.showAmuletOfChemistryCharges())
+		{
+			updateJewelleryInfobox(ItemWithSlot.AMULET_OF_CHEMISTY, items);
+		}
+
+		if (config.showAmuletOfBountyCharges())
+		{
+			updateJewelleryInfobox(ItemWithSlot.AMULET_OF_BOUNTY, items);
 		}
 	}
 
@@ -642,6 +715,40 @@ public class ItemChargePlugin extends Plugin
 		}
 	}
 
+	private void updateAmuletOfChemistyCharges(final int value)
+	{
+		config.amuletOfChemistry(value);
+
+		if (config.showInfoboxes() && config.showAmuletOfChemistryCharges())
+		{
+			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+
+			if (itemContainer == null)
+			{
+				return;
+			}
+
+			updateJewelleryInfobox(ItemWithSlot.AMULET_OF_CHEMISTY, itemContainer.getItems());
+		}
+	}
+
+	private void updateAmuletOfBountyCharges(final int value)
+	{
+		config.amuletOfBounty(value);
+
+		if (config.showInfoboxes() && config.showAmuletOfBountyCharges())
+		{
+			final ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+
+			if (itemContainer == null)
+			{
+				return;
+			}
+
+			updateJewelleryInfobox(ItemWithSlot.AMULET_OF_BOUNTY, itemContainer.getItems());
+		}
+	}
+
 	private void updateBindingNecklaceCharges(final int value)
 	{
 		config.bindingNecklace(value);
@@ -715,6 +822,12 @@ public class ItemChargePlugin extends Plugin
 			case "Dodgy necklace":
 				updateDodgyNecklaceCharges(MAX_DODGY_CHARGES);
 				break;
+			case "Ring of forging":
+				updateRingOfForgingCharges(MAX_RING_OF_FORGING_CHARGES);
+				break;
+			case "Amulet of chemistry":
+				updateAmuletOfChemistyCharges(MAX_AMULET_OF_CHEMISTRY_CHARGES);
+				break;
 		}
 	}
 
@@ -765,6 +878,14 @@ public class ItemChargePlugin extends Plugin
 			else if ((id >= ItemID.EXPLORERS_RING_1 && id <= ItemID.EXPLORERS_RING_4) && type == ItemWithSlot.EXPLORER_RING)
 			{
 				charges = config.explorerRing();
+			}
+			else if (id == ItemID.AMULET_OF_CHEMISTRY && type == ItemWithSlot.AMULET_OF_CHEMISTY)
+			{
+				charges = config.amuletOfChemistry();
+			}
+			else if (id == ItemID.AMULET_OF_BOUNTY && type == ItemWithSlot.AMULET_OF_BOUNTY)
+			{
+				charges = config.amuletOfBounty();
 			}
 		}
 		else if (itemWithCharge.getType() == type.getType())

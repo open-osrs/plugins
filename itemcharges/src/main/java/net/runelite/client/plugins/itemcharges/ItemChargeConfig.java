@@ -233,12 +233,70 @@ public interface ItemChargeConfig extends Config
 		description = ""
 	)
 	void bindingNecklace(int bindingNecklace);
+	
+	@ConfigItem(
+		keyName = "showAmuletOfChemistryCharges",
+		name = "Show Amulet of Chemistry Charges",
+		description = "Configures if amulet of chemistry item charge is shown",
+		position = 16
+	)
+	default boolean showAmuletOfChemistryCharges()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "amuletOfChemistry",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default int amuletOfChemistry()
+	{
+		return -1;
+	}
+
+	@ConfigItem(
+		keyName = "amuletOfChemistry",
+		name = "",
+		description = ""
+	)
+	void amuletOfChemistry(int amuletOfChemistry);
+
+	@ConfigItem(
+		keyName = "showAmuletOfBountyCharges",
+		name = "Show Amulet of Bounty Charges",
+		description = "Configures if amulet of bounty item charge is shown",
+		position = 17
+	)
+	default boolean showAmuletOfBountyCharges()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "amuletOfBounty",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default int amuletOfBounty()
+	{
+		return -1;
+	}
+
+	@ConfigItem(
+		keyName = "amuletOfBounty",
+		name = "",
+		description = ""
+	)
+	void amuletOfBounty(int amuletOfBounty);
 
 	@ConfigItem(
 		keyName = "bindingNotification",
 		name = "Binding Necklace Notification",
 		description = "Configures if the binding necklace breaking notification is shown",
-		position = 16
+		position = 18
 	)
 	default boolean bindingNotification()
 	{
@@ -249,7 +307,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showExplorerRingCharges",
 		name = "Show Explorer's Ring Alch Charges",
 		description = "Configures if explorer's ring alchemy charges are shown",
-		position = 17
+		position = 19
 	)
 	default boolean showExplorerRingCharges()
 	{
@@ -278,7 +336,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showSlayerBracelets",
 		name = "Show Slayer Bracelets Charges",
 		description = "Configures if slayer bracelets' item charges are shown",
-		position = 18
+		position = 20
 	)
 	default boolean showSlayerBracelets()
 	{
@@ -345,7 +403,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showSoulBearerCharges",
 		name = "Show Soul Bearer Charges",
 		description = "Configures if Soul Bearer item charge is shown",
-		position = 19
+		position = 21
 	)
 	default boolean showSoulBearerCharges()
 	{
@@ -374,7 +432,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showChronicleCharges",
 		name = "Show Chronicle Charges",
 		description = "Configures if Chronicle item charge is shown",
-		position = 20
+		position = 22
 	)
 	default boolean showChronicleCharges()
 	{
@@ -385,7 +443,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showXericTalismanCharges",
 		name = "Show Xeric's Talisman Charges",
 		description = "Configures if Xeric's Talisman item charge is shown",
-		position = 21
+		position = 23
 	)
 	default boolean showXericTalismanCharges()
 	{
@@ -396,7 +454,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showrecoil",
 		name = "Show If Recoil is activated",
 		description = "Configures if Recoil is activated",
-		position = 22
+		position = 24
 	)
 	default boolean showrecoil()
 	{
@@ -425,7 +483,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showRingOfForgingCount",
 		name = "Show Ring of Forging Charges",
 		description = "Configures if the Ring of Forging charge count is shown",
-		position = 23
+		position = 25
 	)
 	default boolean showRingOfForgingCount()
 	{
@@ -454,7 +512,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "ringOfForgingNotification",
 		name = "Ring of Forging Notification",
 		description = "Configures if the Ring of Forging breaking notification is enabled",
-		position = 24
+		position = 26
 	)
 	default boolean ringOfForgingNotification()
 	{
@@ -465,7 +523,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showSackCharges",
 		name = "Show Sack Quantity",
 		description = "Configures if the number of vegetables in sacks is shown",
-		position = 25
+		position = 27
 	)
 	default boolean showSackCharges()
 	{
@@ -476,7 +534,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showBasketCharges",
 		name = "Show Basket Quantity",
 		description = "Configures if the number of fruit in a basket is shown",
-		position = 26
+		position = 28
 	)
 	default boolean showBasketCharges()
 	{
@@ -487,7 +545,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showKharedstsMemoirsCharges",
 		name = "Show Kharedst's Memoirs Charges",
 		description = "Configures if Kharedst's Memoirs item charge is shown",
-		position = 27
+		position = 29
 	)
 	default boolean showKharedstsMemoirsCharges()
 	{
@@ -498,7 +556,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showInfoboxes",
 		name = "Show Infoboxes",
 		description = "Configures whether to show an infobox equipped charge items",
-		position = 28
+		position = 30
 	)
 	default boolean showInfoboxes()
 	{

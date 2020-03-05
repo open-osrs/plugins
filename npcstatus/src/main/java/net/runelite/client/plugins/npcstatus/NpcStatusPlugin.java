@@ -144,7 +144,7 @@ public class NpcStatusPlugin extends Plugin
 			return;
 		}
 		final Hitsplat hitsplat = event.getHitsplat();
-		if ((hitsplat.getHitsplatType() == Hitsplat.HitsplatType.DAMAGE || hitsplat.getHitsplatType() == Hitsplat.HitsplatType.BLOCK) && event.getActor() instanceof NPC)
+		if ((hitsplat.getHitsplatType() == Hitsplat.HitsplatType.DAMAGE_ME || hitsplat.getHitsplatType() == Hitsplat.HitsplatType.BLOCK_ME) && event.getActor() instanceof NPC)
 		{
 			for (MemorizedNPC mn : memorizedNPCs)
 			{
