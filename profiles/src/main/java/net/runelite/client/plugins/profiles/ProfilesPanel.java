@@ -59,6 +59,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.FontManager;
@@ -532,7 +533,7 @@ class ProfilesPanel extends PluginPanel
 
 	private static void showErrorMessage(String title, String text)
 	{
-		SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null,
+		SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(ClientUI.getFrame(),
 			text,
 			title,
 			JOptionPane.ERROR_MESSAGE));

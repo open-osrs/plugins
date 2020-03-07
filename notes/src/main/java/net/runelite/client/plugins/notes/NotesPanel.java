@@ -39,7 +39,6 @@ import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
-import static javax.swing.JOptionPane.getRootFrame;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -49,6 +48,7 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.notes.events.PageAdded;
 import net.runelite.client.plugins.notes.events.PageDeleted;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
@@ -181,7 +181,7 @@ class NotesPanel extends PluginPanel
 
 		deleteMenuItem.addActionListener(e ->
 		{
-			if (JOptionPane.showConfirmDialog(getRootFrame(), String.format("Delete note page %s?", name), "Notes", YES_NO_OPTION) != YES_OPTION)
+			if (JOptionPane.showConfirmDialog(ClientUI.getFrame(), String.format("Delete note page %s?", name), "Notes", YES_NO_OPTION) != YES_OPTION)
 			{
 				return;
 			}
@@ -191,7 +191,7 @@ class NotesPanel extends PluginPanel
 			}
 			catch (DeleteOnlyPageException err)
 			{
-				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(getRootFrame(),
+				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(ClientUI.getFrame(),
 					"Cannot delete the last page",
 					"Notes", ERROR_MESSAGE));
 			}

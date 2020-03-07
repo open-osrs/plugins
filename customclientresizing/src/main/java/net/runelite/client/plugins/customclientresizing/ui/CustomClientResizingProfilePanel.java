@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import net.runelite.client.plugins.customclientresizing.CustomClientResizingPlugin;
 import net.runelite.client.plugins.customclientresizing.CustomClientResizingProfile;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.FlatTextField;
@@ -229,7 +230,7 @@ public class CustomClientResizingProfilePanel extends JPanel
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
-				int confirm = JOptionPane.showConfirmDialog(CustomClientResizingProfilePanel.this,
+				int confirm = JOptionPane.showConfirmDialog(ClientUI.getFrame(),
 					"Are you sure you want to permanently delete this resize profile?",
 					"Warning", JOptionPane.OK_CANCEL_OPTION);
 
