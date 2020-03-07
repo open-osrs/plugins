@@ -48,6 +48,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import net.runelite.client.plugins.screenmarkers.ScreenMarkerOverlay;
 import net.runelite.client.plugins.screenmarkers.ScreenMarkerPlugin;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.FlatTextField;
@@ -385,7 +386,7 @@ class ScreenMarkerPanel extends JPanel
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
-				int confirm = JOptionPane.showConfirmDialog(ScreenMarkerPanel.this,
+				int confirm = JOptionPane.showConfirmDialog(ClientUI.getFrame(),
 					"Are you sure you want to permanently delete this screen marker?",
 					"Warning", JOptionPane.OK_CANCEL_OPTION);
 
