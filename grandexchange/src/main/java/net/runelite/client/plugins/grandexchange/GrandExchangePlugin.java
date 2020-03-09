@@ -50,6 +50,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
 import static net.runelite.api.ItemID.COINS_995;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.ScriptID;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.FocusChanged;
@@ -57,6 +58,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GrandExchangeOfferChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
@@ -440,13 +442,19 @@ public class GrandExchangePlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onScriptCallbackEvent(ScriptCallbackEvent event)
+	private void onScriptPostFired(ScriptPostFired event)
 	{
-		if (event.getEventName().equals("geBuilt"))
+		// GE offers setup init
+		if (event.getScriptId() != ScriptID.GE_OFFERS_SETUP_BUILD)
 		{
-			rebuildGeText();
+			return;
 		}
+		rebuildGeText();
+	}
 
+	@Subscribe
+	public void onScriptCallbackEvent(ScriptCallbackEvent event)
+	{
 		if (!event.getEventName().equals("setGETitle") || !config.showTotal())
 		{
 			return;

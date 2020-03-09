@@ -28,7 +28,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.time.Instant;
-import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,7 +35,6 @@ import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -49,6 +47,11 @@ class MiningOverlay extends Overlay
 	static final int ORE_VEIN_MAX_RESPAWN_TIME = 277; // Game ticks
 	private static final int ORE_VEIN_MIN_RESPAWN_TIME = 150; // Game ticks
 	private static final float ORE_VEIN_RANDOM_PERCENT_THRESHOLD = (float) ORE_VEIN_MIN_RESPAWN_TIME / ORE_VEIN_MAX_RESPAWN_TIME;
+
+	static final int LOVAKITE_ORE_MAX_RESPAWN_TIME = 65; // Game ticks
+	private static final int LOVAKITE_ORE_MIN_RESPAWN_TIME = 50; // Game ticks
+	private static final float LOVAKITE_ORE_RANDOM_PERCENT_THRESHOLD = (float) LOVAKITE_ORE_MIN_RESPAWN_TIME / LOVAKITE_ORE_MAX_RESPAWN_TIME;
+
 	private static final Color DARK_GREEN = new Color(0, 100, 0);
 	private static final int MOTHERLODE_UPPER_FLOOR_HEIGHT = -500;
 
@@ -76,24 +79,18 @@ class MiningOverlay extends Overlay
 		}
 
 		Instant now = Instant.now();
-		for (Iterator<RockRespawn> it = respawns.iterator(); it.hasNext(); )
+		for (RockRespawn rockRespawn : respawns)
 		{
-			Color pieFillColor = config.progressPieColor();
-			Color pieBorderColor;
-			RockRespawn rockRespawn = it.next();
-			float percent = (now.toEpochMilli() - rockRespawn.getStartTime().toEpochMilli()) / (float) rockRespawn.getRespawnTime();
-			WorldPoint worldPoint = rockRespawn.getWorldPoint();
-			LocalPoint loc = LocalPoint.fromWorld(client, worldPoint);
-			if (loc == null || percent > 1.0f)
+			LocalPoint loc = LocalPoint.fromWorld(client, rockRespawn.getWorldPoint());
+			if (loc == null)
 			{
-				it.remove();
 				continue;
 			}
 
+			float percent = (now.toEpochMilli() - rockRespawn.getStartTime().toEpochMilli()) / (float) rockRespawn.getRespawnTime();
 			Point point = Perspective.localToCanvas(client, loc, client.getPlane(), rockRespawn.getZOffset());
-			if (point == null)
+			if (point == null || percent > 1.0f)
 			{
-				it.remove();
 				continue;
 			}
 
@@ -106,8 +103,12 @@ class MiningOverlay extends Overlay
 				continue;
 			}
 
-			// Recolour pie on motherlode veins during the portion of the timer where they may respawn
-			if (rock == Rock.ORE_VEIN && percent > ORE_VEIN_RANDOM_PERCENT_THRESHOLD)
+			Color pieFillColor = Color.YELLOW;
+			Color pieBorderColor = Color.ORANGE;
+
+			// Recolour pie on motherlode veins or Lovakite ore during the portion of the timer where they may respawn
+			if ((rock == Rock.ORE_VEIN && percent > ORE_VEIN_RANDOM_PERCENT_THRESHOLD)
+				|| (rock == Rock.LOVAKITE && percent > LOVAKITE_ORE_RANDOM_PERCENT_THRESHOLD))
 			{
 				pieFillColor = config.progressPieColorMotherlode();
 			}
