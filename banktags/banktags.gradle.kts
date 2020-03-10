@@ -39,7 +39,7 @@ dependencies {
 
     compileOnly(project(":cluescroll"))
 
-    compileOnly(Libraries.apacheCommonsLang)
+    compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
