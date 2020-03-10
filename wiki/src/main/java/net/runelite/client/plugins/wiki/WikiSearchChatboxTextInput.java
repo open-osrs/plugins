@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
@@ -76,7 +75,7 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 	private String offPrediction = null;
 
 	@Inject
-	public WikiSearchChatboxTextInput(final ChatboxPanelManager chatboxPanelManager, final ClientThread clientThread, final ScheduledExecutorService scheduledExecutorService, @Named("developerMode") final boolean developerMode)
+	public WikiSearchChatboxTextInput(final ChatboxPanelManager chatboxPanelManager, final ClientThread clientThread, final ScheduledExecutorService scheduledExecutorService)
 	{
 		super(chatboxPanelManager, clientThread);
 		this.chatboxPanelManager = chatboxPanelManager;
@@ -115,7 +114,6 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 					.addQueryParameter("search", searchString)
 					.addQueryParameter("redirects", "resolve")
 					.addQueryParameter("format", "json")
-					.addQueryParameter("warningsaserror", Boolean.toString(developerMode))
 					.build();
 
 				Request req = new Request.Builder()
@@ -137,7 +135,9 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 						try
 						{
 							JsonArray jar = new JsonParser().parse(body).getAsJsonArray();
-							List<String> apredictions = gson.fromJson(jar.get(1), new TypeToken<List<String>>() {}.getType());
+							List<String> apredictions = gson.fromJson(jar.get(1), new TypeToken<List<String>>()
+							{
+							}.getType());
 
 							if (apredictions.size() > MAX_NUM_PREDICTIONS)
 							{
