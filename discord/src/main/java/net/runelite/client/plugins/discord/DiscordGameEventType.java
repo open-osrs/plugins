@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -286,15 +287,26 @@ enum DiscordGameEventType
 		FROM_VARBITS = fromVarbitsBuilder.build();
 	}
 
+	@Nullable
 	private String imageKey;
+
+	@Nullable
 	private String state;
+
+	@Nullable
 	private String details;
+
 	private int priority;
 	private boolean shouldClear;
 	private boolean shouldTimeout;
 
+	@Nullable
 	private DiscordAreaType discordAreaType;
+
+	@Nullable
 	private Varbits varbits;
+
+	@Nullable
 	private int[] regionIds;
 
 	DiscordGameEventType(Skill skill)
