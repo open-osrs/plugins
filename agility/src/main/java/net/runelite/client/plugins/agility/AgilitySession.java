@@ -55,6 +55,13 @@ class AgilitySession
 
 		int currentExp = client.getSkillExperience(Skill.AGILITY);
 		int nextLevel = client.getRealSkillLevel(Skill.AGILITY) + 1;
+		double courseTotalExp = course.getTotalXp();
+		if (course == Courses.PYRAMID)
+		{
+			// agility pyramid has a bonus exp drop on the last obstacle that scales with player level and caps at 1000
+			// the bonus is not already accounted for in the total exp number in the courses enum
+			courseTotalExp += Math.min(300 + 8 * client.getRealSkillLevel(Skill.AGILITY), 1000);
+		}
 
 		int remainingXp;
 		do
@@ -63,9 +70,9 @@ class AgilitySession
 			nextLevel++;
 		} while (remainingXp < 0);
 
-		lapsTillLevel = remainingXp > 0 ? (int) Math.ceil(remainingXp / course.getTotalXp()) : 0;
+		lapsTillLevel = remainingXp > 0 ? (int) Math.ceil(remainingXp / courseTotalExp) : 0;
 		int goalRemainingXp = client.getVar(VarPlayer.AGILITY_GOAL_END) - currentExp;
-		lapsTillGoal = goalRemainingXp > 0 ? (int) Math.ceil(goalRemainingXp / course.getTotalXp()) : 0;
+		lapsTillGoal = goalRemainingXp > 0 ? (int) Math.ceil(goalRemainingXp / courseTotalExp) : 0;
 	}
 
 	void resetLapCount()

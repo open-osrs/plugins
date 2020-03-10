@@ -133,8 +133,7 @@ public class AntiDragPlugin extends Plugin
 		{
 			overlayManager.remove(overlay);
 			client.setInventoryDragDelay(DEFAULT_DELAY);
-			// In this case, 0 is the default for bank item widgets.
-			setBankDragDelay(0);
+			setBankDragDelay(DEFAULT_DELAY);
 			clientUI.resetCursor();
 		}
 	};
@@ -218,6 +217,7 @@ public class AntiDragPlugin extends Plugin
 		if (!focusChanged.isFocused() && config.reqFocus() && !config.alwaysOn())
 		{
 			client.setInventoryDragDelay(DEFAULT_DELAY);
+			setBankDragDelay(DEFAULT_DELAY);
 			overlayManager.remove(overlay);
 		}
 	}
