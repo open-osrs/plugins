@@ -30,8 +30,7 @@ object ProjectVersions {
 
 object Libraries {
     private object Versions {
-        const val annotations = "18.0.0"
-        const val apacheCommonsLang = "3.9"
+        const val annotations = "19.0.0"
         const val apacheCommonsText = "1.8"
         const val discord = "1.1"
         const val gson = "2.8.6"
@@ -41,20 +40,19 @@ object Libraries {
         const val javax = "1.3.2"
         const val jogamp = "2.3.2"
         const val jopt = "5.0.4"
-        const val jooq = "3.12.3"
+        const val jooq = "3.13.0"
         const val junit = "4.13"
         const val logback = "1.2.3"
-        const val lombok = "1.18.10"
+        const val lombok = "1.18.12"
         const val mockito = "3.2.4"
-        const val okhttp3 = "4.3.0"
+        const val okhttp3 = "4.4.0"
         const val pf4j = "3.2.0"
         const val radiance = "2.5.1"
-        const val rxjava = "2.2.16"
+        const val rxjava = "2.2.18"
         const val slf4j = "1.7.30"
     }
 
     const val annotations = "org.jetbrains:annotations:${Versions.annotations}"
-    const val apacheCommonsLang = "org.apache.commons:commons-lang3:${Versions.apacheCommonsLang}"
     const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.apacheCommonsText}"
     const val discord = "net.runelite:discord:${Versions.discord}"
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
