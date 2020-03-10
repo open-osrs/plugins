@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.inject.Inject;
-import javax.inject.Named;
 import joptsimple.internal.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -174,10 +173,6 @@ public class ClueScrollPlugin extends Plugin
 
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
-
-	@Inject
-	@Named("developerMode")
-	boolean developerMode;
 
 	private BufferedImage emoteImage;
 	private BufferedImage mapArrow;
@@ -488,7 +483,7 @@ public class ClueScrollPlugin extends Plugin
 	@Subscribe
 	public void onCommandExecuted(CommandExecuted commandExecuted)
 	{
-		if (developerMode && commandExecuted.getCommand().equals("clue"))
+		if (commandExecuted.getCommand().equals("clue"))
 		{
 			String text = Strings.join(commandExecuted.getArguments(), " ");
 			if (text.isEmpty())
