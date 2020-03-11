@@ -45,7 +45,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -144,8 +143,7 @@ public class ChatFilterPluginTest
 		when(chatFilterConfig.filteredWords()).thenReturn("ReGeX!!!");
 
 		chatFilterPlugin.updateFilteredPatterns();
-		assertEquals("Hey, everyone, I just tried to say something very silly!",
-			chatFilterPlugin.censorMessage("Blue", "I love regex!!!!!!!!"));
+		assertEquals(CENSOR_MESSAGE, chatFilterPlugin.censorMessage("Blue", "I love regex!!!!!!!!"));
 	}
 
 	@Test
@@ -188,13 +186,14 @@ public class ChatFilterPluginTest
 	public void testMessageFromClanIsFiltered()
 	{
 		when(client.isFriended("B0aty", false)).thenReturn(false);
+		when(chatFilterConfig.filterClan()).thenReturn(true);
 		assertTrue(chatFilterPlugin.shouldFilterPlayerMessage("B0aty"));
 	}
 
 	@Test
 	public void testMessageFromClanIsNotFiltered()
 	{
-		lenient().when(client.isClanMember("B0aty")).thenReturn(true);
+		when(client.isClanMember("B0aty")).thenReturn(true);
 		when(chatFilterConfig.filterClan()).thenReturn(false);
 		assertFalse(chatFilterPlugin.shouldFilterPlayerMessage("B0aty"));
 	}
@@ -202,15 +201,15 @@ public class ChatFilterPluginTest
 	@Test
 	public void testMessageFromSelfIsNotFiltered()
 	{
-		lenient().when(localPlayer.getName()).thenReturn("Swampletics");
+		when(localPlayer.getName()).thenReturn("Swampletics");
 		assertFalse(chatFilterPlugin.shouldFilterPlayerMessage("Swampletics"));
 	}
 
 	@Test
 	public void testMessageFromNonFriendNonClanIsFiltered()
 	{
-		lenient().when(client.isFriended("Woox", false)).thenReturn(false);
-		lenient().when(client.isClanMember("Woox")).thenReturn(false);
+		when(client.isFriended("Woox", false)).thenReturn(false);
+		when(client.isClanMember("Woox")).thenReturn(false);
 		assertTrue(chatFilterPlugin.shouldFilterPlayerMessage("Woox"));
 	}
 
