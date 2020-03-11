@@ -19,6 +19,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -32,12 +33,13 @@ import static net.runelite.api.ObjectID.CANNON_BASE;
 import static net.runelite.api.ProjectileID.CANNONBALL;
 import static net.runelite.api.ProjectileID.GRANITE_CANNONBALL;
 
+@Extension
 @PluginDescriptor(
 		name = "Cannon Reloader",
 		description = "Automatically reload your cannon",
 		tags = { "combat", "notifications", "ranged" },
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.PVM
 )
 public class CannonReloaderPlugin extends Plugin {
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");

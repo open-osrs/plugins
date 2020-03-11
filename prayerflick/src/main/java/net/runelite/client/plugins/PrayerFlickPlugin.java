@@ -12,17 +12,19 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 
+@Extension
 @PluginDescriptor(
 		name = "Prayer Flick",
 		description = "Automatically Flicks Auto-Prayer and drinks Prayer potions (for training, not PvP).",
 		tags = {"combat", "flicking", "overlay", "prayer"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.PVM
 )
 public class PrayerFlickPlugin extends Plugin
 {

@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.praypotdrinker;
 
+import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
@@ -9,23 +10,28 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.Notifier;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
 
+@Extension
 @PluginDescriptor(
 		name = "Prayer Pot Drinker",
 		description = "Automatically drink pray pots",
 		tags = {"combat", "notifications", "prayer"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.PVM
 )
 public class PrayPotDrinkerPlugin extends Plugin
 {
@@ -33,20 +39,44 @@ public class PrayPotDrinkerPlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private PrayPotDrinkerConfig config;
+
+	@Inject
 	private Notifier notifier;
+
+	@Inject
+	private ItemManager itemManager;
 
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 			new ThreadPoolExecutor.DiscardPolicy());
 
+	private String[] potions;
+
+	@Provides
+	PrayPotDrinkerConfig provideConfig(final ConfigManager configManager)
+	{
+		return configManager.getConfig(PrayPotDrinkerConfig.class);
+	}
+
 	@Override
 	protected void startUp() throws Exception
 	{
+		potions = config.potionNames().split(",");
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (!event.getGroup().equals("praypotdrinker"))
+			return;
+
+		potions = config.potionNames().split(",");
 	}
 
 	@Subscribe
@@ -56,7 +86,6 @@ public class PrayPotDrinkerPlugin extends Plugin
 		{
 			try
 			{
-				
 				//7 + 25%
 				int currentPrayerPoints = client.getBoostedSkillLevel(Skill.PRAYER);
 				int maxPrayerPoints = client.getRealSkillLevel(Skill.PRAYER);
@@ -66,9 +95,6 @@ public class PrayPotDrinkerPlugin extends Plugin
 				{
 					return;
 				}
-				
-				//flexo.keyPress(KeyEvent.VK_ESCAPE);
-				//flexo.delay(50);
 
 				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
@@ -77,9 +103,8 @@ public class PrayPotDrinkerPlugin extends Plugin
 
 				for (WidgetItem item : inventory.getWidgetItems())
 				{
-					int itemid = item.getId();
-
-					if (itemid == ItemID.PRAYER_POTION1 || itemid == ItemID.PRAYER_POTION2 || itemid == ItemID.PRAYER_POTION3 || itemid == ItemID.PRAYER_POTION4)
+					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
+					if (Arrays.asList(potions).contains(name))
 					{
 						InputHandler.pressKey(client.getCanvas(), KeyEvent.VK_ESCAPE);
 						Thread.sleep(50);

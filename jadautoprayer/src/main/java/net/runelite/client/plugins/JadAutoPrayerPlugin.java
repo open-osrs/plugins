@@ -19,16 +19,18 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+@Extension
 @PluginDescriptor(
 		name = "Jad Auto Prayer",
 		description = "Auto click proper prayers against Jad.",
 		tags = {"bosses", "combat", "minigame", "overlay", "prayer", "pve", "pvm", "jad", "firecape", "fight", "cave", "caves"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.MINIGAME
 )
 public class JadAutoPrayerPlugin extends Plugin
 {

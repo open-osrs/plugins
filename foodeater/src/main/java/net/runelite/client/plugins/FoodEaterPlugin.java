@@ -15,6 +15,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -24,12 +25,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+@Extension
 @PluginDescriptor(
 		name = "Food Eater",
 		description = "Automatically eats food",
 		tags = {"combat", "notifications", "health", "food", "eat"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.PVM
 )
 public class FoodEaterPlugin extends Plugin
 {

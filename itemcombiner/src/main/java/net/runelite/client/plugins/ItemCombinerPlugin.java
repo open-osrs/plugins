@@ -7,15 +7,17 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 
+@Extension
 @PluginDescriptor(
 		name = "Item Combiner",
 		description = "Automatically uses items on another item",
 		tags = {"skilling", "item", "object", "combiner"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.SKILLING
 )
 public class ItemCombinerPlugin extends Plugin
 {

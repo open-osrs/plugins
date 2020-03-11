@@ -7,15 +7,17 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 
+@Extension
 @PluginDescriptor(
 		name = "Item Dropper",
 		description = "Automatically drop all specified items",
 		tags = {"skilling", "notifications", "drop", "item"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.UTILITY
 )
 public class ItemDropperPlugin extends Plugin
 {

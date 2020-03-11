@@ -20,6 +20,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.util.HotkeyListener;
+import org.pf4j.Extension;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -32,12 +33,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+@Extension
 @PluginDescriptor(
 		name = "Item User",
 		description = "Automatically uses items on an object",
 		tags = {"skilling", "item", "object", "user"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.SKILLING
 )
 public class ItemUserPlugin extends Plugin
 {

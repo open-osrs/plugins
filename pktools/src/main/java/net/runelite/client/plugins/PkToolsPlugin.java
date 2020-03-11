@@ -19,18 +19,20 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+@Extension
 @PluginDescriptor(
 		name = "PKing Tools",
 		description = "Arsenal of PKing Tools",
 		tags = {"combat", "player", "enemy", "tracking", "overlay"},
 		enabledByDefault = false,
-		type = PluginType.EXTERNAL
+		type = PluginType.PVP
 )
 public class PkToolsPlugin extends Plugin
 {
