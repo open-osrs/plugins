@@ -48,7 +48,7 @@ object Libraries {
         const val okhttp3 = "4.4.0"
         const val pf4j = "3.2.0"
         const val radiance = "2.5.1"
-        const val rxjava = "2.2.18"
+        const val rxjava = "3.0.0"
         const val slf4j = "1.7.30"
     }
 
@@ -60,7 +60,6 @@ object Libraries {
     const val guice = "com.google.inject:guice:${Versions.guice}:no_aop"
     const val guiceTestlib = "com.google.inject.extensions:guice-testlib:${Versions.guice}"
     const val hamcrest = "org.hamcrest:hamcrest-library:${Versions.hamcrest}"
-    const val javax = "javax.annotation:javax.annotation-api:${Versions.javax}"
     const val jogampJogl = "org.jogamp.jogl:jogl-all:${Versions.jogamp}"
     const val jogampGluegen = "org.jogamp.gluegen:gluegen-rt:${Versions.jogamp}"
     const val jopt = "net.sf.jopt-simple:jopt-simple:${Versions.jopt}"
@@ -72,7 +71,7 @@ object Libraries {
     const val mockitoInline = "org.mockito:mockito-inline:${Versions.mockito}"
     const val okhttp3 = "com.squareup.okhttp3:okhttp:${Versions.okhttp3}"
     const val pf4j = "org.pf4j:pf4j:${Versions.pf4j}"
-    const val rxjava = "io.reactivex.rxjava2:rxjava:${Versions.rxjava}"
+    const val rxjava = "io.reactivex.rxjava3:rxjava:${Versions.rxjava}"
     const val slf4jApi = "org.slf4j:slf4j-api:${Versions.slf4j}"
     const val substance = "org.pushing-pixels:radiance-substance:${Versions.radiance}"
 

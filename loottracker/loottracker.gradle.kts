@@ -41,7 +41,6 @@ dependencies {
     compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
     compileOnly(Libraries.gson)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.jooq)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)

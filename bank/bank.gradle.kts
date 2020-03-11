@@ -41,7 +41,6 @@ dependencies {
     compileOnly(project(":cluescroll"))
 
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
 

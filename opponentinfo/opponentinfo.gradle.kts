@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.4"
 
 project.extra["PluginName"] = "Opponent Information"
 project.extra["PluginDescription"] = "Show name and hitpoints information about the NPC you are fighting"
@@ -39,7 +39,6 @@ dependencies {
     compileOnly("com.openosrs:http-api:$rlVersion")
 
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
     compileOnly(Libraries.rxjava)

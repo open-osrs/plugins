@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Chat Commands"
 project.extra["PluginDescription"] = "Enable chat commands"
@@ -40,7 +40,6 @@ dependencies {
 
     compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.okhttp3)
     compileOnly(Libraries.pf4j)
