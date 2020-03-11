@@ -37,7 +37,6 @@ object Libraries {
         const val guava = "28.2-jre"
         const val guice = "4.2.2"
         const val hamcrest = "2.2"
-        const val javax = "1.3.2"
         const val jogamp = "2.3.2"
         const val jopt = "5.0.4"
         const val jooq = "3.13.0"
