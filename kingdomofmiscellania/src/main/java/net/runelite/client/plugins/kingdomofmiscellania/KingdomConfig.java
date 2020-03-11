@@ -26,6 +26,7 @@ package net.runelite.client.plugins.kingdomofmiscellania;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("kingdomofmiscellania")
@@ -42,6 +43,9 @@ public interface KingdomConfig extends Config
 		return false;
 	}
 
+	@Range(
+		max = 100
+	)
 	@ConfigItem(
 		keyName = "notifyFavorThreshold",
 		name = "Notify chat favor",
