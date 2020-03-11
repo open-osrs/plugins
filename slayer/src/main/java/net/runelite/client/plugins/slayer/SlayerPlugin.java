@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2017, Tyler <https://github.com/tylerthardy>
  * Copyright (c) 2018, Shaun Dreclin <shaundreclin@gmail.com>
+ * Copyright (c) 2018, Robin Withes <https://github.com/robinwithes>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -123,6 +124,8 @@ public class SlayerPlugin extends Plugin
 	private static final String CHAT_CANCEL_MESSAGE_JAD = "You no longer have a slayer task as you left the fight cave.";
 	private static final String CHAT_CANCEL_MESSAGE_ZUK = "You no longer have a slayer task as you left the Inferno.";
 	private static final String CHAT_SUPERIOR_MESSAGE = "A superior foe has appeared...";
+	private static final String CHAT_SLAYER_TASKDONE_NOTIFICATION = "You have completed your slayer task.";
+	private static final String CHAT_SLAYER_STREAK_NOTIFICATION = "Your next task will earn you more points, it is recommended to do it with the highest level slayer master you can access.";
 	private static final Pattern COMBAT_BRACELET_TASK_UPDATE_MESSAGE = Pattern.compile("^You still need to kill (\\d+) monsters to complete your current Slayer assignment");
 
 	private static final String CHAT_BRACELET_SLAUGHTER = "Your bracelet of slaughter prevents your slayer";
@@ -626,6 +629,17 @@ public class SlayerPlugin extends Plugin
 				" so error rate is " + currentTask.getAmount() + " in " + currentTask.getLastCertainAmount());
 
 			setTask("", 0, 0, true, 0);
+
+			if (config.maximumPointsNotification() && streak % 10 == 9)
+			{
+				notifier.notify(CHAT_SLAYER_STREAK_NOTIFICATION);
+			}
+
+			if (config.taskDoneNotification())
+			{
+				notifier.notify(CHAT_SLAYER_TASKDONE_NOTIFICATION);
+			}
+
 			return;
 		}
 

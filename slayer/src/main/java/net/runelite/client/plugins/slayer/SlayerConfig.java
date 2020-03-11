@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2017, Seth <Sethtroll3@gmail.com>
  * Copyright (c) 2018, Shaun Dreclin <shaundreclin@gmail.com>
+ * Copyright (c) 2018, Robin Withes <https://github.com/robinwithes>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -165,11 +166,23 @@ public interface SlayerConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		position = 12,
+		keyName = "taskDoneNotification",
+		name = "Task completed notification",
+		description = "Gives you a notification when you complete a task.",
+		titleSection = "notificationTitle"
+	)
+	default boolean taskDoneNotification()
+	{
+		return false;
+	}
+
 	@ConfigTitleSection(
 		keyName = "overlayTitle",
 		name = "Overlay",
 		description = "",
-		position = 12
+		position = 13
 	)
 	default Title overlayTitle()
 	{
@@ -177,7 +190,7 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 13,
+		position = 14,
 		keyName = "itemoverlay",
 		name = "Count on Items",
 		description = "Display task count remaining on slayer items",
@@ -189,7 +202,7 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 15,
 		keyName = "drawNames",
 		name = "Draw names above NPC",
 		description = "Configures whether or not NPC names should be drawn above the NPC",
@@ -201,7 +214,7 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 15,
+		position = 16,
 		keyName = "drawMinimapNames",
 		name = "Draw names on minimap",
 		description = "Configures whether or not NPC names should be drawn on the minimap",
@@ -213,7 +226,7 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 17,
 		keyName = "weaknessPrompt",
 		name = "Show Monster Weakness",
 		description = "Show an overlay on a monster when it is weak enough to finish off (Only Lizards, Gargoyles & Rockslugs)",
@@ -228,7 +241,7 @@ public interface SlayerConfig extends Config
 		keyName = "commandsTitle",
 		name = "Commands",
 		description = "",
-		position = 17
+		position = 18
 	)
 	default Title commandsTitle()
 	{
@@ -236,7 +249,7 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 18,
+		position = 19,
 		keyName = "taskCommand",
 		name = "Task Command",
 		description = "Configures whether the slayer task command is enabled<br> !task",
@@ -248,7 +261,7 @@ public interface SlayerConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 19,
+		position = 20,
 		keyName = "pointsCommand",
 		name = "Points Command",
 		description = "Configures whether the slayer points command is enabled<br> !points",
@@ -257,6 +270,29 @@ public interface SlayerConfig extends Config
 	default boolean pointsCommand()
 	{
 		return true;
+	}
+
+	@ConfigTitleSection(
+		keyName = "streakTitle",
+		name = "Streak",
+		description = "",
+		position = 21
+	)
+	default Title streakTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		position = 22,
+		keyName = "maximumPointsNotification",
+		name = "Slayer Streak Notification",
+		description = "Gives you a warning when you should do a task with your highest level slayer master for the most points.",
+		titleSection = "streakTitle"
+	)
+	default boolean maximumPointsNotification()
+	{
+		return false;
 	}
 
 	// Stored data
