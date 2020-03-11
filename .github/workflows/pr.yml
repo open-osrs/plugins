@@ -120,7 +120,7 @@ jobs:
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
 
-      - name: Building plugins
+      - name: Testing plugins
         run: ./gradlew test --stacktrace -x test -x checkstyleMain --console=plain
 
   checkstyleMain:
