@@ -25,9 +25,12 @@
  */
 package net.runelite.client.plugins.kingdomofmiscellania;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 import javax.inject.Singleton;
 import net.runelite.client.ui.overlay.infobox.Counter;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.QuantityFormatter;
 
 @Singleton
@@ -41,6 +44,43 @@ class KingdomCounter extends Counter
 		this.plugin = plugin;
 	}
 
+	private String bestResources()
+	{
+		Kingdom maxKingdom = plugin.getMaxKingdom();
+
+		if (maxKingdom.resourceProfit == null)
+		{
+			return ColorUtil.wrapWithColorTag("Calculating resource profits...", Color.ORANGE);
+		}
+
+		StringBuilder maxRewards = new StringBuilder(ColorUtil.wrapWithColorTag("Resource Yields </br>", Color.YELLOW));
+
+		for (Map.Entry<ResourceType, Integer> entry : maxKingdom.resourceProfit.entrySet())
+		{
+			maxRewards.append(entry.getKey().getType()).append(": ").append(QuantityFormatter.formatNumber(entry.getValue())).append("</br>");
+		}
+		return maxRewards.toString();
+	}
+
+	private String rewardInfo()
+	{
+		Kingdom personalKingdom = plugin.getPersonalKingdom();
+
+		if (personalKingdom.resourceProfit == null)
+		{
+			return ColorUtil.wrapWithColorTag("Calculating reward info...", Color.ORANGE);
+		}
+
+		StringBuilder currentRewardSettings = new StringBuilder(ColorUtil.wrapWithColorTag("Current Rewards: ", Color.YELLOW)
+			+ QuantityFormatter.formatNumber(personalKingdom.grossProfit) + "</br>");
+
+		for (Map.Entry<Reward, Integer> entry : personalKingdom.rewardQuantity.entrySet())
+		{
+			currentRewardSettings.append(entry.getKey().getName()).append(" x ").append(QuantityFormatter.formatNumber(entry.getValue())).append("</br>");
+		}
+		return currentRewardSettings.toString();
+	}
+
 	@Override
 	public String getText()
 	{
@@ -50,11 +90,11 @@ class KingdomCounter extends Counter
 	@Override
 	public String getTooltip()
 	{
-		return "Favor: " +
-			plugin.getFavor() +
-			"/127" +
-			"</br>" +
-			"Coffer: " +
-			QuantityFormatter.quantityToStackSize(plugin.getCoffer());
+		String kingdomSummary = ColorUtil.wrapWithColorTag("Favor: ", Color.YELLOW)
+			+ KingdomPlugin.getFavorPercent(plugin.getFavor()) + " / 100" + "</br>"
+			+ ColorUtil.wrapWithColorTag("Coffer: ", Color.YELLOW)
+			+ QuantityFormatter.quantityToRSDecimalStack(plugin.getCoffer()) + "</br>";
+
+		return kingdomSummary + bestResources() + rewardInfo();
 	}
 }

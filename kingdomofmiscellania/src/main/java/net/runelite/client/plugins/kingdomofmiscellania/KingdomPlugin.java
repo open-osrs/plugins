@@ -28,6 +28,8 @@ package net.runelite.client.plugins.kingdomofmiscellania;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,7 +37,8 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import static net.runelite.api.ItemID.TEAK_CHEST;
-import net.runelite.api.VarPlayer;
+import net.runelite.api.Quest;
+import net.runelite.api.QuestState;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
@@ -87,7 +90,17 @@ public class KingdomPlugin extends Plugin
 	@Getter(AccessLevel.PACKAGE)
 	private int favor = 0, coffer = 0;
 
+	private boolean throneOfMiscellania = false;
+
+	private boolean royalTrouble = false;
+
 	private KingdomCounter counter;
+
+	@Getter
+	private Kingdom maxKingdom = new Kingdom(15, false);
+
+	@Getter
+	private Kingdom personalKingdom;
 
 	@Provides
 	KingdomConfig provideConfig(ConfigManager configManager)
@@ -104,23 +117,50 @@ public class KingdomPlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged event)
 	{
-		updateKingdomVarbits();
-		processInfobox();
+		if (client.getGameState() == GameState.LOGGED_IN && (isInKingdom() || config.showInfoboxAnywhere()))
+		{
+			if (!royalTrouble || !throneOfMiscellania)
+			{
+				clientThread.invokeLater(this::hasCompletedQuests);
+			}
+			if (throneOfMiscellania || royalTrouble)
+			{
+				updateKingdomVarbits();
+				setKingdomResourceDistribution();
+				kingdomManagement(personalKingdom);
+				kingdomManagement(maxKingdom);
+				addKingdomInfobox();
+			}
+			else
+			{
+				removeKingdomInfobox();
+			}
+		}
 	}
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
-
-		if (event.getGameState() == GameState.LOGGED_IN)
+		if (client.getGameState() == GameState.LOGGED_IN && (isInKingdom() || config.showInfoboxAnywhere()))
 		{
-			clientThread.invokeLater(() ->
+			if (!royalTrouble || !throneOfMiscellania)
+			{
+				clientThread.invokeLater(this::hasCompletedQuests);
+			}
+			if (throneOfMiscellania || royalTrouble)
 			{
 				updateKingdomVarbits();
-				processInfobox();
+				setKingdomResourceDistribution();
+				kingdomManagement(personalKingdom);
+				kingdomManagement(maxKingdom);
+				addKingdomInfobox();
 				notifyFavor();
 				notifyCoffer();
-			});
+			}
+			else
+			{
+				removeKingdomInfobox();
+			}
 		}
 	}
 
@@ -132,31 +172,86 @@ public class KingdomPlugin extends Plugin
 			return;
 		}
 
-		processInfobox();
-	}
-
-	private void processInfobox()
-	{
-		if (client.getGameState() == GameState.LOGGED_IN && hasCompletedQuest() && (isInKingdom() || config.showInfoboxAnywhere()))
+		if (client.getGameState() == GameState.LOGGED_IN && (isInKingdom() || config.showInfoboxAnywhere()))
 		{
-			addKingdomInfobox();
+			if (!royalTrouble || !throneOfMiscellania)
+			{
+				clientThread.invokeLater(this::hasCompletedQuests);
+			}
+			if (throneOfMiscellania || royalTrouble)
+			{
+				updateKingdomVarbits();
+				setKingdomResourceDistribution();
+				kingdomManagement(personalKingdom);
+				kingdomManagement(maxKingdom);
+				addKingdomInfobox();
+			}
+			else
+			{
+				removeKingdomInfobox();
+			}
 		}
-		else
-		{
-			removeKingdomInfobox();
-		}
-
 	}
 
 	private void updateKingdomVarbits()
 	{
-		if (!hasCompletedQuest())
+		if (throneOfMiscellania || royalTrouble)
 		{
-			return;
+			this.favor = client.getVar(Varbits.KINGDOM_FAVOR);
+			this.coffer = client.getVar(Varbits.KINGDOM_COFFER);
 		}
+	}
 
-		this.favor = client.getVar(Varbits.KINGDOM_FAVOR);
-		this.coffer = client.getVar(Varbits.KINGDOM_COFFER);
+	private void setKingdomResourceDistribution()
+	{
+		int hardwoodButton, cookedFishButton, herbsButton;
+
+		favor = client.getVar(Varbits.KINGDOM_FAVOR);
+		coffer = client.getVar(Varbits.KINGDOM_COFFER);
+
+		hardwoodButton = client.getVar(Varbits.KINGDOM_WORKERS_HARDWOOD_BUTTON);
+		cookedFishButton = client.getVar(Varbits.KINGDOM_WORKERS_FISH_COOKED_BUTTON);
+		herbsButton = client.getVar(Varbits.KINGDOM_WORKERS_HERBS_BUTTON);
+
+		ResourceType herbsOrFlax = herbsButton == 0 ? ResourceType.HERBS : ResourceType.FLAX;
+		ResourceType cookedOrRaw = cookedFishButton == 0 ? ResourceType.RAW_FISH : ResourceType.COOKED_FISH;
+		ResourceType hardwoodType = hardwoodButton == 0 ? ResourceType.HARDWOOD_MAHOGANY
+			: hardwoodButton == 1 ? ResourceType.HARDWOOD_TEAK : ResourceType.HARDWOOD_BOTH;
+
+		personalKingdom.resourceDistribution = new HashMap<>();
+		personalKingdom.resourceDistribution.put(herbsOrFlax, client.getVar(Varbits.KINGDOM_WORKERS_HERBS));
+		personalKingdom.resourceDistribution.put(cookedOrRaw, client.getVar(Varbits.KINGDOM_WORKERS_FISHING));
+		personalKingdom.resourceDistribution.put(hardwoodType, client.getVar(Varbits.KINGDOM_WORKERS_HARDWOOD));
+		personalKingdom.resourceDistribution.put(ResourceType.MINING, client.getVar(Varbits.KINGDOM_WORKERS_MINING));
+		personalKingdom.resourceDistribution.put(ResourceType.WOOD, client.getVar(Varbits.KINGDOM_WORKERS_WOOD));
+		personalKingdom.resourceDistribution.put(ResourceType.FARM, client.getVar(Varbits.KINGDOM_WORKERS_FARM));
+	}
+
+	private void kingdomManagement(Kingdom kingdom)
+	{
+		if (kingdom.isPersonalKingdom)
+		{
+			kingdom.calculateKingdomFunds(coffer, getFavorPercent(favor));
+			kingdom.calculateRewardQuantities();
+		}
+		calculateRewards(kingdom);
+		kingdom.getResourceProfit();
+	}
+
+	private void calculateRewards(Kingdom kingdom)
+	{
+		kingdom.rewardProfit = new HashMap<>();
+
+		for (Map.Entry<Reward, Integer> entry : kingdom.rewardQuantity.entrySet())
+		{
+			if (entry.getValue() != null)
+			{
+				Reward reward = entry.getKey();
+				int quantity = entry.getValue();
+				int total = quantity * itemManager.getItemPrice(reward.getRewardId());
+				kingdom.rewardProfit.put(reward, total);
+			}
+		}
 	}
 
 	private void addKingdomInfobox()
@@ -183,9 +278,18 @@ public class KingdomPlugin extends Plugin
 			&& KINGDOM_REGION.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
 	}
 
-	private boolean hasCompletedQuest()
+	private void hasCompletedQuests()
 	{
-		return client.getVar(VarPlayer.THRONE_OF_MISCELLANIA) > 0;
+		if (Quest.ROYAL_TROUBLE.getState(client) == QuestState.FINISHED)
+		{
+			royalTrouble = true;
+			personalKingdom = new Kingdom(15, true);
+		}
+		else if (Quest.THRONE_OF_MISCELLANIA.getState(client) == QuestState.FINISHED)
+		{
+			throneOfMiscellania = true;
+			personalKingdom = new Kingdom(10, true);
+		}
 	}
 
 	static int getFavorPercent(int favor)
@@ -195,7 +299,7 @@ public class KingdomPlugin extends Plugin
 
 	private void notifyFavor()
 	{
-		if (hasCompletedQuest() && getFavorPercent(favor) < config.notifyFavorThreshold())
+		if ((throneOfMiscellania || royalTrouble) && getFavorPercent(favor) < config.notifyFavorThreshold())
 		{
 			sendChatMessage("Your favor with your kingdom is below " + config.notifyFavorThreshold() + "%.");
 		}
@@ -203,7 +307,7 @@ public class KingdomPlugin extends Plugin
 
 	private void notifyCoffer()
 	{
-		if (hasCompletedQuest() && coffer < config.notifyCofferThreshold())
+		if ((throneOfMiscellania || royalTrouble) && coffer < config.notifyCofferThreshold())
 		{
 			sendChatMessage("Your kingdom's coffer has less than " + NumberFormat.getIntegerInstance().format(config.notifyCofferThreshold()) + " coins in it.");
 		}

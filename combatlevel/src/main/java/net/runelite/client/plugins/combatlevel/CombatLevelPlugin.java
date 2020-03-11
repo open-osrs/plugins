@@ -31,8 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
@@ -88,10 +86,6 @@ public class CombatLevelPlugin extends Plugin
 	@Inject
 	private OverlayManager overlayManager;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showLevelsUntil;
-	private boolean wildernessAttackLevelRange;
-
 	@Provides
 	CombatLevelConfig provideConfig(ConfigManager configManager)
 	{
@@ -101,11 +95,9 @@ public class CombatLevelPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		updateConfig();
-
 		overlayManager.add(overlay);
 
-		if (this.wildernessAttackLevelRange)
+		if (config.wildernessAttackLevelRange())
 		{
 			appendAttackLevelRangeText();
 		}
@@ -165,9 +157,7 @@ public class CombatLevelPlugin extends Plugin
 			return;
 		}
 
-		updateConfig();
-
-		if (this.wildernessAttackLevelRange)
+		if (config.wildernessAttackLevelRange())
 		{
 			appendAttackLevelRangeText();
 		}
@@ -180,7 +170,7 @@ public class CombatLevelPlugin extends Plugin
 	@Subscribe
 	private void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
-		if (this.wildernessAttackLevelRange
+		if (config.wildernessAttackLevelRange()
 			&& "wildernessWidgetTextSet".equals(event.getEventName()))
 		{
 			appendAttackLevelRangeText();
@@ -256,11 +246,5 @@ public class CombatLevelPlugin extends Plugin
 	private static String combatAttackRange(final int combatLevel, final int wildernessLevel)
 	{
 		return Math.max(MIN_COMBAT_LEVEL, combatLevel - wildernessLevel) + "-" + Math.min(Experience.MAX_COMBAT_LEVEL, combatLevel + wildernessLevel);
-	}
-
-	private void updateConfig()
-	{
-		this.showLevelsUntil = config.showLevelsUntil();
-		this.wildernessAttackLevelRange = config.showLevelsUntil();
 	}
 }

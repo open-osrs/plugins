@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -56,12 +57,13 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.SkillColor;
+import net.runelite.client.ui.components.PopupMenuOwner;
 import net.runelite.client.ui.components.ProgressBar;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.LinkBrowser;
 import net.runelite.client.util.QuantityFormatter;
 
-class XpInfoBox extends JPanel
+class XpInfoBox extends JPanel implements PopupMenuOwner
 {
 	private static final DecimalFormat TWO_DECIMAL_FORMAT = new DecimalFormat("0.00");
 
@@ -82,7 +84,7 @@ class XpInfoBox extends JPanel
 	private static final String ADD_STATE = "Add to canvas";
 
 	// Instance members
-	private final JPanel panel;
+	private final JComponent panel;
 	private final XpTrackerConfig config;
 
 	@Getter(AccessLevel.PACKAGE)
@@ -99,6 +101,7 @@ class XpInfoBox extends JPanel
 
 	private final JPanel progressWrapper = new JPanel();
 	private final ProgressBar progressBar = new ProgressBar();
+	private final JPopupMenu popupMenu = new JPopupMenu();
 
 	private final JLabel expGained = new JLabel();
 	private final JLabel expHour = new JLabel();
@@ -117,7 +120,7 @@ class XpInfoBox extends JPanel
 		SIMPLE
 	}
 
-	XpInfoBox(XpTrackerPlugin xpTrackerPlugin, XpTrackerConfig xpTrackerConfig, Client client, JPanel panel, Skill skill, SkillIconManager iconManager)
+	XpInfoBox(XpTrackerPlugin xpTrackerPlugin, XpTrackerConfig xpTrackerConfig, Client client, JComponent panel, Skill skill, SkillIconManager iconManager)
 	{
 		this.config = xpTrackerConfig;
 		this.panel = panel;
@@ -145,7 +148,6 @@ class XpInfoBox extends JPanel
 		pauseSkill.addActionListener(e -> xpTrackerPlugin.pauseSkill(skill, !paused));
 
 		// Create popup menu
-		final JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
 		popupMenu.add(openXpTracker);
 		popupMenu.add(reset);
@@ -218,7 +220,7 @@ class XpInfoBox extends JPanel
 
 		progressWrapper.add(progressBar, BorderLayout.NORTH);
 
-		container.setComponentPopupMenu(popupMenu);
+		// progressBar's tooltip text consumes mouse events from parent, and so requires setComponentPopupMenu
 		progressBar.setComponentPopupMenu(popupMenu);
 
 		MouseListener mouseListener = new MouseAdapter()
@@ -232,7 +234,7 @@ class XpInfoBox extends JPanel
 				}
 			}
 		};
-		container.addMouseListener(mouseListener);
+
 		progressBar.addMouseListener(mouseListener);
 
 		add(container, BorderLayout.NORTH);
@@ -263,7 +265,6 @@ class XpInfoBox extends JPanel
 	void reset()
 	{
 		canvasItem.setText(ADD_STATE);
-		container.remove(statsPanel);
 		panel.remove(this);
 		panel.revalidate();
 	}
@@ -360,6 +361,12 @@ class XpInfoBox extends JPanel
 		{
 			setStyle(Style.FULL);
 		}
+	}
+
+	@Override
+	public JPopupMenu getPopupMenu()
+	{
+		return popupMenu;
 	}
 
 	static String htmlLabel(String key, int value)
