@@ -29,7 +29,7 @@ package net.runelite.client.plugins.grandexchange;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Provides;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;

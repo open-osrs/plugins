@@ -38,7 +38,6 @@ dependencies {
     compileOnly("com.openosrs:http-api:$rlVersion")
 
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
 }

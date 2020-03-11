@@ -40,7 +40,6 @@ dependencies {
 
     compileOnly(Libraries.annotations)
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.okhttp3)
     compileOnly(Libraries.pf4j)

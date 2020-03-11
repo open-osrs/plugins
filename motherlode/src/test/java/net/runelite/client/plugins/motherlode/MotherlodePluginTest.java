@@ -27,8 +27,10 @@ package net.runelite.client.plugins.motherlode;
 import com.google.inject.Guice;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
+import java.io.File;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
+import javax.inject.Named;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
@@ -40,6 +42,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.Notifier;
+import net.runelite.client.RuneLite;
 import net.runelite.client.config.ChatColorConfig;
 import net.runelite.client.config.OpenOSRSConfig;
 import net.runelite.client.config.RuneLiteConfig;
@@ -106,6 +109,10 @@ public class MotherlodePluginTest
 	@Mock
 	@Bind
 	private OpenOSRSConfig openOSRSConfig;
+
+	@Bind
+	@Named("config")
+	private File configManagerConfig = RuneLite.DEFAULT_CONFIG_FILE;
 
 	@Before
 	public void before()

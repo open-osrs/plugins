@@ -41,7 +41,6 @@ dependencies {
     compileOnly(Libraries.annotations)
     compileOnly(Libraries.guice)
     compileOnly(Libraries.gson)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
     compileOnly(Libraries.okhttp3)
