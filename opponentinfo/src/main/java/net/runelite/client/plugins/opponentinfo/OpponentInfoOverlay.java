@@ -161,6 +161,16 @@ class OpponentInfoOverlay extends Overlay
 			panelComponent.getChildren().add(progressBarComponent);
 		}
 
+		// Opponents opponent
+		if (opponentsOpponentName != null && opponentInfoConfig.showOpponentsOpponent())
+		{
+			textWidth = Math.max(textWidth, fontMetrics.stringWidth(opponentsOpponentName));
+			panelComponent.setPreferredSize(new Dimension(textWidth, 0));
+			panelComponent.getChildren().add(TitleComponent.builder()
+				.text(opponentsOpponentName)
+				.build());
+		}
+
 		return panelComponent.render(graphics);
 	}
 
