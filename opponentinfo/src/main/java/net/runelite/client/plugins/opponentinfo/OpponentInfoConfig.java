@@ -55,10 +55,21 @@ public interface OpponentInfoConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showOpponentsOpponent",
+		name = "Show opponent's opponent",
+		description = "Toggle showing opponent's opponent if within a multi-combat area",
+		position = 2
+	)
+	default boolean showOpponentsOpponent()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showAttackersMenu",
 		name = "Show attackers in menu",
 		description = "Marks attackers' names in menus with a *<br>",
-		position = 2,
+		position = 3,
 		warning = "NOTE: This'll also mark people who are following you/interacting with you in any other way. Don't blindly trust this in pvp!"
 	)
 	default boolean showAttackersMenu()
@@ -70,7 +81,7 @@ public interface OpponentInfoConfig extends Config
 		keyName = "showAttackingMenu",
 		name = "Green main target",
 		description = "Display main target's name colored in menus (Players and NPCs)",
-		position = 3,
+		position = 4,
 		warning = "NOTE: This'll also show green when following/interacting in any other way. Don't blindly trust this in pvp!"
 	)
 	default boolean showAttackingMenu()
@@ -82,7 +93,7 @@ public interface OpponentInfoConfig extends Config
 		keyName = "attackingColor",
 		name = "Target color",
 		description = "The color your target will be highlighted with",
-		position = 4
+		position = 5
 	)
 	default Color attackingColor()
 	{
@@ -93,7 +104,7 @@ public interface OpponentInfoConfig extends Config
 		keyName = "showHitpointsMenu",
 		name = "Show NPC hp in menu",
 		description = "Show NPC hp in menu. Useful when barraging",
-		position = 5
+		position = 6
 	)
 	default boolean showHitpointsMenu()
 	{
