@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.extensions.pktools;
+package net.runelite.client.plugins.pktools;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

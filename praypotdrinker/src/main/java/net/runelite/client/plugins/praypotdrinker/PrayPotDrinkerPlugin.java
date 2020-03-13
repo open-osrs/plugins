@@ -2,10 +2,9 @@ package net.runelite.client.plugins.praypotdrinker;
 
 import com.google.inject.Provides;
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
+import net.runelite.api.Point;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -23,7 +22,10 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
