@@ -229,11 +229,6 @@ jobs:
           repository: open-osrs/runelite
           ref: master
 
-      - uses: actions/checkout@v1
-        with:
-          repository: open-osrs/plugin-hosting
-          ref: master
-
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
@@ -268,6 +263,11 @@ jobs:
 
       - name: Bootstrapping plugins
         run: ./gradlew bootstrapPlugins --stacktrace --console=plain
+
+      - uses: actions/checkout@v1
+        with:
+          repository: open-osrs/plugin-hosting
+          ref: master
 
       - name: Copy bootstrap
         run: cp -af /home/runner/work/plugins/plugins/build/bootstrap/. /home/runner/work/plugins/plugin-hosting/
