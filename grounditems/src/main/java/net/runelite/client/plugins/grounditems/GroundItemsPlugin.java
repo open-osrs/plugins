@@ -137,7 +137,7 @@ public class GroundItemsPlugin extends Plugin
 	boolean highlightHerblore;
 	boolean highlightPrayer;
 	LoadingCache<String, Boolean> hiddenItems;
-	static final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
+	public final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
 		(
 			//Grimy Herbs
 			GRIMY_GUAM_LEAF,
@@ -291,7 +291,7 @@ public class GroundItemsPlugin extends Plugin
 			POISON_IVY_SEED,
 			BELLADONNA_SEED
 		);
-	static final ImmutableSet<Integer> prayerItems = ImmutableSet.of
+	public final ImmutableSet<Integer> prayerItems = ImmutableSet.of
 		(
 			//Bones
 			BONES,
