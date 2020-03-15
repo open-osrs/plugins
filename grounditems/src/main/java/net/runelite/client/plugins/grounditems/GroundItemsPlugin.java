@@ -137,7 +137,7 @@ public class GroundItemsPlugin extends Plugin
 	boolean highlightHerblore;
 	boolean highlightPrayer;
 	LoadingCache<String, Boolean> hiddenItems;
-	static final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
+	public final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
 		(
 			//Grimy Herbs
 			GRIMY_GUAM_LEAF,
@@ -291,7 +291,7 @@ public class GroundItemsPlugin extends Plugin
 			POISON_IVY_SEED,
 			BELLADONNA_SEED
 		);
-	static final ImmutableSet<Integer> prayerItems = ImmutableSet.of
+	public final ImmutableSet<Integer> prayerItems = ImmutableSet.of
 		(
 			//Bones
 			BONES,
@@ -830,6 +830,10 @@ public class GroundItemsPlugin extends Plugin
 
 	private void reset()
 	{
+		// Herb / Pray XP
+		highlightPrayer = config.highlightPrayer();
+		highlightHerblore = config.highlightHerblore();
+		
 		// gets the hidden items from the text box in the config
 		hiddenItemList = Text.fromCSV(config.getHiddenItems());
 
