@@ -204,14 +204,14 @@ public class GroundItemsOverlay extends Overlay
 			{
 				if (plugin.highlightHerblore)
 				{
-					if (GroundItemsPlugin.herbloreItems.contains(item.getId()))
+					if (plugin.herbloreItems.contains(item.getId()))
 					{
 						highlighted = plugin.getHerbloreColor();
 					}
 				}
 				if (plugin.highlightPrayer)
 				{
-					if (GroundItemsPlugin.prayerItems.contains(item.getId()))
+					if (plugin.prayerItems.contains(item.getId()))
 					{
 						highlighted = plugin.getPrayerColor();
 					}

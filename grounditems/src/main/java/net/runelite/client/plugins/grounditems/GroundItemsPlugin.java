@@ -830,6 +830,10 @@ public class GroundItemsPlugin extends Plugin
 
 	private void reset()
 	{
+		// Herb / Pray XP
+		highlightPrayer = config.highlightPrayer();
+		highlightHerblore = config.highlightHerblore();
+		
 		// gets the hidden items from the text box in the config
 		hiddenItemList = Text.fromCSV(config.getHiddenItems());
 
