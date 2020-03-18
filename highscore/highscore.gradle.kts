@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.4"
 
 project.extra["PluginName"] = "Highscore"
 project.extra["PluginDescription"] = "Enable the highscore panel and an optional Lookup option on players"
@@ -50,6 +50,7 @@ dependencies {
     testImplementation(Libraries.pf4j)
     testImplementation(Libraries.guiceTestlib)
     testImplementation(Libraries.junit)
+    testImplementation(Libraries.mockitoCore)
 }
 
 tasks {

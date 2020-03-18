@@ -67,16 +67,24 @@ class ObjectIndicatorsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		for (TileObject object : plugin.getObjects())
+		for (ColorTileObject colorTileObject : plugin.getObjects())
 		{
+			TileObject object = colorTileObject.getTileObject();
+			Color objectColor = colorTileObject.getColor();
+
 			if (object.getPlane() != client.getPlane())
 			{
 				continue;
 			}
 
-			Color color = config.objectMarkerColor();
-			int opacity = (int) floor(config.objectMarkerAlpha() * 2.55);
-			Color objectColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+			if (objectColor == null || !config.rememberObjectColors())
+			{
+				// Fallback to the current config if the object is marked before the addition of multiple colors
+				Color color = config.objectMarkerColor();
+				int opacity = (int) floor(config.objectMarkerAlpha() * 2.55);
+				objectColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+			}
+
 
 			switch (config.objectMarkerRenderStyle())
 			{
