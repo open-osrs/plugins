@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.12"
+version = "0.0.13"
 
 project.extra["PluginName"] = "Clue Scroll"
 project.extra["PluginDescription"] = "Show answers to clue scroll riddles, anagrams, ciphers, and cryptic clues"
@@ -37,6 +37,7 @@ dependencies {
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
 
+    compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
     compileOnly(Libraries.jopt)
     compileOnly(Libraries.lombok)

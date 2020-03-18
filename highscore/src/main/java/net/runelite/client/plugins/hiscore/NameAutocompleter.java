@@ -24,6 +24,7 @@
  */
 package net.runelite.client.plugins.hiscore;
 
+import com.google.common.collect.EvictingQueue;
 import com.google.inject.Inject;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -36,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ClanMember;
 import net.runelite.api.Client;
@@ -50,12 +52,17 @@ class NameAutocompleter implements KeyListener
 	 */
 	private static final String NBSP = Character.toString((char) 160);
 
+	private static final int MAX_SEARCH_HISTORY = 25;
+
 	/**
 	 * Character class for characters that cannot be in an RSN.
 	 */
 	private static final Pattern INVALID_CHARS = Pattern.compile("[^a-zA-Z0-9_ -]");
 
 	private final Client client;
+	private final HiscoreConfig hiscoreConfig;
+
+	private final EvictingQueue<String> searchHistory = EvictingQueue.create(MAX_SEARCH_HISTORY);
 
 	/**
 	 * The name currently being autocompleted.
@@ -68,9 +75,10 @@ class NameAutocompleter implements KeyListener
 	private Pattern autocompleteNamePattern;
 
 	@Inject
-	private NameAutocompleter(@Nullable final Client client)
+	private NameAutocompleter(@Nullable final Client client, final HiscoreConfig hiscoreConfig)
 	{
 		this.client = client;
+		this.hiscoreConfig = hiscoreConfig;
 	}
 
 	@Override
@@ -88,6 +96,11 @@ class NameAutocompleter implements KeyListener
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
+		if (!hiscoreConfig.autocomplete())
+		{
+			return;
+		}
+
 		final JTextComponent input = (JTextComponent) e.getSource();
 		final String inputText = input.getText();
 
@@ -189,16 +202,23 @@ class NameAutocompleter implements KeyListener
 
 		autocompleteName = Optional.empty();
 
-		// TODO: Search lookup history
+		// Search all previous successful queries
+		autocompleteName = searchHistory.stream()
+			.filter(n -> pattern.matcher(n).matches())
+			.findFirst();
 
-		Friend[] friends = client.getFriends();
-		if (friends != null)
+		// Search friends if previous searches weren't matched
+		if (!autocompleteName.isPresent())
 		{
-			autocompleteName = Arrays.stream(friends)
-				.filter(Objects::nonNull)
-				.map(Friend::getName)
-				.filter(n -> pattern.matcher(n).matches())
-				.findFirst();
+			Friend[] friends = client.getFriends();
+			if (friends != null)
+			{
+				autocompleteName = Arrays.stream(friends)
+					.filter(Objects::nonNull)
+					.map(Friend::getName)
+					.filter(n -> pattern.matcher(n).matches())
+					.findFirst();
+			}
 		}
 
 		// Search clan if a friend wasn't found
@@ -239,6 +259,14 @@ class NameAutocompleter implements KeyListener
 		}
 
 		return autocompleteName.isPresent();
+	}
+
+	void addToSearchHistory(@NonNull String name)
+	{
+		if (!searchHistory.contains(name))
+		{
+			searchHistory.offer(name);
+		}
 	}
 
 	private boolean isExpectedNext(JTextComponent input, String nextChar)

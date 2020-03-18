@@ -236,4 +236,4 @@ class BankGridOverlay extends Overlay
 		return null;
 	}
 
-} 
+}
