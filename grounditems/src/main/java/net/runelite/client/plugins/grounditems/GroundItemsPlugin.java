@@ -134,8 +134,6 @@ public class GroundItemsPlugin extends Plugin
 	private static final String TELEGRAB_TEXT = ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil.prependColorTag(" -> ", Color.WHITE);
 	private final Map<Integer, Color> priceChecks = new LinkedHashMap<>();
 	private final Queue<Integer> droppedItemQueue = EvictingQueue.create(16); // recently dropped items
-	boolean highlightHerblore;
-	boolean highlightPrayer;
 	LoadingCache<NamedQuantity, Boolean> hiddenItems;
 	static final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
 		(

@@ -202,14 +202,14 @@ public class GroundItemsOverlay extends Overlay
 			//Process skill items
 			if (!plugin.hiddenItems.getUnchecked(new NamedQuantity(item)))
 			{
-				if (plugin.highlightHerblore)
+				if (config.highlightHerblore())
 				{
 					if (GroundItemsPlugin.herbloreItems.contains(item.getId()))
 					{
 						highlighted = plugin.getHerbloreColor();
 					}
 				}
-				if (plugin.highlightPrayer)
+				if (config.highlightPrayer())
 				{
 					if (GroundItemsPlugin.prayerItems.contains(item.getId()))
 					{
