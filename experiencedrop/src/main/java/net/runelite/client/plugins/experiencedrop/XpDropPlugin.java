@@ -28,6 +28,8 @@ package net.runelite.client.plugins.experiencedrop;
 
 import com.google.inject.Provides;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.stream.IntStream;
 import javax.inject.Inject;
 import lombok.AccessLevel;
@@ -45,6 +47,7 @@ import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.WidgetHiddenChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -105,6 +108,7 @@ public class XpDropPlugin extends Plugin
 	private Skill lastSkill = null;
 	private PrayerType currentTickPrayer;
 	private XpDropConfig.DamageMode damageMode;
+	private Map<Skill, Integer> previousSkillExpTable = new EnumMap<>(Skill.class);
 
 	@Provides
 	XpDropConfig provideConfig(ConfigManager configManager)
@@ -420,5 +424,21 @@ public class XpDropPlugin extends Plugin
 		NPC target = (NPC) a;
 		damage = (int) Math.rint(damageDealt / npcManager.getXpModifier(target.getId()));
 		tickShow = 3;
+	}
+
+	@Subscribe
+	public void onStatChanged(StatChanged statChanged)
+	{
+		final Skill skill = statChanged.getSkill();
+		final int xp = statChanged.getXp();
+
+		lastSkill = skill;
+
+		Integer previous = previousSkillExpTable.put(skill, xp);
+		if (previous != null)
+		{
+			previousExpGained = xp - previous;
+			hasDropped = true;
+		}
 	}
 }
