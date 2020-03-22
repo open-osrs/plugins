@@ -475,13 +475,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 				switch (object.getOption())
 				{
 					case "Jalsavrah":
-						object.setOption("Pyramid plunder");
+						object.setOption("Pyramid Plunder");
 						break;
 					case "Jaleustrophos":
-						object.setOption("Agility pyramid");
+						object.setOption("Agility Pyramid");
 						break;
 					case "Jaldraocht":
-						object.setOption("Desert treasure pyramid");
+						object.setOption("Desert Treasure Pyramid");
 						break;
 				}
 				if (object.getTarget().contains("Kharyrll teleport"))
@@ -494,7 +494,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				}
 				if (object.getTarget().contains("Lassar teleport"))
 				{
-					object.setTarget("<col=40b3ff>Ice mountain teleport");
+					object.setTarget("<col=40b3ff>Ice Mountain teleport");
 				}
 				if (object.getTarget().contains("Ghorrock teleport"))
 				{
@@ -502,19 +502,19 @@ public class MenuEntrySwapperPlugin extends Plugin
 				}
 				if (object.getTarget().contains("Paddewwa teleport"))
 				{
-					object.setTarget("<col=40b3ff>Edgeville dungeon teleport");
+					object.setTarget("<col=40b3ff>Edgeville Dungeon teleport");
 				}
 				if (object.getTarget().contains("Dareeyak teleport"))
 				{
-					object.setTarget("<col=40b3ff>Ruins west of banditcamp teleport");
+					object.setTarget("<col=40b3ff>Crazy Archeologist Ruins teleport");
 				}
 				if (object.getTarget().contains("Annakarl teleport"))
 				{
-					object.setTarget("<col=40b3ff>Demonic ruins teleport");
+					object.setTarget("<col=40b3ff>Demonic Ruins teleport");
 				}
 				if (object.getTarget().contains("Carrallangar teleport"))
 				{
-					object.setTarget("<col=40b3ff>Graveyard of shadows teleport");
+					object.setTarget("<col=40b3ff>Graveyard of Shadows teleport");
 				}
 				if (object.getTarget().contains("Icy basalt"))
 				{

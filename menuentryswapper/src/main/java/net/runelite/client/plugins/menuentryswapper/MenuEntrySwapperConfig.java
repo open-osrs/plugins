@@ -971,7 +971,7 @@ public interface MenuEntrySwapperConfig extends Config
 
 	@ConfigItem(
 		keyName = "swapPuroPuro",
-		name = "Puro-Puro Wheat",
+		name = "Puro-Puro Wheat.",
 		description = "",
 		position = 3,
 		section = "skillingSection"
@@ -983,7 +983,7 @@ public interface MenuEntrySwapperConfig extends Config
 
 	@ConfigItem(
 		keyName = "swapGrimyHerb",
-		name = "Grimy Herbs",
+		name = "Grimy Herbs.",
 		description = "",
 		position = 4,
 		section = "skillingSection"
@@ -1094,7 +1094,7 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapDropFish",
 		name = "Left Click Drop Fish",
-		description = "Left click drop fish.",
+		description = "Left Click Drop Fish.",
 		position = 14,
 		section = "skillingSection"
 	)
@@ -1106,7 +1106,7 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapDropOre",
 		name = "Left Click Drop Ore",
-		description = "Left click drop ore.",
+		description = "Left Click Drop Ore.",
 		position = 15,
 		section = "skillingSection"
 	)
@@ -1118,7 +1118,7 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapDropLogs",
 		name = "Left Click Drop Logs",
-		description = "Left click drop logs.",
+		description = "Left Click Drop Logs.",
 		position = 16,
 		section = "skillingSection"
 	)
