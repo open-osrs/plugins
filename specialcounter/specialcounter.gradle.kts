@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Special Attack Counter"
-project.extra["PluginDescription"] = "Track DWH, Arclight, Darklight, and BGS special attacks used on NPCs"
+project.extra["PluginDescription"] = "Track special attacks used on NPCs"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
