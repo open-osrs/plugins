@@ -85,6 +85,7 @@ public class FriendListPlugin extends Plugin
 					")";
 
 				setFriendsListTitle(title);
+			}
 		}
 
 		else if (event.getScriptId() == ScriptID.IGNORE_UPDATE)
@@ -106,6 +107,7 @@ public class FriendListPlugin extends Plugin
 					")";
 
 				setIgnoreListTitle(title);
+			}
 		}
 	}
 
