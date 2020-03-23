@@ -45,6 +45,7 @@ public enum CustomCursor
 	SARADOMIN_GODSWORD("Saradomin Godsword", "cursor-saradomin-godsword.png"),
 	ZAMORAK_GODSWORD("Zamorak Godsword", "cursor-zamorak-godsword.png"),
 	SKILL_SPECS("Skill Specs", "cursor-skill-specs.png"),
+	EQUIPPED_WEAPON("Equipped Weapon"),
 	CUSTOM_IMAGE("Custom Image");
 
 	private final String name;

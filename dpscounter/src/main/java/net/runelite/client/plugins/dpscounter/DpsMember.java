@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020 Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,43 +22,78 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.dpscounter;
 
-version = "0.0.4"
+import java.time.Duration;
+import java.time.Instant;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-project.extra["PluginName"] = "Skybox"
-project.extra["PluginDescription"] = "Draws an oldschool styled skybox"
+@RequiredArgsConstructor
+@Getter
+class DpsMember
+{
+	private final String name;
+	private Instant start;
+	private Instant end;
+	private int damage;
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+	void addDamage(int amount)
+	{
+		if (start == null)
+		{
+			start = Instant.now();
+		}
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
+		damage += amount;
+	}
 
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
+	float getDps()
+	{
+		if (start == null)
+		{
+			return 0;
+		}
 
-    testAnnotationProcessor(Libraries.lombok)
+		Instant now = end == null ? Instant.now() : end;
+		int diff = (int) (now.toEpochMilli() - start.toEpochMilli()) / 1000;
+		if (diff == 0)
+		{
+			return 0;
+		}
 
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
+		return (float) damage / (float) diff;
+	}
 
-    testImplementation(Libraries.guava)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.lombok)
-    testImplementation(Libraries.slf4jApi)
-}
+	void pause()
+	{
+		end = Instant.now();
+	}
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	boolean isPaused()
+	{
+		return start == null || end != null;
+	}
+
+	void unpause()
+	{
+		if (end == null)
+		{
+			return;
+		}
+
+		start = start.plus(Duration.between(end, Instant.now()));
+		end = null;
+	}
+
+	void reset()
+	{
+		damage = 0;
+		start = end = Instant.now();
+	}
+
+	Duration elapsed()
+	{
+		return Duration.between(start, end == null ? Instant.now() : end);
+	}
 }

@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.1"
 
-project.extra["PluginName"] = "Skybox"
-project.extra["PluginDescription"] = "Draws an oldschool styled skybox"
+project.extra["PluginName"] = "DPS Counter"
+project.extra["PluginDescription"] = "Counts damage (per second) by a party"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -36,19 +36,13 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$rlVersion")
     compileOnly("com.openosrs:runelite-client:$rlVersion")
+    compileOnly("com.openosrs:http-api:$rlVersion")
 
+    compileOnly(Libraries.annotations)
     compileOnly(Libraries.guice)
     compileOnly(Libraries.lombok)
+    compileOnly(Libraries.okhttp3)
     compileOnly(Libraries.pf4j)
-
-    testAnnotationProcessor(Libraries.lombok)
-
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
-    testImplementation(Libraries.guava)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.lombok)
-    testImplementation(Libraries.slf4jApi)
 }
 
 tasks {
