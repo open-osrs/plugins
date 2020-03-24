@@ -113,10 +113,31 @@ public class MenuEntrySwapperPlugin extends Plugin
 		"miscellania", "grand exchange", "falador park", "dondakan's rock", "edgeville", "karamja",
 		"draynor village", "al kharid"
 	);
+	private static final List<String> pharaohsSceptre = Arrays.asList(
+		"Pharaoh's Sceptre (3)", "Pharaoh's Sceptre (2)", "Pharaoh's Sceptre (1)", "Pharaoh's Sceptre"
+	);
 	private static final List<String> npcContact = Arrays.asList(
 		"honest jimmy", "bert the sandman", "advisor ghrim", "dark mage", "lanthus", "turael",
 		"mazchna", "vannaka", "chaeldar", "nieve", "steve", "duradel", "krystilia", "konar",
 		"murphy", "cyrisus", "smoggy", "ginea", "watson", "barbarian guard", "random"
+	);
+	private static final List<String> dropFish = Arrays.asList(
+		"Raw shrimp", "Raw Sardine", "Raw karambwanji", "Raw herring", "Raw anchovies", "Raw mackerel",
+		"Raw trout", "Raw cod", "Raw pike", "Raw slimy eel", "Raw salmon", "Raw tuna", "Raw rainbow fish",
+		"Raw cave eellobster", "Raw bluegill", "Raw bass", "Raw leaping trout", "Raw swordfish", "Raw lava eel",
+		"Raw common tench", "Raw leaping salmon", "Raw monkfish", "Raw karambwan", "Raw leaping sturgeon",
+		"Raw mottled eel", "Raw shark", "Raw sea turtle", "Raw infernal eel", "Raw manta ray", "Raw angler fish",
+		"Raw dark crab", "Raw sacred eel"
+	);
+	private static final List<String> dropOre = Arrays.asList(
+		"Copper ore", "Tin ore", "Limestone", "Blurite ore", "Iron ore", "Elemental ore", "Daeyalt ore",
+		"Silver ore", "Coal", "Sandstone", "Gold ore", "Granite", "Mithril ore", "Lovakite ore",
+		"Adamantite ore", "Runite ore", "Amethyst ore"
+	);
+
+	private static final List<String> dropLogs = Arrays.asList(
+		"Logs", "Achey tree logs", "Oak logs", "Willow logs", "Teak logs", "Juniper logs", "Maple logs",
+		"Mahogany logs", "Artic pine logs", "Yew logs", "Magic logs", "Redwood logs"
 	);
 
 	private static final Splitter NEWLINE_SPLITTER = Splitter
@@ -192,7 +213,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			setControlActive(false);
 		}
 	};
-	
+
 	@Provides
 	MenuEntrySwapperConfig provideConfig(ConfigManager configManager)
 	{
@@ -445,6 +466,68 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			return;
 		}
+
+		if (config.swapTeleportNames())
+		{
+			MenuEntry[] menuEntries = client.getMenuEntries();
+			for (MenuEntry object : menuEntries)
+			{
+				switch (object.getOption())
+				{
+					case "Jalsavrah":
+						object.setOption("Pyramid Plunder");
+						break;
+					case "Jaleustrophos":
+						object.setOption("Agility Pyramid");
+						break;
+					case "Jaldraocht":
+						object.setOption("Desert Treasure Pyramid");
+						break;
+				}
+				if (object.getTarget().contains("Kharyrll teleport"))
+				{
+					object.setTarget("<col=40b3ff>Canifis teleport");
+				}
+				if (object.getTarget().contains("Senntisten teleport"))
+				{
+					object.setTarget("<col=40b3ff>Digsite teleport");
+				}
+				if (object.getTarget().contains("Lassar teleport"))
+				{
+					object.setTarget("<col=40b3ff>Ice Mountain teleport");
+				}
+				if (object.getTarget().contains("Ghorrock teleport"))
+				{
+					object.setTarget("<col=40b3ff>Ice Plateau teleport");
+				}
+				if (object.getTarget().contains("Paddewwa teleport"))
+				{
+					object.setTarget("<col=40b3ff>Edgeville Dungeon teleport");
+				}
+				if (object.getTarget().contains("Dareeyak teleport"))
+				{
+					object.setTarget("<col=40b3ff>Crazy Archeologist Ruins teleport");
+				}
+				if (object.getTarget().contains("Annakarl teleport"))
+				{
+					object.setTarget("<col=40b3ff>Demonic Ruins teleport");
+				}
+				if (object.getTarget().contains("Carrallangar teleport"))
+				{
+					object.setTarget("<col=40b3ff>Graveyard of Shadows teleport");
+				}
+				if (object.getTarget().contains("Icy basalt"))
+				{
+					object.setTarget("<col=40b3ff>Weiss teleport");
+				}
+				if (object.getTarget().contains("Stony basalt"))
+				{
+					object.setTarget("<col=40b3ff>Troll Stronghold teleport");
+				}
+			}
+			client.setMenuEntries(menuEntries);
+		}
+
 
 		if (config.swapImps() && target.contains("impling"))
 		{
@@ -879,6 +962,12 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addSwap("Bury", "bone", "Use");
 		}
 
+		if (config.swapSalamander())
+		{
+			menuManager.addSwap("Wield", "salamander", "Release");
+			menuManager.addSwap("Wield", "Swamp lizard", "Release");
+		}
+
 		if (config.swapNexus())
 		{
 			menuManager.addPriorityEntry("Teleport menu", "Portal nexus");
@@ -985,6 +1074,38 @@ public class MenuEntrySwapperPlugin extends Plugin
 				menuManager.addPriorityEntry(jewellerybox, "basic jewellery box");
 				menuManager.addPriorityEntry(jewellerybox, "fancy jewellery box");
 				menuManager.addPriorityEntry(jewellerybox, "ornate jewellery box");
+			}
+		}
+
+		if (config.swapPharaohsSceptre())
+		{
+			for (String pharaohsSceptre : pharaohsSceptre)
+			{
+				menuManager.addPriorityEntry("Wield", pharaohsSceptre);
+			}
+		}
+
+		if (config.swapDropFish())
+		{
+			for (String dropFish : dropFish)
+			{
+				menuManager.addSwap("Use", dropFish, "Drop");
+			}
+		}
+
+		if (config.swapDropOre())
+		{
+			for (String dropOre : dropOre)
+			{
+				menuManager.addSwap("Use", dropOre, "Drop");
+			}
+		}
+
+		if (config.swapDropLogs())
+		{
+			for (String dropLogs : dropLogs)
+			{
+				menuManager.addSwap("Use", dropLogs, "Drop");
 			}
 		}
 	}
@@ -1105,11 +1226,32 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(config.questCapeMode().toString(), "quest point cape");
 		menuManager.removePriorityEntry(config.swapHouseAdMode().getEntry());
 		menuManager.removeSwap("Bury", "bone", "Use");
+		menuManager.removeSwap("Wield", "salamander", "Release");
+		menuManager.removeSwap("Wield", "Swamp lizard", "Release");
 		for (String jewellerybox : jewelleryBox)
 		{
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
 			menuManager.removePriorityEntry(jewellerybox, "fancy jewellery box");
 			menuManager.removePriorityEntry(jewellerybox, "ornate jewellery box");
+		}
+		for (String pharaohsSceptre : pharaohsSceptre)
+		{
+			menuManager.removePriorityEntry("Wield", pharaohsSceptre);
+		}
+
+		for (String dropFish : dropFish)
+		{
+			menuManager.removeSwap("Use", dropFish, "Drop");
+		}
+
+		for (String dropOre : dropOre)
+		{
+			menuManager.removeSwap("Use", dropOre, "Drop");
+		}
+
+		for (String dropLogs : dropLogs)
+		{
+			menuManager.removeSwap("Use", dropLogs, "Drop");
 		}
 
 		switch (config.swapFairyRingMode())
