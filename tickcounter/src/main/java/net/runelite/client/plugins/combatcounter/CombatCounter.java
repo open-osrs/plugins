@@ -258,7 +258,8 @@ public class CombatCounter extends Plugin
 						 * This part handles the Tick Counter.
 						 */
 						long ticks = VARIABLES.get(animation);
-						if (((Player) actor).getPlayerAppearance().getEquipmentId(KitType.WEAPON) == 23360)
+						if (((Player) actor).getPlayerAppearance().getEquipmentId(KitType.WEAPON) == 23360
+							|| ((Player) actor).getPlayerAppearance().getEquipmentId(KitType.WEAPON) == 24219)
 						{
 							ticks = 3;
 						}
