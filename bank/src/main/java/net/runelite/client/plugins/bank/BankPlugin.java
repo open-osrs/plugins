@@ -49,6 +49,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.ScriptID;
 import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
@@ -73,8 +74,8 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.banktags.tabs.BankSearch;
 import net.runelite.client.util.QuantityFormatter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @Extension
@@ -141,9 +142,6 @@ public class BankPlugin extends Plugin implements KeyListener
 	private BankConfig config;
 
 	@Inject
-	private BankSearch bankSearch;
-
-	@Inject
 	private ContainerCalculation bankCalculation;
 
 	@Inject
@@ -167,7 +165,7 @@ public class BankPlugin extends Plugin implements KeyListener
 	{
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
-		keyManager.registerKeyListener(this);
+			keyManager.registerKeyListener(this);
 		}
 		searchString = "";
 	}
@@ -176,7 +174,7 @@ public class BankPlugin extends Plugin implements KeyListener
 	protected void shutDown()
 	{
 		keyManager.unregisterKeyListener(this);
-		clientThread.invokeLater(() -> bankSearch.reset(false));
+		clientThread.invokeLater(() -> client.runScript(ScriptID.MESSAGE_LAYER_CLOSE, 0, 0));
 		forceRightClickFlag = false;
 		itemQuantities = null;
 	}
@@ -205,7 +203,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		MenuEntry[] menuEntries = client.getMenuEntries();
 		for (MenuEntry entry : menuEntries)
 		{
-			if ((entry.getOption().equals(DEPOSIT_WORN) && config.rightClickBankEquip())
+			if ( (entry.getOption().equals(DEPOSIT_WORN) && config.rightClickBankEquip())
 				|| (entry.getOption().equals(DEPOSIT_INVENTORY) && config.rightClickBankInventory())
 				|| (entry.getOption().equals(DEPOSIT_LOOT) && config.rightClickBankLoot())
 				|| (entry.getOption().equals(DISABLE) && config.rightClickSetPlaceholders())
@@ -305,12 +303,16 @@ public class BankPlugin extends Plugin implements KeyListener
 				searchButtonBackground.setOnTimerListener((Object[]) null);
 				searchButtonBackground.setHasListener(false);
 			}
-
-			clientThread.invokeLater(() -> bankSearch.layoutBank());
+			Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+			if (bankContainer != null)
+			{
+				clientThread.invokeLater(() -> client.runScript(bankContainer.getOnInvTransmit()));
+			}
 			searchString = searchVar;
 		}
 
-		if (client.getVar(VarClientInt.INPUT_TYPE) != InputType.SEARCH.getType() && Strings.isNullOrEmpty(client.getVar(VarClientStr.INPUT_TEXT)))
+		if (client.getVar(VarClientInt.INPUT_TYPE) != InputType.SEARCH.getType()
+			&& Strings.isNullOrEmpty(client.getVar(VarClientStr.INPUT_TEXT)))
 		{
 			Widget searchBackground = client.getWidget(WidgetInfo.BANK_SEARCH_BUTTON_BACKGROUND);
 			if (searchBackground != null)
@@ -590,8 +592,12 @@ public class BankPlugin extends Plugin implements KeyListener
 			{
 				return;
 			}
+			Object[] bankBuildArgs = new Object[] {ScriptID.BANKMAIN_SEARCH_TOGGLE, 1};
+			ArrayUtils.add(bankBuildArgs, bankContainer.getOnInvTransmit());
+			client.runScript(ScriptID.MESSAGE_LAYER_CLOSE, 0, 0);
+			client.runScript(bankBuildArgs);
 
-			bankSearch.initSearch();
+
 			e.consume();
 		}
 	}
