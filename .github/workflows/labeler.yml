@@ -12,4 +12,4 @@ jobs:
     - uses: andymckay/labeler@1.0.2
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        remove-labels: "in progress"
+        remove-labels: "bug"
