@@ -13,4 +13,4 @@ jobs:
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         remove-labels: "in progress"
-        ignore-if-assigned: false
+        ignore-if-assigned: False
