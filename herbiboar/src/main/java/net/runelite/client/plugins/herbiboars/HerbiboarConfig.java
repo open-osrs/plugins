@@ -39,15 +39,37 @@ public interface HerbiboarConfig extends Config
 		keyName = "objectsTitle",
 		name = "Objects",
 		description = "",
-		position = 1
+		position = 0
 	)
 	default Title objectsTitle()
 	{
 		return new Title();
 	}
 
+	@ConfigTitleSection(
+		keyName = "trailTitle",
+		name = "Trail",
+		description = "",
+		position = 1
+	)
+	default Title trailTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigTitleSection(
+		keyName = "colorsTitle",
+		name = "Colors",
+		description = "",
+		position = 2
+	)
+	default Title colorsTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
-		position = 2,
+		position = 0,
 		keyName = "showStart",
 		name = "Show Start Objects",
 		description = "Show highlights for starting rocks and logs",
@@ -59,7 +81,19 @@ public interface HerbiboarConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 3,
+		position = 1,
+		keyName = "showClickboxes",
+		name = "Show Clickboxes",
+		description = "Show clickboxes on trail objects and tunnels instead of tiles",
+		titleSection = "objectsTitle"
+	)
+	default boolean showClickBoxes()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 2,
 		keyName = "showTunnel",
 		name = "Show End Tunnels",
 		description = "Show highlights for tunnels with herbiboars",
@@ -71,7 +105,7 @@ public interface HerbiboarConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
+		position = 3,
 		keyName = "showObject",
 		name = "Show Trail Objects",
 		description = "Show highlights for mushrooms, mud, seaweed, etc",
@@ -82,56 +116,8 @@ public interface HerbiboarConfig extends Config
 		return true;
 	}
 
-	@ConfigTitleSection(
-		keyName = "outlineTitle",
-		name = "Outline",
-		description = "",
-		position = 5
-	)
-	default Title outlineTitle()
-	{
-		return new Title();
-	}
-
 	@ConfigItem(
-		position = 6,
-		keyName = "showOutline",
-		name = "Show Outlines",
-		description = "Show outlines on trail objects and tunnels instead of tiles",
-		titleSection = "outlineTitle"
-	)
-	default boolean showOutlines()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		position = 7,
-		keyName = "highlightStyle",
-		name = "Outline Style",
-		description = "Outline setting",
-		hidden = true,
-		unhide = "showOutline",
-		titleSection = "outlineTitle"
-	)
-	default RenderStyle outlineStyle()
-	{
-		return RenderStyle.THIN_OUTLINE;
-	}
-
-	@ConfigTitleSection(
-		keyName = "trailTitle",
-		name = "Trail",
-		description = "",
-		position = 8
-	)
-	default Title trailTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-		position = 9,
+		position = 0,
 		keyName = "showTrail",
 		name = "Show Trail",
 		description = "Show highlights for trail prints",
@@ -143,32 +129,7 @@ public interface HerbiboarConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 10,
-		keyName = "showOnlyCurrentTrail",
-		name = "Show Current Trail Only",
-		description = "Only show the trail that you currently have to follow to get to the next object you have to inspect",
-		hidden = true,
-		unhide = "showTrail",
-		titleSection = "trailTitle"
-	)
-	default boolean isOnlyCurrentTrailShown()
-	{
-		return false;
-	}
-
-	@ConfigTitleSection(
-		keyName = "colorsTitle",
-		name = "Colors",
-		description = "",
-		position = 11
-	)
-	default Title colorsTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-		position = 12,
+		position = 0,
 		keyName = "colorStart",
 		name = "Start Color",
 		description = "Color for rocks that start the trails",
@@ -180,7 +141,7 @@ public interface HerbiboarConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 13,
+		position = 1,
 		keyName = "colorTunnel",
 		name = "Tunnel Color",
 		description = "Color for tunnels with herbiboars",
@@ -192,7 +153,7 @@ public interface HerbiboarConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 2,
 		keyName = "colorGameObject",
 		name = "Trail Object Color",
 		description = "Color for mushrooms, mud, seaweed, etc",
@@ -204,7 +165,7 @@ public interface HerbiboarConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 15,
+		position = 3,
 		keyName = "colorTrail",
 		name = "Trail Color",
 		description = "Color for mushrooms, mud, seaweed, etc",
