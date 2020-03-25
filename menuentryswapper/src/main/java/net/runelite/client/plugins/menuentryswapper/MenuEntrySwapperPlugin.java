@@ -375,7 +375,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				{
 					continue;
 				}
-				if (config.hideDestroyGembag() && entry.getTarget().contains("Gem bag"))
+				if (config.hideDestroyGembag() && (entry.getTarget().contains("Gem bag") || entry.getTarget().contains("open gem bag")))
 				{
 					continue;
 				}
