@@ -1,0 +1,16 @@
+# This workflow fires when an issue is closed, and removes the "in progress" label
+name: Remove 'in progress' label from closed issue
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  remove-label:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: andymckay/labeler@1.0.2
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        remove-labels: "in progress"
+        ignore-if-assigned: false
