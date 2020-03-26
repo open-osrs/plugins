@@ -1,7 +1,5 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, dekvall <https://github.com/dekvall>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,37 +22,34 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.herbiboars;
 
-version = "0.0.6"
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.runelite.api.coords.WorldPoint;
 
-project.extra["PluginName"] = "Special Attack Counter"
-project.extra["PluginDescription"] = "Track special attacks used on NPCs"
+@Getter
+@RequiredArgsConstructor
+enum HerbiboarStart
+{
+	MIDDLE(new WorldPoint(3686, 3870, 0)),
+	LEPRECHAUN(new WorldPoint(3705, 3830, 0)),
+	CAMP_ENTRANCE(new WorldPoint(3704, 3810, 0)),
+	GHOST_MUSHROOM(new WorldPoint(3695, 3800, 0)),
+	DRIFTWOOD(new WorldPoint(3751, 3850, 0)),
+	;
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+	private final WorldPoint location;
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	static HerbiboarStart from(WorldPoint location)
+	{
+		for (final HerbiboarStart start : values())
+		{
+			if (start.getLocation().equals(location))
+			{
+				return start;
+			}
+		}
+		return null;
+	}
 }

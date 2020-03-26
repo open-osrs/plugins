@@ -68,7 +68,7 @@ public class SpecialCounterPlugin extends Plugin
 {
 	private int currentWorld = -1;
 	private int specialPercentage = -1;
-	private boolean specialUsed;
+	private NPC specedNPC;
 
 	private SpecialWeapon specialWeapon;
 	private final Set<Integer> interactedNpcIds = new HashSet<>();
@@ -137,7 +137,11 @@ public class SpecialCounterPlugin extends Plugin
 		this.specialPercentage = specialPercentage;
 		this.specialWeapon = usedSpecialWeapon();
 
-		specialUsed = true;
+		Actor interacting = client.getLocalPlayer().getInteracting();
+		if (interacting instanceof NPC)
+		{
+			specedNPC = (NPC) interacting;
+		}
 	}
 
 	@Subscribe
@@ -160,9 +164,9 @@ public class SpecialCounterPlugin extends Plugin
 			addInteracting(interactingId);
 		}
 
-		if (specialUsed)
+		if (specedNPC == hitsplatApplied.getActor())
 		{
-			specialUsed = false;
+			specedNPC = null;
 
 			if (specialWeapon != null)
 			{
@@ -250,6 +254,13 @@ public class SpecialCounterPlugin extends Plugin
 	private void onNpcDespawned(NpcDespawned npcDespawned)
 	{
 		NPC actor = npcDespawned.getNpc();
+		
+		// if the NPC despawns before the hitsplat is shown
+		if (specedNPC == actor)
+		{
+			specedNPC = null;
+		}
+
 
 		if (actor.isDead() && interactedNpcIds.contains(actor.getId()))
 		{
