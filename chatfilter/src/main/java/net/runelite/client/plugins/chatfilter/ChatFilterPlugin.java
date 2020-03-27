@@ -137,7 +137,7 @@ public class ChatFilterPlugin extends Plugin
 				return;
 		}
 
-		MessageNode messageNode = (MessageNode) client.getMessages().get(messageId);
+		MessageNode messageNode = client.getMessages().get(messageId);
 		String name = messageNode.getName();
 
 		if (client.getLocalPlayer() != null && client.getLocalPlayer().getName() != null && client.getLocalPlayer().getName().equals(messageNode.getName()) ||

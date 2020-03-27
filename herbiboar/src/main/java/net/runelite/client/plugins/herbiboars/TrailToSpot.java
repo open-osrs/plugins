@@ -1,7 +1,6 @@
-import ProjectVersions.rlVersion
-
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, dekvall <https://github.com/dekvall>
+ * Copyright (c) 2020, Jordan <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,37 +23,38 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.herbiboars;
 
-version = "0.0.6"
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import lombok.Value;
+import net.runelite.api.Varbits;
 
-project.extra["PluginName"] = "Special Attack Counter"
-project.extra["PluginDescription"] = "Track special attacks used on NPCs"
+/**
+ * A representation of a trail of footsteps which appears when hunting for the Herbiboar.
+ */
+@Value
+class TrailToSpot
+{
+	/**
+	 * The Varbit associated with the trail. When inactive, this Varbit's value should be less than
+	 * {@link TrailToSpot#getValue()}. When this trail appears after searching a spot, this Varbit's value should be
+	 * equal to that of {@link TrailToSpot#getValue()}. Once the next object along the trail has been searched, this
+	 * Varbit's value will be greater than that of {@link TrailToSpot#getValue()}.
+	 */
+	private final Varbits varbit;
+	/**
+	 * The cutoff reference value to compare against the value of {@link TrailToSpot#getVarbit()} to determine its state
+	 * along the current trail.
+	 */
+	private final int value;
+	/**
+	 * The object ID of the footprints which appear when the trail is made visible.
+	 */
+	private final int footprint;
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	Set<Integer> getFootprintIds()
+	{
+		return ImmutableSet.of(footprint, footprint + 1);
+	}
 }
