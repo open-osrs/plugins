@@ -1396,17 +1396,41 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	private void removeHotkey(ClientTick event)
 	{
-		menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
-		menuManager.removePriorityEntry("climb-up");
-
-		for (String npccontact : npcContact)
+		if (config.bankWieldItem())
 		{
-			menuManager.removePriorityEntry(npccontact, "npc contact");
+		menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
+		}
+		if (config.bankWearItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
+		}
+		if (config.bankEatItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
+		}
+		if (config.bankDrinkItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
+		}
+		if (config.bankEquipItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
+		}
+		if (config.bankInvigorateItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
+		}
+		if (config.swapClimbUpDown())
+		{
+		menuManager.removePriorityEntry("climb-up");
+		}
+
+		if (config.swapNpcContact())
+		{
+			for (String npccontact : npcContact)
+			{
+				menuManager.removePriorityEntry(npccontact, "npc contact");
+			}
 		}
 
 		loadCustomSwaps("", customShiftSwaps);
