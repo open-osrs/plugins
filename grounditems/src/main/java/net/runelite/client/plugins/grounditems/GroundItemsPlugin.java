@@ -28,6 +28,7 @@ package net.runelite.client.plugins.grounditems;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.EvictingQueue;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.Color;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -132,7 +134,7 @@ public class GroundItemsPlugin extends Plugin
 	private static final int WALK = MenuOpcode.WALK.getId();
 	private static final int CAST_ON_ITEM = MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId();
 	private static final String TELEGRAB_TEXT = ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil.prependColorTag(" -> ", Color.WHITE);
-	private final Map<Integer, Color> priceChecks = new LinkedHashMap<>();
+	private Map<Integer, Color> priceChecks = ImmutableMap.of();
 	private final Queue<Integer> droppedItemQueue = EvictingQueue.create(16); // recently dropped items
 	LoadingCache<NamedQuantity, Boolean> hiddenItems;
 	static final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
@@ -431,6 +433,9 @@ public class GroundItemsPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
+	@Inject
+	private ScheduledExecutorService executor;
+
 	private LoadingCache<NamedQuantity, Boolean> highlightedItems;
 
 	@Provides
@@ -443,9 +448,9 @@ public class GroundItemsPlugin extends Plugin
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
-		reset();
 		mouseManager.registerMouseListener(inputListener);
 		keyManager.registerKeyListener(inputListener);
+		executor.execute(this::reset);
 	}
 
 	@Override
@@ -481,7 +486,7 @@ public class GroundItemsPlugin extends Plugin
 	{
 		if (event.getGroup().equals("grounditems"))
 		{
-			reset();
+			executor.execute(this::reset);
 		}
 	}
 
@@ -845,32 +850,34 @@ public class GroundItemsPlugin extends Plugin
 			.build(new WildcardMatchLoader(hiddenItemList));
 
 		// Cache colors
-		priceChecks.clear();
+		ImmutableMap.Builder<Integer, Color> priceCheckBuilder = ImmutableMap.builder();
 
 		if (config.insaneValuePrice() > 0)
 		{
-			priceChecks.put(config.insaneValuePrice(), config.insaneValueColor());
+			priceCheckBuilder.put(config.insaneValuePrice(), config.insaneValueColor());
 		}
 
 		if (config.highValuePrice() > 0)
 		{
-			priceChecks.put(config.highValuePrice(), config.highValueColor());
+			priceCheckBuilder.put(config.highValuePrice(), config.highValueColor());
 		}
 
 		if (config.mediumValuePrice() > 0)
 		{
-			priceChecks.put(config.mediumValuePrice(), config.mediumValueColor());
+			priceCheckBuilder.put(config.mediumValuePrice(), config.mediumValueColor());
 		}
 
 		if (config.lowValuePrice() > 0)
 		{
-			priceChecks.put(config.lowValuePrice(), config.lowValueColor());
+			priceCheckBuilder.put(config.lowValuePrice(), config.lowValueColor());
 		}
 
 		if (config.getHighlightOverValue() > 0)
 		{
-			priceChecks.put(config.getHighlightOverValue(), config.highlightedColor());
+			priceCheckBuilder.put(config.getHighlightOverValue(), config.highlightedColor());
 		}
+
+		priceChecks = priceCheckBuilder.build();
 	}
 
 	@Subscribe
