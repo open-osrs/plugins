@@ -12,6 +12,6 @@ jobs:
     - uses: andymckay/labeler@1.0.2
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        add-labels: "in progress"
+        add-labels: "bug"
         remove-labels: "bug"
         ignore-if-assigned: false
