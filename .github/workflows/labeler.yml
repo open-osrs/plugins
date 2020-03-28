@@ -13,5 +13,4 @@ jobs:
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         remove-labels: "bug"
-        ignore-if-assigned: False
-        ignore-if-labeled: False
+        ignore-if-assigned: true
