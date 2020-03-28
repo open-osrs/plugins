@@ -25,18 +25,24 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.6"
 
 project.extra["PluginName"] = "CoX Scouter"
 project.extra["PluginDescription"] = "Show helpful information for the Chambers of Xeric raid"
+
+repositories {
+    maven {
+        url = uri("https://jitpack.io")
+    }
+}
 
 dependencies {
     annotationProcessor(Libraries.lombok)
     annotationProcessor(Libraries.pf4j)
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
+    compileOnly("com.github.open-osrs.runelite:runelite-api:master-SNAPSHOT")
+    compileOnly("com.github.open-osrs.runelite:runelite-client:master-SNAPSHOT")
+    compileOnly("com.github.open-osrs.runelite:http-api:master-SNAPSHOT")
 
     compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)

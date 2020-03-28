@@ -36,17 +36,18 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
-import net.runelite.client.game.WorldService;
 import net.runelite.api.SpriteID;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
+import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.raids.solver.Room;
 import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
@@ -65,21 +66,21 @@ import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldRegion;
 import net.runelite.http.api.worlds.WorldResult;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 @Singleton
 public class RaidsOverlay extends Overlay
 {
-	
+
 	@Inject
 	private WorldService worldService;
-	
+
 	private static final int OLM_PLANE = 0;
-	private static final int BORDER_OFFSET = 2;
 	private static final int ICON_SIZE = 32;
 	private static final int SMALL_ICON_SIZE = 21;
-	private static final int TITLE_COMPONENT_HEIGHT = 20;
-	private static final int LINE_COMPONENT_HEIGHT = 16;
 	static final String BROADCAST_ACTION = "Broadcast layout";
+
 	private final PanelComponent panelComponent = new PanelComponent();
 	private final ItemManager itemManager;
 	private final SpriteManager spriteManager;
@@ -87,15 +88,23 @@ public class RaidsOverlay extends Overlay
 	private final Client client;
 	private final RaidsPlugin plugin;
 	private final RaidsConfig config;
+
+	@Setter(AccessLevel.PACKAGE)
+	private CachedRaid cachedRaid;
+
 	@Setter(AccessLevel.PACKAGE)
 	private boolean sharable = false;
+
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
 	private boolean scoutOverlayShown = false;
+
 	@Getter(AccessLevel.PACKAGE)
 	private boolean scouterActive = false;
+
 	@Getter(AccessLevel.PACKAGE)
 	private int width;
+
 	@Getter(AccessLevel.PACKAGE)
 	private int height;
 
@@ -150,7 +159,8 @@ public class RaidsOverlay extends Overlay
 		if (config.displayFloorBreak())
 		{
 			displayLayout = plugin.getRaid().getLayout().toCode();
-			displayLayout = displayLayout.substring(0, displayLayout.length() - 1).replaceAll("#", "").replaceFirst("¤", " | ");
+			displayLayout =
+				displayLayout.substring(0, displayLayout.length() - 1).replaceAll("#", "").replaceFirst("¤", " | ");
 		}
 		else
 		{
@@ -161,77 +171,16 @@ public class RaidsOverlay extends Overlay
 		{
 			color = Color.RED;
 		}
-		int combatCount = 0;
-		int roomCount = 0;
-		List<Integer> iceRooms = new ArrayList<>();
-		List<Integer> scavRooms = new ArrayList<>();
-		List<Integer> scavsBeforeIceRooms = new ArrayList<>();
-		boolean crabs = false;
-		boolean iceDemon = false;
-		boolean tightrope = false;
-		boolean thieving = false;
-		boolean vanguards = false;
-		boolean unknownCombat = false;
-		boolean unknownPuzzle = false;
-		String puzzles = "";
-		String roomName;
-		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
-		{
-			int position = layoutRoom.getPosition();
-			RaidRoom room = plugin.getRaid().getRoom(position);
+		CachedRaid raid = getCachedRaid();
+		String puzzleStr = "";
 
-			if (room == null)
-			{
-				continue;
-			}
-
-			switch (room.getType())
-			{
-				case COMBAT:
-					combatCount++;
-					switch (room)
-					{
-						case VANGUARDS:
-							vanguards = true;
-							break;
-						case UNKNOWN_COMBAT:
-							unknownCombat = true;
-							break;
-					}
-					break;
-				case PUZZLE:
-					switch (room)
-					{
-						case CRABS:
-							crabs = true;
-							break;
-						case ICE_DEMON:
-							iceDemon = true;
-							iceRooms.add(roomCount);
-							break;
-						case THIEVING:
-							thieving = true;
-							break;
-						case TIGHTROPE:
-							tightrope = true;
-							break;
-						case UNKNOWN_PUZZLE:
-							unknownPuzzle = true;
-							break;
-					}
-					break;
-				case SCAVENGERS:
-					scavRooms.add(roomCount);
-					break;
-			}
-			roomCount++;
-		}
-		if (tightrope)
+		if (raid.isTightrope())
 		{
-			puzzles = crabs ? "cr" : iceDemon ? "ri" : thieving ? "tr" : "?r";
+			puzzleStr = raid.isCrabs() ? "cr" : raid.isIceDemon() ? "ri" : raid.isThieving() ? "tr" : "?r";
 		}
 
-		if ((config.hideVanguards() && vanguards) || (config.hideRopeless() && !tightrope) || (config.hideUnknownCombat() && unknownCombat))
+		if ((config.hideVanguards() && raid.isVanguards()) || (config.hideRopeless() && !raid.isTightrope()) ||
+			(config.hideUnknownCombat() && raid.isVanguards()))
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Bad Raid!")
@@ -242,22 +191,7 @@ public class RaidsOverlay extends Overlay
 		}
 
 		scouterActive = true;
-		displayLayout = (config.enhanceScouterTitle() ? "" + combatCount + "c " + puzzles + " " : "") + displayLayout;
-
-		for (Integer i : iceRooms)
-		{
-			int prev = 0;
-			for (Integer s : scavRooms)
-			{
-				if (s > i)
-				{
-					break;
-				}
-				prev = s;
-			}
-			scavsBeforeIceRooms.add(prev);
-		}
-		int lastScavs = scavRooms.get(scavRooms.size() - 1);
+		displayLayout = (config.enhanceScouterTitle() ? "" + raid.getCombatCount() + "c " + puzzleStr + " " : "") + displayLayout;
 
 		panelComponent.getChildren().add(TitleComponent.builder()
 			.text(displayLayout)
@@ -295,7 +229,7 @@ public class RaidsOverlay extends Overlay
 				clanOwner = "Open CC Tab";
 				color = Color.RED;
 			}
-			
+
 			String worldString = "W" + client.getWorld();
 			WorldResult worldResult = worldService.getWorlds();
 			if (worldResult != null)
@@ -309,146 +243,31 @@ public class RaidsOverlay extends Overlay
 				}
 			}
 
-			tableComponent.addRow(ColorUtil.prependColorTag(worldString, Color.ORANGE), ColorUtil.prependColorTag("" + clanOwner, color));
+			tableComponent.addRow(ColorUtil.prependColorTag(worldString, Color.ORANGE),
+				ColorUtil.prependColorTag("" + clanOwner, color));
 		}
 
-		int bossMatches = 0;
-		int bossCount = 0;
-		roomCount = 0;
-
-		if (config.enableRotationWhitelist())
+		for (Pair<String, String> pair : raid.getTableComponentSet())
 		{
-			bossMatches = plugin.getRotationMatches();
+			tableComponent.addRow(pair.getLeft(), pair.getRight());
 		}
 
-		Set<Integer> imageIds = new HashSet<>();
-		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
-		{
-			int position = layoutRoom.getPosition();
-			RaidRoom room = plugin.getRaid().getRoom(position);
-
-			if (room == null)
-			{
-				continue;
-			}
-
-			color = Color.WHITE;
-
-			switch (room.getType())
-			{
-				case COMBAT:
-					bossCount++;
-					if (plugin.getRoomWhitelist().contains(room.getName().toLowerCase()))
-					{
-						color = Color.GREEN;
-					}
-					else if (plugin.getRoomBlacklist().contains(room.getName().toLowerCase())
-						|| config.enableRotationWhitelist() && bossCount > bossMatches)
-					{
-						color = Color.RED;
-					}
-
-					String bossName = room.getName();
-					String bossNameLC = bossName.toLowerCase();
-					if (config.showRecommendedItems() && plugin.getRecommendedItemsList().get(bossNameLC) != null)
-					{
-						imageIds.addAll(plugin.getRecommendedItemsList().get(bossNameLC));
-					}
-
-					if (bossNameLC.startsWith("unknown"))
-					{
-						bossName = "Unknown";
-					}
-					tableComponent.addRow(room.getType().getName(), ColorUtil.prependColorTag(bossName, color));
-
-					break;
-
-				case PUZZLE:
-					String puzzleName = room.getName();
-					String puzzleNameLC = puzzleName.toLowerCase();
-					if (plugin.getRecommendedItemsList().get(puzzleNameLC) != null)
-					{
-						imageIds.addAll(plugin.getRecommendedItemsList().get(puzzleNameLC));
-					}
-					if (plugin.getRoomWhitelist().contains(puzzleNameLC))
-					{
-						color = Color.GREEN;
-					}
-					else if (plugin.getRoomBlacklist().contains(puzzleNameLC))
-					{
-						color = Color.RED;
-					}
-					if (config.colorTightrope() && puzzleNameLC.equals("tightrope"))
-					{
-						color = config.tightropeColor();
-					}
-					if (config.crabHandler() && puzzleNameLC.equals("crabs"))
-					{
-						if (plugin.getGoodCrabs() == null)
-						{
-							color = Color.RED;
-						}
-						else
-						{
-							switch (plugin.getGoodCrabs())
-							{
-								case "Good Crabs":
-									color = config.goodCrabColor();
-									break;
-								case "Rare Crabs":
-									color = config.rareCrabColor();
-									break;
-							}
-						}
-					}
-
-					if (puzzleNameLC.startsWith("unknown"))
-					{
-						puzzleName = "Unknown";
-					}
-
-					tableComponent.addRow(room.getType().getName(), ColorUtil.prependColorTag(puzzleName, color));
-					break;
-				case FARMING:
-					if (config.showScavsFarms())
-					{
-						tableComponent.addRow("", ColorUtil.prependColorTag(room.getType().getName(), new Color(181, 230, 29)));
-					}
-					break;
-				case SCAVENGERS:
-					if (config.scavsBeforeOlm() && roomCount == lastScavs)
-					{
-						tableComponent.addRow("OlmPrep", ColorUtil.prependColorTag("Scavs", config.scavPrepColor()));
-					}
-					else if (config.scavsBeforeIce() && scavsBeforeIceRooms.contains(roomCount))
-					{
-						tableComponent.addRow("IcePrep", ColorUtil.prependColorTag("Scavs", config.scavPrepColor()));
-					}
-					else if (config.showScavsFarms())
-					{
-						tableComponent.addRow("", ColorUtil.prependColorTag("Scavs", new Color(181, 230, 29)));
-					}
-					break;
-			}
-			roomCount++;
-		}
+		// TODO: rest of other rooms code
 
 		panelComponent.getChildren().add(tableComponent);
 
-
 		//add recommended items
-		if (config.showRecommendedItems() && imageIds.size() > 0)
+		if (config.showRecommendedItems() && raid.getImageIds().size() > 0)
 		{
 			panelImages.getChildren().clear();
 
-			Integer[] idArray = imageIds.toArray(new Integer[0]);
+			Integer[] idArray = raid.getImageIds().toArray(new Integer[0]);
 			boolean smallImages = false;
 
 			panelImages.setBackgroundColor(null);
 
 			panelImages.setOrientation(ComponentOrientation.HORIZONTAL);
 			panelImages.setWrapping(4);
-
 
 			for (Integer e : idArray)
 			{
@@ -460,7 +279,6 @@ public class RaidsOverlay extends Overlay
 			}
 			panelComponent.getChildren().add(panelImages);
 		}
-
 
 		Dimension panelDims = panelComponent.render(graphics);
 		width = (int) panelDims.getWidth();
@@ -492,5 +310,276 @@ public class RaidsOverlay extends Overlay
 			return ImageUtil.resizeImage(bim, SMALL_ICON_SIZE, SMALL_ICON_SIZE);
 		}
 		return ImageUtil.resizeCanvas(bim, SMALL_ICON_SIZE, SMALL_ICON_SIZE);
+	}
+
+	private CachedRaid getCachedRaid()
+	{
+		if (cachedRaid != null)
+		{
+			return cachedRaid;
+		}
+		cachedRaid = new CachedRaid();
+		cachedRaid.precompute(config);
+		// TODO: implement
+		return cachedRaid;
+	}
+
+	@Data
+	class CachedRaid
+	{
+		int combatCount;
+		List<Integer> iceRooms;
+		List<Integer> scavRooms;
+		List<Integer> scavsBeforeIceRooms;
+		boolean crabs;
+		boolean iceDemon;
+		boolean tightrope;
+		boolean thieving;
+		boolean vanguards;
+		boolean unknownCombat;
+		int bossMatches;
+		int bossCount;
+		List<Pair<String, String>> tableComponentSet;
+		Set<Integer> imageIds;
+		int lastScavs;
+
+		@Getter(AccessLevel.NONE)
+		@Setter(AccessLevel.NONE)
+		private boolean computed = false;
+		@Getter(AccessLevel.NONE)
+		@Setter(AccessLevel.NONE)
+		int roomCountTmp;
+		@Getter(AccessLevel.NONE)
+		@Setter(AccessLevel.NONE)
+		RaidsConfig config;
+
+		public void precompute(RaidsConfig config)
+		{
+			if (computed)
+			{
+				return;
+			}
+			this.config = config;
+			initFields();
+			computePuzzles();
+			computeScavs();
+			computeTable();
+			computed = true;
+		}
+
+		private void initFields()
+		{
+			combatCount = 0;
+			iceRooms = new ArrayList<>();
+			scavRooms = new ArrayList<>();
+			scavsBeforeIceRooms = new ArrayList<>();
+			crabs = false;
+			iceDemon = false;
+			tightrope = false;
+			thieving = false;
+			vanguards = false;
+			unknownCombat = false;
+			bossMatches = 0;
+			bossCount = 0;
+			tableComponentSet = new ArrayList<>();
+			imageIds = new HashSet<>();
+			lastScavs = 0;
+
+			roomCountTmp = 0;
+		}
+
+		private void computePuzzles()
+		{
+			roomCountTmp = 0;
+			for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
+			{
+				int position = layoutRoom.getPosition();
+				RaidRoom room = plugin.getRaid().getRoom(position);
+
+				if (room == null)
+				{
+					continue;
+				}
+
+				switch (room.getType())
+				{
+					case COMBAT:
+						combatCount++;
+						switch (room)
+						{
+							case VANGUARDS:
+								vanguards = true;
+								break;
+							case UNKNOWN_COMBAT:
+								unknownCombat = true;
+								break;
+						}
+						break;
+					case PUZZLE:
+						switch (room)
+						{
+							case CRABS:
+								crabs = true;
+								break;
+							case ICE_DEMON:
+								iceDemon = true;
+								iceRooms.add(roomCountTmp);
+								break;
+							case THIEVING:
+								thieving = true;
+								break;
+							case TIGHTROPE:
+								tightrope = true;
+								break;
+							default:
+								break;
+						}
+						break;
+					case SCAVENGERS:
+						scavRooms.add(roomCountTmp);
+						break;
+				}
+				roomCountTmp++;
+			}
+		}
+
+		private void computeScavs()
+		{
+			for (Integer i : getIceRooms())
+			{
+				int prev = 0;
+				for (Integer s : getScavRooms())
+				{
+					if (s > i)
+					{
+						break;
+					}
+					prev = s;
+				}
+				getScavsBeforeIceRooms().add(prev);
+			}
+			lastScavs = getScavRooms().get(getScavRooms().size() - 1);
+		}
+
+		private void computeTable()
+		{
+			roomCountTmp = 0;
+			if (config.enableRotationWhitelist())
+			{
+				bossMatches = plugin.getRotationMatches();
+			}
+
+			Color color;
+			for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
+			{
+				int position = layoutRoom.getPosition();
+				RaidRoom room = plugin.getRaid().getRoom(position);
+
+				if (room == null)
+				{
+					continue;
+				}
+
+				color = Color.WHITE;
+
+				switch (room.getType())
+				{
+					case COMBAT:
+						bossCount++;
+						if (plugin.getRoomWhitelist().contains(room.getName().toLowerCase()))
+						{
+							color = Color.GREEN;
+						}
+						else if (plugin.getRoomBlacklist().contains(room.getName().toLowerCase())
+							|| config.enableRotationWhitelist() && bossCount > bossMatches)
+						{
+							color = Color.RED;
+						}
+
+						String bossName = room.getName();
+						String bossNameLC = bossName.toLowerCase();
+						if (config.showRecommendedItems() && plugin.getRecommendedItemsList().get(bossNameLC) != null)
+						{
+							imageIds.addAll(plugin.getRecommendedItemsList().get(bossNameLC));
+						}
+
+						if (bossNameLC.startsWith("unknown"))
+						{
+							bossName = "Unknown";
+						}
+						tableComponentSet.add(new ImmutablePair<>(room.getType().getName(), ColorUtil.prependColorTag(bossName, color)));
+
+						break;
+
+					case PUZZLE:
+						String puzzleName = room.getName();
+						String puzzleNameLC = puzzleName.toLowerCase();
+						if (plugin.getRecommendedItemsList().get(puzzleNameLC) != null)
+						{
+							imageIds.addAll(plugin.getRecommendedItemsList().get(puzzleNameLC));
+						}
+						if (plugin.getRoomWhitelist().contains(puzzleNameLC))
+						{
+							color = Color.GREEN;
+						}
+						else if (plugin.getRoomBlacklist().contains(puzzleNameLC))
+						{
+							color = Color.RED;
+						}
+						if (config.colorTightrope() && puzzleNameLC.equals("tightrope"))
+						{
+							color = config.tightropeColor();
+						}
+						if (config.crabHandler() && puzzleNameLC.equals("crabs"))
+						{
+							if (plugin.getGoodCrabs() == null)
+							{
+								color = Color.RED;
+							}
+							else
+							{
+								switch (plugin.getGoodCrabs())
+								{
+									case "Good Crabs":
+										color = config.goodCrabColor();
+										break;
+									case "Rare Crabs":
+										color = config.rareCrabColor();
+										break;
+								}
+							}
+						}
+
+						if (puzzleNameLC.startsWith("unknown"))
+						{
+							puzzleName = "Unknown";
+						}
+
+						tableComponentSet.add(new ImmutablePair<>(room.getType().getName(), ColorUtil.prependColorTag(puzzleName, color)));
+						break;
+					case FARMING:
+						if (config.showScavsFarms())
+						{
+							tableComponentSet.add(new ImmutablePair<>("", ColorUtil.prependColorTag(room.getType().getName(), new Color(181, 230, 29))));
+						}
+						break;
+					case SCAVENGERS:
+						if (config.scavsBeforeOlm() && roomCountTmp == lastScavs)
+						{
+							tableComponentSet.add(new ImmutablePair<>("OlmPrep", ColorUtil.prependColorTag("Scavs", config.scavPrepColor())));
+						}
+						else if (config.scavsBeforeIce() && scavsBeforeIceRooms.contains(roomCountTmp))
+						{
+							tableComponentSet.add(new ImmutablePair<>("IcePrep", ColorUtil.prependColorTag("Scavs", config.scavPrepColor())));
+						}
+						else if (config.showScavsFarms())
+						{
+							tableComponentSet.add(new ImmutablePair<>("", ColorUtil.prependColorTag("Scavs", new Color(181, 230, 29))));
+						}
+						break;
+				}
+				roomCountTmp++;
+			}
+		}
 	}
 }

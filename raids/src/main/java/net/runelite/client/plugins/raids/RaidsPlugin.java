@@ -736,6 +736,7 @@ public class RaidsPlugin extends Plugin
 			if (inRaidChambers)
 			{
 				raid = buildRaid();
+				overlay.setCachedRaid(null);
 
 				if (raid == null)
 				{
@@ -951,6 +952,7 @@ public class RaidsPlugin extends Plugin
 
 	int getRotationMatches()
 	{
+		// TODO: this is shit
 		String rotation = raid.getRotationString().toLowerCase();
 		List<String> bosses = Text.fromCSV(rotation);
 
@@ -1157,6 +1159,7 @@ public class RaidsPlugin extends Plugin
 	private void reset()
 	{
 		raid = null;
+		overlay.setCachedRaid(null);
 		upperTime = -1;
 		middleTime = -1;
 		lowerTime = -1;
