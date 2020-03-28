@@ -63,6 +63,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
@@ -71,7 +72,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Herbiboar",
 	description = "Highlight starting rocks, trails, and the objects to search at the end of each trail",
-	tags = {"herblore", "hunter", "skilling", "overlay"}
+	tags = {"herblore", "hunter", "skilling", "overlay"},
+	type = PluginType.SKILLING
 )
 @Slf4j
 @Getter
