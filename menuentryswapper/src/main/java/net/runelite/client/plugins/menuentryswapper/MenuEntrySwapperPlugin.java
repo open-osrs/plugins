@@ -124,8 +124,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static final List<String> dropFish = Arrays.asList(
 		"Raw shrimp", "Raw Sardine", "Raw karambwanji", "Raw herring", "Raw anchovies", "Raw mackerel",
 		"Raw trout", "Raw cod", "Raw pike", "Raw slimy eel", "Raw salmon", "Raw tuna", "Raw rainbow fish",
-		"Raw cave eellobster", "Raw bluegill", "Raw bass", "Raw leaping trout", "Raw swordfish", "Raw lava eel",
-		"Raw common tench", "Raw leaping salmon", "Raw monkfish", "Raw karambwan", "Raw leaping sturgeon",
+		"Raw cave eellobster", "Raw bluegill", "Raw bass", "Leaping trout", "Raw swordfish", "Raw lava eel",
+		"Raw common tench", "Leaping salmon", "Raw monkfish", "Raw karambwan", "Leaping sturgeon",
 		"Raw mottled eel", "Raw shark", "Raw sea turtle", "Raw infernal eel", "Raw manta ray", "Raw angler fish",
 		"Raw dark crab", "Raw sacred eel"
 	);
@@ -134,7 +134,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		"Silver ore", "Coal", "Sandstone", "Gold ore", "Granite", "Mithril ore", "Lovakite ore",
 		"Adamantite ore", "Runite ore", "Amethyst ore"
 	);
-
 	private static final List<String> dropLogs = Arrays.asList(
 		"Logs", "Achey tree logs", "Oak logs", "Willow logs", "Teak logs", "Juniper logs", "Maple logs",
 		"Mahogany logs", "Artic pine logs", "Yew logs", "Magic logs", "Redwood logs"
