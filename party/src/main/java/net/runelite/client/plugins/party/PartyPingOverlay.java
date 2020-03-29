@@ -30,7 +30,6 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.Iterator;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
@@ -39,7 +38,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
 class PartyPingOverlay extends Overlay
 {
 	private final Client client;
