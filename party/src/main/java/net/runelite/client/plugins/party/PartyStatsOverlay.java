@@ -32,7 +32,6 @@ import java.awt.Rectangle;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.MenuOpcode;
 import net.runelite.client.plugins.party.data.PartyData;
 import net.runelite.client.ui.overlay.Overlay;
@@ -43,7 +42,6 @@ import net.runelite.client.ui.overlay.components.ProgressBarComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ws.PartyService;
 
-@Singleton
 public class PartyStatsOverlay extends Overlay
 {
 	private static final Color HP_FG = new Color(0, 146, 54, 230);
@@ -52,17 +50,17 @@ public class PartyStatsOverlay extends Overlay
 	private static final Color PRAY_BG = Color.black;
 
 	private final PartyPlugin plugin;
-	private final PartyConfig config;
 	private final PartyService party;
+	private final PartyConfig config;
 	private final PanelComponent body = new PanelComponent();
 
 	@Inject
-	private PartyStatsOverlay(final PartyPlugin plugin, final PartyConfig config, final PartyService party)
+	private PartyStatsOverlay(final PartyPlugin plugin, final PartyService party, final PartyConfig config)
 	{
 		super(plugin);
 		this.plugin = plugin;
-		this.config = config;
 		this.party = party;
+		this.config = config;
 		body.setBorder(new Rectangle());
 		body.setGap(new Point(0, ComponentConstants.STANDARD_BORDER / 2));
 		getMenuEntries().add(new OverlayMenuEntry(MenuOpcode.RUNELITE_OVERLAY, "Leave", "Party"));
