@@ -73,7 +73,6 @@ import org.slf4j.LoggerFactory;
 @PluginDescriptor(
 	name = "Developer Tools",
 	tags = {"panel"},
-	developerPlugin = true,
 	type = PluginType.MISCELLANEOUS
 )
 @Getter(AccessLevel.PACKAGE)

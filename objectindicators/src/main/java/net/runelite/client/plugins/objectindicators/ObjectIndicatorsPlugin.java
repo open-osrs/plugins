@@ -29,7 +29,9 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
+import static java.lang.Math.floor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,7 +97,7 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 
 	private final Gson GSON = new Gson();
 	@Getter(AccessLevel.PACKAGE)
-	private final List<TileObject> objects = new ArrayList<>();
+	private final List<ColorTileObject> objects = new ArrayList<>();
 	private final Map<Integer, Set<ObjectPoint>> points = new HashMap<>();
 	private boolean hotKeyPressed;
 
@@ -113,6 +115,9 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 
 	@Inject
 	private KeyManager keyManager;
+
+	@Inject
+	private ObjectIndicatorsConfig config;
 
 	@Provides
 	ObjectIndicatorsConfig provideConfig(ConfigManager configManager)
@@ -182,54 +187,50 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 		WallObject previous = event.getPrevious();
 		WallObject wallObject = event.getWallObject();
 
-		objects.remove(previous);
+		objects.removeIf(o -> o.getTileObject() == previous);
 		checkObjectPoints(wallObject);
 	}
 
 	@Subscribe
 	private void onWallObjectDespawned(WallObjectDespawned event)
 	{
-		objects.remove(event.getWallObject());
+		objects.removeIf(o -> o.getTileObject() == event.getWallObject());
 	}
 
 	@Subscribe
 	private void onGameObjectSpawned(GameObjectSpawned event)
 	{
-		final GameObject eventObject = event.getGameObject();
-		checkObjectPoints(eventObject);
+		checkObjectPoints(event.getGameObject());
 	}
 
 	@Subscribe
 	private void onDecorativeObjectSpawned(DecorativeObjectSpawned event)
 	{
-		final DecorativeObject eventObject = event.getDecorativeObject();
-		checkObjectPoints(eventObject);
+		checkObjectPoints(event.getDecorativeObject());
 	}
 
 	@Subscribe
 	private void onGameObjectDespawned(GameObjectDespawned event)
 	{
-		objects.remove(event.getGameObject());
+		objects.removeIf(o -> o.getTileObject() == event.getGameObject());
 	}
 
 	@Subscribe
 	private void onDecorativeObjectDespawned(DecorativeObjectDespawned event)
 	{
-		objects.remove(event.getDecorativeObject());
+		objects.removeIf(o -> o.getTileObject() == event.getDecorativeObject());
 	}
 
 	@Subscribe
-	private void onGroundObjectSpawned(GroundObjectSpawned groundObjectSpawned)
+	public void onGroundObjectSpawned(GroundObjectSpawned event)
 	{
-		final GroundObject groundObject = groundObjectSpawned.getGroundObject();
-		checkObjectPoints(groundObject);
+		checkObjectPoints(event.getGroundObject());
 	}
 
 	@Subscribe
-	private void onGroundObjectDespawned(GroundObjectDespawned groundObjectDespawned)
+	public void onGroundObjectDespawned(GroundObjectDespawned event)
 	{
-		GroundObject groundObject = groundObjectDespawned.getGroundObject();
-		objects.remove(groundObject);
+		objects.removeIf(o -> o.getTileObject() == event.getGroundObject());
 	}
 
 	@Subscribe
@@ -267,12 +268,18 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 		}
 
 		final Tile tile = client.getScene().getTiles()[client.getPlane()][event.getParam0()][event.getParam1()];
+		final TileObject tileObject = findTileObject(tile, event.getIdentifier());
+
+		if (tileObject == null)
+		{
+			return;
+		}
 
 		MenuEntry[] menuEntries = client.getMenuEntries();
 		menuEntries = Arrays.copyOf(menuEntries, menuEntries.length + 1);
 		MenuEntry menuEntry = menuEntries[menuEntries.length - 1] = new MenuEntry();
 
-		menuEntry.setOption(objects.contains(findTileObject(tile, event.getIdentifier())) ? UNMARK : MARK);
+		menuEntry.setOption(objects.stream().anyMatch(o -> o.getTileObject() == tileObject) ? UNMARK : MARK);
 		menuEntry.setTarget(event.getTarget());
 		menuEntry.setParam0(event.getParam0());
 		menuEntry.setParam1(event.getParam1());
@@ -344,7 +351,7 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 				if (objectDefinition != null && objectPoint.getName().equals(objectDefinition.getName()))
 				{
 					log.debug("Marking object {} due to matching {}", object, objectPoint);
-					objects.add(object);
+					objects.add(new ColorTileObject(object, objectPoint.getColor()));
 					break;
 				}
 			}
@@ -434,13 +441,19 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 			return;
 		}
 		final int regionId = worldPoint.getRegionID();
+
+		Color color = config.objectMarkerColor();
+		int opacity = (int) floor(config.objectMarkerAlpha() * 2.55);
+		Color objectColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+
 		final ObjectPoint point = new ObjectPoint(
 			object.getId(),
 			name,
 			regionId,
 			worldPoint.getRegionX(),
 			worldPoint.getRegionY(),
-			worldPoint.getPlane());
+			worldPoint.getPlane(),
+			objectColor);
 
 		Set<ObjectPoint> objectPoints = points.computeIfAbsent(regionId, k -> new HashSet<>());
 
@@ -463,7 +476,7 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 		else
 		{
 			objectPoints.add(point);
-			objects.add(object);
+			objects.add(new ColorTileObject(object, color));
 			log.debug("Marking object: {}", point);
 		}
 

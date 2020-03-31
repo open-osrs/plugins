@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.7"
 
 project.extra["PluginName"] = "Inventory Grid"
 project.extra["PluginDescription"] = "Shows a grid over the inventory, bank and a preview of where items will be dragged"

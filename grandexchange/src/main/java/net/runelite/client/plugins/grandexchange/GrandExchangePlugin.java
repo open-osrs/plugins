@@ -28,12 +28,9 @@
 package net.runelite.client.plugins.grandexchange;
 
 import com.google.common.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import com.google.inject.Provides;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
@@ -53,6 +50,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
 import static net.runelite.api.ItemID.COINS_995;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.ScriptID;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.FocusChanged;
@@ -60,6 +58,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GrandExchangeOfferChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
@@ -87,6 +86,7 @@ import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.RuneLiteAPI;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.ge.GrandExchangeTrade;
+import net.runelite.http.api.item.ItemStats;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
@@ -162,21 +162,10 @@ public class GrandExchangePlugin extends Plugin
 	private Widget grandExchangeText;
 	private Widget grandExchangeItem;
 	private Widget grandExchangeOfferQuantityHeading;
-	private Map<Integer, Integer> itemGELimits;
 
 	private int osbItem;
 	private OSBGrandExchangeResult osbGrandExchangeResult;
 	private GrandExchangeClient grandExchangeClient;
-
-	private static Map<Integer, Integer> loadGELimits() throws IOException
-	{
-		try (final JsonReader geLimitData = new JsonReader(new InputStreamReader(GrandExchangePlugin.class.getResourceAsStream("ge_limits.json"))))
-		{
-			final Map<Integer, Integer> itemGELimits = RuneLiteAPI.GSON.fromJson(geLimitData, BUY_LIMIT_TOKEN.getType());
-			log.debug("Loaded {} limits", itemGELimits.size());
-			return itemGELimits;
-		}
-	}
 
 	private SavedOffer getOffer(int slot)
 	{
@@ -207,9 +196,7 @@ public class GrandExchangePlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		itemGELimits = loadGELimits();
 		panel = injector.getInstance(GrandExchangePanel.class);
-		panel.setGELimits(itemGELimits);
 
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "ge_icon.png");
 
@@ -247,7 +234,6 @@ public class GrandExchangePlugin extends Plugin
 		grandExchangeText = null;
 		grandExchangeItem = null;
 		grandExchangeOfferQuantityHeading = null;
-		itemGELimits = null;
 		grandExchangeClient = null;
 	}
 
@@ -456,13 +442,19 @@ public class GrandExchangePlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onScriptCallbackEvent(ScriptCallbackEvent event)
+	private void onScriptPostFired(ScriptPostFired event)
 	{
-		if (event.getEventName().equals("geBuilt"))
+		// GE offers setup init
+		if (event.getScriptId() != ScriptID.GE_OFFERS_SETUP_BUILD)
 		{
-			rebuildGeText();
+			return;
 		}
+		rebuildGeText();
+	}
 
+	@Subscribe
+	public void onScriptCallbackEvent(ScriptCallbackEvent event)
+	{
 		if (!event.getEventName().equals("setGETitle") || !config.showTotal())
 		{
 			return;
@@ -550,14 +542,14 @@ public class GrandExchangePlugin extends Plugin
 		String[] lines = geText.getText().split("<br>");
 		String text = lines[0]; // remove any limit or OSB ge values
 
-		if (config.enableGELimits() && itemGELimits != null)
+		if (config.enableGELimits())
 		{
-			final Integer itemLimit = itemGELimits.get(itemId);
+			final ItemStats itemStats = itemManager.getItemStats(itemId, false);
 
 			// If we have item buy limit, append it
-			if (itemLimit != null)
+			if (itemStats != null && itemStats.getGeLimit() > 0)
 			{
-				text += BUY_LIMIT_GE_TEXT + QuantityFormatter.formatNumber(itemLimit);
+				text += BUY_LIMIT_GE_TEXT + QuantityFormatter.formatNumber(itemStats.getGeLimit());
 			}
 		}
 

@@ -25,10 +25,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.7"
 
 project.extra["PluginName"] = "Special Attack Counter"
-project.extra["PluginDescription"] = "Track DWH, Arclight, Darklight, and BGS special attacks used on NPCs"
+project.extra["PluginDescription"] = "Track special attacks used on NPCs"
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -38,9 +38,8 @@ dependencies {
     compileOnly("com.openosrs:runelite-client:$rlVersion")
     compileOnly("com.openosrs:http-api:$rlVersion")
 
-    compileOnly(Libraries.apacheCommonsLang)
+    compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.okhttp3)
     compileOnly(Libraries.pf4j)

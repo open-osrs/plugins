@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2017, Tyler <https://github.com/tylerthardy>
  * Copyright (c) 2018, Shaun Dreclin <shaundreclin@gmail.com>
+ * Copyright (c) 2018, Robin Withes <https://github.com/robinwithes>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -121,7 +122,10 @@ public class SlayerPlugin extends Plugin
 	private static final Pattern CHAT_COMPLETE_MESSAGE = Pattern.compile("(?:\\d+,)*\\d+");
 	private static final String CHAT_CANCEL_MESSAGE = "Your task has been cancelled.";
 	private static final String CHAT_CANCEL_MESSAGE_JAD = "You no longer have a slayer task as you left the fight cave.";
+	private static final String CHAT_CANCEL_MESSAGE_ZUK = "You no longer have a slayer task as you left the Inferno.";
 	private static final String CHAT_SUPERIOR_MESSAGE = "A superior foe has appeared...";
+	private static final String CHAT_SLAYER_TASKDONE_NOTIFICATION = "You have completed your slayer task.";
+	private static final String CHAT_SLAYER_STREAK_NOTIFICATION = "Your next task will earn you more points, it is recommended to do it with the highest level slayer master you can access.";
 	private static final Pattern COMBAT_BRACELET_TASK_UPDATE_MESSAGE = Pattern.compile("^You still need to kill (\\d+) monsters to complete your current Slayer assignment");
 
 	private static final String CHAT_BRACELET_SLAUGHTER = "Your bracelet of slaughter prevents your slayer";
@@ -130,7 +134,7 @@ public class SlayerPlugin extends Plugin
 
 	//NPC messages
 	private static final Pattern NPC_ASSIGN_MESSAGE = Pattern.compile(".*(?:Your new task is to kill|You are to bring balance to)\\s*(?<amount>\\d+) (?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>.+))?\\.");
-	private static final Pattern NPC_ASSIGN_BOSS_MESSAGE = Pattern.compile("^Excellent. You're now assigned to kill (?:the )?(.*) (\\d+) times.*Your reward point tally is (.*)\\.$");
+	private static final Pattern NPC_ASSIGN_BOSS_MESSAGE = Pattern.compile("^(?:Excellent\\. )?You're now assigned to (?:kill|bring balance to) (?:the )?(.*) (\\d+) times.*Your reward point tally is (.*)\\.$");
 	private static final Pattern NPC_ASSIGN_FIRST_MESSAGE = Pattern.compile("^We'll start you off (?:hunting|bringing balance to) (.*), you'll need to kill (\\d*) of them\\.$");
 	private static final Pattern NPC_CURRENT_MESSAGE = Pattern.compile("^You're still (?:hunting|bringing balance to) (?<name>.+)(?: (?:in|on|south of) (?:the )?(?<location>.+), with|; you have) (?<amount>\\d+) to go\\..*");
 
@@ -574,9 +578,17 @@ public class SlayerPlugin extends Plugin
 			}
 			forcedWait--;
 		}
+		
 
-		if (infoTimer != null && config.statTimeout() != 0)
+		// If a timeout is configured for showing slayer stats
+		if (config.statTimeout() != 0)
 		{
+			// If the timer has not started, start it now
+			if (infoTimer == null)
+			{
+				infoTimer = Instant.now();
+			}
+			
 			Duration timeSinceInfobox = Duration.between(infoTimer, Instant.now());
 			Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 
@@ -625,10 +637,21 @@ public class SlayerPlugin extends Plugin
 				" so error rate is " + currentTask.getAmount() + " in " + currentTask.getLastCertainAmount());
 
 			setTask("", 0, 0, true, 0);
+
+			if (config.maximumPointsNotification() && streak % 10 == 9)
+			{
+				notifier.notify(CHAT_SLAYER_STREAK_NOTIFICATION);
+			}
+
+			if (config.taskDoneNotification())
+			{
+				notifier.notify(CHAT_SLAYER_TASKDONE_NOTIFICATION);
+			}
+
 			return;
 		}
 
-		if (chatMsg.equals(CHAT_GEM_COMPLETE_MESSAGE) || chatMsg.equals(CHAT_CANCEL_MESSAGE) || chatMsg.equals(CHAT_CANCEL_MESSAGE_JAD))
+		if (chatMsg.equals(CHAT_GEM_COMPLETE_MESSAGE) || chatMsg.equals(CHAT_CANCEL_MESSAGE) || chatMsg.equals(CHAT_CANCEL_MESSAGE_JAD) || chatMsg.equals(CHAT_CANCEL_MESSAGE_ZUK))
 		{
 			setTask("", 0, 0, true, 0);
 			return;

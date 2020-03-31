@@ -35,8 +35,8 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
-import io.reactivex.Completable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -149,7 +149,7 @@ import org.pf4j.Extension;
 public class LootTrackerPlugin extends Plugin
 {
 	// Activity/Event loot handling
-	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed [0-9]+ ([a-z]+) Treasure Trails?\\.");
+	private static final Pattern CLUE_SCROLL_PATTERN = Pattern.compile("You have completed ([0-9]+) ([a-z]+) Treasure Trails?\\.");
 	private static final int THEATRE_OF_BLOOD_REGION = 12867;
 
 	private static final Pattern BOSS_NAME_NUMBER_PATTERN = Pattern.compile("Your (.*) kill count is: ([0-9]*).");
@@ -738,6 +738,10 @@ public class LootTrackerPlugin extends Plugin
 				event = "Fishing Trawler";
 				container = client.getItemContainer(InventoryID.FISHING_TRAWLER_REWARD);
 				break;
+			case (WidgetID.DRIFT_NET_FISHING_REWARD_GROUP_ID):
+				event = "Drift Net";
+				container = client.getItemContainer(InventoryID.DRIFT_NET_FISHING_REWARD);
+				break;
 			default:
 				return;
 		}
@@ -1301,7 +1305,7 @@ public class LootTrackerPlugin extends Plugin
 		else
 		{
 			gePrice = (long) itemManager.getItemPrice(realItemId) * (long) quantity;
-			haPrice = (long) Math.round(itemManager.getItemPrice(realItemId) * Constants.HIGH_ALCHEMY_MULTIPLIER) * (long) quantity;
+			haPrice = (long) itemManager.getAlchValue(realItemId) * (long) quantity;
 		}
 		final boolean ignored = ignoredItems.contains(itemDefinition.getName());
 

@@ -44,7 +44,7 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.VarClientIntChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.util.Text;
@@ -125,9 +125,9 @@ public class QuestListPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onScriptCallbackEvent(ScriptCallbackEvent event)
+	private void onScriptPostFired(ScriptPostFired event)
 	{
-		if (!event.getEventName().equals("questProgressUpdated"))
+		if (event.getScriptId() != ScriptID.QUESTLIST_PROGRESS_LIST_SHOW)
 		{
 			return;
 		}
@@ -273,8 +273,8 @@ public class QuestListPlugin extends Plugin
 		updateList(QuestContainer.MEMBER_QUESTS, filter);
 		updateList(QuestContainer.MINI_QUESTS, filter);
 
-		memberList.setOriginalY(freeList.getOriginalY() + freeList.getOriginalHeight() + ENTRY_PADDING);
-		miniList.setOriginalY(memberList.getOriginalY() + memberList.getOriginalHeight() + ENTRY_PADDING);
+		memberList.setOriginalY(freeList.getOriginalY() + freeList.getOriginalHeight() + (freeList.getOriginalHeight() == 0 ? 0 : ENTRY_PADDING));
+		miniList.setOriginalY(memberList.getOriginalY() + memberList.getOriginalHeight() + (memberList.getOriginalHeight() == 0 ? 0 : ENTRY_PADDING));
 
 		// originalHeight is changed within updateList so revalidate all lists
 		freeList.revalidate();
@@ -378,7 +378,10 @@ public class QuestListPlugin extends Plugin
 			}
 		}
 
-		list.setOriginalHeight(y);
+		long hiddenCount = quests.stream()
+			.filter(q -> q.getQuest().isHidden())
+			.count();
+		list.setOriginalHeight(hiddenCount == quests.size() ? 0 : y);
 	}
 
 	@AllArgsConstructor

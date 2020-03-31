@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.7"
 
 project.extra["PluginName"] = "Bank Tags"
 project.extra["PluginDescription"] = "Enable tagging of bank items and searching of bank tags"
@@ -39,9 +39,8 @@ dependencies {
 
     compileOnly(project(":cluescroll"))
 
-    compileOnly(Libraries.apacheCommonsLang)
+    compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)
 

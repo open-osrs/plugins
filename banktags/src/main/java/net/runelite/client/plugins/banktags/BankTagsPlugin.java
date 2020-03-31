@@ -31,6 +31,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
+import com.google.common.primitives.Shorts;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
@@ -38,6 +39,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -55,6 +58,7 @@ import net.runelite.api.VarClientStr;
 import net.runelite.api.events.DraggingWidgetChanged;
 import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GrandExchangeSearched;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
@@ -70,6 +74,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.input.KeyListener;
@@ -105,6 +110,8 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	public static final String VAR_TAG_SUFFIX = "*";
 	private static final String EDIT_TAGS_MENU_OPTION = "Edit-tags";
 	private static final String NUMBER_REGEX = "[0-9]+(\\.[0-9]+)?[kmb]?";
+
+	private static final int MAX_RESULT_COUNT = 250;
 
 	private static final String SEARCH_BANK_INPUT_TEXT =
 		"Show items whose names or tags contain the following text:<br>" +
@@ -277,6 +284,33 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	}
 
 	@Subscribe
+	public void onGrandExchangeSearched(GrandExchangeSearched event)
+	{
+		final String input = client.getVar(VarClientStr.INPUT_TEXT);
+		if (!input.startsWith(TAG_SEARCH))
+		{
+			return;
+		}
+
+		event.consume();
+
+		final String tag = input.substring(TAG_SEARCH.length()).trim();
+		final Set<Integer> ids = tagManager.getItemsForTag(tag)
+			.stream()
+			.mapToInt(Math::abs)
+			.mapToObj(ItemVariationMapping::getVariations)
+			.flatMap(Collection::stream)
+			.distinct()
+			.filter(i -> itemManager.getItemDefinition(i).isTradeable())
+			.limit(MAX_RESULT_COUNT)
+			.collect(Collectors.toCollection(TreeSet::new));
+
+		client.setGeSearchResultIndex(0);
+		client.setGeSearchResultCount(ids.size());
+		client.setGeSearchResultIds(Shorts.toArray(ids));
+	}
+
+	@Subscribe
 	private void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
 		String eventName = event.getEventName();
@@ -285,6 +319,8 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 		String[] stringStack = client.getStringStack();
 		int intStackSize = client.getIntStackSize();
 		int stringStackSize = client.getStringStackSize();
+		
+		tabInterface.handleScriptEvent(event);
 
 		switch (eventName)
 		{
@@ -361,7 +397,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 				// set the index to our remembered value instead of 0
 				intStack[intStackSize - 1] = nextRowIndex;
 				break;
-			case "bankLayoutInit":
+			case "beforeBankLayout":
 				// reset the row index if the bank is rebuilt
 				nextRowIndex = 0;
 				break;

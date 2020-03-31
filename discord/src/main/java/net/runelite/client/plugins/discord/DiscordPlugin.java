@@ -138,7 +138,7 @@ public class DiscordPlugin extends Plugin
 		{
 			partyService.setUsername(discordService.getCurrentUser().username + "#" + discordService.getCurrentUser().discriminator);
 		}
-		wsClient.unregisterMessage(DiscordUserInfo.class);
+
 		wsClient.registerMessage(DiscordUserInfo.class);
 	}
 
@@ -299,7 +299,11 @@ public class DiscordPlugin extends Plugin
 					}
 
 					final InputStream inputStream = response.body().byteStream();
-					final BufferedImage image = ImageIO.read(inputStream);
+					final BufferedImage image;
+					synchronized (ImageIO.class)
+					{
+						image = ImageIO.read(inputStream);
+					}
 					memberById.setAvatar(image);
 				}
 				finally

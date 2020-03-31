@@ -29,7 +29,6 @@ package net.runelite.client.plugins.privateserver;
 import com.google.inject.Provides;
 import java.math.BigInteger;
 import javax.inject.Inject;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import net.runelite.api.Client;
 import net.runelite.client.RuneLite;
@@ -39,6 +38,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.util.StringFileUtils;
 import org.pf4j.Extension;
 
@@ -103,7 +103,7 @@ public class PrivateServerPlugin extends Plugin
 		{
 			StringFileUtils.writeStringToFile(RuneLite.RUNELITE_DIR + "/codebase", config.codebase());
 			String message = "Client restart required after codebase change\n";
-			JOptionPane.showMessageDialog(new JFrame(), message, "Restart required",
+			JOptionPane.showMessageDialog(ClientUI.getFrame(), message, "Restart required",
 				JOptionPane.WARNING_MESSAGE);
 		}
 	}

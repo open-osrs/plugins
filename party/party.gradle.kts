@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.2"
+version = "0.0.4"
 
 project.extra["PluginName"] = "Party"
 project.extra["PluginDescription"] = "Shows useful information about current party"
@@ -42,7 +42,6 @@ dependencies {
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.gson)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.okhttp3)
     compileOnly(Libraries.pf4j)

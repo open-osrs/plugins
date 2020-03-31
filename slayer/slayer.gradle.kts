@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.6"
+version = "0.0.10"
 
 project.extra["PluginName"] = "Slayer"
 project.extra["PluginDescription"] = "Show additional slayer task related information"
@@ -42,7 +42,6 @@ dependencies {
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.gson)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.jopt)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.pf4j)

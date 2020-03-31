@@ -39,11 +39,9 @@ dependencies {
 
     compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
     compileOnly(Libraries.okhttp3)
     compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.rxjava)
 
     testImplementation("com.openosrs:runelite-api:$rlVersion")
     testImplementation("com.openosrs:runelite-client:$rlVersion")

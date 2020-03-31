@@ -197,19 +197,19 @@ public class GroundItemsOverlay extends Overlay
 				continue;
 			}
 
-			Color highlighted = plugin.getHighlighted(item.getName(), item.getGePrice(), item.getHaPrice());
+			Color highlighted = plugin.getHighlighted(new NamedQuantity(item), item.getGePrice(), item.getHaPrice());
 
 			//Process skill items
-			if (!plugin.hiddenItems.getUnchecked(item.getName()))
+			if (!plugin.hiddenItems.getUnchecked(new NamedQuantity(item)))
 			{
-				if (plugin.highlightHerblore)
+				if (config.highlightHerblore())
 				{
 					if (GroundItemsPlugin.herbloreItems.contains(item.getId()))
 					{
 						highlighted = plugin.getHerbloreColor();
 					}
 				}
-				if (plugin.highlightPrayer)
+				if (config.highlightPrayer())
 				{
 					if (GroundItemsPlugin.prayerItems.contains(item.getId()))
 					{
@@ -219,15 +219,15 @@ public class GroundItemsOverlay extends Overlay
 			}
 
 			// Value overrides skill
-			if (plugin.getHighlighted(item.getName(), item.getGePrice(), item.getHaPrice()) != null)
+			if (plugin.getHighlighted(new NamedQuantity(item), item.getGePrice(), item.getHaPrice()) != null)
 			{
-				if (plugin.getHighlighted(item.getName(), item.getGePrice(), item.getHaPrice()).getRGB() != highlighted.getRGB())
+				if (plugin.getHighlighted(new NamedQuantity(item), item.getGePrice(), item.getHaPrice()).getRGB() != highlighted.getRGB())
 				{
-					highlighted = plugin.getHighlighted(item.getName(), item.getGePrice(), item.getHaPrice());
+					highlighted = plugin.getHighlighted(new NamedQuantity(item), item.getGePrice(), item.getHaPrice());
 				}
 			}
 
-			final Color hidden = plugin.getHidden(item.getName(), item.getGePrice(), item.getHaPrice(), item.isTradeable());
+			final Color hidden = plugin.getHidden(new NamedQuantity(item), item.getGePrice(), item.getHaPrice(), item.isTradeable());
 
 			if (highlighted == null && !plugin.isHotKeyPressed())
 			{

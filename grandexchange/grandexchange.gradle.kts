@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Grand Exchange"
 project.extra["PluginDescription"] = "Provide additional and/or easier access to Grand Exchange information"
@@ -38,7 +38,7 @@ dependencies {
     compileOnly("com.openosrs:runelite-client:$rlVersion")
     compileOnly("com.openosrs:http-api:$rlVersion")
 
-    compileOnly(Libraries.apacheCommonsLang)
+    compileOnly(Libraries.apacheCommonsText)
     compileOnly(Libraries.guice)
     compileOnly(Libraries.gson)
     compileOnly(Libraries.lombok)

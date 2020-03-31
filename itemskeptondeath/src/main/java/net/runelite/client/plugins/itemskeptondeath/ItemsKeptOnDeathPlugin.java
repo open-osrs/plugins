@@ -54,7 +54,7 @@ import net.runelite.api.SkullIcon;
 import net.runelite.api.SpriteID;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
-import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -130,9 +130,9 @@ public class ItemsKeptOnDeathPlugin extends Plugin
 	int wildyLevel;
 
 	@Subscribe
-	private void onScriptCallbackEvent(ScriptCallbackEvent event)
+	private void onScriptPostFired(ScriptPostFired event)
 	{
-		if (event.getEventName().equals("itemsKeptOnDeath"))
+		if (event.getScriptId() == ScriptID.DEATH_KEEP_BUILD)
 		{
 			// The script in charge of building the Items Kept on Death interface has finished running.
 			// Make all necessary changes now.

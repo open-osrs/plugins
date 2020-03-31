@@ -32,6 +32,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
 import com.google.inject.Provides;
+import java.awt.event.KeyEvent;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 import net.runelite.api.Client;
 import static net.runelite.api.Constants.HIGH_ALCHEMY_MULTIPLIER;
 import net.runelite.api.FontID;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -51,6 +53,7 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuShouldLeftClick;
@@ -65,6 +68,8 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.input.KeyListener;
+import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -79,7 +84,7 @@ import org.pf4j.Extension;
 	tags = {"grand", "exchange", "high", "alchemy", "prices", "deposit"},
 	type = PluginType.UTILITY
 )
-public class BankPlugin extends Plugin
+public class BankPlugin extends Plugin implements KeyListener
 {
 	private static final List<Varbits> TAB_VARBITS = ImmutableList.of(
 		Varbits.BANK_TAB_ONE_COUNT,
@@ -144,6 +149,9 @@ public class BankPlugin extends Plugin
 	@Inject
 	private ContainerCalculation seedVaultCalculation;
 
+	@Inject
+	private KeyManager keyManager;
+
 	private boolean forceRightClickFlag;
 	private Multiset<Integer> itemQuantities; // bank item quantities for bank value search
 	private String searchString;
@@ -157,15 +165,32 @@ public class BankPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		if (client.getGameState() == GameState.LOGGED_IN)
+		{
+		keyManager.registerKeyListener(this);
+		}
 		searchString = "";
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		keyManager.unregisterKeyListener(this);
 		clientThread.invokeLater(() -> bankSearch.reset(false));
 		forceRightClickFlag = false;
 		itemQuantities = null;
+	}
+	
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() != GameState.LOGGED_IN)
+		{
+			keyManager.unregisterKeyListener(this);
+			return;
+		}
+
+		keyManager.registerKeyListener(this);
 	}
 
 	@Subscribe
@@ -548,5 +573,31 @@ public class BankPlugin extends Plugin
 			}
 		}
 		return set;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e)
+	{
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		if (config.ctrlfSearch() && e.isControlDown() && e.getKeyCode() == KeyEvent.VK_F)
+		{
+			Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+			if (bankContainer == null || bankContainer.isHidden())
+			{
+				return;
+			}
+
+			bankSearch.initSearch();
+			e.consume();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e)
+	{
 	}
 }

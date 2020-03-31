@@ -28,6 +28,7 @@ package net.runelite.client.plugins.grounditems;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.EvictingQueue;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.Color;
@@ -38,13 +39,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -134,11 +134,9 @@ public class GroundItemsPlugin extends Plugin
 	private static final int WALK = MenuOpcode.WALK.getId();
 	private static final int CAST_ON_ITEM = MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId();
 	private static final String TELEGRAB_TEXT = ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil.prependColorTag(" -> ", Color.WHITE);
-	private final Map<Integer, Color> priceChecks = new LinkedHashMap<>();
+	private Map<Integer, Color> priceChecks = ImmutableMap.of();
 	private final Queue<Integer> droppedItemQueue = EvictingQueue.create(16); // recently dropped items
-	boolean highlightHerblore;
-	boolean highlightPrayer;
-	LoadingCache<String, Boolean> hiddenItems;
+	LoadingCache<NamedQuantity, Boolean> hiddenItems;
 	static final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
 		(
 			//Grimy Herbs
@@ -435,7 +433,10 @@ public class GroundItemsPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
-	private LoadingCache<String, Boolean> highlightedItems;
+	@Inject
+	private ScheduledExecutorService executor;
+
+	private LoadingCache<NamedQuantity, Boolean> highlightedItems;
 
 	@Provides
 	GroundItemsConfig provideConfig(ConfigManager configManager)
@@ -447,9 +448,9 @@ public class GroundItemsPlugin extends Plugin
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
-		reset();
 		mouseManager.registerMouseListener(inputListener);
 		keyManager.registerKeyListener(inputListener);
+		executor.execute(this::reset);
 	}
 
 	@Override
@@ -485,7 +486,7 @@ public class GroundItemsPlugin extends Plugin
 	{
 		if (event.getGroup().equals("grounditems"))
 		{
-			reset();
+			executor.execute(this::reset);
 		}
 	}
 
@@ -515,7 +516,7 @@ public class GroundItemsPlugin extends Plugin
 		}
 
 		boolean shouldNotify = !config.onlyShowLoot() && config.highlightedColor().equals(getHighlighted(
-			groundItem.getName(),
+			new NamedQuantity(groundItem),
 			groundItem.getGePrice(),
 			groundItem.getHaPrice()));
 
@@ -601,7 +602,7 @@ public class GroundItemsPlugin extends Plugin
 		for (ItemStack is : items)
 		{
 			composition = itemManager.getItemDefinition(is.getId());
-			Color itemColor = getHighlighted(composition.getName(), itemManager.getItemPrice(is.getId()) * is.getQuantity(), itemManager.getAlchValue(is.getId()) * is.getQuantity());
+			Color itemColor = getHighlighted(new NamedQuantity(composition.getName(), is.getQuantity()), itemManager.getItemPrice(is.getId()) * is.getQuantity(), itemManager.getAlchValue(is.getId()) * is.getQuantity());
 			if (itemColor != null)
 			{
 				if (config.notifyHighlightedDrops() && itemColor.equals(config.highlightedColor()))
@@ -756,7 +757,7 @@ public class GroundItemsPlugin extends Plugin
 				groundItem.setLootType(lootType);
 
 				boolean shouldNotify = config.onlyShowLoot() && config.highlightedColor().equals(getHighlighted(
-					groundItem.getName(),
+					new NamedQuantity(groundItem),
 					groundItem.getGePrice(),
 					groundItem.getHaPrice()));
 
@@ -849,32 +850,34 @@ public class GroundItemsPlugin extends Plugin
 			.build(new WildcardMatchLoader(hiddenItemList));
 
 		// Cache colors
-		priceChecks.clear();
+		ImmutableMap.Builder<Integer, Color> priceCheckBuilder = ImmutableMap.builder();
 
 		if (config.insaneValuePrice() > 0)
 		{
-			priceChecks.put(config.insaneValuePrice(), config.insaneValueColor());
+			priceCheckBuilder.put(config.insaneValuePrice(), config.insaneValueColor());
 		}
 
 		if (config.highValuePrice() > 0)
 		{
-			priceChecks.put(config.highValuePrice(), config.highValueColor());
+			priceCheckBuilder.put(config.highValuePrice(), config.highValueColor());
 		}
 
 		if (config.mediumValuePrice() > 0)
 		{
-			priceChecks.put(config.mediumValuePrice(), config.mediumValueColor());
+			priceCheckBuilder.put(config.mediumValuePrice(), config.mediumValueColor());
 		}
 
 		if (config.lowValuePrice() > 0)
 		{
-			priceChecks.put(config.lowValuePrice(), config.lowValueColor());
+			priceCheckBuilder.put(config.lowValuePrice(), config.lowValueColor());
 		}
 
 		if (config.getHighlightOverValue() > 0)
 		{
-			priceChecks.put(config.getHighlightOverValue(), config.highlightedColor());
+			priceCheckBuilder.put(config.getHighlightOverValue(), config.highlightedColor());
 		}
+
+		priceChecks = priceCheckBuilder.build();
 	}
 
 	@Subscribe
@@ -918,8 +921,8 @@ public class GroundItemsPlugin extends Plugin
 			final int price = itemPrice <= 0 ? itemComposition.getPrice() : itemPrice;
 			final int haPrice = itemManager.getAlchValue(realItemId);
 			final int gePrice = quantity * price;
-			final Color hidden = getHidden(itemComposition.getName(), gePrice, haPrice, itemComposition.isTradeable());
-			final Color highlighted = getHighlighted(itemComposition.getName(), gePrice, haPrice);
+			final Color hidden = getHidden(new NamedQuantity(itemComposition.getName(), quantity), gePrice, haPrice, itemComposition.isTradeable());
+			final Color highlighted = getHighlighted(new NamedQuantity(itemComposition.getName(), quantity), gePrice, haPrice);
 			final Color color = getItemColor(highlighted, hidden);
 			final boolean canBeRecolored = highlighted != null || (hidden != null && config.recolorMenuHiddenItems());
 
@@ -970,8 +973,8 @@ public class GroundItemsPlugin extends Plugin
 
 	void updateList(String item, boolean hiddenList)
 	{
-		final Set<String> hiddenItemSet = new HashSet<>(hiddenItemList);
-		final Set<String> highlightedItemSet = new HashSet<>(highlightedItemsList);
+		final List<String> hiddenItemSet = new ArrayList<>(hiddenItemList);
+		final List<String> highlightedItemSet = new ArrayList<>(highlightedItemsList);
 
 		if (hiddenList)
 		{
@@ -982,7 +985,7 @@ public class GroundItemsPlugin extends Plugin
 			hiddenItemSet.removeIf(item::equalsIgnoreCase);
 		}
 
-		final Set<String> items = hiddenList ? hiddenItemSet : highlightedItemSet;
+		final List<String> items = hiddenList ? hiddenItemSet : highlightedItemSet;
 
 		if (!items.removeIf(item::equalsIgnoreCase))
 		{
@@ -1008,7 +1011,7 @@ public class GroundItemsPlugin extends Plugin
 		return config.defaultColor();
 	}
 
-	Color getHighlighted(String item, int gePrice, int haPrice)
+	Color getHighlighted(NamedQuantity item, int gePrice, int haPrice)
 	{
 		if (TRUE.equals(highlightedItems.getUnchecked(item)))
 		{
@@ -1050,7 +1053,7 @@ public class GroundItemsPlugin extends Plugin
 		return null;
 	}
 
-	Color getHidden(String item, int gePrice, int haPrice, boolean isTradeable)
+	Color getHidden(NamedQuantity item, int gePrice, int haPrice, boolean isTradeable)
 	{
 		final boolean isExplicitHidden = TRUE.equals(hiddenItems.getUnchecked(item));
 		final boolean isExplicitHighlight = TRUE.equals(highlightedItems.getUnchecked(item));
@@ -1079,7 +1082,7 @@ public class GroundItemsPlugin extends Plugin
 		final int alchPrice = itemManager.getAlchValue(realItemId) * quantity;
 		final int gePrice = itemManager.getItemPrice(realItemId) * quantity;
 
-		return getHidden(itemComposition.getName(), gePrice, alchPrice, itemComposition.isTradeable()) != null;
+		return getHidden(new NamedQuantity(itemComposition.getName(), quantity), gePrice, alchPrice, itemComposition.isTradeable()) != null;
 	}
 
 	private int getCollapsedItemQuantity(int itemId, String item)

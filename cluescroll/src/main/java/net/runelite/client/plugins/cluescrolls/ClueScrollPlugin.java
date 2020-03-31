@@ -36,10 +36,13 @@ import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import joptsimple.internal.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -64,12 +67,24 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.CommandExecuted;
+import net.runelite.api.events.DecorativeObjectChanged;
+import net.runelite.api.events.DecorativeObjectDespawned;
+import net.runelite.api.events.DecorativeObjectSpawned;
+import net.runelite.api.events.GameObjectChanged;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GroundObjectChanged;
+import net.runelite.api.events.GroundObjectDespawned;
+import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.WallObjectChanged;
+import net.runelite.api.events.WallObjectDespawned;
+import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
@@ -97,6 +112,7 @@ import net.runelite.client.plugins.cluescrolls.clues.LocationClueScroll;
 import net.runelite.client.plugins.cluescrolls.clues.LocationsClueScroll;
 import net.runelite.client.plugins.cluescrolls.clues.MapClue;
 import net.runelite.client.plugins.cluescrolls.clues.MusicClue;
+import net.runelite.client.plugins.cluescrolls.clues.NamedObjectClueScroll;
 import net.runelite.client.plugins.cluescrolls.clues.NpcClueScroll;
 import net.runelite.client.plugins.cluescrolls.clues.ObjectClueScroll;
 import net.runelite.client.plugins.cluescrolls.clues.SkillChallengeClue;
@@ -109,6 +125,7 @@ import net.runelite.client.ui.overlay.components.TextComponent;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.ItemUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @Extension
@@ -136,6 +153,10 @@ public class ClueScrollPlugin extends Plugin
 
 	@Getter(AccessLevel.PUBLIC)
 	private final List<TileObject> objectsToMark = new ArrayList<>();
+
+	@Getter(AccessLevel.PUBLIC)
+	private final Set<TileObject> namedObjectsToMark = new HashSet<>();
+
 	private final TextComponent textComponent = new TextComponent();
 
 	@Getter(AccessLevel.PACKAGE)
@@ -175,15 +196,17 @@ public class ClueScrollPlugin extends Plugin
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
 
-	@Inject
-	@Named("developerMode")
-	boolean developerMode;
-
 	private BufferedImage emoteImage;
 	private BufferedImage mapArrow;
 	private Integer clueItemId;
 	private boolean worldMapPointsSet = false;
 	private boolean displayHintArrows;
+
+	// Some objects will only update to their "active" state when changing to their plane after varbit changes,
+	// which take one extra tick to fire after the plane change. These fields are used to track those changes and delay
+	// scans of the current plane's tiles accordingly.
+	private int currentPlane = -1;
+	private boolean namedObjectCheckThisTick;
 
 	/**
 	 * Translate a coordinate either between overworld and real, or real and overworld
@@ -241,8 +264,11 @@ public class ClueScrollPlugin extends Plugin
 		overlayManager.remove(clueScrollWorldOverlay);
 		overlayManager.remove(clueScrollMusicOverlay);
 		npcsToMark.clear();
+		namedObjectsToMark.clear();
 		inventoryItems = null;
 		equippedItems = null;
+		currentPlane = -1;
+		namedObjectCheckThisTick = false;
 		resetClue(true);
 	}
 
@@ -367,6 +393,94 @@ public class ClueScrollPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onDecorativeObjectChanged(final DecorativeObjectChanged event)
+	{
+		tileObjectChangedHandler(event.getPrevious(), event.getDecorativeObject());
+	}
+
+	@Subscribe
+	public void onDecorativeObjectDespawned(final DecorativeObjectDespawned event)
+	{
+		tileObjectDespawnedHandler(event.getDecorativeObject());
+	}
+
+	@Subscribe
+	public void onDecorativeObjectSpawned(final DecorativeObjectSpawned event)
+	{
+		tileObjectSpawnedHandler(event.getDecorativeObject());
+	}
+
+	@Subscribe
+	public void onGameObjectChanged(final GameObjectChanged event)
+	{
+		tileObjectChangedHandler(event.getPrevious(), event.getGameObject());
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(final GameObjectDespawned event)
+	{
+		tileObjectDespawnedHandler(event.getGameObject());
+	}
+
+	@Subscribe
+	public void onGameObjectSpawned(final GameObjectSpawned event)
+	{
+		tileObjectSpawnedHandler(event.getGameObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectChanged(final GroundObjectChanged event)
+	{
+		tileObjectChangedHandler(event.getPrevious(), event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectDespawned(final GroundObjectDespawned event)
+	{
+		tileObjectDespawnedHandler(event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectSpawned(final GroundObjectSpawned event)
+	{
+		tileObjectSpawnedHandler(event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onWallObjectChanged(final WallObjectChanged event)
+	{
+		tileObjectChangedHandler(event.getPrevious(), event.getWallObject());
+	}
+
+	@Subscribe
+	public void onWallObjectDespawned(final WallObjectDespawned event)
+	{
+		tileObjectDespawnedHandler(event.getWallObject());
+	}
+
+	@Subscribe
+	public void onWallObjectSpawned(final WallObjectSpawned event)
+	{
+		tileObjectSpawnedHandler(event.getWallObject());
+	}
+
+	private void tileObjectChangedHandler(final TileObject prev, final TileObject changedTo)
+	{
+		tileObjectDespawnedHandler(prev);
+		tileObjectSpawnedHandler(changedTo);
+	}
+
+	private void tileObjectDespawnedHandler(final TileObject despawned)
+	{
+		namedObjectsToMark.remove(despawned);
+	}
+
+	private void tileObjectSpawnedHandler(final TileObject spawned)
+	{
+		checkClueNamedObject(clue, spawned);
+	}
+
+	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
 		if (event.getGroup().equals("cluescroll"))
@@ -453,6 +567,20 @@ public class ClueScrollPlugin extends Plugin
 			}
 		}
 
+		// Load the current plane's tiles if a tick has elapsed since the player has changed planes
+		if (namedObjectCheckThisTick)
+		{
+			namedObjectCheckThisTick = false;
+			checkClueNamedObjects(clue);
+		}
+
+		// Delay one tick when changing planes before scanning for new named objects on the new plane
+		if (currentPlane != client.getPlane())
+		{
+			currentPlane = client.getPlane();
+			namedObjectCheckThisTick = true;
+		}
+
 		// Reset clue when receiving a new beginner or master clue
 		// These clues use a single item ID, so we cannot detect step changes based on the item ID changing
 		final Widget chatDialogClueItem = client.getWidget(WidgetInfo.DIALOG_SPRITE_SPRITE);
@@ -488,12 +616,19 @@ public class ClueScrollPlugin extends Plugin
 	@Subscribe
 	public void onCommandExecuted(CommandExecuted commandExecuted)
 	{
-		if (developerMode && commandExecuted.getCommand().equals("clue"))
+		if (commandExecuted.getCommand().equals("clue"))
 		{
 			String text = Strings.join(commandExecuted.getArguments(), " ");
-			ClueScroll clueScroll = findClueScroll(text);
-			log.debug("Found clue scroll for '{}': {}", text, clueScroll);
-			updateClue(clueScroll);
+			if (text.isEmpty())
+			{
+				resetClue(true);
+			}
+			else
+			{
+				ClueScroll clueScroll = findClueScroll(text);
+				log.debug("Found clue scroll for '{}': {}", text, clueScroll);
+				updateClue(clueScroll);
+			}
 		}
 	}
 
@@ -547,6 +682,7 @@ public class ClueScrollPlugin extends Plugin
 		worldMapPointManager.removeIf(ClueScrollWorldMapPoint.class::isInstance);
 		worldMapPointsSet = false;
 		npcsToMark.clear();
+		namedObjectsToMark.clear();
 
 		if (this.displayHintArrows)
 		{
@@ -732,7 +868,6 @@ public class ClueScrollPlugin extends Plugin
 		final Scene scene = client.getScene();
 		final Tile[][][] tiles = scene.getTiles();
 		final Tile tile = tiles[client.getPlane()][localLocation.getSceneX()][localLocation.getSceneY()];
-		objectsToMark.clear();
 
 		if (tile == null || tile.getGameObjects() == null)
 		{
@@ -805,6 +940,81 @@ public class ClueScrollPlugin extends Plugin
 		}
 	}
 
+	/**
+	 * Scans all of the current plane's loaded tiles for {@link TileObject}s and passes any found objects to
+	 * {@link ClueScrollPlugin#checkClueNamedObject(ClueScroll, TileObject)} for storing in the cache of discovered
+	 * named objects.
+	 *
+	 * @param clue The active clue scroll
+	 */
+	private void checkClueNamedObjects(@Nullable ClueScroll clue)
+	{
+		if (!(clue instanceof NamedObjectClueScroll))
+		{
+			return;
+		}
+
+		// Search loaded tiles for objects
+		for (final Tile[] tiles : client.getScene().getTiles()[client.getPlane()])
+		{
+			for (final Tile tile : tiles)
+			{
+				if (tile == null)
+				{
+					continue;
+				}
+
+				for (final GameObject object : tile.getGameObjects())
+				{
+					if (object == null)
+					{
+						continue;
+					}
+
+					checkClueNamedObject(clue, object);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks passed objects against the active clue's object names and regions. If the clue is a
+	 * {@link NamedObjectClueScroll} and the object matches its allowable object names and is within its regions, the
+	 * object will be stored in the cache of discovered named objects.
+	 *
+	 * @param clue   The active clue scroll
+	 * @param object The spawned or scanned object
+	 */
+	private void checkClueNamedObject(@Nullable final ClueScroll clue, @Nonnull final TileObject object)
+	{
+		if (!(clue instanceof NamedObjectClueScroll))
+		{
+			return;
+		}
+
+		final NamedObjectClueScroll namedObjectClue = (NamedObjectClueScroll) clue;
+
+		final String[] objectNames = namedObjectClue.getObjectNames();
+		final int[] regionIds = namedObjectClue.getObjectRegions();
+
+		if (objectNames == null || objectNames.length == 0
+			|| regionIds != null && !ArrayUtils.contains(regionIds, object.getWorldLocation().getRegionID()))
+		{
+			return;
+		}
+
+		final ObjectDefinition comp = client.getObjectDefinition(object.getId());
+		final ObjectDefinition impostor = comp.getImpostorIds() != null ? comp.getImpostor() : comp;
+
+		for (final String name : objectNames)
+		{
+			if (comp.getName().equals(name) || impostor.getName().equals(name))
+			{
+				namedObjectsToMark.add(object);
+			}
+		}
+	}
+
 	private void updateClue(final ClueScroll clue)
 	{
 		if (clue == null || clue == this.clue)
@@ -814,6 +1024,7 @@ public class ClueScrollPlugin extends Plugin
 
 		resetClue(false);
 		checkClueNPCs(clue, client.getCachedNPCs());
+		checkClueNamedObjects(clue);
 		// If we have a clue, save that knowledge
 		// so the clue window doesn't have to be open.
 		this.clue = clue;

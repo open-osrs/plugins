@@ -69,7 +69,10 @@ public enum Pet
 	IKKLE_HYDRA(ItemID.IKKLE_HYDRA, "Alchemical Hydra"),
 	PHOENIX(ItemID.PHOENIX, "Wintertodt"),
 	YOUNGLLEF(ItemID.YOUNGLLEF, "Gauntlet"),
-	SRARACHA(ItemID.SRARACHA, "Sraracha");
+	SRARACHA(ItemID.SRARACHA, "Sraracha"),
+	SMOLCANO(ItemID.SMOLCANO, "Zalcano"),
+	PET_PENANCE_QUEEN(ItemID.PET_PENANCE_QUEEN, "Barbarian Assault"),
+	LITTLE_NIGHTMARE(ItemID.LITTLE_NIGHTMARE, "Nightmare");
 
 	private final int petID;
 	private final String[] bossNames;

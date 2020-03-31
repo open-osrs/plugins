@@ -115,4 +115,16 @@ public interface ObjectIndicatorsConfig extends Config
 	{
 		return 100;
 	}
+
+	@ConfigItem(
+		position = 6,
+		keyName = "rememberObjectColors",
+		name = "Remember color per object",
+		description = "Color objects using the color from time of marking",
+		titleSection = "colorTitle"
+	)
+	default boolean rememberObjectColors()
+	{
+		return false;
+	}
 }

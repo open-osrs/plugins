@@ -36,10 +36,9 @@ import net.runelite.api.GameState;
 import net.runelite.api.VarClientStr;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.input.KeyListener;
-import net.runelite.client.input.MouseAdapter;
 
 @Singleton
-class KeyRemappingListener extends MouseAdapter implements KeyListener
+class KeyRemappingListener implements KeyListener
 {
 	@Inject
 	private KeyRemappingPlugin plugin;

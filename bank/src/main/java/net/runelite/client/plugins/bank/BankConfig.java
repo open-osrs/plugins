@@ -65,6 +65,17 @@ public interface BankConfig extends Config
 	{
 		return false;
 	}
+	
+	@ConfigSection(
+		name = "HotKey Functions",
+		description = "",
+		position = 3,
+		keyName = "HotKeySection"
+	)
+	default boolean HotKeySection()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "showGE",
@@ -206,6 +217,18 @@ public interface BankConfig extends Config
 		section = "BankPinSection"
 	)
 	default boolean largePinNumbers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "ctrlfSearch",
+		name = "Ctrl + F search",
+		description = "Enables Ctrl + F hotkey to open search box",
+		position = 0,
+		section = "HotKeySection"
+	)
+	default boolean ctrlfSearch()
 	{
 		return false;
 	}

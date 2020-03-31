@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
@@ -66,6 +67,7 @@ public class ReportButtonPlugin extends Plugin
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMM. dd, yyyy");
 
 	private Instant loginTime;
+	private int ticksSinceLogin;
 	private boolean ready;
 
 	@Inject
@@ -118,9 +120,21 @@ public class ReportButtonPlugin extends Plugin
 				if (ready)
 				{
 					loginTime = Instant.now();
+					ticksSinceLogin = 0;
 					ready = false;
 				}
 				break;
+		}
+	}
+	
+	@Subscribe
+	public void onGameTick(GameTick tick)
+	{
+		ticksSinceLogin++;
+
+		if (config.time() == TimeStyle.GAME_TICKS)
+		{
+			updateReportButtonTime();
 		}
 	}
 
@@ -163,10 +177,18 @@ public class ReportButtonPlugin extends Plugin
 			case DATE:
 				reportButton.setText(getDate());
 				break;
+			case GAME_TICKS:
+				reportButton.setText(getGameTicks());
+				break;
 			case OFF:
 				reportButton.setText("Report");
 				break;
 		}
+	}
+	
+	private String getGameTicks()
+	{
+		return Integer.toString(ticksSinceLogin);
 	}
 
 	private String getLoginTime()

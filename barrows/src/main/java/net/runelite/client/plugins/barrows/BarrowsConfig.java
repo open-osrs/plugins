@@ -66,10 +66,21 @@ public interface BarrowsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showDigLocation",
+		name = "Show Dig Location",
+		description = "Configure whether to show the dig location of the crypts",
+		position = 3
+	)
+	default boolean showDigLocation()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "deadBrotherLocColor",
 		name = "Dead Brother loc. color",
 		description = "Change the color of the name displayed on the minimap for a dead brother",
-		position = 3
+		position = 4
 	)
 	default Color deadBrotherLocColor()
 	{
@@ -80,7 +91,7 @@ public interface BarrowsConfig extends Config
 		keyName = "showPuzzleAnswer",
 		name = "Show Puzzle Answer",
 		description = "Configures if the puzzle answer should be shown.",
-		position = 4
+		position = 5
 	)
 	default boolean showPuzzleAnswer()
 	{
@@ -91,7 +102,7 @@ public interface BarrowsConfig extends Config
 		keyName = "showPrayerDrainTimer",
 		name = "Show Prayer Drain Timer",
 		description = "Configure whether or not a countdown until the next prayer drain is displayed",
-		position = 5
+		position = 6
 	)
 	default boolean showPrayerDrainTimer()
 	{

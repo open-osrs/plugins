@@ -56,6 +56,8 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
+import net.runelite.client.ui.overlay.tooltip.Tooltip;
+import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 import net.runelite.client.util.ColorUtil;
 
 @Singleton
@@ -71,8 +73,9 @@ public class XpGlobesOverlay extends Overlay
 	private final XpGlobesPlugin plugin;
 	private final XpGlobesConfig config;
 	private final XpTrackerService xpTrackerService;
-	private final PanelComponent xpTooltip = new PanelComponent();
+	private final TooltipManager tooltipManager;
 	private final SkillIconManager iconManager;
+	private final Tooltip xpTooltip = new Tooltip(new PanelComponent());
 
 	@Inject
 	private XpGlobesOverlay(
@@ -80,15 +83,17 @@ public class XpGlobesOverlay extends Overlay
 		final XpGlobesPlugin plugin,
 		final XpGlobesConfig config,
 		final XpTrackerService xpTrackerService,
-		final SkillIconManager iconManager)
+		SkillIconManager iconManager,
+		TooltipManager tooltipManager)
 	{
 		super(plugin);
 		this.iconManager = iconManager;
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
-
 		this.xpTrackerService = xpTrackerService;
+		this.tooltipManager = tooltipManager;
+		this.xpTooltip.getComponent().setPreferredSize(new Dimension(TOOLTIP_RECT_SIZE_X, 0));
 		setPosition(OverlayPosition.TOP_CENTER);
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "XP Globes overlay"));
 	}
@@ -156,7 +161,7 @@ public class XpGlobesOverlay extends Overlay
 
 			if (config.enableTooltips())
 			{
-				drawTooltip(graphics, skillToDraw, goalXp, backgroundCircle);
+				drawTooltip(skillToDraw, goalXp);
 			}
 		}
 
@@ -235,12 +240,8 @@ public class XpGlobesOverlay extends Overlay
 		);
 	}
 
-	private void drawTooltip(Graphics2D graphics, XpGlobe mouseOverSkill, int goalXp, Ellipse2D drawnGlobe)
+	private void drawTooltip(XpGlobe mouseOverSkill, int goalXp)
 	{
-		//draw tooltip under the globe of the mouse location
-		int x = (int) drawnGlobe.getX() - (TOOLTIP_RECT_SIZE_X / 2) + (config.xpOrbSize() / 2);
-		int y = (int) drawnGlobe.getY() + config.xpOrbSize() + 10;
-
 		// reset the timer on XpGlobe to prevent it from disappearing while hovered over it
 		mouseOverSkill.setTime(Instant.now());
 
@@ -250,9 +251,9 @@ public class XpGlobesOverlay extends Overlay
 		DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
 		String skillCurrentXp = decimalFormat.format(mouseOverSkill.getCurrentXp());
 
+		final PanelComponent xpTooltip = (PanelComponent) this.xpTooltip.getComponent();
+
 		xpTooltip.getChildren().clear();
-		xpTooltip.setPreferredLocation(new java.awt.Point(x, y));
-		xpTooltip.setPreferredSize(new Dimension(TOOLTIP_RECT_SIZE_X, 0));
 
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
@@ -301,6 +302,6 @@ public class XpGlobesOverlay extends Overlay
 
 		xpTooltip.getChildren().add(tableComponent);
 
-		xpTooltip.render(graphics);
+		tooltipManager.add(this.xpTooltip);
 	}
 }
