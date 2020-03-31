@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018, Kamiel
  * Copyright (c) 2019, ganom <https://github.com/Ganom>
+ * Copyright (c) 2020, Crystalknoct
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package net.runelite.client.plugins.raids;
 
 import java.awt.Color;
@@ -179,7 +181,7 @@ public interface RaidsConfig extends Config
 	)
 	default String recommendedItems()
 	{
-		return "[muttadiles,zamorak godsword],[Vasa,ghrazi rapier],[Guardians,Dragon pickaxe],[Mystics,Salve amulet(ei)],[Shamans,Antidote++],[Vespula,Super restore(4)]";
+		return "[Muttadiles, zamorak godsword, ice barrage],[Vasa,zamorakian hasta, abyssal dagger, Blade of saeldor, ghrazi rapier, vengeance],[Guardians,Dragon pickaxe],[Mystics,Salve amulet(ei)],[Shamans,Sanfew serum(4), Antidote++(4)],[Vespula,Prayer potion(4), Super restore(4), Sanfew Serum(4)],[Tekton,Elder Maul, Abyssal Bludgeon, Vengeance],[Thieving,lockpick],[Ice Demon, fire surge]";
 	}
 
 	@ConfigItem(

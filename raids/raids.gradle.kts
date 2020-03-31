@@ -24,13 +24,13 @@ import ProjectVersions.rlVersion
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-version = "0.0.6"
+version = "0.0.7"
 
 project.extra["PluginName"] = "CoX Scouter"
 project.extra["PluginDescription"] = "Show helpful information for the Chambers of Xeric raid"
 
 dependencies {
+    
     annotationProcessor(Libraries.lombok)
     annotationProcessor(Libraries.pf4j)
 

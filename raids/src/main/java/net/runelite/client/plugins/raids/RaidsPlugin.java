@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018, Kamiel
  * Copyright (c) 2019, ganom <https://github.com/Ganom>
+ * Copyright (c) 2020, Crystalknoct
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package net.runelite.client.plugins.raids;
 
 import com.google.common.base.Joiner;
@@ -421,7 +423,7 @@ public class RaidsPlugin extends Plugin
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
-		if (!event.getGroup().equals("raids"))
+		if (!event.getGroup().equals("net/runelite/client/plugins/raids"))
 		{
 			return;
 		}
@@ -909,6 +911,14 @@ public class RaidsPlugin extends Plugin
 				if (itemName.equals("ice barrage"))
 				{
 					map.get(key).add(SpriteID.SPELL_ICE_BARRAGE);
+				}
+				if (itemName.equals("vengeance"))
+				{
+					map.get(key).add(SpriteID.SPELL_VENGEANCE);
+				}
+				if (itemName.equals("fire surge"))
+				{
+					map.get(key).add(SpriteID.SPELL_FIRE_SURGE);
 				}
 				else if (itemName.startsWith("salve"))
 				{
