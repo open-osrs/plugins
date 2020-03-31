@@ -33,7 +33,7 @@ import lombok.Getter;
 import net.runelite.client.plugins.raids.solver.Layout;
 import net.runelite.client.plugins.raids.solver.Room;
 
-class Raid
+public class Raid
 {
 	@Getter(AccessLevel.PACKAGE)
 	private final RaidRoom[] rooms = new RaidRoom[16];
@@ -170,7 +170,7 @@ class Raid
 	 * Get the raid rooms in the order they are in the raid
 	 * @return
 	 */
-	List<RaidRoom> getOrderedRooms()
+	public List<RaidRoom> getOrderedRooms()
 	{
 		List<RaidRoom> orderedRooms = new ArrayList<>();
 		for (Room r : getLayout().getRooms())
