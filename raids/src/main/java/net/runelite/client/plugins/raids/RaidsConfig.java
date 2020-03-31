@@ -32,7 +32,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Title;
 
-@ConfigGroup("raids")
+@ConfigGroup("net/runelite/client/plugins/raids")
 public interface RaidsConfig extends Config
 {
 	@ConfigTitleSection(
@@ -179,7 +179,7 @@ public interface RaidsConfig extends Config
 	)
 	default String recommendedItems()
 	{
-		return "[muttadiles,zamorak godsword],[Vasa,ghrazi rapier],[Guardians,Dragon pickaxe],[Mystics,Salve amulet(ei)],[Shamans,Antidote++],[Vespula,Super restore(4)]";
+		return "[muttadiles,Abyssal tentacle, zamorak godsword, ice barrage],[Vasa,zamorakian hasta, abyssal dagger, ghrazi rapier, vengeance],[Guardians,Dragon pickaxe],[Mystics,Salve amulet(ei)],[Shamans,Sanfew serum(4), Antidote++(4)],[Vespula,Prayer potion(4), Super restore(4), Sanfew Serum(4)],[Tekton,Elder Maul, Abyssal Bludgeon, Vengeance]";
 	}
 
 	@ConfigItem(
