@@ -67,7 +67,7 @@ public class RemindersPlugin extends Plugin
 
 	private Instant loginTime;
 	private boolean ready;
-	private int seconds = 60;
+	private final static int seconds = 60;
 	private int minutes;
 	private int hours;
 	private int ounces;

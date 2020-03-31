@@ -34,5 +34,5 @@ import net.runelite.http.api.ws.messages.party.PartyMemberMessage;
 @EqualsAndHashCode(callSuper = true)
 public class LocationUpdate extends PartyMemberMessage implements Event
 {
-	private final WorldPoint worldPoint;
+	WorldPoint worldPoint;
 }

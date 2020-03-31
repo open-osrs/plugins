@@ -29,6 +29,7 @@ package net.runelite.client.plugins.banlist;
 import com.google.inject.Provides;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
@@ -366,7 +367,12 @@ public class BanListPlugin extends Plugin
 			@Override
 			public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
 			{
-				String text = response.body().string();
+				if (request.body() == null)
+				{
+					return;
+				}
+
+				String text = Objects.requireNonNull(response.body()).string();
 				String mytext = text.substring(text.indexOf("lcp_instance_0"), text.indexOf("strong>Evidence Quality Suggestion"));
 				String[] split = mytext.split("href=");
 				for (String x : split)
@@ -399,7 +405,13 @@ public class BanListPlugin extends Plugin
 			@Override
 			public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
 			{
-				String text = response.body().string();
+				if (response.body() == null)
+				{
+					return;
+				}
+
+
+				String text = Objects.requireNonNull(response.body()).string();
 				text = text.substring(text.indexOf("<p>") + 3, text.indexOf("</p>"));
 				text = text.replace("/", ",");
 				text = text.replace(", $", "");

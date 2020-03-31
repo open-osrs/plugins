@@ -38,7 +38,7 @@ import org.junit.rules.ErrorCollector;
 public class PatchImplementationTest
 {
 	@Rule
-	public ErrorCollector collector = new ErrorCollector();
+	public final ErrorCollector collector = new ErrorCollector();
 
 	@Test
 	public void testRange()

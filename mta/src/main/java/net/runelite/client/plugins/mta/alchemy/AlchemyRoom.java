@@ -238,7 +238,7 @@ public class AlchemyRoom extends MTARoom
 			String item = message.replace(YOU_FOUND, "").trim();
 			AlchemyItem alchemyItem = AlchemyItem.find(item);
 			Cupboard clicked = getClicked();
-			if (clicked.alchemyItem != alchemyItem && alchemyItem != null)
+			if (clicked != null && clicked.alchemyItem != alchemyItem && alchemyItem != null)
 			{
 				fill(clicked, alchemyItem);
 			}
@@ -263,7 +263,10 @@ public class AlchemyRoom extends MTARoom
 				}
 			}
 
-			clicked.alchemyItem = AlchemyItem.EMPTY;
+			if (clicked != null)
+			{
+				clicked.alchemyItem = AlchemyItem.EMPTY;
+			}
 		}
 	}
 
@@ -388,6 +391,11 @@ public class AlchemyRoom extends MTARoom
 
 	private Cupboard getClicked()
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
 		Cupboard nearest = null;
 		double distance = Double.MAX_VALUE;
 
@@ -441,6 +449,11 @@ public class AlchemyRoom extends MTARoom
 					return cupboard;
 				}
 			}
+		}
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
 		}
 
 		// otherwise find the closest cupboard which can not be empty

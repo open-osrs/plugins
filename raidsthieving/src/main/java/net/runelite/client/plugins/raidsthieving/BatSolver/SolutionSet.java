@@ -159,5 +159,5 @@ class SolutionSet
 	}
 
 	@Getter(AccessLevel.PACKAGE)
-	private Set<Integer> emptyChests;
+	private final Set<Integer> emptyChests;
 }

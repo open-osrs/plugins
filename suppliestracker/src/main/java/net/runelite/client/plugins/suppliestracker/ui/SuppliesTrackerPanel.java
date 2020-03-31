@@ -73,7 +73,7 @@ public class SuppliesTrackerPanel extends PluginPanel
 	private final JLabel overallIcon = new JLabel();
 	private UpdatePanel updatePanel;
 	@Getter(AccessLevel.PACKAGE)
-	private JButton info;
+	private final JButton info;
 	private int overallSuppliesUsed;
 	private int overallCost;
 

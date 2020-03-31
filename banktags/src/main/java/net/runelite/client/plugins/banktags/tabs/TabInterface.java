@@ -793,7 +793,7 @@ public class TabInterface
 		// round-about way to prevent drag reordering when in a tag tab, now that it looks like a normal tab
 		// returning early from drag release and nulling out the drag release listener have no effect,
 		// probably a better way to do this though
-		if (draggedWidget.getId() == WidgetInfo.BANK_ITEM_CONTAINER.getId() && isActive()
+		if (draggedWidget != null && draggedWidget.getId() == WidgetInfo.BANK_ITEM_CONTAINER.getId() && isActive()
 			&& config.removeSeparators())
 		{
 			client.setDraggedOnWidget(null);
@@ -807,7 +807,7 @@ public class TabInterface
 		// is dragging widget and mouse button released
 		if (client.getMouseCurrentButton() == 0)
 		{
-			if (!isTabMenuActive() && draggedWidget.getItemId() > 0 && draggedWidget.getId() != parent.getId())
+			if (!isTabMenuActive() && draggedWidget != null && draggedWidget.getItemId() > 0 && draggedWidget.getId() != parent.getId())
 			{
 				// Tag an item dragged on a tag tab
 				if (draggedOn.getId() == parent.getId())
@@ -816,13 +816,13 @@ public class TabInterface
 					updateTabIfActive(Lists.newArrayList(Text.standardize(draggedOn.getName())));
 				}
 			}
-			else if ((isTabMenuActive() && draggedWidget.getId() == draggedOn.getId() && draggedOn.getId() != parent.getId())
-				|| (parent.getId() == draggedOn.getId() && parent.getId() == draggedWidget.getId()))
+			else if ((isTabMenuActive() && draggedWidget != null && draggedWidget.getId() == draggedOn.getId() && draggedOn.getId() != parent.getId())
+				|| (parent.getId() == draggedOn.getId() && draggedWidget != null && parent.getId() == draggedWidget.getId()))
 			{
 				moveTagTab(draggedWidget, draggedOn);
 			}
 		}
-		else if (draggedWidget.getItemId() > 0)
+		else if (draggedWidget != null && draggedWidget.getItemId() > 0)
 		{
 			MenuEntry[] entries = client.getMenuEntries();
 

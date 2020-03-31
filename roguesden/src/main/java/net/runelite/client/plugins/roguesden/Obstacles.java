@@ -150,7 +150,7 @@ class Obstacles
 	@Getter(AccessLevel.PACKAGE)
 	static class Obstacle
 	{
-		private WorldPoint tile;
+		private final WorldPoint tile;
 		private String hint;
 		private int objectId = -1;
 		private final Color tileColor = Color.GREEN;

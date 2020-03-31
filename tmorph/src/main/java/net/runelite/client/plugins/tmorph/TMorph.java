@@ -49,7 +49,6 @@ import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -101,9 +100,6 @@ public class TMorph extends Plugin
 	private TMorphConfig config;
 
 	@Inject
-	private EventBus eventBus;
-
-	@Inject
 	private ClientToolbar clientToolbar;
 
 	@Inject
@@ -140,7 +136,7 @@ public class TMorph extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		eventBus.unregister(this);
+		clientToolbar.removeNavigation(navButton);
 	}
 
 	@Subscribe

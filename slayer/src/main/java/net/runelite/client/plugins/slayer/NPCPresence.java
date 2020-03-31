@@ -10,10 +10,10 @@ public class NPCPresence
 	private static final int FADE_TIMER_START = 20;
 
 	@Getter(AccessLevel.PACKAGE)
-	private String name;
+	private final String name;
 
 	@Getter(AccessLevel.PACKAGE)
-	private int combatLevel;
+	private final int combatLevel;
 
 	private int fadeTimer;
 

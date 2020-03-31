@@ -35,6 +35,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
@@ -298,13 +299,15 @@ public class DiscordPlugin extends Plugin
 						throw new IOException("Unexpected code " + response);
 					}
 
-					final InputStream inputStream = response.body().byteStream();
-					final BufferedImage image;
-					synchronized (ImageIO.class)
+					try (final InputStream inputStream = Objects.requireNonNull(response.body()).byteStream())
 					{
-						image = ImageIO.read(inputStream);
+						final BufferedImage image;
+						synchronized (ImageIO.class)
+						{
+							image = ImageIO.read(inputStream);
+						}
+						memberById.setAvatar(image);
 					}
-					memberById.setAvatar(image);
 				}
 				finally
 				{
@@ -405,7 +408,7 @@ public class DiscordPlugin extends Plugin
 
 	private boolean showArea(final DiscordGameEventType event)
 	{
-		if (event == null)
+		if (event == null || event.getDiscordAreaType() == null)
 		{
 			return false;
 		}

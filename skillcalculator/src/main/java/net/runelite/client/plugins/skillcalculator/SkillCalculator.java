@@ -69,7 +69,7 @@ class SkillCalculator extends JPanel
 	private final List<UIActionSlot> uiActionSlots = new ArrayList<>();
 	private final CacheSkillData cacheSkillData = new CacheSkillData();
 	private final UICombinedActionSlot combinedActionSlot;
-	private final ArrayList<UIActionSlot> combinedActionSlots = new ArrayList<>();
+	private final List<UIActionSlot> combinedActionSlots = new ArrayList<>();
 	private final List<JCheckBox> bonusCheckBoxes = new ArrayList<>();
 	private final IconTextField searchBar = new IconTextField();
 

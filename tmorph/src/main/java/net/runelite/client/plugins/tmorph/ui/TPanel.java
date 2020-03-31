@@ -419,7 +419,7 @@ public class TPanel extends PluginPanel
 			notifier.notify("Saved to clipboard.");
 		}
 
-		return plugin.getNEWLINE_SPLITTER()
+		return TMorph.getNEWLINE_SPLITTER()
 			.withKeyValueSeparator(":")
 			.split(s);
 	}

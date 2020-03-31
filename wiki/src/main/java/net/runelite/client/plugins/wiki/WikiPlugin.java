@@ -25,6 +25,7 @@
 package net.runelite.client.plugins.wiki;
 
 import com.google.inject.Provides;
+import java.util.Objects;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
@@ -287,7 +288,7 @@ public class WikiPlugin extends Plugin
 				type = "npc";
 				NPC npc = client.getCachedNPCs()[ev.getIdentifier()];
 				NPCDefinition nc = npc.getTransformedDefinition();
-				id = nc.getId();
+				id = Objects.requireNonNull(nc).getId();
 				name = nc.getName();
 				location = npc.getWorldLocation();
 				break;

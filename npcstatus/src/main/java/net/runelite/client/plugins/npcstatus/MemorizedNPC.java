@@ -36,10 +36,10 @@ import net.runelite.api.coords.WorldArea;
 @Getter(AccessLevel.PACKAGE)
 class MemorizedNPC
 {
-	private NPC npc;
-	private int npcIndex;
-	private String npcName;
-	private int attackSpeed;
+	private final NPC npc;
+	private final int npcIndex;
+	private final String npcName;
+	private final int attackSpeed;
 	@Setter(AccessLevel.PACKAGE)
 	private int combatTimerEnd;
 	@Setter(AccessLevel.PACKAGE)

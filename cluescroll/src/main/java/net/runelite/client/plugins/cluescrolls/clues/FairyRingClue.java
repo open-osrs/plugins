@@ -55,8 +55,8 @@ public class FairyRingClue extends ClueScroll implements TextClueScroll, Locatio
 		new FairyRingClue("D K S 2 3 1 0", new WorldPoint(2747, 3720, 0))
 	);
 
-	private String text;
-	private WorldPoint location;
+	private final String text;
+	private final WorldPoint location;
 
 	private FairyRingClue(String text, WorldPoint location)
 	{

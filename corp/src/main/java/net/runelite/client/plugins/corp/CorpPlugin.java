@@ -238,7 +238,7 @@ public class CorpPlugin extends Plugin
 
 		final int npcIndex = event.getIdentifier();
 		final NPC npc = client.getCachedNPCs()[npcIndex];
-		if (npc == null || !npc.getName().equals(DARK_ENERGY_CORE))
+		if (npc == null || (npc.getName() != null && !npc.getName().equals(DARK_ENERGY_CORE)))
 		{
 			return;
 		}

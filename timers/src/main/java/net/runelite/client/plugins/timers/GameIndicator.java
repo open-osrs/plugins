@@ -35,8 +35,8 @@ enum GameIndicator
 	VENGEANCE_ACTIVE(SpriteID.SPELL_VENGEANCE_OTHER, GameTimerImageType.SPRITE, "Vengeance active");
 
 	private final String description;
-	private String text;
-	private Color textColor;
+	private final String text;
+	private final Color textColor;
 	private final int imageId;
 	private final GameTimerImageType imageType;
 

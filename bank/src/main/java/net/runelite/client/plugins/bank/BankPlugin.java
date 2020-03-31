@@ -504,7 +504,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		final String mode = matcher.group("mode");
 		if (mode != null)
 		{
-			value = mode.toLowerCase().equals("ge") ? gePrice : haPrice;
+			value = mode.equalsIgnoreCase("ge") ? gePrice : haPrice;
 		}
 
 		final String op = matcher.group("op");

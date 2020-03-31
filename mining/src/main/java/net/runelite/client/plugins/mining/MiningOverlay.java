@@ -97,6 +97,11 @@ class MiningOverlay extends Overlay
 			Rock rock = rockRespawn.getRock();
 
 			// Only draw timer for veins on the same level in motherlode mine
+			if (client.getLocalPlayer() == null)
+			{
+				continue;
+			}
+
 			LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
 			if (rock == Rock.ORE_VEIN && isUpstairsMotherlode(localLocation) != isUpstairsMotherlode(loc))
 			{

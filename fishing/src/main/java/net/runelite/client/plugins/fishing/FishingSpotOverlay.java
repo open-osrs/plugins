@@ -111,7 +111,7 @@ class FishingSpotOverlay extends Overlay
 			{
 				color = config.getMinnowsOverlayColor();
 			}
-			else if (spot == FishingSpot.COMMON_TENCH && npc.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) <= ONE_TICK_AERIAL_FISHING)
+			else if (spot == FishingSpot.COMMON_TENCH && client.getLocalPlayer() != null && npc.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) <= ONE_TICK_AERIAL_FISHING)
 			{
 				color = config.getAerialOverlayColor();
 			}
@@ -161,7 +161,7 @@ class FishingSpotOverlay extends Overlay
 				BufferedImage fishImage = itemManager.getImage(spot.getFishSpriteId());
 
 				if (spot == FishingSpot.COMMON_TENCH
-					&& npc.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) <= ONE_TICK_AERIAL_FISHING)
+					&& client.getLocalPlayer() != null && npc.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) <= ONE_TICK_AERIAL_FISHING)
 				{
 					fishImage = ImageUtil.outlineImage(itemManager.getImage(spot.getFishSpriteId()), color);
 				}

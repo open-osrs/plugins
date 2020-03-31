@@ -397,7 +397,7 @@ public class MusicPlugin extends Plugin
 		@Setter
 		private Widget track;
 
-		private static int PADDING = 8;
+		private static final int PADDING = 8;
 
 		private int getX()
 		{

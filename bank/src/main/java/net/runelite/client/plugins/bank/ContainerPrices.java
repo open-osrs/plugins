@@ -30,6 +30,6 @@ import lombok.Value;
 public
 class ContainerPrices
 {
-	private long gePrice;
-	private long highAlchPrice;
+	long gePrice;
+	long highAlchPrice;
 }

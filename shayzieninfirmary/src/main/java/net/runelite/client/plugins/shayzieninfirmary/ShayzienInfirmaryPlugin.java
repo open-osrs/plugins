@@ -50,7 +50,7 @@ import org.pf4j.Extension;
 public class ShayzienInfirmaryPlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)
-	private List<NPC> unhealedSoldiers = new ArrayList<>();
+	private final List<NPC> unhealedSoldiers = new ArrayList<>();
 
 	@Inject
 	private OverlayManager overlayManager;

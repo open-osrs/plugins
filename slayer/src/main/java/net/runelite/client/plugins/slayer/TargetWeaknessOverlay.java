@@ -70,7 +70,7 @@ class TargetWeaknessOverlay extends Overlay
 
 		final Task npcTask = plugin.getWeaknessTask();
 
-		if (npcTask == null)
+		if (npcTask == null || client.getLocalPlayer() == null)
 		{
 			return null;
 		}

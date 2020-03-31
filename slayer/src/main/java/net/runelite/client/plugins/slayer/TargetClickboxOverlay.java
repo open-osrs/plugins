@@ -169,7 +169,7 @@ public class TargetClickboxOverlay extends Overlay
 				break;
 		}
 
-		if (config.drawNames())
+		if (config.drawNames() && actor.getName() != null)
 		{
 			String npcName = Text.removeTags(actor.getName());
 			Point textLocation = actor.getCanvasTextLocation(graphics, npcName, actor.getLogicalHeight() + 40);
@@ -188,6 +188,11 @@ public class TargetClickboxOverlay extends Overlay
 
 	private void drawTile(Graphics2D graphics, WorldPoint point, Color color, int strokeWidth, int outlineAlpha, int fillAlpha)
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return;
+		}
+
 		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 
 		if (point.distanceTo(playerLocation) >= 32)

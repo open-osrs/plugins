@@ -76,6 +76,11 @@ class CannonOverlay extends Overlay
 			return null;
 		}
 
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
 		LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
 
 		if (localLocation.distanceTo(cannonPoint) <= MAX_DISTANCE)

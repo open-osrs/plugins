@@ -227,7 +227,7 @@ public class AgilityPlugin extends Plugin
 	@Subscribe
 	public void onStatChanged(StatChanged statChanged)
 	{
-		if (statChanged.getSkill() != AGILITY)
+		if (statChanged.getSkill() != AGILITY || client.getLocalPlayer() == null)
 		{
 			return;
 		}

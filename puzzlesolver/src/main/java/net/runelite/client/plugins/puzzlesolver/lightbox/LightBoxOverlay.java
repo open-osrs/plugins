@@ -29,7 +29,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
@@ -61,7 +61,7 @@ public class LightBoxOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		ArrayList<String> unclickedButtons = plugin.getUnclickedButtons();
+		List<String> unclickedButtons = plugin.getUnclickedButtons();
 
 		if (unclickedButtons.isEmpty())
 		{

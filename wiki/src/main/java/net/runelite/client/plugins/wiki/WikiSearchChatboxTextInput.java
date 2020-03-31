@@ -34,6 +34,7 @@ import com.google.inject.Inject;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -131,8 +132,8 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 					@Override
 					public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
 					{
-						String body = response.body().string();
-						try
+						String body = Objects.requireNonNull(response.body()).string();
+						try (response)
 						{
 							JsonArray jar = new JsonParser().parse(body).getAsJsonArray();
 							List<String> apredictions = gson.fromJson(jar.get(1), new TypeToken<List<String>>()
@@ -155,10 +156,6 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 						catch (JsonParseException | IllegalStateException | IndexOutOfBoundsException e)
 						{
 							log.warn("error parsing wiki response {}", body, e);
-						}
-						finally
-						{
-							response.close();
 						}
 					}
 				});

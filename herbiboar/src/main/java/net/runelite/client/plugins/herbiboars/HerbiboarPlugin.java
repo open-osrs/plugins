@@ -116,16 +116,16 @@ public class HerbiboarPlugin extends Plugin
 	private boolean inHerbiboarArea;
 
 	@Getter(AccessLevel.PACKAGE)
-	private Map<WorldPoint, TileObject> trails = new HashMap<>();
+	private final Map<WorldPoint, TileObject> trails = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private Map<WorldPoint, TileObject> tunnels = new HashMap<>();
+	private final Map<WorldPoint, TileObject> tunnels = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private Map<WorldPoint, TileObject> starts = new HashMap<>();
+	private final Map<WorldPoint, TileObject> starts = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private Map<WorldPoint, TileObject> trailObjects = new HashMap<>();
+	private final Map<WorldPoint, TileObject> trailObjects = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)

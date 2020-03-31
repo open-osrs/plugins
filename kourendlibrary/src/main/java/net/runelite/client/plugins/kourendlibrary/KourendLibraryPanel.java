@@ -54,7 +54,7 @@ class KourendLibraryPanel extends PluginPanel
 	private final KourendLibraryConfig config;
 	private final Library library;
 
-	private final HashMap<Book, BookPanel> bookPanels = new HashMap<>();
+	private final Map<Book, BookPanel> bookPanels = new HashMap<>();
 
 	static
 	{

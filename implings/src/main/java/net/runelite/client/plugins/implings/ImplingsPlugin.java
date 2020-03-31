@@ -63,13 +63,13 @@ public class ImplingsPlugin extends Plugin
 	private static final int DYNAMIC_SPAWN_BABY_ESSENCE = 1634;
 
 	@Getter(AccessLevel.PACKAGE)
-	private Map<ImplingType, Integer> implingCounterMap = new HashMap<>();
+	private final Map<ImplingType, Integer> implingCounterMap = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	private final List<NPC> implings = new ArrayList<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private Map<Integer, String> dynamicSpawns = new HashMap<>();
+	private final Map<Integer, String> dynamicSpawns = new HashMap<>();
 
 	@Inject
 	private ImplingsOverlay overlay;

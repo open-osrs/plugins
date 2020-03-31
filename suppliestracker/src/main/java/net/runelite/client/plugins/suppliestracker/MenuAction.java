@@ -44,9 +44,9 @@ public class MenuAction
 	{
 
 		@Getter(AccessLevel.MODULE)
-		private int itemID;
+		private final int itemID;
 		@Getter(AccessLevel.MODULE)
-		private int slot;
+		private final int slot;
 
 		ItemAction(final ActionType type, final Item[] oldInventory, final int itemID, final int slot)
 		{

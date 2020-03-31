@@ -33,7 +33,7 @@ import lombok.Getter;
 public abstract class GenericDiaryRequirement
 {
 	@Getter(AccessLevel.PACKAGE)
-	private Set<DiaryRequirement> requirements = new HashSet<>();
+	private final Set<DiaryRequirement> requirements = new HashSet<>();
 
 	protected void add(String task, Requirement... requirements)
 	{

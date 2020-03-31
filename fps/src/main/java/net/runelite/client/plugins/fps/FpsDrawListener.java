@@ -45,7 +45,6 @@ public class FpsDrawListener implements Runnable
 	private static final int SAMPLE_SIZE = 4;
 
 	private final FpsConfig config;
-	private final FpsPlugin plugin;
 
 	private long targetDelay = 0;
 
@@ -59,10 +58,9 @@ public class FpsDrawListener implements Runnable
 	private long sleepDelay = 0;
 
 	@Inject
-	private FpsDrawListener(final FpsConfig config, final FpsPlugin plugin)
+	private FpsDrawListener(final FpsConfig config)
 	{
 		this.config = config;
-		this.plugin = plugin;
 		reloadConfig();
 	}
 

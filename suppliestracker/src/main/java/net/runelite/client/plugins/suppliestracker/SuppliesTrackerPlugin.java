@@ -918,7 +918,7 @@ public class SuppliesTrackerPlugin extends Plugin
 			String target = event.getTarget();
 			if (target.toLowerCase().contains("teleport scroll"))
 			{
-				switch (target.toLowerCase().substring(target.indexOf(">") + 1))
+				switch (target.toLowerCase().substring(target.indexOf('>') + 1))
 				{
 					case "watson teleport scroll":
 						buildEntries(WATSON_TELEPORT);

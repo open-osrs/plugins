@@ -104,6 +104,11 @@ public class EnchantmentRoom extends MTARoom
 
 	private WorldPoint findNearestStone()
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
 		WorldPoint nearest = null;
 		double dist = Double.MAX_VALUE;
 		WorldPoint local = client.getLocalPlayer().getWorldLocation();

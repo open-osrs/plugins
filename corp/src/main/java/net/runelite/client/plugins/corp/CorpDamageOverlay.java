@@ -98,7 +98,7 @@ class CorpDamageOverlay extends Overlay
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 
 		NPC core = corpPlugin.getCore();
-		if (core != null)
+		if (core != null && client.getLocalPlayer() != null)
 		{
 			WorldPoint corePoint = core.getWorldLocation();
 			WorldPoint myPoint = client.getLocalPlayer().getWorldLocation();

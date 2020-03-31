@@ -59,10 +59,10 @@ class HunterTrap
 	 * The ID of the game object this is representing
 	 */
 	@Getter(AccessLevel.PACKAGE)
-	private int objectId;
+	private final int objectId;
 
 	@Getter(AccessLevel.PACKAGE)
-	private WorldPoint worldLocation;
+	private final WorldPoint worldLocation;
 
 	/**
 	 * The states a trap can be in.

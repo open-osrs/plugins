@@ -219,11 +219,8 @@ public class ExaminePlugin extends Plugin
 
 			itemDefinition = itemManager.getItemDefinition(itemId);
 
-			if (itemDefinition != null)
-			{
-				final int id = itemManager.canonicalize(itemDefinition.getId());
-				executor.submit(() -> getItemPrice(id, itemDefinition, itemQuantity));
-			}
+			final int id = itemManager.canonicalize(itemDefinition.getId());
+			executor.submit(() -> getItemPrice(id, itemDefinition, itemQuantity));
 		}
 		else
 		{
@@ -355,14 +352,13 @@ public class ExaminePlugin extends Plugin
 
 			if (gePrice > 0)
 			{
-				int finalQuantity = quantity;
 				message
 					.append(ChatColorType.NORMAL)
 					.append(" GE  ")
 					.append(ChatColorType.HIGHLIGHT)
-					.append(QuantityFormatter.formatNumber(gePrice * finalQuantity));
+					.append(QuantityFormatter.formatNumber(gePrice * quantity));
 
-				if (finalQuantity > 1)
+				if (quantity > 1)
 				{
 					message
 						.append(ChatColorType.NORMAL)
@@ -377,9 +373,9 @@ public class ExaminePlugin extends Plugin
 					.append(ChatColorType.NORMAL)
 					.append(" HA value ")
 					.append(ChatColorType.HIGHLIGHT)
-					.append(QuantityFormatter.formatNumber(alchPrice * finalQuantity));
+					.append(QuantityFormatter.formatNumber(alchPrice * quantity));
 
-				if (finalQuantity > 1)
+				if (quantity > 1)
 				{
 					message
 						.append(ChatColorType.NORMAL)

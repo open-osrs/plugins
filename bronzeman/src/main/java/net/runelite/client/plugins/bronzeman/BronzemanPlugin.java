@@ -252,12 +252,13 @@ public class BronzemanPlugin extends Plugin
 		{
 			File playerFolder = new File(RuneLite.PROFILES_DIR, client.getUsername());
 			File playerFile = new File(playerFolder, "bronzeman-unlocks.txt");
-			PrintWriter w = new PrintWriter(playerFile);
-			for (int itemId : unlockedItems)
+			try (PrintWriter w = new PrintWriter(playerFile))
 			{
-				w.println(itemId);
+				for (int itemId : unlockedItems)
+				{
+					w.println(itemId);
+				}
 			}
-			w.close();
 		}
 		catch (Exception e)
 		{
@@ -286,13 +287,14 @@ public class BronzemanPlugin extends Plugin
 			}
 			else
 			{
-				BufferedReader r = new BufferedReader(new FileReader(playerFile));
-				String l;
-				while ((l = r.readLine()) != null)
+				try (BufferedReader r = new BufferedReader(new FileReader(playerFile)))
 				{
-					unlockedItems.add(Integer.parseInt(l));
+					String l;
+					while ((l = r.readLine()) != null)
+					{
+						unlockedItems.add(Integer.parseInt(l));
+					}
 				}
-				r.close();
 			}
 		}
 		catch (Exception e)
@@ -305,23 +307,23 @@ public class BronzemanPlugin extends Plugin
 	@Subscribe
 	public void onChatMessage(ChatMessage chatMessage)
 	{
-		if (config.countCommand() && chatMessage.getMessage().toLowerCase().equals(COUNT_CHAT_COMMAND))
+		if (config.countCommand() && chatMessage.getMessage().equalsIgnoreCase(COUNT_CHAT_COMMAND))
 		{
 			sendMessage("You have successfully unlocked " + unlockedItems.size() + " items.");
 		}
-		if (config.resetCommand() && chatMessage.getMessage().toLowerCase().equals(RESET_CHAT_COMMAND))
+		if (config.resetCommand() && chatMessage.getMessage().equalsIgnoreCase(RESET_CHAT_COMMAND))
 		{
 			resetUnlocks();
 		}
-		if (config.backupCommand() && chatMessage.getMessage().toLowerCase().equals(BACKUP_CHAT_COMMAND))
+		if (config.backupCommand() && chatMessage.getMessage().equalsIgnoreCase(BACKUP_CHAT_COMMAND))
 		{
 			backupUnlocks();
 		}
-		if (config.deleteCommand() && chatMessage.getMessage().toLowerCase().equals(DELETE_CHAT_COMMAND))
+		if (config.deleteCommand() && chatMessage.getMessage().equalsIgnoreCase(DELETE_CHAT_COMMAND))
 		{
 			deleteUnlocks();
 		}
-		if (config.restoreCommand() && chatMessage.getMessage().toLowerCase().equals(RESTORE_CHAT_COMMAND))
+		if (config.restoreCommand() && chatMessage.getMessage().equalsIgnoreCase(RESTORE_CHAT_COMMAND))
 		{
 			restoreUnlocks();
 		}

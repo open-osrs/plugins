@@ -47,8 +47,8 @@ import org.pushingpixels.substance.internal.utils.SubstanceDropDownButton;
 public class EquipSlot extends JComboBox<ComboBoxIconEntry>
 {
 	private final ComboBoxIconEntry original;
-	private Map<Integer, ComboBoxIconEntry> boxMap;
-	private KitType kitType;
+	private final Map<Integer, ComboBoxIconEntry> boxMap;
+	private final KitType kitType;
 
 	EquipSlot(KitType kitType)
 	{

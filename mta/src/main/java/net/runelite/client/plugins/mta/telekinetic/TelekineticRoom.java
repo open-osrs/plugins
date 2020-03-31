@@ -269,10 +269,21 @@ public class TelekineticRoom extends MTARoom
 
 	private WorldPoint optimal()
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
 		WorldPoint current = client.getLocalPlayer().getWorldLocation();
 
 		Direction next = moves.pop();
 		WorldArea areaNext = getIndicatorLine(next);
+
+		if (areaNext == null)
+		{
+			return null;
+		}
+
 		WorldPoint nearestNext = nearest(areaNext, current);
 
 		if (moves.isEmpty())
@@ -285,6 +296,12 @@ public class TelekineticRoom extends MTARoom
 		Direction after = moves.peek();
 		moves.push(next);
 		WorldArea areaAfter = getIndicatorLine(after);
+
+		if (areaAfter == null)
+		{
+			return null;
+		}
+
 		WorldPoint nearestAfter = nearest(areaAfter, nearestNext);
 
 		return nearest(areaNext, nearestAfter);
@@ -493,6 +510,11 @@ public class TelekineticRoom extends MTARoom
 
 	private Direction getPosition()
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
 		WorldPoint mine = client.getLocalPlayer().getWorldLocation();
 
 		if (mine.getY() >= bounds.getMaxY() && mine.getX() < bounds.getMaxX() && mine.getX() > bounds.getX())

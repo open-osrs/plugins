@@ -124,7 +124,7 @@ public class ZalcanoOverlay extends Overlay
 	{
 		List<GraphicsObject> rockFall = util.getRockfall();
 
-		if (rockFall != null)
+		if (rockFall != null && client.getLocalPlayer() != null)
 		{
 			for (GraphicsObject graphicsObject : rockFall)
 			{

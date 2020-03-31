@@ -44,9 +44,9 @@ enum WidgetOverride
 	FIXED_BOTTOM_RIGHT_2005(Skin.AROUND_2005, "1030_bottom_middle", WidgetInfo.FIXED_VIEWPORT_LOGOUT_TAB),
 	FIXED_BOTTOM_MIDDLE_2005(Skin.AROUND_2005, "1030_bottom_right", WidgetInfo.FIXED_VIEWPORT_OPTIONS_TAB, WidgetInfo.FIXED_VIEWPORT_EMOTES_TAB);
 
-	private Skin skin;
-	private String name;
-	private WidgetInfo[] widgetInfo;
+	private final Skin skin;
+	private final String name;
+	private final WidgetInfo[] widgetInfo;
 
 	WidgetOverride(final Skin skin, final String name, final WidgetInfo... widgetInfo)
 	{

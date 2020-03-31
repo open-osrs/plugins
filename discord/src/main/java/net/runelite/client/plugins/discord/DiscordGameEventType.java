@@ -324,7 +324,7 @@ enum DiscordGameEventType
 		this.shouldTimeout = true;
 	}
 
-	DiscordGameEventType(String areaName, DiscordAreaType areaType, int... regionIds)
+	DiscordGameEventType(String areaName, @Nullable DiscordAreaType areaType, @Nullable int... regionIds)
 	{
 		this.state = exploring(areaType, areaName);
 		this.priority = -2;
@@ -333,14 +333,14 @@ enum DiscordGameEventType
 		this.shouldClear = true;
 	}
 
-	DiscordGameEventType(String state, int priority)
+	DiscordGameEventType(@Nullable String state, int priority)
 	{
 		this.state = state;
 		this.priority = priority;
 		this.shouldClear = true;
 	}
 
-	DiscordGameEventType(String areaName, DiscordAreaType areaType, Varbits varbits)
+	DiscordGameEventType(String areaName, @Nullable DiscordAreaType areaType, @Nullable Varbits varbits)
 	{
 		this.state = exploring(areaType, areaName);
 		this.priority = -2;

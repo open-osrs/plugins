@@ -73,7 +73,7 @@ class FishingOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!config.showFishingStats() || plugin.getSession().getLastFishCaught() == null)
+		if (!config.showFishingStats() || plugin.getSession().getLastFishCaught() == null || client.getLocalPlayer() == null || client.getLocalPlayer().getInteracting().getName() == null)
 		{
 			return null;
 		}

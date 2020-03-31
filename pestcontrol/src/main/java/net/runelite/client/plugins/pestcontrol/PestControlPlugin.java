@@ -31,6 +31,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
@@ -80,9 +81,9 @@ public class PestControlPlugin extends Plugin
 {
 	private static final int VOID_KNIGHTS_OUTPOST = 10537;
 
-	private final int NOVICE_GANGPLANK = 14315; // Combat 40+ (3 points)
-	private final int INTERMEDIATE_GANGPLANK = 25631; // Combat 70+ (4 points)
-	private final int VETERAN_GANGPLANK = 25632; // Combat 100+ (5 points)
+	private final static int NOVICE_GANGPLANK = 14315; // Combat 40+ (3 points)
+	private final static int INTERMEDIATE_GANGPLANK = 25631; // Combat 70+ (4 points)
+	private final static int VETERAN_GANGPLANK = 25632; // Combat 100+ (5 points)
 
 	private final Pattern SHIELD_DROP_PATTERN = Pattern.compile("The ([a-z]+), [^ ]+ portal shield has dropped!");
 	private final Pattern EXCHANGE_WINDOW_POINTS_PATTERN = Pattern.compile("Points: <col=ffffff>([0-9]+)</col>");
@@ -137,10 +138,10 @@ public class PestControlPlugin extends Plugin
 	private Game game;
 
 	@Getter(AccessLevel.PACKAGE)
-	private HashMap<Integer, NpcHighlightContext> highlightedNpcList = new HashMap<>();
+	private final Map<Integer, NpcHighlightContext> highlightedNpcList = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private List<TileObject> highlightedRepairList = new ArrayList<>();
+	private final List<TileObject> highlightedRepairList = new ArrayList<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	private Tile noviceGangplankTile;

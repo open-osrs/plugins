@@ -336,7 +336,7 @@ public class FishingPlugin extends Plugin
 	@Subscribe
 	private void onVarbitChanged(VarbitChanged event)
 	{
-		if (!config.trawlerNotification() || client.getGameState() != GameState.LOGGED_IN)
+		if (!config.trawlerNotification() || client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer() == null)
 		{
 			return;
 		}
@@ -372,7 +372,7 @@ public class FishingPlugin extends Plugin
 	 */
 	private void updateTrawlerTimer()
 	{
-		if (trawlerStartTime == null)
+		if (trawlerStartTime == null || client.getLocalPlayer() == null)
 		{
 			return;
 		}

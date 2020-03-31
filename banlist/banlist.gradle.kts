@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Ban List"
 project.extra["PluginDescription"] = "Displays warning in chat when you join a clan chat/new member join your clan chat and he is in a WDR/RuneWatch/Manual List"

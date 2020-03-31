@@ -68,7 +68,7 @@ public class ZalcanoUtil
 
 	boolean isInZalcanoRegion()
 	{
-		return client.getLocalPlayer().getWorldLocation().getRegionID() == ZALCANO_REGION;
+		return client.getLocalPlayer() != null && client.getLocalPlayer().getWorldLocation().getRegionID() == ZALCANO_REGION;
 	}
 
 
@@ -121,7 +121,7 @@ public class ZalcanoUtil
 			{
 				if (gameObject.getId() == ObjectID.ROCK_FORMATION_GLOWING)
 				{
-					if (client.getLocalPlayer().getLocalLocation().distanceTo(gameObject.getLocalLocation()) <= 2400)
+					if (client.getLocalPlayer() != null && client.getLocalPlayer().getLocalLocation().distanceTo(gameObject.getLocalLocation()) <= 2400)
 					{
 						Entity entity = gameObject.getEntity();
 						if (entity instanceof DynamicObject)
@@ -147,7 +147,7 @@ public class ZalcanoUtil
 			{
 				if (gameObject.getId() == ObjectID.DEMONIC_SYMBOL)
 				{
-					if (client.getLocalPlayer().getLocalLocation().distanceTo(gameObject.getLocalLocation()) <= 2400)
+					if (client.getLocalPlayer() != null && client.getLocalPlayer().getLocalLocation().distanceTo(gameObject.getLocalLocation()) <= 2400)
 					{
 						Entity entity = gameObject.getEntity();
 						if (entity instanceof DynamicObject)

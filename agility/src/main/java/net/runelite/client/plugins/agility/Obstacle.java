@@ -35,7 +35,7 @@ import net.runelite.client.game.AgilityShortcut;
 @AllArgsConstructor
 class Obstacle
 {
-	private final Tile tile;
+	Tile tile;
 	@Nullable
-	private final AgilityShortcut shortcut;
+	AgilityShortcut shortcut;
 }

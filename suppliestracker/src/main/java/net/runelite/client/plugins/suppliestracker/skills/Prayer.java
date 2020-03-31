@@ -7,8 +7,8 @@ import net.runelite.client.plugins.suppliestracker.SuppliesTrackerPlugin;
 @Singleton
 public class Prayer
 {
-	private SuppliesTrackerPlugin plugin;
-	private ItemManager itemManager;
+	private final SuppliesTrackerPlugin plugin;
+	private final ItemManager itemManager;
 	private int bonesId = 0;
 
 	public Prayer(SuppliesTrackerPlugin plugin, ItemManager itemManager)

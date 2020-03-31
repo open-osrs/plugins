@@ -72,9 +72,9 @@ public enum HerbiboarTrail
 	private final WorldPoint objectLoc4;
 
 	@Getter(AccessLevel.PACKAGE)
-	private static Set<Integer> trailIds = new HashSet<>();
+	private static final Set<Integer> trailIds = new HashSet<>();
 	@Getter(AccessLevel.PACKAGE)
-	private static Set<WorldPoint> allObjectLocs = new HashSet<>();
+	private static final Set<WorldPoint> allObjectLocs = new HashSet<>();
 
 	static
 	{

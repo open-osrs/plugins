@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Supplier;
 import javax.imageio.ImageIO;
 import javax.inject.Singleton;
@@ -183,7 +184,7 @@ class FeedPanel extends PluginPanel
 								BufferedImage icon;
 								synchronized (ImageIO.class)
 								{
-									icon = ImageIO.read(responseBody.byteStream());
+									icon = ImageIO.read(Objects.requireNonNull(responseBody).byteStream());
 								}
 								avatar.setIcon(new ImageIcon(icon));
 							}

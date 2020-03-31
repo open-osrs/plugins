@@ -240,44 +240,46 @@ public class XpDropPlugin extends Plugin
 		}
 
 		String text = widget.getText();
-		final IntStream spriteIDs =
-			Arrays.stream(widget.getParent().getDynamicChildren()).mapToInt(Widget::getSpriteId);
-
-		if (text != null)
+		try (IntStream spriteIDs =
+			Arrays.stream(widget.getParent().getDynamicChildren()).mapToInt(Widget::getSpriteId))
 		{
-			int color = widget.getTextColor();
 
-			switch (prayer)
+			if (text != null)
 			{
-				case MELEE:
-					if (spriteIDs.anyMatch(
-						id ->
-							id == SpriteID.SKILL_ATTACK
-								|| id == SpriteID.SKILL_STRENGTH
-								|| id == SpriteID.SKILL_DEFENCE
-								|| correctPrayer))
-					{
-						color = config.getMeleePrayerColor().getRGB();
-						correctPrayer = true;
-					}
-					break;
-				case RANGE:
-					if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_RANGED || correctPrayer))
-					{
-						color = config.getRangePrayerColor().getRGB();
-						correctPrayer = true;
-					}
-					break;
-				case MAGIC:
-					if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_MAGIC || correctPrayer))
-					{
-						color = config.getMagePrayerColor().getRGB();
-						correctPrayer = true;
-					}
-					break;
-			}
+				int color = widget.getTextColor();
 
-			widget.setTextColor(color);
+				switch (prayer)
+				{
+					case MELEE:
+						if (spriteIDs.anyMatch(
+							id ->
+								id == SpriteID.SKILL_ATTACK
+									|| id == SpriteID.SKILL_STRENGTH
+									|| id == SpriteID.SKILL_DEFENCE
+									|| correctPrayer))
+						{
+							color = config.getMeleePrayerColor().getRGB();
+							correctPrayer = true;
+						}
+						break;
+					case RANGE:
+						if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_RANGED || correctPrayer))
+						{
+							color = config.getRangePrayerColor().getRGB();
+							correctPrayer = true;
+						}
+						break;
+					case MAGIC:
+						if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_MAGIC || correctPrayer))
+						{
+							color = config.getMagePrayerColor().getRGB();
+							correctPrayer = true;
+						}
+						break;
+				}
+
+				widget.setTextColor(color);
+			}
 		}
 	}
 

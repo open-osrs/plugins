@@ -116,7 +116,7 @@ public class StatusOrbsPlugin extends Plugin
 	private double hpPerMs;
 
 	@Getter(AccessLevel.PACKAGE)
-	private double specPerMs = (double) 1 / (SPEC_REGEN_TICKS * 600);
+	private final double specPerMs = (double) 1 / (SPEC_REGEN_TICKS * 600);
 
 	// RegenMeter
 	private int ticksSinceSpecRegen;

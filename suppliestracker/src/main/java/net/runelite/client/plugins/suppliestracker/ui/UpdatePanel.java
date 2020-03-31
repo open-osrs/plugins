@@ -14,7 +14,7 @@ import net.runelite.client.ui.PluginPanel;
 class UpdatePanel extends PluginPanel
 {
 
-	private SuppliesTrackerPanel panel;
+	private final SuppliesTrackerPanel panel;
 
 	UpdatePanel(SuppliesTrackerPanel suppliesTrackerPanel)
 	{

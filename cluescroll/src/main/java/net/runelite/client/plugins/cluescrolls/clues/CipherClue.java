@@ -62,14 +62,14 @@ public class CipherClue extends ClueScroll implements TextClueScroll, NpcClueScr
 		new CipherClue("BSOPME MZETQPS", "Arnold Lydspor", new WorldPoint(2329, 3689, 0), "Piscatoris Fishing Colony general store/bank")
 	);
 
-	private String text;
-	private String npc;
-	private WorldPoint location;
-	private String area;
+	private final String text;
+	private final String npc;
+	private final WorldPoint location;
+	private final String area;
 	@Nullable
-	private String question;
+	private final String question;
 	@Nullable
-	private String answer;
+	private final String answer;
 
 	private CipherClue(String text, String npc, WorldPoint location, String area)
 	{

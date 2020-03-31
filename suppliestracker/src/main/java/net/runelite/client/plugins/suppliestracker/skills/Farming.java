@@ -9,8 +9,8 @@ import net.runelite.client.plugins.suppliestracker.SuppliesTrackerPlugin;
 @Singleton
 public class Farming
 {
-	private SuppliesTrackerPlugin plugin;
-	private ItemManager itemManager;
+	private final SuppliesTrackerPlugin plugin;
+	private final ItemManager itemManager;
 	private int plantId = 0;
 	private int compostId = 0;
 	private int bucketId = 0;

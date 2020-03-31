@@ -71,7 +71,7 @@ enum HealthbarOverride implements SpriteOverride
 	private final int spriteId;
 	private final String fileName;
 	@Getter(AccessLevel.PACKAGE)
-	private int padding = 1;
+	private final static int padding = 1;
 
 	static HealthbarOverride get(int spriteID)
 	{

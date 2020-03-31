@@ -52,9 +52,9 @@ class GrandExchangePanel extends PluginPanel
 	private final MaterialTab searchTab;
 
 	@Getter(AccessLevel.PACKAGE)
-	private GrandExchangeSearchPanel searchPanel;
+	private final GrandExchangeSearchPanel searchPanel;
 	@Getter(AccessLevel.PACKAGE)
-	private GrandExchangeOffersPanel offersPanel;
+	private final GrandExchangeOffersPanel offersPanel;
 
 	@Inject
 	private GrandExchangePanel(ClientThread clientThread, ItemManager itemManager, ScheduledExecutorService executor, GrandExchangeConfig config)

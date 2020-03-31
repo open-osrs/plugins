@@ -129,7 +129,7 @@ public class PoisonPlugin extends Plugin
 	private int nextTickCount;
 
 	@Getter
-	private Map<Actor, ActorPoisonInfo> poisonedActors = new HashMap<>();
+	private final Map<Actor, ActorPoisonInfo> poisonedActors = new HashMap<>();
 
 	@Provides
 	PoisonConfig getConfig(ConfigManager configManager)

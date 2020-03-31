@@ -31,7 +31,7 @@ import lombok.Getter;
 
 public class Kingdom
 {
-	private int numberOfWorkers;
+	private final int numberOfWorkers;
 
 	// How much money is withdrawn from the coffer for that day
 	private int kingdomFunds;
@@ -44,15 +44,12 @@ public class Kingdom
 
 	int grossProfit;
 
-	boolean isPersonalKingdom;
+	final boolean isPersonalKingdom;
 
-	HashMap <ResourceType, Integer> resourceDistribution;
-
-	HashMap <ResourceType, Integer> resourceProfit;
-
-	HashMap <Reward, Integer> rewardQuantity;
-
-	HashMap <Reward, Integer> rewardProfit;
+	Map <ResourceType, Integer> resourceDistribution;
+	Map <ResourceType, Integer> resourceProfit;
+	Map <Reward, Integer> rewardQuantity;
+	Map <Reward, Integer> rewardProfit;
 
 	Kingdom(int workers, boolean personal)
 	{

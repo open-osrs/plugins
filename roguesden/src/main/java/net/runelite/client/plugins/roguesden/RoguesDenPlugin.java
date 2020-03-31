@@ -25,6 +25,7 @@
 package net.runelite.client.plugins.roguesden;
 
 import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -67,10 +68,10 @@ import org.pf4j.Extension;
 public class RoguesDenPlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)
-	private final HashMap<TileObject, Tile> obstaclesHull = new HashMap<>();
+	private final Map<TileObject, Tile> obstaclesHull = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private final HashMap<TileObject, Tile> obstaclesTile = new HashMap<>();
+	private final Map<TileObject, Tile> obstaclesTile = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	private boolean hasGem;

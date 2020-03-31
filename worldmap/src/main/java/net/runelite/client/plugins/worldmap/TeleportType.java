@@ -39,7 +39,7 @@ public enum TeleportType
 	SCROLL(""),
 	OTHER("");
 
-	private String prefix;
+	private final String prefix;
 
 	TeleportType(String prefix)
 	{

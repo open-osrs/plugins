@@ -38,7 +38,7 @@ import net.runelite.client.util.QuantityFormatter;
 class AmmoCounter extends Counter
 {
 	@Getter(AccessLevel.PACKAGE)
-	private int itemID;
+	private final int itemID;
 	private final String name;
 	private final int total;
 	private final Instant time;

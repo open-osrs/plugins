@@ -85,7 +85,7 @@ public class CannonPlugin extends Plugin
 	private GameObject cannon;
 
 	@Getter(AccessLevel.PACKAGE)
-	private List<WorldPoint> spotPoints = new ArrayList<>();
+	private final List<WorldPoint> spotPoints = new ArrayList<>();
 
 	@Inject
 	private ItemManager itemManager;

@@ -43,7 +43,7 @@ import org.junit.rules.TemporaryFolder;
 public class ShaderTest
 {
 	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void testShaders() throws Exception

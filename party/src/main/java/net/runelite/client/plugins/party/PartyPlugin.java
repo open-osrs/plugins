@@ -283,7 +283,7 @@ public class PartyPlugin extends Plugin implements KeyListener
 
 		final PartyMember localMember = party.getLocalMember();
 
-		if (localMember == null)
+		if (localMember == null || client.getLocalPlayer() == null)
 		{
 			return;
 		}

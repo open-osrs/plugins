@@ -31,7 +31,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Shape;
-import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -67,7 +67,7 @@ public class NpcHighlightOverlay extends Overlay
 			return null;
 		}
 
-		HashMap highlightedNpcList = plugin.getHighlightedNpcList();
+		Map highlightedNpcList = plugin.getHighlightedNpcList();
 
 		for (NPC npc : client.getNpcs())
 		{

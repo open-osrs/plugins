@@ -57,7 +57,6 @@ class PrayerDoseOverlay extends Overlay
 	private static final Color END_COLOR = new Color(0, 92, 92);
 
 	private final Client client;
-	private final PrayerPlugin plugin;
 	private final PrayerConfig config;
 	private final TooltipManager tooltipManager;
 	private Instant startOfLastTick = Instant.now();
@@ -73,11 +72,10 @@ class PrayerDoseOverlay extends Overlay
 	private boolean hasHolyWrench;
 
 	@Inject
-	private PrayerDoseOverlay(final Client client, final TooltipManager tooltipManager, final PrayerPlugin plugin, final PrayerConfig config)
+	private PrayerDoseOverlay(final Client client, final TooltipManager tooltipManager, final PrayerConfig config)
 	{
 		this.client = client;
 		this.tooltipManager = tooltipManager;
-		this.plugin = plugin;
 		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);

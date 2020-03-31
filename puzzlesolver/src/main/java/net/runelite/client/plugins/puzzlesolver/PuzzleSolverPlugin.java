@@ -29,6 +29,7 @@ import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -89,9 +90,9 @@ public class PuzzleSolverPlugin extends Plugin
 	private Client client;
 
 	@Getter
-	private ArrayList<String> unclickedButtons = new ArrayList<>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H"));
+	private final List<String> unclickedButtons = new ArrayList<>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H"));
 
-	private ArrayList<String> clickedThisTick = new ArrayList<>(8);
+	private final List<String> clickedThisTick = new ArrayList<>(8);
 	private LightboxState lightbox;
 	private final LightboxState[] changes = new LightboxState[LightBox.COMBINATIONS_POWER];
 	private Combination lastClick;

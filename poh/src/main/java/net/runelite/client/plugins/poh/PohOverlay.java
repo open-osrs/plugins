@@ -71,6 +71,11 @@ public class PohOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
 		LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
 		plugin.getPohObjects().forEach((object, tile) ->
 		{

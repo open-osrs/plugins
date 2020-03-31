@@ -97,7 +97,7 @@ public class KingdomPlugin extends Plugin
 	private KingdomCounter counter;
 
 	@Getter
-	private Kingdom maxKingdom = new Kingdom(15, false);
+	private final Kingdom maxKingdom = new Kingdom(15, false);
 
 	@Getter
 	private Kingdom personalKingdom;

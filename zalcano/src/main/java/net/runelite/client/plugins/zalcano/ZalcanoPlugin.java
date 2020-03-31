@@ -186,7 +186,7 @@ public class ZalcanoPlugin extends Plugin
 		}
 		if (util.countItemInInventory(ItemID.TEPHRA) < 3 && util.countItemInInventory(ItemID.REFINED_TEPHRA) < 3 && util.countStackInInventory(ItemID.IMBUED_TEPHRA) < 3)
 		{
-			if (client.getLocalPlayer().getPlayerAppearance().getEquipmentId(KitType.WEAPON) == ItemID.IMBUED_TEPHRA)
+			if (client.getLocalPlayer() != null && client.getLocalPlayer().getPlayerAppearance() != null && client.getLocalPlayer().getPlayerAppearance().getEquipmentId(KitType.WEAPON) == ItemID.IMBUED_TEPHRA)
 			{
 				setStep(Step.THROW);
 				return;

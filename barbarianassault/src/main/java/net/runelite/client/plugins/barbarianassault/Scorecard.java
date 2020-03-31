@@ -37,18 +37,18 @@ import net.runelite.client.chat.ChatMessageBuilder;
 @Getter(AccessLevel.PACKAGE)
 public class Scorecard
 {
-	private BarbarianAssaultPlugin game;
+	private final BarbarianAssaultPlugin game;
 
 	@Getter(AccessLevel.NONE)
-	private List<Wave> waves = new ArrayList<>();
-	private String[] totalDescriptions = {
+	private final List<Wave> waves = new ArrayList<>();
+	private final String[] totalDescriptions = {
 		"A: ",
 		"; D: ",
 		"; C: ",
 		"; Vial: ",
 		"; H packs: ",
 		"; Total: "};
-	private String[] otherPointsDescriptions = {
+	private final String[] otherPointsDescriptions = {
 		" A: ",
 		"; D: ",
 		"; C: ",
@@ -56,7 +56,7 @@ public class Scorecard
 	};
 	private int[] totalPoints = new int[6];
 	private int[] totalAmounts = new int[6];
-	private int[] otherRolesPoints = new int[4];
+	private final int[] otherRolesPoints = new int[4];
 
 	Scorecard(BarbarianAssaultPlugin game)
 	{

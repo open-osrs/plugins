@@ -60,8 +60,8 @@ public enum Emote
 	FLAP("Flap", EMOTE_FLAP),
 	PUSH_UP("Push up", EMOTE_PUSH_UP);
 
-	private String name;
-	private int spriteId;
+	private final String name;
+	private final int spriteId;
 
 	Emote(String name, int spriteId)
 	{

@@ -71,6 +71,12 @@ class BarrowsOverlay extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		Player local = client.getLocalPlayer();
+
+		if (local == null)
+		{
+			return null;
+		}
+
 		final Color npcColor = getMinimapDotColor(1);
 		final Color playerColor = getMinimapDotColor(2);
 		Widget puzzleAnswer = plugin.getPuzzleAnswer();
@@ -255,6 +261,11 @@ class BarrowsOverlay extends Overlay
 
 	private void renderDigLocations(Graphics2D graphics)
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return;
+		}
+
 		for (BarrowsBrothers brother : BarrowsBrothers.values())
 		{
 			WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();

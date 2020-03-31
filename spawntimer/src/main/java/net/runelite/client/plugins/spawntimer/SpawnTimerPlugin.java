@@ -41,7 +41,7 @@ public class SpawnTimerPlugin extends Plugin
 	private final Set<NPC> highlightedNpcs = new HashSet<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	Set<thing> ticks = new HashSet<>();
+	final Set<thing> ticks = new HashSet<>();
 
 	@Inject
 	private net.runelite.client.plugins.spawntimer.SpawnTimerOverlay SpawnTimerOverlay;

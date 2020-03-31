@@ -38,8 +38,8 @@ import net.runelite.api.coords.WorldPoint;
 @Getter(AccessLevel.PACKAGE)
 class MemorizedNpc
 {
-	private int npcIndex;
-	private Set<String> npcNames;
+	private final int npcIndex;
+	private final Set<String> npcNames;
 	private int npcSize;
 	/**
 	 * The time the npc died at, in game ticks, relative to the tick counter

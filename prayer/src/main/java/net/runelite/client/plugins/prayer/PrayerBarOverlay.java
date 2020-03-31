@@ -74,7 +74,7 @@ class PrayerBarOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!config.showPrayerBar() || !showingPrayerBar)
+		if (!config.showPrayerBar() || !showingPrayerBar || client.getLocalPlayer() == null)
 		{
 			return null;
 		}
@@ -82,6 +82,11 @@ class PrayerBarOverlay extends Overlay
 		final int height = client.getLocalPlayer().getLogicalHeight() + 10;
 		final LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
 		final Point canvasPoint = Perspective.localToCanvas(client, localLocation, client.getPlane(), height);
+
+		if (canvasPoint == null)
+		{
+			return null;
+		}
 
 		final float ratio = (float) client.getBoostedSkillLevel(Skill.PRAYER) / client.getRealSkillLevel(Skill.PRAYER);
 

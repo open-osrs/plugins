@@ -141,7 +141,7 @@ public class CookingPlugin extends Plugin
 	{
 		Player player = client.getLocalPlayer();
 
-		if (graphicChanged.getActor() != player)
+		if (graphicChanged.getActor() != player || player == null)
 		{
 			return;
 		}

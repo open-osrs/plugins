@@ -56,7 +56,7 @@ public class ZalcanoStepsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (client.getLocalPlayer().getWorldLocation().getRegionID() == 12126 && config.showSteps())
+		if (client.getLocalPlayer() != null && client.getLocalPlayer().getWorldLocation().getRegionID() == 12126 && config.showSteps())
 		{
 			panelComponent.getChildren().clear();
 

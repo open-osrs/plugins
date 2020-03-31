@@ -1109,7 +1109,7 @@ public class SlayerPlugin extends Plugin
 		ChatMessageType type = chatMessage.getType();
 
 		final String player;
-		if (type.equals(ChatMessageType.PRIVATECHATOUT))
+		if (type.equals(ChatMessageType.PRIVATECHATOUT) && client.getLocalPlayer() != null)
 		{
 			player = client.getLocalPlayer().getName();
 		}
@@ -1229,7 +1229,7 @@ public class SlayerPlugin extends Plugin
 
 	private boolean taskSubmit(ChatInput chatInput, String value)
 	{
-		if (Strings.isNullOrEmpty(currentTask.getTaskName()))
+		if (Strings.isNullOrEmpty(currentTask.getTaskName()) || client.getLocalPlayer() == null)
 		{
 			return false;
 		}

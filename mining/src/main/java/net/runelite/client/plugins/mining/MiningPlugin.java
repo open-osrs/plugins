@@ -162,7 +162,7 @@ public class MiningPlugin extends Plugin
 	@Subscribe
 	private void onGameObjectDespawned(GameObjectDespawned event)
 	{
-		if (client.getGameState() != GameState.LOGGED_IN || recentlyLoggedIn)
+		if (client.getGameState() != GameState.LOGGED_IN || recentlyLoggedIn || client.getLocalPlayer() == null)
 		{
 			return;
 		}
@@ -199,7 +199,7 @@ public class MiningPlugin extends Plugin
 	@Subscribe
 	private void onWallObjectSpawned(WallObjectSpawned event)
 	{
-		if (client.getGameState() != GameState.LOGGED_IN)
+		if (client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer() == null)
 		{
 			return;
 		}
@@ -313,6 +313,6 @@ public class MiningPlugin extends Plugin
 
 	private boolean inMiningGuild()
 	{
-		return client.getLocalPlayer().getWorldLocation().getRegionID() == MINING_GUILD_REGION;
+		return client.getLocalPlayer() != null && client.getLocalPlayer().getWorldLocation().getRegionID() == MINING_GUILD_REGION;
 	}
 }

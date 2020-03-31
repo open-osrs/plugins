@@ -125,7 +125,7 @@ public class HunterPlugin extends Plugin
 			case ObjectID.DEADFALL: // Deadfall trap placed
 			case ObjectID.MONKEY_TRAP: // Maniacal monkey trap placed
 				// If player is right next to "object" trap assume that player placed the trap
-				if (localPlayer.getWorldLocation().distanceTo(trapLocation) <= 2)
+				if (localPlayer != null && localPlayer.getWorldLocation().distanceTo(trapLocation) <= 2)
 				{
 					log.debug("Trap placed by \"{}\" on {}", localPlayer.getName(), trapLocation);
 					traps.put(trapLocation, new HunterTrap(gameObject));
@@ -379,7 +379,10 @@ public class HunterPlugin extends Plugin
 			}
 		}
 
-		lastTickLocalPlayerLocation = client.getLocalPlayer().getWorldLocation();
+		if (client.getLocalPlayer() != null)
+		{
+			lastTickLocalPlayerLocation = client.getLocalPlayer().getWorldLocation();
+		}
 	}
 
 	@Subscribe

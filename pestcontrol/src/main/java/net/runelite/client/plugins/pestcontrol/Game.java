@@ -46,16 +46,16 @@ public class Game
 	private final PestControlPlugin plugin;
 
 	@Getter(AccessLevel.PACKAGE)
-	private Portal bluePortal = new Portal(PortalColor.BLUE, WidgetPortal.BLUE);
+	private final Portal bluePortal = new Portal(PortalColor.BLUE, WidgetPortal.BLUE);
 
 	@Getter(AccessLevel.PACKAGE)
-	private Portal purplePortal = new Portal(PortalColor.PURPLE, WidgetPortal.PURPLE);
+	private final Portal purplePortal = new Portal(PortalColor.PURPLE, WidgetPortal.PURPLE);
 
 	@Getter(AccessLevel.PACKAGE)
-	private Portal yellowPortal = new Portal(PortalColor.YELLOW, WidgetPortal.YELLOW);
+	private final Portal yellowPortal = new Portal(PortalColor.YELLOW, WidgetPortal.YELLOW);
 
 	@Getter(AccessLevel.PACKAGE)
-	private Portal redPortal = new Portal(PortalColor.RED, WidgetPortal.RED);
+	private final Portal redPortal = new Portal(PortalColor.RED, WidgetPortal.RED);
 
 	@Getter(AccessLevel.PACKAGE)
 	private int shieldsDropped = 0;

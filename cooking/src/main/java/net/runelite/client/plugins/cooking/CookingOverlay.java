@@ -111,6 +111,11 @@ class CookingOverlay extends Overlay
 
 	private boolean isCooking()
 	{
+		if (client.getLocalPlayer() == null)
+		{
+			return false;
+		}
+
 		switch (client.getLocalPlayer().getAnimation())
 		{
 			case COOKING_FIRE:

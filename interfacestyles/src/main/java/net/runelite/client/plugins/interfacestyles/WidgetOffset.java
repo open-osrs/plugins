@@ -178,12 +178,12 @@ enum WidgetOffset
 	FIXED_2006_EMOTES_ICON(Skin.AROUND_2006, WidgetInfo.FIXED_VIEWPORT_EMOTES_ICON, 177, null, null, null),
 	FIXED_2006_MUSIC_HIGHLIGHT(Skin.AROUND_2006, WidgetInfo.FIXED_VIEWPORT_MUSIC_TAB, 206, null, 30, null),
 	FIXED_2006_MUSIC_ICON(Skin.AROUND_2006, WidgetInfo.FIXED_VIEWPORT_MUSIC_ICON, 202, -1, null, null);
-	private Skin skin;
-	private WidgetInfo widgetInfo;
-	private Integer offsetX;
-	private Integer offsetY;
-	private Integer width;
-	private Integer height;
+	private final Skin skin;
+	private final WidgetInfo widgetInfo;
+	private final Integer offsetX;
+	private final Integer offsetY;
+	private final Integer width;
+	private final Integer height;
 
 	WidgetOffset(Skin skin, WidgetInfo widgetInfo, Integer offsetX, Integer offsetY, Integer width, Integer height)
 	{

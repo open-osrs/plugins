@@ -639,7 +639,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 		final String mode = matcher.group("mode");
 		if (mode != null)
 		{
-			value = mode.toLowerCase().equals("ge") ? gePrice : haPrice;
+			value = mode.equalsIgnoreCase("ge") ? gePrice : haPrice;
 		}
 
 		final String op = matcher.group("op");
