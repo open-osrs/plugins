@@ -46,6 +46,7 @@ import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.events.PartyChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ws.PartyMember;
 import net.runelite.client.ws.PartyService;
@@ -56,7 +57,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "DPS Counter",
 	description = "Counts damage (per second) by a party",
-	enabledByDefault = false
+	enabledByDefault = false,
+	type = PluginType.UTILITY
 )
 @Slf4j
 public class DpsCounterPlugin extends Plugin
