@@ -578,9 +578,17 @@ public class SlayerPlugin extends Plugin
 			}
 			forcedWait--;
 		}
+		
 
-		if (infoTimer != null && config.statTimeout() != 0)
+		// If a timeout is configured for showing slayer stats
+		if (config.statTimeout() != 0)
 		{
+			// If the timer has not started, start it now
+			if (infoTimer == null)
+			{
+				infoTimer = Instant.now();
+			}
+			
 			Duration timeSinceInfobox = Duration.between(infoTimer, Instant.now());
 			Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 

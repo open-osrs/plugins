@@ -41,6 +41,7 @@ import lombok.Setter;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
+import net.runelite.client.game.WorldService;
 import net.runelite.api.SpriteID;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
@@ -61,10 +62,17 @@ import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.http.api.worlds.World;
+import net.runelite.http.api.worlds.WorldRegion;
+import net.runelite.http.api.worlds.WorldResult;
 
 @Singleton
 public class RaidsOverlay extends Overlay
 {
+	
+	@Inject
+	private WorldService worldService;
+	
 	private static final int OLM_PLANE = 0;
 	private static final int BORDER_OFFSET = 2;
 	private static final int ICON_SIZE = 32;
@@ -287,8 +295,21 @@ public class RaidsOverlay extends Overlay
 				clanOwner = "Open CC Tab";
 				color = Color.RED;
 			}
+			
+			String worldString = "W" + client.getWorld();
+			WorldResult worldResult = worldService.getWorlds();
+			if (worldResult != null)
+			{
+				World world = worldResult.findWorld(client.getWorld());
+				WorldRegion region = world.getRegion();
+				if (region != null)
+				{
+					String countryCode = region.getAlpha2();
+					worldString += " (" + countryCode + ")";
+				}
+			}
 
-			tableComponent.addRow(ColorUtil.prependColorTag("W" + client.getWorld(), Color.ORANGE), ColorUtil.prependColorTag("" + clanOwner, color));
+			tableComponent.addRow(ColorUtil.prependColorTag(worldString, Color.ORANGE), ColorUtil.prependColorTag("" + clanOwner, color));
 		}
 
 		int bossMatches = 0;

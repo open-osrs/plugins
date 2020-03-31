@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
-import net.runelite.api.Varbits;
 import net.runelite.api.util.Text;
 import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
@@ -101,17 +100,6 @@ class OpponentInfoOverlay extends Overlay
 			opponentName = Text.removeTags(opponent.getName());
 
 			lastMaxHealth = opponentInfoPlugin.getMaxHp(opponent);
-
-			final Actor opponentsOpponent = opponent.getInteracting();
-			if (opponentsOpponent != null
-				&& (opponentsOpponent != client.getLocalPlayer() || client.getVar(Varbits.MULTICOMBAT_AREA) == 1))
-			{
-				opponentsOpponentName = Text.removeTags(opponentsOpponent.getName());
-			}
-			else
-			{
-				opponentsOpponentName = null;
-			}
 		}
 
 		if (opponentName == null)
@@ -162,7 +150,7 @@ class OpponentInfoOverlay extends Overlay
 		}
 
 		// Opponents opponent
-		if (opponentsOpponentName != null && opponentInfoConfig.showOpponentsOpponent())
+		if (opponentsOpponentName != null)
 		{
 			panelWidth = Math.max(panelWidth, fontMetrics.stringWidth(opponentsOpponentName) + ComponentConstants.STANDARD_BORDER + ComponentConstants.STANDARD_BORDER);
 			panelComponent.setPreferredSize(new Dimension(panelWidth, 0));

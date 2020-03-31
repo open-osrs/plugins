@@ -123,7 +123,7 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
-	
+
 	@ConfigSection(
 		name = "Right Click Options",
 		description = "",
@@ -289,6 +289,30 @@ public interface MenuEntrySwapperConfig extends Config
 	default String getWithdrawAllItems()
 	{
 		return "";
+	}
+
+	@ConfigItem(
+		keyName = "getSwapOffer",
+		name = "Offer-All",
+		description = "Swap 'Offer', on trades with 'Offer-All'",
+		position = 11,
+		section = "miscellaneousSection"
+	)
+	default boolean getSwapOffer()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapCoalBag",
+		name = "Coal Bag",
+		description = "Makes Empty the left click option when in a bank",
+		position = 12,
+		section = "miscellaneousSection"
+	)
+	default boolean swapCoalBag()
+	{
+		return true;
 	}
 
 	//------------------------------------------------------------//
@@ -466,60 +490,12 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return "";
 	}
-	
-	@ConfigItem(
-		keyName = "getSwapOffer",
-		name = "Offer-All",
-		description = "Swap 'Offer', on trades with 'Offer-All'",
-		position = 3,
-		section = "miscellaneousSection"
-	)
-	default boolean getSwapOffer()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "swapCoalBag",
-		name = "Coal Bag",
-		description = "Makes Empty the left click option when in a bank",
-		position = 3,
-		section = "miscellaneousSection"
-	)
-	default boolean swapCoalBag()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "swapBirdhouseEmpty",
-		name = "Birdhouse",
-		description = "Swap 'Interact' with 'Empty' for birdhouses on Fossil Island.",
-		position = 4,
-		section = "miscellaneousSection"
-	)
-	default boolean swapBirdhouseEmpty()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "swapBones",
-		name = "Bury",
-		description = "Swap 'Bury' with 'Use' on Bones.",
-		position = 5,
-		section = "miscellaneousSection"
-	)
-	default boolean swapBones()
-	{
-		return false;
-	}
 
 	@ConfigItem(
 		keyName = "swapChase",
 		name = "Chase",
 		description = "Allows to left click your cat to chase rats.",
-		position = 6,
+		position = 2,
 		section = "miscellaneousSection"
 	)
 	default boolean swapChase()
@@ -527,23 +503,12 @@ public interface MenuEntrySwapperConfig extends Config
 		return true;
 	}
 
-	@ConfigItem(
-		keyName = "swapHarpoon",
-		name = "Harpoon",
-		description = "Swap 'Cage', 'Big Net' with 'Harpoon' on Fishing spots.",
-		position = 7,
-		section = "miscellaneousSection"
-	)
-	default boolean swapHarpoon()
-	{
-		return false;
-	}
 
 	@ConfigItem(
 		keyName = "swapOccult",
 		name = "Occult Altar",
 		description = "Swap 'Venerate' with 'Ancient', 'Lunar', or 'Arceuus' on an Altar of the Occult.",
-		position = 8,
+		position = 3,
 		section = "miscellaneousSection"
 	)
 	default boolean swapOccult()
@@ -555,7 +520,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "occultalter",
 		name = "Mode",
 		description = "",
-		position = 9,
+		position = 4,
 		section = "miscellaneousSection",
 		hidden = true,
 		unhide = "swapOccult"
@@ -569,7 +534,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapHomePortal",
 		name = "Home",
 		description = "Swap 'Enter' with 'Home', 'Build' or 'Friend's house' on Portal.",
-		position = 10,
+		position = 5,
 		section = "miscellaneousSection"
 	)
 	default boolean swapHomePortal()
@@ -581,7 +546,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "home",
 		name = "Mode",
 		description = "",
-		position = 11,
+		position = 6,
 		section = "miscellaneousSection",
 		hidden = true,
 		unhide = "swapHomePortal"
@@ -595,7 +560,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapHouseAd",
 		name = "House Ad",
 		description = "Swap your house advertisement entries.",
-		position = 12,
+		position = 7,
 		section = "miscellaneousSection"
 	)
 	default boolean swapHouseAd()
@@ -607,7 +572,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapHouseAdMode",
 		name = "Mode",
 		description = "",
-		position = 13,
+		position = 8,
 		section = "miscellaneousSection",
 		hidden = true,
 		unhide = "swapHouseAd"
@@ -621,19 +586,19 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapPrivate",
 		name = "Private",
 		description = "Swap 'Shared' with 'Private' on the Chambers of Xeric storage units.",
-		position = 15,
+		position = 9,
 		section = "miscellaneousSection"
 	)
 	default boolean swapPrivate()
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "swapPick",
 		name = "Pick",
 		description = "Swap 'Pick' with 'Pick-lots' of the Gourd tree in the Chambers of Xeric.",
-		position = 15,
+		position = 10,
 		section = "miscellaneousSection"
 	)
 	default boolean swapPick()
@@ -645,7 +610,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapQuick",
 		name = "Quick Pass/Open/Start/Travel",
 		description = "Swap 'Pass' with 'Quick-Pass', 'Open' with 'Quick-Open', 'Ring' with 'Quick-Start' and 'Talk-to' with 'Quick-Travel'.",
-		position = 16,
+		position = 11,
 		section = "miscellaneousSection"
 	)
 	default boolean swapQuick()
@@ -654,22 +619,10 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "swapBoxTrap",
-		name = "Reset",
-		description = "Swap 'Check' with 'Reset' on box traps.",
-		position = 17,
-		section = "miscellaneousSection"
-	)
-	default boolean swapBoxTrap()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "rockCake",
 		name = "Rock Cake Guzzle",
 		description = "Enables Left Click 'Guzzle' on the Dwarven Rock Cake.",
-		position = 18,
+		position = 12,
 		section = "miscellaneousSection"
 	)
 	default boolean rockCake()
@@ -678,46 +631,10 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "swapRogueschests",
-		name = "Rogues Chests",
-		description = "Swap Rogues Chests from 'Open' to 'Search for traps'.",
-		position = 19,
-		section = "miscellaneousSection"
-	)
-	default boolean swapRogueschests()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "swapClimbUpDown",
-		name = "Climb",
-		description = "Swap 'Climb-Up'/'Climb-Down' depending on Shift or Control key.",
-		position = 20,
-		section = "miscellaneousSection"
-	)
-	default boolean swapClimbUpDown()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "swapStun",
-		name = "Stun Hoop Snakes",
-		description = "Swap 'Attack' with 'Stun'.",
-		position = 21,
-		section = "miscellaneousSection"
-	)
-	default boolean swapStun()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "swapSearch",
 		name = "Search",
 		description = "Swap 'Close', 'Shut' with 'Search' on chests, cupboards, etc.",
-		position = 22,
+		position = 13,
 		section = "miscellaneousSection"
 	)
 	default boolean swapSearch()
@@ -729,7 +646,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapHardWoodGrove",
 		name = "Hardwood Grove",
 		description = "Swap 'Quick-Pay(100)' and 'Send-Parcel' at Hardwood Grove.",
-		position = 23,
+		position = 14,
 		section = "miscellaneousSection"
 	)
 	default boolean swapHardWoodGrove()
@@ -737,12 +654,11 @@ public interface MenuEntrySwapperConfig extends Config
 		return true;
 	}
 
-
 	@ConfigItem(
 		keyName = "removeObjects",
 		name = "Remove Objects",
 		description = "Removes interaction with the listed objects.",
-		position = 24,
+		position = 15,
 		section = "miscellaneousSection"
 	)
 	default boolean getRemoveObjects()
@@ -754,7 +670,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "removedObjects",
 		name = "Objects",
 		description = "Objects listed here will have all interaction be removed.",
-		position = 25,
+		position = 16,
 		section = "miscellaneousSection",
 		hidden = true,
 		unhide = "removeObjects"
@@ -768,10 +684,34 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapImps",
 		name = "Impling Jars",
 		description = "Don't open implings if bank has a clue.",
-		position = 26,
+		position = 17,
 		section = "miscellaneousSection"
 	)
 	default boolean swapImps()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapPharaohsSceptre",
+		name = "Swap Pharaoh's sceptre",
+		description = "Swap left click to Wield from Jalsavrah.",
+		position = 18,
+		section = "miscellaneousSection"
+	)
+	default boolean swapPharaohsSceptre()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapTeleportNames",
+		name = "Swap Teleport Names",
+		description = "Swap Teleport Names for Teleports with silly names.",
+		position = 19,
+		section = "miscellaneousSection"
+	)
+	default boolean swapTeleportNames()
 	{
 		return false;
 	}
@@ -1031,7 +971,7 @@ public interface MenuEntrySwapperConfig extends Config
 
 	@ConfigItem(
 		keyName = "swapPuroPuro",
-		name = "Puro-Puro Wheat",
+		name = "Puro-Puro Wheat.",
 		description = "",
 		position = 3,
 		section = "skillingSection"
@@ -1043,7 +983,7 @@ public interface MenuEntrySwapperConfig extends Config
 
 	@ConfigItem(
 		keyName = "swapGrimyHerb",
-		name = "Grimy Herbs",
+		name = "Grimy Herbs.",
 		description = "",
 		position = 4,
 		section = "skillingSection"
@@ -1065,6 +1005,126 @@ public interface MenuEntrySwapperConfig extends Config
 	default SwapGrimyHerbMode swapGrimyHerbMode()
 	{
 		return SwapGrimyHerbMode.DYNAMIC;
+	}
+
+	@ConfigItem(
+		keyName = "swapBones",
+		name = "Bury",
+		description = "Swap 'Bury' with 'Use' on Bones.",
+		position = 6,
+		section = "skillingSection"
+	)
+	default boolean swapBones()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapHarpoon",
+		name = "Harpoon",
+		description = "Swap 'Cage', 'Big Net' with 'Harpoon' on Fishing spots.",
+		position = 7,
+		section = "skillingSection"
+	)
+	default boolean swapHarpoon()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapBirdhouseEmpty",
+		name = "Birdhouse",
+		description = "Swap 'Interact' with 'Empty' for birdhouses on Fossil Island.",
+		position = 8,
+		section = "skillingSection"
+	)
+	default boolean swapBirdhouseEmpty()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "swapBoxTrap",
+		name = "Reset",
+		description = "Swap 'Check' with 'Reset' on box traps.",
+		position = 9,
+		section = "skillingSection"
+	)
+	default boolean swapBoxTrap()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "swapRogueschests",
+		name = "Rogues Chests",
+		description = "Swap Rogues Chests from 'Open' to 'Search for traps'.",
+		position = 10,
+		section = "skillingSection"
+	)
+	default boolean swapRogueschests()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "swapStun",
+		name = "Stun Hoop Snakes",
+		description = "Swap 'Attack' with 'Stun'.",
+		position = 11,
+		section = "skillingSection"
+	)
+	default boolean swapStun()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "swapSalamander",
+		name = "Release Salamander",
+		description = "Swap wield with release for salamanders when training hunter.",
+		position = 12,
+		section = "skillingSection"
+	)
+	default boolean swapSalamander()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapDropFish",
+		name = "Left Click Drop Fish",
+		description = "Left Click Drop Fish.",
+		position = 14,
+		section = "skillingSection"
+	)
+	default boolean swapDropFish()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapDropOre",
+		name = "Left Click Drop Ore",
+		description = "Left Click Drop Ore.",
+		position = 15,
+		section = "skillingSection"
+	)
+	default boolean swapDropOre()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapDropLogs",
+		name = "Left Click Drop Logs",
+		description = "Left Click Drop Logs.",
+		position = 16,
+		section = "skillingSection"
+	)
+	default boolean swapDropLogs()
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------//
@@ -1345,7 +1405,7 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
-	
+
 	//------------------------------------------------------------//
 	// Right Click Options
 	//------------------------------------------------------------//
@@ -1473,7 +1533,7 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "hideRestoreTanzaniteHelm",
 		name = "Restore on Tanzanite Helm",
@@ -1485,7 +1545,7 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "hideRestoreMagmaHelm",
 		name = "Restore on Magma Helm",
@@ -1612,6 +1672,18 @@ public interface MenuEntrySwapperConfig extends Config
 		section = "hotkeySwapping"
 	)
 	default boolean bankInvigorateItem()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapClimbUpDown",
+		name = "Climb",
+		description = "Swap 'Climb-Up'/'Climb-Down' depending on Shift or Control key.",
+		position = 9,
+		section = "hotkeySwapping"
+	)
+	default boolean swapClimbUpDown()
 	{
 		return false;
 	}
