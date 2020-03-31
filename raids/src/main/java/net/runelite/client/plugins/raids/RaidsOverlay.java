@@ -473,7 +473,7 @@ public class RaidsOverlay extends Overlay
 	{
 		BufferedImage bim;
 		{
-			if (!(id == SpriteID.SPELL_ICE_BARRAGE || id == SpriteID.SPELL_VENGEANCE))
+			if (!(id == SpriteID.SPELL_ICE_BARRAGE || id == SpriteID.SPELL_VENGEANCE || id == SpriteID.SPELL_FIRE_SURGE))
 			{
 				bim = itemManager.getImage(id);
 			}
@@ -489,7 +489,7 @@ public class RaidsOverlay extends Overlay
 			{
 				return ImageUtil.resizeCanvas(bim, ICON_SIZE, ICON_SIZE);
 			}
-			if (!(id == SpriteID.SPELL_ICE_BARRAGE || id == SpriteID.SPELL_VENGEANCE))
+			if (!(id == SpriteID.SPELL_ICE_BARRAGE || id == SpriteID.SPELL_VENGEANCE || id == SpriteID.SPELL_FIRE_SURGE))
 			{
 				return ImageUtil.resizeImage(bim, SMALL_ICON_SIZE, SMALL_ICON_SIZE);
 			}
