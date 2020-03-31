@@ -423,7 +423,7 @@ public class RaidsPlugin extends Plugin
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
-		if (!event.getGroup().equals("net/runelite/client/plugins/raids"))
+		if (!event.getGroup().equals("raids"))
 		{
 			return;
 		}
