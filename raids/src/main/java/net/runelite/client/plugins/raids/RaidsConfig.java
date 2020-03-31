@@ -180,7 +180,7 @@ public interface RaidsConfig extends Config
 	)
 	default String recommendedItems()
 	{
-		return "[Muttadiles, zamorak godsword, ice barrage],[Vasa,zamorakian hasta, abyssal dagger, ghrazi rapier, vengeance],[Guardians,Dragon pickaxe],[Mystics,Salve amulet(ei)],[Shamans,Sanfew serum(4), Antidote++(4)],[Vespula,Prayer potion(4), Super restore(4), Sanfew Serum(4)],[Tekton,Elder Maul, Abyssal Bludgeon, Vengeance],[Thieving,lockpick]";
+		return "[Muttadiles, zamorak godsword, ice barrage],[Vasa,zamorakian hasta, abyssal dagger, Blade of saeldor, ghrazi rapier, vengeance],[Guardians,Dragon pickaxe],[Mystics,Salve amulet(ei)],[Shamans,Sanfew serum(4), Antidote++(4)],[Vespula,Prayer potion(4), Super restore(4), Sanfew Serum(4)],[Tekton,Elder Maul, Abyssal Bludgeon, Vengeance],[Thieving,lockpick],[Ice Demon, fire surge]";
 	}
 
 	@ConfigItem(
