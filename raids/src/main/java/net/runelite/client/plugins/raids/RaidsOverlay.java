@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018, Kamiel
  * Copyright (c) 2019, ganom <https://github.com/Ganom>
+ * Copyright (c) 2020, Crystalknoct
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,12 +42,12 @@ import lombok.Setter;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
-import net.runelite.client.game.WorldService;
 import net.runelite.api.SpriteID;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
+import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.raids.solver.Room;
 import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
@@ -69,10 +70,10 @@ import net.runelite.http.api.worlds.WorldResult;
 @Singleton
 public class RaidsOverlay extends Overlay
 {
-	
+
 	@Inject
 	private WorldService worldService;
-	
+
 	private static final int OLM_PLANE = 0;
 	private static final int BORDER_OFFSET = 2;
 	private static final int ICON_SIZE = 32;
@@ -295,7 +296,7 @@ public class RaidsOverlay extends Overlay
 				clanOwner = "Open CC Tab";
 				color = Color.RED;
 			}
-			
+
 			String worldString = "W" + client.getWorld();
 			WorldResult worldResult = worldService.getWorlds();
 			if (worldResult != null)
@@ -471,26 +472,28 @@ public class RaidsOverlay extends Overlay
 	private BufferedImage getImage(int id, boolean small)
 	{
 		BufferedImage bim;
-		if (id != SpriteID.SPELL_ICE_BARRAGE)
 		{
-			bim = itemManager.getImage(id);
+			if (!(id == SpriteID.SPELL_ICE_BARRAGE || id == SpriteID.SPELL_VENGEANCE))
+			{
+				bim = itemManager.getImage(id);
+			}
+			else
+			{
+				bim = spriteManager.getSprite(id, 0);
+			}
+			if (bim == null)
+			{
+				return null;
+			}
+			if (!small)
+			{
+				return ImageUtil.resizeCanvas(bim, ICON_SIZE, ICON_SIZE);
+			}
+			if (!(id == SpriteID.SPELL_ICE_BARRAGE || id == SpriteID.SPELL_VENGEANCE))
+			{
+				return ImageUtil.resizeImage(bim, SMALL_ICON_SIZE, SMALL_ICON_SIZE);
+			}
+			return ImageUtil.resizeCanvas(bim, SMALL_ICON_SIZE, SMALL_ICON_SIZE);
 		}
-		else
-		{
-			bim = spriteManager.getSprite(id, 0);
-		}
-		if (bim == null)
-		{
-			return null;
-		}
-		if (!small)
-		{
-			return ImageUtil.resizeCanvas(bim, ICON_SIZE, ICON_SIZE);
-		}
-		if (id != SpriteID.SPELL_ICE_BARRAGE)
-		{
-			return ImageUtil.resizeImage(bim, SMALL_ICON_SIZE, SMALL_ICON_SIZE);
-		}
-		return ImageUtil.resizeCanvas(bim, SMALL_ICON_SIZE, SMALL_ICON_SIZE);
 	}
 }
