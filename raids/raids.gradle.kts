@@ -31,6 +31,7 @@ project.extra["PluginName"] = "CoX Scouter"
 project.extra["PluginDescription"] = "Show helpful information for the Chambers of Xeric raid"
 
 dependencies {
+    
     annotationProcessor(Libraries.lombok)
     annotationProcessor(Libraries.pf4j)
 
