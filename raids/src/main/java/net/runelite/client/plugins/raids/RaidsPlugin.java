@@ -915,6 +915,10 @@ public class RaidsPlugin extends Plugin
 				{
 					map.get(key).add(SpriteID.SPELL_VENGEANCE);
 				}
+				if (itemName.equals("fire surge"))
+				{
+					map.get(key).add(SpriteID.SPELL_FIRE_SURGE);
+				}
 				else if (itemName.startsWith("salve"))
 				{
 					map.get(key).add(ItemID.SALVE_AMULETEI);
