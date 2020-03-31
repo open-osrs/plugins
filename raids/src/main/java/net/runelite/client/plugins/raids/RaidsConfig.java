@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018, Kamiel
  * Copyright (c) 2019, ganom <https://github.com/Ganom>
+ * Copyright (c) 2020, Crystalknoct
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
