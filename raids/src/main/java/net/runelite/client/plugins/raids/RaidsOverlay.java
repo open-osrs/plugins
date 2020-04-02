@@ -322,8 +322,6 @@ public class RaidsOverlay extends Overlay
 		{
 			bossMatches = plugin.getRotationMatches();
 		}
-
-
 		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
 		{
 			int position = layoutRoom.getPosition();
