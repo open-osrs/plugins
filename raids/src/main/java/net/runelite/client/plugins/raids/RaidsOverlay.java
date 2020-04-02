@@ -33,6 +33,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
@@ -324,7 +325,7 @@ public class RaidsOverlay extends Overlay
 			bossMatches = plugin.getRotationMatches();
 		}
 
-		Set<Integer> imageIds = new HashSet<>();
+
 		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
 		{
 			int position = layoutRoom.getPosition();
