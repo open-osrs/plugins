@@ -202,14 +202,16 @@ public class CannonReloaderPlugin extends Plugin {
 				if (localLocation.distanceTo(cannonPoint) > MAX_DISTANCE)
 					return;
 				
-				Point p = Perspective.localToCanvas(client, cannonPoint, client.getPlane(), 45);
+				//Point p = Perspective.localToCanvas(client, cannonPoint, client.getPlane(), 45);
+
+				Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
 				
 				if (p == null)
 					return;
 				
 				if (client.getTickCount() % 5 != 1)
 					return;
-				
+
 				Thread.sleep(100);
 				InputHandler.leftClick(client, p);
 			} catch (Exception e) {

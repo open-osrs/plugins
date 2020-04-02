@@ -28,11 +28,9 @@ rootProject.name = "ben93riggs Plugins"
 include(":cannonreloader")
 include(":foodeater")
 include(":itemcombiner")
-include(":itemdropper")
 include(":itemuser")
 include(":jadautoprayer")
 include(":pktools")
-include(":prayerflick")
 include(":praypotdrinker")
 
 for (project in rootProject.children) {
