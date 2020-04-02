@@ -318,6 +318,7 @@ public class RaidsOverlay extends Overlay
 		int bossCount = 0;
 		roomCount = 0;
 
+		Set<Integer> imageIds = new LinkedHashSet<>();
 		if (config.enableRotationWhitelist())
 		{
 			bossMatches = plugin.getRotationMatches();
