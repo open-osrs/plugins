@@ -465,6 +465,30 @@ public interface RaidsConfig extends Config
 
 	@ConfigItem(
 		position = 32,
+		titleSection = "hideRooms",
+		keyName = "hideIceDemon",
+		name = "Hide Ice Demon raids",
+		description = "Display an overlay that shows information about the current party"
+	)
+	default boolean hideIceDemon()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 33,
+		titleSection = "hideRooms",
+		keyName = "hideThieving",
+		name = "Hide Thieving raids",
+		description = "Display an overlay that shows information about the current party"
+	)
+	default boolean hideThieving()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 34,
 		keyName = "partyDisplay",
 		name = "Party Info Display",
 		description = "Display an overlay that shows information about the current party"

@@ -32,7 +32,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
@@ -233,7 +233,7 @@ public class RaidsOverlay extends Overlay
 			puzzles = crabs ? "cr" : iceDemon ? "ri" : thieving ? "tr" : "?r";
 		}
 
-		if ((config.hideVanguards() && vanguards) || (config.hideRopeless() && !tightrope) || (config.hideUnknownCombat() && unknownCombat))
+		if ((config.hideVanguards() && vanguards) || (config.hideRopeless() && !tightrope) || (config.hideUnknownCombat() && unknownCombat || (config.hideIceDemon() && iceDemon || config.hideThieving() && thieving)))
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Bad Raid!")
@@ -318,12 +318,11 @@ public class RaidsOverlay extends Overlay
 		int bossCount = 0;
 		roomCount = 0;
 
+		Set<Integer> imageIds = new LinkedHashSet<>();
 		if (config.enableRotationWhitelist())
 		{
 			bossMatches = plugin.getRotationMatches();
 		}
-
-		Set<Integer> imageIds = new HashSet<>();
 		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
 		{
 			int position = layoutRoom.getPosition();
