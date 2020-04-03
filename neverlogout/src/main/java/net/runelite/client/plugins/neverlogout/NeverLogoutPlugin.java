@@ -50,11 +50,11 @@ public class NeverLogoutPlugin extends Plugin
 	@Subscribe
 	private void onGametick(GameTick gameTick)
 	{
-		if (client.getKeyboardIdleTicks() > 14990)
+		if (client.getKeyboardIdleTicks() > 14900)
 		{
 			client.setKeyboardIdleTicks(0);
 		}
-		if (client.getMouseIdleTicks() > 14990)
+		if (client.getMouseIdleTicks() > 14900)
 		{
 			client.setMouseIdleTicks(0);
 		}
