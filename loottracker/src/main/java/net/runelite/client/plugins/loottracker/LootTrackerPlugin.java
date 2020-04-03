@@ -73,6 +73,7 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
+import net.runelite.api.MessageNode;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.SpriteID;
@@ -156,8 +157,10 @@ public class LootTrackerPlugin extends Plugin
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
 
 	// Herbiboar loot handling
-	private static final String HERBIBOAR_LOOTED_MESSAGE = "You harvest herbs from the herbiboar, whereupon it escapes.";
+	@VisibleForTesting
+	static final String HERBIBOAR_LOOTED_MESSAGE = "You harvest herbs from the herbiboar, whereupon it escapes.";
 	private static final String HERBIBOAR_EVENT = "Herbiboar";
+	private static final Pattern HERBIBOAR_HERB_SACK_PATTERN = Pattern.compile(".+(Grimy .+?) herb.+");
 
 	// Wintertodt loot handling
 	private static final Pattern WINTERTODT_NUMBER_PATTERN = Pattern.compile("Your subdued Wintertodt count is: ([0-9]*).");
@@ -849,10 +852,13 @@ public class LootTrackerPlugin extends Plugin
 
 		if (message.equals(HERBIBOAR_LOOTED_MESSAGE))
 		{
+			if (processHerbiboarHerbSackLoot(event.getTimestamp()))
+			{
+				return;
+			}
 			eventType = HERBIBOAR_EVENT;
 			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
-
 			return;
 		}
 
@@ -1233,6 +1239,54 @@ public class LootTrackerPlugin extends Plugin
 			eventBus.post(LootReceived.class, new LootReceived(event, -1, LootRecordType.EVENT, items));
 			inventorySnapshot = null;
 		}
+	}
+
+	private boolean processHerbiboarHerbSackLoot(int timestamp)
+	{
+		List<ItemStack> herbs = new ArrayList<>();
+
+		for (MessageNode messageNode : client.getMessages())
+		{
+			if (messageNode.getTimestamp() != timestamp
+				|| messageNode.getType() != ChatMessageType.SPAM)
+			{
+				continue;
+			}
+
+			Matcher matcher = HERBIBOAR_HERB_SACK_PATTERN.matcher(messageNode.getValue());
+			if (matcher.matches())
+			{
+				herbs.add(new ItemStack(itemManager.search(matcher.group(1)).get(0).getId(), 1, client.getLocalPlayer().getLocalLocation()));
+			}
+		}
+
+		if (herbs.isEmpty())
+		{
+			return false;
+		}
+
+		final LootTrackerItem[] entries = buildEntries(stack(herbs));
+
+		LootRecord lootRecord = new LootRecord(HERBIBOAR_EVENT, client.getLocalPlayer().getName(),
+			LootRecordType.EVENT, toGameItems(herbs), Instant.now());
+
+		SwingUtilities.invokeLater(() -> panel.add(HERBIBOAR_EVENT, client.getLocalPlayer().getName(), lootRecord.getType(), -1, entries));
+		if (config.saveLoot())
+		{
+			synchronized (queuedLoots)
+			{
+				queuedLoots.add(lootRecord);
+			}
+		}
+
+		if (config.localPersistence())
+		{
+			saveLocalLootRecord(lootRecord);
+		}
+
+		eventBus.post(LootReceived.class, new LootReceived(HERBIBOAR_EVENT, -1, LootRecordType.EVENT, herbs));
+		inventorySnapshot = null;
+		return true;
 	}
 
 	void toggleItem(String name, boolean ignore)
