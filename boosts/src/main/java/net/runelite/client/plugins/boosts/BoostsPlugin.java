@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
@@ -75,7 +75,9 @@ public class BoostsPlugin extends Plugin
 		Skill.SLAYER, Skill.FARMING, Skill.CONSTRUCTION, Skill.HUNTER);
 
 	@Getter
-	private final Set<Skill> shownSkills = new LinkedHashSet<>();
+	private final Set<Skill> skillsToDisplay = EnumSet.noneOf(Skill.class);
+
+	private final Set<Skill> shownSkills = EnumSet.noneOf(Skill.class);
 	private final int[] lastSkillLevels = new int[Skill.values().length - 1];
 	private final List<String> boostedSkillsChanged = new ArrayList<>();
 
@@ -122,7 +124,6 @@ public class BoostsPlugin extends Plugin
 		overlayManager.add(boostsOverlay);
 		overlayManager.add(combatIconsOverlay);
 		updateShownSkills();
-		updateBoostedStats();
 		Arrays.fill(lastSkillLevels, -1);
 
 		// Add infoboxes for everything at startup and then determine inside if it will be rendered
@@ -149,6 +150,7 @@ public class BoostsPlugin extends Plugin
 		lastChangeUp = -1;
 		isChangedUp = false;
 		isChangedDown = false;
+		skillsToDisplay.clear();
 	}
 
 	@Subscribe
@@ -327,6 +329,7 @@ public class BoostsPlugin extends Plugin
 				shownSkills.addAll(BOOSTABLE_NON_COMBAT_SKILLS);
 				break;
 		}
+		updateBoostedStats();
 	}
 
 	private void updateBoostedStats()
@@ -334,11 +337,12 @@ public class BoostsPlugin extends Plugin
 		// Reset is boosted
 		isChangedDown = false;
 		isChangedUp = false;
+		skillsToDisplay.clear();
 
 		// Check if we are still boosted
 		for (final Skill skill : Skill.values())
 		{
-			if (!BOOSTABLE_COMBAT_SKILLS.contains(skill) && !BOOSTABLE_NON_COMBAT_SKILLS.contains(skill))
+			if (!shownSkills.contains(skill))
 			{
 				continue;
 			}
@@ -353,6 +357,11 @@ public class BoostsPlugin extends Plugin
 			else if (boosted < base)
 			{
 				isChangedDown = true;
+			}
+			
+			if (boosted != base)
+			{
+				skillsToDisplay.add(skill);
 			}
 		}
 	}

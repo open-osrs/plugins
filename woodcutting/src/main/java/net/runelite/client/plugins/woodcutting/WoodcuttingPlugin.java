@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -107,9 +108,11 @@ public class WoodcuttingPlugin extends Plugin
 	private ItemManager itemManager;
 
 	@Getter
+	@Nullable
 	private WoodcuttingSession session;
 
 	@Getter
+	@Nullable
 	private Axe axe;
 
 	private boolean recentlyLoggedIn;
@@ -162,13 +165,19 @@ public class WoodcuttingPlugin extends Plugin
 
 		respawns.removeIf(TreeRespawn::isExpired);
 
-		if (session == null || session.getLastLogCut() == null)
+		if (session == null || session.getLastChopping() == null)
 		{
+			return;
+		}
+		
+		if (axe != null && axe.matchesChoppingAnimation(client.getLocalPlayer()))
+		{
+			session.setLastChopping();
 			return;
 		}
 
 		Duration statTimeout = Duration.ofMinutes(config.statTimeout());
-		Duration sinceCut = Duration.between(session.getLastLogCut(), Instant.now());
+		Duration sinceCut = Duration.between(session.getLastChopping(), Instant.now());
 
 		if (sinceCut.compareTo(statTimeout) >= 0)
 		{
@@ -190,7 +199,7 @@ public class WoodcuttingPlugin extends Plugin
 					gpEarned = 0;
 				}
 
-				session.setLastLogCut();
+				session.setLastChopping();
 
 				typeOfLogCut(event.getMessage());
 				gpEarned += itemManager.getItemPrice(treeTypeID);
