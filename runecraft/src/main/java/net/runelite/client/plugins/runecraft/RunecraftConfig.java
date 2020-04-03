@@ -58,22 +58,10 @@ public interface RunecraftConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "essPouch",
-		name = "Swap essence pouch",
-		description = "Makes essence pouch left-click fill in bank",
-		titleSection = "utilTitle",
-		position = 3
-	)
-	default boolean essPouch()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "hightlightDarkMage",
 		name = "Highlight Dark Mage NPC",
 		description = "Configures whether to highlight the Dark Mage when pouches are degraded",
-		position = 4,
+		position = 3,
 		titleSection = "utilTitle"
 	)
 	default boolean hightlightDarkMage()
@@ -85,7 +73,7 @@ public interface RunecraftConfig extends Config
 		keyName = "degradingNotification",
 		name = "Notify when pouch degrades",
 		description = "Send a notification when a pouch degrades",
-		position = 5,
+		position = 4,
 		titleSection = "utilTitle"
 	)
 	default boolean degradingNotification()
@@ -97,7 +85,7 @@ public interface RunecraftConfig extends Config
 		keyName = "degradeOverlay",
 		name = "Show Uses until Degrade",
 		description = "This will show how many uses are left on a pouch until they degrade.",
-		position = 6,
+		position = 5,
 		titleSection = "utilTitle"
 	)
 	default boolean degradeOverlay()
