@@ -31,6 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import static net.runelite.api.AnimationID.*;
 import static net.runelite.api.ItemID.*;
+import net.runelite.api.Player;
 
 @AllArgsConstructor
 @Getter(AccessLevel.PACKAGE)
@@ -43,6 +44,7 @@ enum Axe
 	MITHRIL(WOODCUTTING_MITHRIL, MITHRIL_AXE),
 	ADAMANT(WOODCUTTING_ADAMANT, ADAMANT_AXE),
 	RUNE(WOODCUTTING_RUNE, RUNE_AXE),
+	GILDED(WOODCUTTING_GILDED, GILDED_AXE),
 	DRAGON(WOODCUTTING_DRAGON, DRAGON_AXE),
 	INFERNAL(WOODCUTTING_INFERNAL, INFERNAL_AXE),
 	THIRDAGE(WOODCUTTING_3A_AXE, _3RD_AGE_AXE),
@@ -63,6 +65,11 @@ enum Axe
 		}
 
 		AXE_ANIM_IDS = builder.build();
+	}
+	
+	boolean matchesChoppingAnimation(final Player player)
+	{
+		return player != null && animId == player.getAnimation();
 	}
 
 	static Axe findAxeByAnimId(int animId)

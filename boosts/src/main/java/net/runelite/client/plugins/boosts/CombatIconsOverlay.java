@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
@@ -65,17 +66,20 @@ class CombatIconsOverlay extends Overlay
 		panelComponent.setBackgroundColor(null);
 		panelComponent.setBorder(new Rectangle());
 
+
+		final Set<Skill> boostedSkills = plugin.getSkillsToDisplay();
+
+		if (boostedSkills.isEmpty())
+		{
+			return panelComponent.render(graphics);
+		}
+
 		if (plugin.canShowBoosts())
 		{
-			for (Skill skill : plugin.getShownSkills())
+			for (Skill skill : boostedSkills)
 			{
 				final int boosted = client.getBoostedSkillLevel(skill);
 				final int base = client.getRealSkillLevel(skill);
-
-				if (boosted == base)
-				{
-					continue;
-				}
 
 				final int boost = boosted - base;
 				final Color strColor = getTextColor(boost);

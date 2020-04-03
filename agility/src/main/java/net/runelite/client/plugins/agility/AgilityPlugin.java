@@ -97,6 +97,9 @@ public class AgilityPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private final List<Tile> marksOfGrace = new ArrayList<>();
+	
+	@Getter(AccessLevel.PACKAGE)
+	private Tile stickTile;
 
 	@Inject
 	private OverlayManager overlayManager;
@@ -164,6 +167,7 @@ public class AgilityPlugin extends Plugin
 		obstacles.clear();
 		session = null;
 		agilityLevel = 0;
+		stickTile = null;
 	}
 
 	private void addMenuSubscriptions()
@@ -186,6 +190,7 @@ public class AgilityPlugin extends Plugin
 			case LOADING:
 				marksOfGrace.clear();
 				obstacles.clear();
+				stickTile = null;
 				break;
 			case LOGGED_IN:
 				if (!isInAgilityArena())
@@ -282,13 +287,25 @@ public class AgilityPlugin extends Plugin
 		{
 			marksOfGrace.add(tile);
 		}
+		
+		if (item.getId() == ItemID.STICK)
+		{
+			stickTile = tile;
+		}
 	}
 
 	@Subscribe
 	private void onItemDespawned(ItemDespawned itemDespawned)
 	{
+		final TileItem item = itemDespawned.getItem();
 		final Tile tile = itemDespawned.getTile();
+		
 		marksOfGrace.remove(tile);
+		
+		if (item.getId() == ItemID.STICK && stickTile == tile)
+		{
+			stickTile = null;
+		}
 	}
 
 	@Subscribe

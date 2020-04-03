@@ -79,7 +79,7 @@ class NightmareZoneOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isNotInNightmareZone() || !config.moveOverlay())
+		if (!plugin.isInNightmareZone() || !config.moveOverlay())
 		{
 			if (absorptionCounter != null)
 			{
