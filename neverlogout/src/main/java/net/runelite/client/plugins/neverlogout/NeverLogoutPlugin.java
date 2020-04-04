@@ -38,7 +38,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Never Logout",
 	enabledByDefault = false,
-	description = "Overrides the 5 minutes AFK logout timer.",
+	description = "Overrides the 5 minute AFK logout timer.",
 	tags = {"never log", "idle", "logout", "log", "never"},
 	type = PluginType.MISCELLANEOUS
 )
