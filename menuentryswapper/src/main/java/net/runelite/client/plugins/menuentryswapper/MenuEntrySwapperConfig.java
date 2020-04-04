@@ -1127,6 +1127,18 @@ public interface MenuEntrySwapperConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "swapEssPouch",
+		name = "Swap essence pouch",
+		description = "Makes essence pouch left-click fill in bank",
+		position = 17,
+		titleSection = "skillingSection"
+	)
+	default boolean swapEssPouch()
+	{
+		return false;
+	}
+
 	//------------------------------------------------------------//
 	// Talk-To
 	//------------------------------------------------------------//

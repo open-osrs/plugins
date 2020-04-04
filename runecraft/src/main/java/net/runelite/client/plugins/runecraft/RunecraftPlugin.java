@@ -55,9 +55,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.menus.BankComparableEntry;
-import net.runelite.client.menus.BaseComparableEntry;
-import static net.runelite.client.menus.ComparableEntries.newBaseComparableEntry;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -80,11 +77,6 @@ public class RunecraftPlugin extends Plugin
 	private static final int LARGE_DEGRADE = 30;
 	private static final int GIANT_DEGRADE = 11;
 	private static final Object POUCH_TICK = new Object();
-	private static final BankComparableEntry POUCH = new BankComparableEntry("fill", "pouch", false);
-	private static final BaseComparableEntry EMPTY_SMALL = newBaseComparableEntry("empty", "small pouch");
-	private static final BaseComparableEntry EMPTY_MEDIUM = newBaseComparableEntry("empty", "medium pouch");
-	private static final BaseComparableEntry EMPTY_LARGE = newBaseComparableEntry("empty", "large pouch");
-	private static final BaseComparableEntry EMPTY_GIANT = newBaseComparableEntry("empty", "giant pouch");
 	private static final String POUCH_DECAYED_MESSAGE = "Your pouch has decayed through use.";
 	private static final String POUCH_DECAYED_NOTIFICATION_MESSAGE = "Your rune pouch has decayed.";
 	private static final int FIRE_ALTAR = 10315;
@@ -342,23 +334,6 @@ public class RunecraftPlugin extends Plugin
 
 	private void handleSwaps()
 	{
-		if (config.essPouch())
-		{
-			menuManager.addPriorityEntry(POUCH).setPriority(100);
-			menuManager.addPriorityEntry(EMPTY_SMALL).setPriority(10);
-			menuManager.addPriorityEntry(EMPTY_MEDIUM).setPriority(10);
-			menuManager.addPriorityEntry(EMPTY_LARGE).setPriority(10);
-			menuManager.addPriorityEntry(EMPTY_GIANT).setPriority(10);
-		}
-		else
-		{
-			menuManager.removePriorityEntry(POUCH);
-			menuManager.removePriorityEntry(EMPTY_SMALL);
-			menuManager.removePriorityEntry(EMPTY_MEDIUM);
-			menuManager.removePriorityEntry(EMPTY_LARGE);
-			menuManager.removePriorityEntry(EMPTY_GIANT);
-		}
-
 		if (client.getLocalPlayer() == null || !config.lavas())
 		{
 			menuManager.removeHiddenEntry("craft", "altar", false, false);
@@ -382,11 +357,6 @@ public class RunecraftPlugin extends Plugin
 	{
 		menuManager.removeHiddenEntry("craft", "altar", false, false);
 		menuManager.removeHiddenEntry("use", "Pure essence", false, true);
-		menuManager.removePriorityEntry(POUCH);
-		menuManager.removePriorityEntry(EMPTY_SMALL);
-		menuManager.removePriorityEntry(EMPTY_MEDIUM);
-		menuManager.removePriorityEntry(EMPTY_LARGE);
-		menuManager.removePriorityEntry(EMPTY_GIANT);
 	}
 
 	private void updateConfig()

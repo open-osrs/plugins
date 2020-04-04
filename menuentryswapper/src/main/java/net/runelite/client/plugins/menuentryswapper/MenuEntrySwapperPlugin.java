@@ -71,6 +71,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.menus.AbstractComparableEntry;
 import net.runelite.client.menus.BankComparableEntry;
+import net.runelite.client.menus.BaseComparableEntry;
 import static net.runelite.client.menus.ComparableEntries.newBankComparableEntry;
 import static net.runelite.client.menus.ComparableEntries.newBaseComparableEntry;
 import net.runelite.client.menus.InventoryComparableEntry;
@@ -102,6 +103,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static final Object HOTKEY_CHECK = new Object();
 	private static final Object CONTROL_CHECK = new Object();
 	private static final int PURO_PURO_REGION_ID = 10307;
+	private static final BankComparableEntry POUCH = new BankComparableEntry("fill", "pouch", false);
+	private static final BaseComparableEntry EMPTY_SMALL = newBaseComparableEntry("empty", "small pouch");
+	private static final BaseComparableEntry EMPTY_MEDIUM = newBaseComparableEntry("empty", "medium pouch");
+	private static final BaseComparableEntry EMPTY_LARGE = newBaseComparableEntry("empty", "large pouch");
+	private static final BaseComparableEntry EMPTY_GIANT = newBaseComparableEntry("empty", "giant pouch");
 	private static final Set<MenuOpcode> NPC_MENU_TYPES = ImmutableSet.of(
 		MenuOpcode.NPC_FIRST_OPTION, MenuOpcode.NPC_SECOND_OPTION, MenuOpcode.NPC_THIRD_OPTION,
 		MenuOpcode.NPC_FOURTH_OPTION, MenuOpcode.NPC_FIFTH_OPTION, MenuOpcode.EXAMINE_NPC
@@ -1066,6 +1072,15 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry(new GrimyHerbComparableEntry(config.swapGrimyHerbMode(), client));
 		}
 
+		if (config.swapEssPouch())
+		{
+			menuManager.addPriorityEntry(POUCH).setPriority(100);
+			menuManager.addPriorityEntry(EMPTY_SMALL).setPriority(10);
+			menuManager.addPriorityEntry(EMPTY_MEDIUM).setPriority(10);
+			menuManager.addPriorityEntry(EMPTY_LARGE).setPriority(10);
+			menuManager.addPriorityEntry(EMPTY_GIANT).setPriority(10);
+		}
+
 		if (config.swapJewelleryBox())
 		{
 			for (String jewellerybox : jewelleryBox)
@@ -1227,6 +1242,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removeSwap("Bury", "bone", "Use");
 		menuManager.removeSwap("Wield", "salamander", "Release");
 		menuManager.removeSwap("Wield", "Swamp lizard", "Release");
+		menuManager.removePriorityEntry(POUCH);
+		menuManager.removePriorityEntry(EMPTY_SMALL);
+		menuManager.removePriorityEntry(EMPTY_MEDIUM);
+		menuManager.removePriorityEntry(EMPTY_LARGE);
+		menuManager.removePriorityEntry(EMPTY_GIANT);
 		for (String jewellerybox : jewelleryBox)
 		{
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
