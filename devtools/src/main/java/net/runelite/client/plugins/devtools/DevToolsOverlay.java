@@ -155,12 +155,12 @@ class DevToolsOverlay extends Overlay
 		{
 			if (!p.equals(local))
 			{
-				String text = p.getName() + " (A: " + p.getAnimation() + ") (G: " + p.getSpotAnimation() + ")";
+				String text = p.getName() + " (A: " + p.getAnimation() + ") (G: " + p.getSpotAnimation() + ") (IDX: " + p.getPlayerId() + ")";
 				OverlayUtil.renderActorOverlay(graphics, p, text, BLUE);
 			}
 		}
 
-		String text = local.getName() + " (A: " + local.getAnimation() + ") (G: " + local.getSpotAnimation() + ")";
+		String text = local.getName() + " (A: " + local.getAnimation() + ") (G: " + local.getSpotAnimation() + ") (IDX: " + local.getPlayerId() + ")";
 		OverlayUtil.renderActorOverlay(graphics, local, text, CYAN);
 		renderPlayerWireframe(graphics, local, CYAN);
 	}
