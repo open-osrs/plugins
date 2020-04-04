@@ -1132,7 +1132,7 @@ public interface MenuEntrySwapperConfig extends Config
 		name = "Swap essence pouch",
 		description = "Makes essence pouch left-click fill in bank",
 		position = 17,
-		titleSection = "skillingSection"
+		section = "skillingSection"
 	)
 	default boolean swapEssPouch()
 	{
