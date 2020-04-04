@@ -14,18 +14,18 @@ public class InputHandler {
 
 		Point pos = new Point(x, y);
 
-		moveMouse(client, pos);
-
 		if (client.isStretchedEnabled()) {
 			final Dimension stretched = client.getStretchedDimensions();
 			final Dimension real = client.getRealDimensions();
 			final double width = (stretched.width / real.getWidth());
 			final double height = (stretched.height / real.getHeight());
 			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+			moveMouse(client, point);
 			clickMouse(client, point, 1);
 			return;
 		}
 
+		moveMouse(client, pos);
 		clickMouse(client, pos, 1);
 	}
 
@@ -33,18 +33,18 @@ public class InputHandler {
 	{
 		assert !client.isClientThread();
 
-		moveMouse(client, pos);
-
 		if (client.isStretchedEnabled()) {
 			final Dimension stretched = client.getStretchedDimensions();
 			final Dimension real = client.getRealDimensions();
 			final double width = (stretched.width / real.getWidth());
 			final double height = (stretched.height / real.getHeight());
 			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+			moveMouse(client, point);
 			clickMouse(client, point, 1);
 			return;
 		}
 
+		moveMouse(client, pos);
 		clickMouse(client, pos, 1);
 	}
 	

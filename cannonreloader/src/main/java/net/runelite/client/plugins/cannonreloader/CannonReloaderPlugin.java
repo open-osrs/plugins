@@ -11,10 +11,7 @@ import net.runelite.api.Point;
 import net.runelite.api.Projectile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ProjectileMoved;
+import net.runelite.api.events.*;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -175,6 +172,29 @@ public class CannonReloaderPlugin extends Plugin {
 			
 			cballsLeft = 0;
 		}
+
+		if (event.getMessage().equalsIgnoreCase("Your cannon has broken!")) {
+			this.executor.submit(() ->
+			{
+				try {
+					if (!cannonPlaced || cannonPosition == null)
+						return;
+
+					Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
+
+					if (p == null)
+						return;
+
+					if (client.getTickCount() % 5 != 1)
+						return;
+
+					Thread.sleep(100);
+					InputHandler.leftClick(client, p);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			});
+		}
 	}
 
 	@Subscribe
@@ -186,25 +206,25 @@ public class CannonReloaderPlugin extends Plugin {
 			try {
 				if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
 					return;
-				
+
 				LocalPoint cannonPoint = LocalPoint.fromWorld(client, cannonPosition);
-				
+
 				if (cannonPoint == null)
 					return;
-				
+
 				Player localPlayer = client.getLocalPlayer();
-				
+
 				if (localPlayer == null)
 					return;
-				
+
 				LocalPoint localLocation = localPlayer.getLocalLocation();
-				
+
 				if (localLocation.distanceTo(cannonPoint) > MAX_DISTANCE)
 					return;
-				
-				//Point p = Perspective.localToCanvas(client, cannonPoint, client.getPlane(), 45);
 
-				Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
+				Point p = Perspective.localToCanvas(client, cannonPoint, cannon.getPlane(), 45);
+
+				//Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
 				
 				if (p == null)
 					return;

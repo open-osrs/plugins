@@ -47,6 +47,8 @@ public class FoodEaterPlugin extends Plugin
 	@Inject
 	private FoodEaterConfig config;
 
+	private boolean notified = false;
+
 	@Provides
 	FoodEaterConfig provideConfig(final ConfigManager configManager)
 	{
@@ -68,8 +70,7 @@ public class FoodEaterPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameTick(final GameTick event)
-	{
+	public void onGameTick(final GameTick event) {
 		int health = this.client.getBoostedSkillLevel(Skill.HITPOINTS);
 
 		if (health > this.config.minimumHealth())
@@ -77,11 +78,9 @@ public class FoodEaterPlugin extends Plugin
 
 		InputHandler.sendKey(this.client.getCanvas(), KeyEvent.VK_ESCAPE);
 
-		try
-		{
+		try {
 			Thread.sleep(50);
-		} catch (final Throwable e)
-		{
+		} catch (final Throwable e) {
 			System.out.println(e.getMessage());
 		}
 
@@ -90,19 +89,18 @@ public class FoodEaterPlugin extends Plugin
 		if (inventory == null)
 			return;
 
-		for (final WidgetItem item : inventory.getWidgetItems())
-		{
+		for (final WidgetItem item : inventory.getWidgetItems()) {
 			final String name = this.itemManager.getItemDefinition(item.getId()).getName();
-			if (name.equalsIgnoreCase(this.config.foodToEat()))
-			{
+			if (name.equalsIgnoreCase(this.config.foodToEat())) {
+
+				notified = false;
+
 				executor.submit(() -> {
-					try
-					{
+					try {
 						final Point p = InputHandler.getClickPoint(item.getCanvasBounds());
 						InputHandler.leftClick(this.client, p);
 						Thread.sleep(50);
-					} catch (final Throwable e)
-					{
+					} catch (final Throwable e) {
 						System.out.println(e.getMessage());
 					}
 				});
@@ -110,6 +108,9 @@ public class FoodEaterPlugin extends Plugin
 			}
 		}
 
-		this.notifier.notify("No more food to eat!", TrayIcon.MessageType.WARNING);
+		if (notified) {
+			this.notifier.notify("No more food to eat!", TrayIcon.MessageType.WARNING);
+			notified = true;
+		}
 	}
 }

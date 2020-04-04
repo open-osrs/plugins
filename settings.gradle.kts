@@ -26,6 +26,7 @@
 rootProject.name = "ben93riggs Plugins"
 
 include(":cannonreloader")
+include(":eventdebugger")
 include(":foodeater")
 include(":itemcombiner")
 include(":itemuser")

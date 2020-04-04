@@ -162,13 +162,14 @@ public class ItemUserPlugin extends Plugin
 		{
 			InputHandler.pressKey(this.client.getCanvas(), KeyEvent.VK_ESCAPE);
 
-			for (Rectangle p : item_rects)
+			for (Rectangle rect : item_rects)
 			{
-				InputHandler.leftClick(this.client, new net.runelite.api.Point((int) p.getCenterX(), (int) p.getCenterY()));
+				Point item1_point = InputHandler.getClickPoint(rect);
+				InputHandler.leftClick(this.client, item1_point);
 				sleep(this.config.clickDelay());
 
-				Rectangle object_rect = object.getConvexHull().getBounds();
-				InputHandler.leftClick(this.client, new Point((int) object_rect.getCenterX(), (int) object_rect.getCenterY()));
+				Point item2_point = InputHandler.getClickPoint(object.getConvexHull().getBounds());
+				InputHandler.leftClick(this.client, item2_point);
 				sleep(this.config.clickDelay());
 			}
 		});

@@ -27,8 +27,8 @@ import ProjectVersions.rlVersion
 
 version = "0.0.8"
 
-project.extra["PluginName"] = "Cannon Reloader"
-project.extra["PluginDescription"] = "Automatically reload your cannon"
+project.extra["PluginName"] = "Event Debugger"
+project.extra["PluginDescription"] = ""
 
 dependencies {
     annotationProcessor(Libraries.lombok)

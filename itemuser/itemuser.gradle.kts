@@ -25,9 +25,9 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.7"
+version = "0.0.8"
 
-project.extra["PluginName"] = "Jad Auto Prayer"
+project.extra["PluginName"] = "Item User"
 project.extra["PluginDescription"] = "Automatically uses items on an object"
 
 dependencies {
