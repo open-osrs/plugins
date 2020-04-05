@@ -2,51 +2,57 @@ package net.runelite.client.plugins.itemuser;
 
 import net.runelite.api.Client;
 import net.runelite.api.Point;
+import net.runelite.api.Varbits;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class InputHandler {
-	public static void leftClick(Client client, int x, int y)
-	{
-		assert !client.isClientThread();
+	public static int getTabHotkey(Client client, Varbits tab) {
+		assert client.isClientThread();
 
-		Point pos = new Point(x, y);
-		moveMouse(client, pos);
-		double xx = ((double) pos.getX() / (double) client.getMouseCanvasPosition().getX());
-		double yy = ((double) pos.getY() / (double) client.getMouseCanvasPosition().getY());
-		Point lastPoint = new Point((int) (pos.getX() * xx), (int) (pos.getY() * yy));
-		moveMouse(client, lastPoint);
-		clickMouse(client, lastPoint, 1);
+		final int var = client.getVarbitValue(client.getVarps(), tab.getId());
+		final int offset = 111;
+
+		switch (var) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+			case 11:
+			case 12:
+				return var + offset;
+			case 13:
+				return 27;
+			default:
+				return -1;
+		}
 	}
-	
+
 	public static void leftClick(Client client, Point pos)
 	{
 		assert !client.isClientThread();
 
+		if (client.isStretchedEnabled()) {
+			final Dimension stretched = client.getStretchedDimensions();
+			final Dimension real = client.getRealDimensions();
+			final double width = (stretched.width / real.getWidth());
+			final double height = (stretched.height / real.getHeight());
+			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+			moveMouse(client, point);
+			clickMouse(client, point, 1);
+			return;
+		}
+
 		moveMouse(client, pos);
-
-		try
-		{
-			Thread.sleep(client.getFPS() / 5);
-		} catch (InterruptedException e) {
-			//e.printStackTrace();
-		}
-
-		double xx = ((double) pos.getX() / (double) client.getMouseCanvasPosition().getX());
-		double yy = ((double) pos.getY() / (double) client.getMouseCanvasPosition().getY());
-		Point lastPoint = new Point((int) (pos.getX() * xx), (int) (pos.getY() * yy));
-		moveMouse(client, lastPoint);
-
-		try
-		{
-			Thread.sleep(client.getFPS() / 5);
-		} catch (InterruptedException e) {
-			//e.printStackTrace();
-		}
-
-		clickMouse(client, lastPoint, 1);
+		clickMouse(client, pos, 1);
 	}
 	
 	private static MouseEvent createEvent(Client client, Point p, int id)

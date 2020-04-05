@@ -185,61 +185,6 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "label3",
-			name = "Setup (required)",
-			description = "",
-			position = 16
-	)
-	default Title label3()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-			position = 17,
-			keyName = "inventoryTabKey",
-			name = "Inventory Tab Key",
-			description = "Hotkey in settings that activates the inventory tab"
-	)
-	default PkToolsHotkeys inventoryTabKey()
-	{
-		return PkToolsHotkeys.ESC;
-	}
-
-	@ConfigItem(
-			position = 18,
-			keyName = "combatTabKey",
-			name = "Combat Tab Key",
-			description = "Hotkey in settings that activates the combat tab"
-	)
-	default PkToolsHotkeys combatTabKey()
-	{
-		return PkToolsHotkeys.F1;
-	}
-
-	@ConfigItem(
-			position = 19,
-			keyName = "prayerTabKey",
-			name = "Prayer Tab Key",
-			description = "Hotkey in settings that activates the prayer tab"
-	)
-	default PkToolsHotkeys prayerTabKey()
-	{
-		return PkToolsHotkeys.F5;
-	}
-
-	@ConfigItem(
-			position = 20,
-			keyName = "spellbookTabKey",
-			name = "Spellbook Tab Key",
-			description = "Hotkey in settings that activates the spellbook tab"
-	)
-	default PkToolsHotkeys spellbookTabKey()
-	{
-		return PkToolsHotkeys.F6;
-	}
-
-	@ConfigItem(
 			position = 21,
 			keyName = "clickDelay",
 			name = "Click Delay",

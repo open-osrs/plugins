@@ -84,8 +84,7 @@ public class PkToolsPlugin extends Plugin
 	private Instant lastTime;
 
 	@Provides
-	PkToolsConfig provideConfig(final ConfigManager configManager)
-	{
+	PkToolsConfig provideConfig(final ConfigManager configManager) {
 		return configManager.getConfig(PkToolsConfig.class);
 	}
 

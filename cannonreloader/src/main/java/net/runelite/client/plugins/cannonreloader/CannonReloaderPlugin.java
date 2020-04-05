@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.cannonreloader;
 
+import com.google.inject.Provides;
 import lombok.Getter;
 import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
@@ -12,7 +13,10 @@ import net.runelite.api.Projectile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.queries.TileObjectQuery;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -45,9 +49,21 @@ public class CannonReloaderPlugin extends Plugin {
 	
 	private int nextReloadCount = (int) (Math.random() % 10 + 10);
 	private boolean skipProjectileCheckThisTick;
+
+	@Inject
+	private CannonReloaderConfig config;
+
+	@Provides
+	CannonReloaderConfig provideConfig(final ConfigManager configManager)
+	{
+		return configManager.getConfig(CannonReloaderConfig.class);
+	}
 	
 	@Getter
 	private int cballsLeft;
+
+	@Inject
+	private MenuManager menuManager;
 	
 	@Getter
 	private boolean cannonPlaced;
@@ -176,23 +192,18 @@ public class CannonReloaderPlugin extends Plugin {
 		if (event.getMessage().equalsIgnoreCase("Your cannon has broken!")) {
 			this.executor.submit(() ->
 			{
-				try {
-					if (!cannonPlaced || cannonPosition == null)
-						return;
+				if (!cannonPlaced || cannonPosition == null)
+					return;
 
-					Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
+				Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
 
-					if (p == null)
-						return;
+				if (p == null)
+					return;
 
-					if (client.getTickCount() % 5 != 1)
-						return;
+				if (client.getTickCount() % 5 != 1)
+					return;
 
-					Thread.sleep(100);
-					InputHandler.leftClick(client, p);
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-				}
+				InputHandler.leftClick(client, p);
 			});
 		}
 	}
@@ -232,8 +243,9 @@ public class CannonReloaderPlugin extends Plugin {
 				if (client.getTickCount() % 5 != 1)
 					return;
 
-				Thread.sleep(100);
+				menuManager.addPriorityEntry("Fire", "Dwarf multicannon");
 				InputHandler.leftClick(client, p);
+				menuManager.removePriorityEntry("Fire", "Dwarf multicannon");
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}

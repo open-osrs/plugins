@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.Point;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
@@ -160,7 +161,7 @@ public class ItemUserPlugin extends Plugin
 
 		executor.submit(() ->
 		{
-			InputHandler.pressKey(this.client.getCanvas(), KeyEvent.VK_ESCAPE);
+			InputHandler.pressKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 
 			for (Rectangle rect : item_rects)
 			{

@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -108,7 +109,7 @@ public class PrayPotDrinkerPlugin extends Plugin
 					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
 					if (Arrays.asList(potions).contains(name))
 					{
-						InputHandler.pressKey(client.getCanvas(), KeyEvent.VK_ESCAPE);
+						InputHandler.pressKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 						Thread.sleep(50);
 						Point p = InputHandler.getClickPoint(item.getCanvasBounds());
 						InputHandler.leftClick(client, p);

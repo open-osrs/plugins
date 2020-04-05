@@ -3,6 +3,7 @@ package net.runelite.client.plugins.itemcombiner;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Point;
+import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -105,8 +106,7 @@ public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListe
 			{
 				return;
 			}
-
-			InputHandler.pressKey(this.client.getCanvas(), KeyEvent.VK_ESCAPE);
+			InputHandler.pressKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 			final Rectangle p = firstItem.getCanvasBounds();
 			InputHandler.leftClick(this.client, new Point((int) p.getCenterX(), (int) p.getCenterY()));
 			Thread.sleep(this.config.clickDelay());

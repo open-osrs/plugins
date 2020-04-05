@@ -1,9 +1,7 @@
 package net.runelite.client.plugins.jadautoprayer;
 
+import net.runelite.api.*;
 import net.runelite.api.Point;
-import net.runelite.api.Client;
-import net.runelite.api.Prayer;
-import net.runelite.api.VarClientInt;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.ui.overlay.Overlay;
@@ -60,7 +58,7 @@ public class JadAutoPrayerOverlay extends Overlay
 
 			//swap to pray tab if necessary
 			if (!onPrayerTab)
-				InputHandler.sendKey(this.client.getCanvas(), this.config.prayerTabKey().getKey());
+				InputHandler.sendKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
 
 			try
 			{
@@ -90,7 +88,7 @@ public class JadAutoPrayerOverlay extends Overlay
 
 			//swap to pray tab if necessary
 			if (!onPrayerTab)
-				InputHandler.sendKey(this.client.getCanvas(), this.config.prayerTabKey().getKey());
+				InputHandler.sendKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
 
 			//get protect from missiles widget
 			final Widget PROTECT_FROM_RANGED = this.client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);

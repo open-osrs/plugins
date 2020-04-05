@@ -3,15 +3,8 @@ package net.runelite.client.plugins.pktools;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.ItemID;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.Point;
-import net.runelite.api.Prayer;
-import net.runelite.api.Skill;
-import net.runelite.api.SpriteID;
-import net.runelite.api.VarClientInt;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -149,13 +142,13 @@ public class PkToolsOverlay extends Overlay
 					if (shouldAutoSwap && !PROTECT_MELEE)
 					{
 						if (!onPrayerTab)
-							InputHandler.sendKey(client.getCanvas(), this.config.prayerTabKey().getKey());
+							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
 
 						if (onPrayerTab)
 						{
 							Point p = InputHandler.getClickPoint(PROTECT_FROM_MELEE.getBounds());
 							InputHandler.leftClick(this.client, p);
-							InputHandler.sendKey(client.getCanvas(), this.config.inventoryTabKey().getKey());
+							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 						}
 					}
 				}
@@ -169,13 +162,13 @@ public class PkToolsOverlay extends Overlay
 					if (shouldAutoSwap && !PROTECT_RANGED)
 					{
 						if (!onPrayerTab)
-							InputHandler.sendKey(client.getCanvas(), this.config.prayerTabKey().getKey());
+							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
 
 						if (onPrayerTab)
 						{
 							Point p = InputHandler.getClickPoint(PROTECT_FROM_RANGED.getBounds());
 							InputHandler.leftClick(this.client, p);
-							InputHandler.sendKey(client.getCanvas(), this.config.inventoryTabKey().getKey());
+							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 						}
 					}
 				}
@@ -190,13 +183,13 @@ public class PkToolsOverlay extends Overlay
 					if (shouldAutoSwap && !PROTECT_MAGIC)
 					{
 						if (!onPrayerTab)
-							InputHandler.sendKey(client.getCanvas(), this.config.prayerTabKey().getKey());
+							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
 
 						if (onPrayerTab)
 						{
 							Point p = InputHandler.getClickPoint(PROTECT_FROM_MAGIC.getBounds());
 							InputHandler.leftClick(this.client, p);
-							InputHandler.sendKey(client.getCanvas(), this.config.inventoryTabKey().getKey());
+							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 						}
 					}
 				}

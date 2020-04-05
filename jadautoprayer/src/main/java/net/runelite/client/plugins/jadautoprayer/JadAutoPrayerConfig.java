@@ -17,15 +17,4 @@ public interface JadAutoPrayerConfig extends Config
 	{
 		return false;
 	}
-
-	@ConfigItem(
-			position = 1,
-			keyName = "prayerTabKey",
-			name = "Prayer Tab Key",
-			description = "Hotkey in settings that activates the prayer tab"
-	)
-	default JadAutoPrayerHotkey prayerTabKey()
-	{
-		return JadAutoPrayerHotkey.F5;
-	}
 }

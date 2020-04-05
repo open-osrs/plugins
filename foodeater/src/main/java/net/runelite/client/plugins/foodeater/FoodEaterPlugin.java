@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -76,7 +77,7 @@ public class FoodEaterPlugin extends Plugin
 		if (health > this.config.minimumHealth())
 			return;
 
-		InputHandler.sendKey(this.client.getCanvas(), KeyEvent.VK_ESCAPE);
+		InputHandler.sendKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 
 		try {
 			Thread.sleep(50);
@@ -95,15 +96,7 @@ public class FoodEaterPlugin extends Plugin
 
 				notified = false;
 
-				executor.submit(() -> {
-					try {
-						final Point p = InputHandler.getClickPoint(item.getCanvasBounds());
-						InputHandler.leftClick(this.client, p);
-						Thread.sleep(50);
-					} catch (final Throwable e) {
-						System.out.println(e.getMessage());
-					}
-				});
+				executor.submit(() -> InputHandler.leftClick(this.client, InputHandler.getClickPoint(item.getCanvasBounds())));
 				return;
 			}
 		}

@@ -3,6 +3,7 @@ package net.runelite.client.plugins.pktools.ScriptCommand;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
+import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -25,11 +26,11 @@ public interface ScriptCommand
 	{
 		try
 		{
-			InputHandler.sendKey(client.getCanvas(), config.prayerTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
 			Thread.sleep(config.clickDelay());
 			InputHandler.leftClick(client, p);
 			Thread.sleep(config.clickDelay());
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 		}
 		catch (Exception e)
 		{
@@ -366,7 +367,7 @@ class FreezeCommand implements ScriptCommand
 			}
 			else if (boosted_level < 94)
 			{
-				InputHandler.sendKey(client.getCanvas(), config.spellbookTabKey().getKey());
+				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
 
 				Thread.sleep(config.clickDelay() * 2);
 
@@ -383,7 +384,7 @@ class FreezeCommand implements ScriptCommand
 			}
 			else
 			{
-				InputHandler.sendKey(client.getCanvas(), config.spellbookTabKey().getKey());
+				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
 
 				Thread.sleep(config.clickDelay() * 2);
 
@@ -400,7 +401,7 @@ class FreezeCommand implements ScriptCommand
 				InputHandler.leftClick(client, p1);
 			}
 			
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 		}
 		catch (Exception e)
 		{
@@ -424,7 +425,7 @@ class VengeanceCommand implements ScriptCommand
 			}
 			else
 			{
-				InputHandler.sendKey(client.getCanvas(), config.spellbookTabKey().getKey());
+				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
 				Thread.sleep(config.clickDelay() * 2);
 
 				Widget Vengeance = client.getWidget(WidgetInfo.SPELL_VENGEANCE);
@@ -439,7 +440,7 @@ class VengeanceCommand implements ScriptCommand
 				InputHandler.leftClick(client, p1);
 			}
 			
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 		}
 		catch (Exception e)
 		{
@@ -462,7 +463,7 @@ class TeleBlockCommand implements ScriptCommand
 			}
 			else
 			{
-				InputHandler.sendKey(client.getCanvas(), config.spellbookTabKey().getKey());
+				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
 
 				Thread.sleep(config.clickDelay() * 2);
 
@@ -478,7 +479,7 @@ class TeleBlockCommand implements ScriptCommand
 				InputHandler.leftClick(client, p1);
 			}
 
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 		}
 		catch (Exception e)
 		{
@@ -501,7 +502,7 @@ class EntangleCommand implements ScriptCommand
 			}
 			else
 			{
-				InputHandler.sendKey(client.getCanvas(), config.spellbookTabKey().getKey());
+				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
 
 				Thread.sleep(config.clickDelay() * 2);
 
@@ -517,7 +518,7 @@ class EntangleCommand implements ScriptCommand
 				InputHandler.leftClick(client, p1);
 			}
 
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 		}
 		catch (Exception e)
 		{
@@ -533,7 +534,7 @@ class SpecCommand implements ScriptCommand
 		try
 		{
 			Thread.sleep(config.clickDelay());
-			InputHandler.sendKey(client.getCanvas(), config.combatTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.COMBAT_TAB_HOTKEY));
 			Widget SPECBAR = client.getWidget(WidgetInfo.COMBAT_TOOLTIP);
 			if (overlay.getSpecCheck() == 0)
 			{
@@ -571,7 +572,7 @@ class DoubleSpecCommand implements ScriptCommand
 		try
 		{
 			Thread.sleep(config.clickDelay());
-			InputHandler.sendKey(client.getCanvas(), config.combatTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.COMBAT_TAB_HOTKEY));
 			Widget SPECBAR = client.getWidget(WidgetInfo.COMBAT_TOOLTIP);
 			if (overlay.getSpecCheck() == 0)
 			{
@@ -617,7 +618,7 @@ class Group1Command implements ScriptCommand
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 
 			Thread.sleep(config.clickDelay());
 
@@ -657,7 +658,7 @@ class Group2Command implements ScriptCommand
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 
 			Thread.sleep(config.clickDelay());
 
@@ -697,7 +698,7 @@ class Group3Command implements ScriptCommand
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 
 			Thread.sleep(config.clickDelay());
 
@@ -737,7 +738,7 @@ class Group4Command implements ScriptCommand
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), config.inventoryTabKey().getKey());
+			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 
 			Thread.sleep(config.clickDelay());
 

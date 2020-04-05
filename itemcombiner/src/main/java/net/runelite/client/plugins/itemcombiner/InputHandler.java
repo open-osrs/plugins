@@ -2,31 +2,38 @@ package net.runelite.client.plugins.itemcombiner;
 
 import net.runelite.api.Client;
 import net.runelite.api.Point;
+import net.runelite.api.Varbits;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class InputHandler {
-	public static void leftClick(Client client, int x, int y)
-	{
-		assert !client.isClientThread();
+	public static int getTabHotkey(Client client, Varbits tab) {
+		assert client.isClientThread();
 
-		Point pos = new Point(x, y);
+		final int var = client.getVarbitValue(client.getVarps(), tab.getId());
+		final int offset = 111;
 
-		if (client.isStretchedEnabled()) {
-			final Dimension stretched = client.getStretchedDimensions();
-			final Dimension real = client.getRealDimensions();
-			final double width = (stretched.width / real.getWidth());
-			final double height = (stretched.height / real.getHeight());
-			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
-			moveMouse(client, point);
-			clickMouse(client, point, 1);
-			return;
+		switch (var) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+			case 11:
+			case 12:
+				return var + offset;
+			case 13:
+				return 27;
+			default:
+				return -1;
 		}
-
-		moveMouse(client, pos);
-		clickMouse(client, pos, 1);
 	}
 
 	public static void leftClick(Client client, Point pos)
