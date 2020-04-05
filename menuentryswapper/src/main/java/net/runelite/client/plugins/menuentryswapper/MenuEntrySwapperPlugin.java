@@ -878,6 +878,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			menuManager.addPriorityEntry("Reset", "Shaking box");
 			menuManager.addPriorityEntry("Lay", "Box trap");
+			menuManager.addPriorityEntry("Reset", "Box trap");
 			menuManager.addPriorityEntry("Activate", "Box trap");
 		}
 
