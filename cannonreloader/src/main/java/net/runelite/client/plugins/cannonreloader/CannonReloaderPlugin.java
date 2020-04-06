@@ -243,7 +243,20 @@ public class CannonReloaderPlugin extends Plugin {
 				if (client.getTickCount() % 5 != 1)
 					return;
 
+				/*
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin - MenuEntryAdded:
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Option: Fire
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Target: <col=ffff>Dwarf multicannon
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Identifier:     6
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Opcode: 3
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Param0: 52
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Param1: 55
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      ForceLeftClick: false
+				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Modified:       false
+				*/
+				
 				menuManager.addPriorityEntry("Fire", "Dwarf multicannon");
+				client.insertMenuItem("Fire", "<col=ffff>Dwarf multicannon", 6,3,52,55,false);
 				InputHandler.leftClick(client, p);
 				menuManager.removePriorityEntry("Fire", "Dwarf multicannon");
 			} catch (Exception e) {
