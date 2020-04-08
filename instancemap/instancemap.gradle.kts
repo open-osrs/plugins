@@ -30,18 +30,6 @@ version = "0.0.2"
 project.extra["PluginName"] = "Instance Map"
 project.extra["PluginDescription"] = "Add an instanced map, accessible by right-clicking the map button"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

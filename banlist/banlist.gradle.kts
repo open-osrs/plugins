@@ -30,21 +30,6 @@ version = "0.0.4"
 project.extra["PluginName"] = "Ban List"
 project.extra["PluginDescription"] = "Displays warning in chat when you join a clan chat/new member join your clan chat and he is in a WDR/RuneWatch/Manual List"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.annotations)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

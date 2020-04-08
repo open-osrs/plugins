@@ -31,17 +31,7 @@ project.extra["PluginName"] = "Status Bars"
 project.extra["PluginDescription"] = "Draws HP/Pray/Stamina/Spec status bars next to inventory"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
     compileOnly(project(":itemstats"))
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
 }
 
 tasks {

@@ -30,18 +30,6 @@ version = "0.0.5"
 project.extra["PluginName"] = "Entity Hider"
 project.extra["PluginDescription"] = "Hide players, NPCs, and/or projectiles"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

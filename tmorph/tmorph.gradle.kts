@@ -31,19 +31,7 @@ project.extra["PluginName"] = "TMorph"
 project.extra["PluginDescription"] = "Want to wear a infernal cape? well now you can!"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:http-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.jooq)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.substance)
+    compileOnly(group = "org.jooq", name = "jooq", version = "3.13.0")
 }
 
 tasks {

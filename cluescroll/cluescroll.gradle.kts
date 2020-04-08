@@ -30,27 +30,6 @@ version = "0.0.14"
 project.extra["PluginName"] = "Clue Scroll"
 project.extra["PluginDescription"] = "Show answers to clue scroll riddles, anagrams, ciphers, and cryptic clues"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.jopt)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-
-    testImplementation("com.openosrs:runelite-api:$rlVersion")
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
-    testImplementation(Libraries.guiceTestlib)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

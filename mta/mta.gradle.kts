@@ -30,19 +30,6 @@ version = "0.0.3"
 project.extra["PluginName"] = "Mage Training Arena"
 project.extra["PluginDescription"] = "Show helpful information for the Mage Training Arena minigame"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.rxjava)
-}
-
 tasks {
     jar {
         manifest {

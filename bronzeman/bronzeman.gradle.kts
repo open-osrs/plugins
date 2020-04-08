@@ -30,18 +30,6 @@ version = "0.0.5"
 project.extra["PluginName"] = "Bronze Man Mode"
 project.extra["PluginDescription"] = "Restrict yourself as an Iron Meme with GE use for items you have unlocked"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

@@ -31,27 +31,11 @@ project.extra["PluginName"] = "GPU"
 project.extra["PluginDescription"] = "Utilizes the GPU"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+    compileOnly(group = "org.jogamp.jogl", name = "jogl-all", version = "2.3.2")
+    compileOnly(group = "org.jogamp.gluegen", name = "gluegen-rt", version = "2.3.2")
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.jogampJogl)
-    compileOnly(Libraries.jogampGluegen)
-
-    testAnnotationProcessor(Libraries.lombok)
-
-    testImplementation(Libraries.jogampJogl)
-    testImplementation(Libraries.jogampGluegen)
-    testImplementation(Libraries.jopt)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.lombok)
-    testImplementation(Libraries.hamcrest)
-    testImplementation(Libraries.slf4jApi)
+    testImplementation(group = "org.jogamp.jogl", name = "jogl-all", version = "2.3.2")
+    testImplementation(group = "org.jogamp.gluegen", name = "gluegen-rt", version = "2.3.2")
 }
 
 tasks {

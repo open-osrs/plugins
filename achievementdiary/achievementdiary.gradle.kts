@@ -30,18 +30,6 @@ version = "0.0.2"
 project.extra["PluginName"] = "Diary Requirements"
 project.extra["PluginDescription"] = "Display level requirements in Achievement Diary interface"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

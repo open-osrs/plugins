@@ -30,18 +30,6 @@ version = "0.0.4"
 project.extra["PluginName"] = "NPC Aggression Timer"
 project.extra["PluginDescription"] = "Highlights the unaggressive area of NPCs nearby and timer until it becomes active"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

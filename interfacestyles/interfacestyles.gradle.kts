@@ -30,18 +30,6 @@ version = "0.0.5"
 project.extra["PluginName"] = "Interface Styles"
 project.extra["PluginDescription"] = "Change the interface style to the 2005/2010 interface"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

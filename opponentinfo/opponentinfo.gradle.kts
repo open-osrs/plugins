@@ -30,20 +30,6 @@ version = "0.0.7"
 project.extra["PluginName"] = "Opponent Information"
 project.extra["PluginDescription"] = "Show name and hitpoints information about the NPC you are fighting"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.rxjava)
-}
-
 tasks {
     jar {
         manifest {

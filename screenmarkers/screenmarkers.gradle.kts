@@ -30,22 +30,6 @@ version = "0.0.3"
 project.extra["PluginName"] = "Screen Markers"
 project.extra["PluginDescription"] = "Enable drawing of screen markers on top of the client"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.annotations)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.gson)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.okhttp3)
-}
-
 tasks {
     jar {
         manifest {

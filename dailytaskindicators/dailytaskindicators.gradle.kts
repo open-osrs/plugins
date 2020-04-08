@@ -30,18 +30,6 @@ version = "0.0.2"
 project.extra["PluginName"] = "Daily Task Indicator"
 project.extra["PluginDescription"] = "Show chat notifications for daily tasks upon login"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

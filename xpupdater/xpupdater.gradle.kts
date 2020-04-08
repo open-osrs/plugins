@@ -30,20 +30,6 @@ version = "0.0.2"
 project.extra["PluginName"] = "XP Updater"
 project.extra["PluginDescription"] = "Automatically updates your stats on external xptrackers when you log out"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

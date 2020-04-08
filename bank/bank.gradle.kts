@@ -31,33 +31,12 @@ project.extra["PluginName"] = "Bank"
 project.extra["PluginDescription"] = "Modifications to the banking interface"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
 
     compileOnly(project(":banktags"))
     compileOnly(project(":cluescroll"))
 
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.hamcrest)
-
-    testImplementation("com.openosrs:runelite-api:$rlVersion")
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
     testImplementation(project(":banktags"))
     testImplementation(project(":cluescroll"))
-
-    testImplementation(Libraries.pf4j)
-    testImplementation(Libraries.guiceTestlib)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.mockitoCore)
-    testImplementation(Libraries.mockitoInline)
 }
 
 tasks {

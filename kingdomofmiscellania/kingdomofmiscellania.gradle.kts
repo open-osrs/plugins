@@ -30,18 +30,6 @@ version = "0.0.5"
 project.extra["PluginName"] = "Kingdom of Miscellania"
 project.extra["PluginDescription"] = "Show various informations about your Kingdom of Miscellania"
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {

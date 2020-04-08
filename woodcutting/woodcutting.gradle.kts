@@ -31,31 +31,9 @@ project.extra["PluginName"] = "Woodcutting"
 project.extra["PluginDescription"] = "Show woodcutting statistics and/or bird nest notifications"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
     compileOnly(project(":xptracker"))
 
-    compileOnly(Libraries.annotations)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-
-    testImplementation("com.openosrs:runelite-api:$rlVersion")
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
     testImplementation(project(":xptracker"))
-
-    testImplementation(Libraries.annotations)
-    testImplementation(Libraries.pf4j)
-    testImplementation(Libraries.guiceTestlib)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.mockitoCore)
-    testImplementation(Libraries.mockitoInline)
-    testImplementation(Libraries.slf4jApi)
 }
 
 tasks {

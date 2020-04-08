@@ -31,17 +31,7 @@ project.extra["PluginName"] = "Anti Drag"
 project.extra["PluginDescription"] = "Prevent dragging an item for a specified delay"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
     compileOnly(project(":customcursor"))
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
 }
 
 tasks {
