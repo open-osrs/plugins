@@ -31,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -616,6 +615,7 @@ public class WorldHopperPlugin extends Plugin
 	{
 		WorldResult worldResult = worldService.getWorlds();
 		// Don't try to hop if the world doesn't exist
+		@SuppressWarnings("ConstantConditions")
 		World world = worldResult.findWorld(worldId);
 		if (world == null)
 		{
