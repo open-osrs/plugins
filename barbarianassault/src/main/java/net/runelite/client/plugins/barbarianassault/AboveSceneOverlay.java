@@ -26,7 +26,6 @@
  */
 package net.runelite.client.plugins.barbarianassault;
 
-import com.google.common.collect.ImmutableMap;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -54,7 +53,7 @@ class AboveSceneOverlay extends Overlay
 	private static final int CENTER_OFFSET = Perspective.LOCAL_HALF_TILE_SIZE / 8;
 	private static final int EGG_DIAMETER = Perspective.LOCAL_HALF_TILE_SIZE / 4;
 	private static final Color HEALTH_BAR_COLOR = new Color(225, 35, 0, 125);
-	private static final ImmutableMap<WidgetInfo, Point> TEAMMATES = ImmutableMap.of(
+	private static final Map<WidgetInfo, Point> TEAMMATES = Map.of(
 		WidgetInfo.BA_HEAL_TEAMMATE1, new Point(28, 2),
 		WidgetInfo.BA_HEAL_TEAMMATE2, new Point(26, 2),
 		WidgetInfo.BA_HEAL_TEAMMATE3, new Point(26, 2),

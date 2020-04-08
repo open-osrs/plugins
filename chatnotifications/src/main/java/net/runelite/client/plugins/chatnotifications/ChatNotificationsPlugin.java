@@ -251,7 +251,7 @@ public class ChatNotificationsPlugin extends Plugin
 			String nodeValue = messageNode.getValue();
 			Matcher matcher = highlightMatcher.matcher(nodeValue);
 			boolean found = false;
-			StringBuffer stringBuffer = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 
 			while (matcher.find())
 			{
@@ -259,22 +259,22 @@ public class ChatNotificationsPlugin extends Plugin
 
 				// Determine the ending color by:
 				// 1) use the color from value if it has one
-				// 2) use the last color from stringBuffer + <content between last match and current match>
+				// 2) use the last color from sb + <content between last match and current match>
 				// To do #2 we just search for the last col tag after calling appendReplacement
 				String endColor = getLastColor(value);
 
 				// Strip color tags from the highlighted region so that it remains highlighted correctly
 				value = stripColor(value);
 
-				matcher.appendReplacement(stringBuffer, "<col" + ChatColorType.HIGHLIGHT + '>' + value);
+				matcher.appendReplacement(sb, "<col" + ChatColorType.HIGHLIGHT + '>' + value);
 
 				if (endColor == null)
 				{
-					endColor = getLastColor(stringBuffer.toString());
+					endColor = getLastColor(sb.toString());
 				}
 
 				// Append end color
-				stringBuffer.append(endColor == null ? "<col" + ChatColorType.NORMAL + ">" : endColor);
+				sb.append(endColor == null ? "<col" + ChatColorType.NORMAL + ">" : endColor);
 
 				update = true;
 				found = true;
@@ -282,8 +282,8 @@ public class ChatNotificationsPlugin extends Plugin
 
 			if (found)
 			{
-				matcher.appendTail(stringBuffer);
-				messageNode.setValue(stringBuffer.toString());
+				matcher.appendTail(sb);
+				messageNode.setValue(sb.toString());
 
 				if (config.notifyOnHighlight())
 				{

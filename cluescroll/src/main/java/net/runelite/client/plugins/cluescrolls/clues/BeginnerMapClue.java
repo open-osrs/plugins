@@ -24,7 +24,7 @@
  */
 package net.runelite.client.plugins.cluescrolls.clues;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.coords.WorldPoint;
@@ -33,7 +33,7 @@ import net.runelite.api.widgets.WidgetID;
 @Getter(AccessLevel.PUBLIC)
 public class BeginnerMapClue extends MapClue implements LocationClueScroll
 {
-	private static final ImmutableList<BeginnerMapClue> CLUES = ImmutableList.of(
+	private static final List<BeginnerMapClue> CLUES = List.of(
 		new BeginnerMapClue(WidgetID.BEGINNER_CLUE_MAP_CHAMPIONS_GUILD, new WorldPoint(3166, 3361, 0), "South West of the Champion's Guild"),
 		new BeginnerMapClue(WidgetID.BEGINNER_CLUE_MAP_VARROCK_EAST_MINE, new WorldPoint(3290, 3374, 0), "Outside Varrock East Mine"),
 		new BeginnerMapClue(WidgetID.BEGINNER_CLUE_MAP_DRAYNOR, new WorldPoint(3093, 3226, 0), "South of Draynor Village Bank"),

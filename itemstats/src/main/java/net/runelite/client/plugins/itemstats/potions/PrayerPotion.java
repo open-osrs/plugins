@@ -24,7 +24,7 @@
  */
 package net.runelite.client.plugins.itemstats.potions;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.InventoryID;
@@ -45,7 +45,7 @@ public class PrayerPotion extends StatBoost
 		this.delta = delta;
 	}
 
-	private static final ImmutableSet<Integer> HOLY_WRENCH_IDS = ImmutableSet.of(
+	private static final Set<Integer> HOLY_WRENCH_IDS = Set.of(
 		ItemID.HOLY_WRENCH, ItemID.PRAYER_CAPE, ItemID.PRAYER_CAPET, ItemID.MAX_CAPE, ItemID.MAX_CAPE_13342,
 		// No idea what these are
 		ItemID.PRAYER_CAPE_10643, ItemID.MAX_CAPE_13282

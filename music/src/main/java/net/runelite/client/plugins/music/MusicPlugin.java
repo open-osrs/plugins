@@ -26,7 +26,6 @@
  */
 package net.runelite.client.plugins.music;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,11 +86,11 @@ import org.pf4j.Extension;
 )
 public class MusicPlugin extends Plugin
 {
-	private static final Set<Integer> SOURCELESS_PLAYER_SOUNDS = ImmutableSet.of(
+	private static final Set<Integer> SOURCELESS_PLAYER_SOUNDS = Set.of(
 		SoundEffectID.TELEPORT_VWOOP
 	);
 
-	private static final Set<Integer> PRAYER_SOUNDS = ImmutableSet.of(
+	private static final Set<Integer> PRAYER_SOUNDS = Set.of(
 		SoundEffectID.PRAYER_ACTIVATE_THICK_SKIN,
 		SoundEffectID.PRAYER_ACTIVATE_BURST_OF_STRENGTH,
 		SoundEffectID.PRAYER_ACTIVATE_CLARITY_OF_THOUGHT,

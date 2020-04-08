@@ -30,7 +30,6 @@ package net.runelite.client.plugins.menuentryswapper;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,7 +107,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static final BaseComparableEntry EMPTY_MEDIUM = newBaseComparableEntry("empty", "medium pouch");
 	private static final BaseComparableEntry EMPTY_LARGE = newBaseComparableEntry("empty", "large pouch");
 	private static final BaseComparableEntry EMPTY_GIANT = newBaseComparableEntry("empty", "giant pouch");
-	private static final Set<MenuOpcode> NPC_MENU_TYPES = ImmutableSet.of(
+	private static final Set<MenuOpcode> NPC_MENU_TYPES = Set.of(
 		MenuOpcode.NPC_FIRST_OPTION, MenuOpcode.NPC_SECOND_OPTION, MenuOpcode.NPC_THIRD_OPTION,
 		MenuOpcode.NPC_FOURTH_OPTION, MenuOpcode.NPC_FIFTH_OPTION, MenuOpcode.EXAMINE_NPC
 	);
@@ -1418,31 +1417,31 @@ public class MenuEntrySwapperPlugin extends Plugin
 	{
 		if (config.bankWieldItem())
 		{
-		menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
+			menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
 		}
 		if (config.bankWearItem())
 		{
-		menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
+			menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
 		}
 		if (config.bankEatItem())
 		{
-		menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
+			menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
 		}
 		if (config.bankDrinkItem())
 		{
-		menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
+			menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
 		}
 		if (config.bankEquipItem())
 		{
-		menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
+			menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
 		}
 		if (config.bankInvigorateItem())
 		{
-		menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
+			menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
 		}
 		if (config.swapClimbUpDown())
 		{
-		menuManager.removePriorityEntry("climb-up");
+			menuManager.removePriorityEntry("climb-up");
 		}
 
 		if (config.swapNpcContact())

@@ -27,9 +27,7 @@ package net.runelite.client.plugins.loottracker;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
@@ -179,7 +177,7 @@ public class LootTrackerPlugin extends Plugin
 	// Chest loot handling
 	private static final String CHEST_LOOTED_MESSAGE = "You find some treasure in the chest!";
 	private static final Pattern LARRAN_LOOTED_PATTERN = Pattern.compile("You have opened Larran's (big|small) chest .*");
-	private static final Map<Integer, String> CHEST_EVENT_TYPES = ImmutableMap.of(
+	private static final Map<Integer, String> CHEST_EVENT_TYPES = Map.of(
 		5179, "Brimstone Chest",
 		11573, "Crystal Chest",
 		12093, "Larran's big chest",
@@ -187,14 +185,14 @@ public class LootTrackerPlugin extends Plugin
 		13151, "Elven Crystal Chest"
 	);
 	private static final File LOOT_RECORDS_FILE = new File(RuneLite.RUNELITE_DIR, "lootRecords.json");
-	private static final Set<Integer> RESPAWN_REGIONS = ImmutableSet.of(
+	private static final Set<Integer> RESPAWN_REGIONS = Set.of(
 		12850, // Lumbridge
 		11828, // Falador
 		12342, // Edgeville
 		11062 // Camelot
 	);
 
-	private static final Set<String> PET_MESSAGES = ImmutableSet.of("You have a funny feeling like you're being followed",
+	private static final Set<String> PET_MESSAGES = Set.of("You have a funny feeling like you're being followed",
 		"You feel something weird sneaking into your backpack",
 		"You have a funny feeling like you would have been followed");
 
@@ -209,7 +207,7 @@ public class LootTrackerPlugin extends Plugin
 	private boolean pvpDeath = false;
 
 	// Last man standing map regions
-	private static final Set<Integer> LAST_MAN_STANDING_REGIONS = ImmutableSet.of(13658, 13659, 13914, 13915, 13916);
+	private static final Set<Integer> LAST_MAN_STANDING_REGIONS = Set.of(13658, 13659, 13914, 13915, 13916);
 
 	private static final Pattern PICKPOCKET_REGEX = Pattern.compile("You pick (the )?(?<target>.+)'s? pocket.*");
 

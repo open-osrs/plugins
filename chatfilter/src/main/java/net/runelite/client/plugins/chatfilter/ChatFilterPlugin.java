@@ -214,7 +214,7 @@ public class ChatFilterPlugin extends Plugin
 		{
 			Matcher m = pattern.matcher(strippedMessage);
 
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 
 			while (m.find())
 			{

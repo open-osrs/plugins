@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.pestcontrol;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,7 +33,7 @@ import net.runelite.api.NpcID;
 public class PestControlNpc
 {
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> splatterIdSet = ImmutableSet.of(
+	private static final Set<Integer> splatterIdSet = Set.of(
 		NpcID.SPLATTER,
 		NpcID.SPLATTER_1690,
 		NpcID.SPLATTER_1691,
@@ -43,7 +42,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	public static final Set<Integer> shifterIdSet = ImmutableSet.of(
+	public static final Set<Integer> shifterIdSet = Set.of(
 		NpcID.SHIFTER,
 		NpcID.SHIFTER_1695,
 		NpcID.SHIFTER_1696,
@@ -57,7 +56,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> spinnerIdSet = ImmutableSet.of(
+	private static final Set<Integer> spinnerIdSet = Set.of(
 		NpcID.SPINNER,
 		NpcID.SPINNER_1710,
 		NpcID.SPINNER_1711,
@@ -66,7 +65,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> torcherIdSet = ImmutableSet.of(
+	private static final Set<Integer> torcherIdSet = Set.of(
 		NpcID.TORCHER,
 		NpcID.TORCHER_1715,
 		NpcID.TORCHER_1716,
@@ -80,7 +79,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> defilerIdSet = ImmutableSet.of(
+	private static final Set<Integer> defilerIdSet = Set.of(
 		NpcID.DEFILER,
 		NpcID.DEFILER_1725,
 		NpcID.DEFILER_1726,
@@ -94,7 +93,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> brawlerIdSet = ImmutableSet.of(
+	private static final Set<Integer> brawlerIdSet = Set.of(
 		NpcID.BRAWLER,
 		NpcID.BRAWLER_1735,
 		NpcID.BRAWLER_1736,
@@ -103,7 +102,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> ravagerIdSet = ImmutableSet.of(
+	private static final Set<Integer> ravagerIdSet = Set.of(
 		NpcID.RAVAGER,
 		NpcID.RAVAGER_1705,
 		NpcID.RAVAGER_1706,
@@ -112,7 +111,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> activePortalIdSet = ImmutableSet.of(
+	private static final Set<Integer> activePortalIdSet = Set.of(
 		NpcID.PORTAL_1747, // Novice Purple Active
 		NpcID.PORTAL_1748, // Novice Blue Active
 		NpcID.PORTAL_1749, // Novice Yellow Active
@@ -124,7 +123,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> shieldedPortalIdSet = ImmutableSet.of(
+	private static final Set<Integer> shieldedPortalIdSet = Set.of(
 		NpcID.PORTAL_1751, // Novice Purple Shielded
 		NpcID.PORTAL_1752, // Novice Blue Shielded
 		NpcID.PORTAL_1753, // Novice Yellow Shielded
@@ -136,7 +135,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> purplePortalIdSet = ImmutableSet.of(
+	private static final Set<Integer> purplePortalIdSet = Set.of(
 		NpcID.PORTAL_1747, // Novice Purple Active
 		NpcID.PORTAL_1751, // Novice Purple Shielded
 		NpcID.PORTAL, // Intermediate Purple Active
@@ -144,7 +143,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> bluePortalIdSet = ImmutableSet.of(
+	private static final Set<Integer> bluePortalIdSet = Set.of(
 		NpcID.PORTAL_1748, // Novice Blue Active
 		NpcID.PORTAL_1752, // Novice Blue Shielded
 		NpcID.PORTAL_1740, // Intermediate Blue Active
@@ -152,7 +151,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> yellowPortalIdSet = ImmutableSet.of(
+	private static final Set<Integer> yellowPortalIdSet = Set.of(
 		NpcID.PORTAL_1749, // Novice Yellow Active
 		NpcID.PORTAL_1753, // Novice Yellow Shielded
 		NpcID.PORTAL_1741, // Intermediate Yellow Active
@@ -160,7 +159,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> redPortalIdSet = ImmutableSet.of(
+	private static final Set<Integer> redPortalIdSet = Set.of(
 		NpcID.PORTAL_1750, // Novice Red Active
 		NpcID.PORTAL_1754, // Novice Red Shielded
 		NpcID.PORTAL_1742, // Intermediate Red Active
@@ -168,7 +167,7 @@ public class PestControlNpc
 	);
 
 	@Getter(AccessLevel.PACKAGE)
-	private static final Set<Integer> ingameVoidKnightIdSet = ImmutableSet.of(
+	private static final Set<Integer> ingameVoidKnightIdSet = Set.of(
 		NpcID.VOID_KNIGHT_2950,
 		NpcID.VOID_KNIGHT_2951,
 		NpcID.VOID_KNIGHT_2952,

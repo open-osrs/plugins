@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.deathindicator;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import java.time.Duration;
@@ -81,7 +80,7 @@ public class DeathIndicatorPlugin extends Plugin
 	// A random number, that jagex probably won't actually use in the near future
 	static final int HIJACKED_ITEMID = 0x69696969;
 
-	private static final Set<Integer> RESPAWN_REGIONS = ImmutableSet.of(
+	private static final Set<Integer> RESPAWN_REGIONS = Set.of(
 		6457, // Kourend
 		12850, // Lumbridge
 		11828, // Falador

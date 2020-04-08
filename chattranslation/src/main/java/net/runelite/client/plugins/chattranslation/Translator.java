@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 class Translator
 {
@@ -31,13 +32,13 @@ class Translator
 
 	String translateIncoming(String message) throws IOException
 	{
-		final String url = incomingUrlBase + URLEncoder.encode(message, "UTF-8");
+		final String url = incomingUrlBase + URLEncoder.encode(message, StandardCharsets.UTF_8);
 		return translate(new URL(url));
 	}
 
 	String translateOutgoing(String message) throws IOException
 	{
-		final String url = outgoingUrlBase + URLEncoder.encode(message, "UTF-8");
+		final String url = outgoingUrlBase + URLEncoder.encode(message, StandardCharsets.UTF_8);
 		return translate(new URL(url));
 	}
 

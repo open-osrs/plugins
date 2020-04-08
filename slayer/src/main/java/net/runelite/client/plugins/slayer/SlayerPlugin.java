@@ -27,7 +27,6 @@
 package net.runelite.client.plugins.slayer;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -140,8 +139,8 @@ public class SlayerPlugin extends Plugin
 
 	private static final int GROTESQUE_GUARDIANS_REGION = 6727;
 
-	private static final Set<Task> weaknessTasks = ImmutableSet.of(Task.LIZARDS, Task.GARGOYLES,
-		Task.GROTESQUE_GUARDIANS, Task.GROTESQUE_GUARDIANS, Task.MUTATED_ZYGOMITES, Task.ROCKSLUGS);
+	private static final Set<Task> weaknessTasks = Set.of(Task.LIZARDS, Task.GARGOYLES,
+		Task.GROTESQUE_GUARDIANS, Task.MUTATED_ZYGOMITES, Task.ROCKSLUGS);
 
 	// Chat Command
 	private static final String TASK_COMMAND_STRING = "!task";
@@ -578,7 +577,7 @@ public class SlayerPlugin extends Plugin
 			}
 			forcedWait--;
 		}
-		
+
 
 		// If a timeout is configured for showing slayer stats
 		if (config.statTimeout() != 0)
@@ -588,7 +587,7 @@ public class SlayerPlugin extends Plugin
 			{
 				infoTimer = Instant.now();
 			}
-			
+
 			Duration timeSinceInfobox = Duration.between(infoTimer, Instant.now());
 			Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 

@@ -29,7 +29,6 @@ package net.runelite.client.plugins.bank;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
@@ -86,7 +85,7 @@ import org.pf4j.Extension;
 )
 public class BankPlugin extends Plugin implements KeyListener
 {
-	private static final List<Varbits> TAB_VARBITS = ImmutableList.of(
+	private static final List<Varbits> TAB_VARBITS = List.of(
 		Varbits.BANK_TAB_ONE_COUNT,
 		Varbits.BANK_TAB_TWO_COUNT,
 		Varbits.BANK_TAB_THREE_COUNT,
@@ -98,7 +97,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		Varbits.BANK_TAB_NINE_COUNT
 	);
 
-	private static final List<WidgetInfo> BANK_PINS = ImmutableList.of(
+	private static final List<WidgetInfo> BANK_PINS = List.of(
 		WidgetInfo.BANK_PIN_1,
 		WidgetInfo.BANK_PIN_2,
 		WidgetInfo.BANK_PIN_3,
@@ -167,7 +166,7 @@ public class BankPlugin extends Plugin implements KeyListener
 	{
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
-		keyManager.registerKeyListener(this);
+			keyManager.registerKeyListener(this);
 		}
 		searchString = "";
 	}
@@ -180,7 +179,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		forceRightClickFlag = false;
 		itemQuantities = null;
 	}
-	
+
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{

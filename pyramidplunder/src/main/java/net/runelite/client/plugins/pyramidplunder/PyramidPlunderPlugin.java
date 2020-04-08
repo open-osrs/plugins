@@ -25,7 +25,6 @@
  */
 package net.runelite.client.plugins.pyramidplunder;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -94,7 +93,7 @@ public class PyramidPlunderPlugin extends Plugin
 //		URN_21266,
 //		URN_21267
 //	);
-	private static final Set<Integer> DOOR_WALL_IDS = ImmutableSet.of(
+	private static final Set<Integer> DOOR_WALL_IDS = Set.of(
 		26618, 26619, 26620, 26621
 	);
 

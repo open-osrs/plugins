@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.wiki;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -69,7 +68,7 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 	private final Gson gson = new Gson();
 
 	private Future<?> runningRequest = null;
-	private List<String> predictions = ImmutableList.of();
+	private List<String> predictions = List.of();
 
 	private int selectedPrediction = -1;
 	private String offPrediction = null;
@@ -102,7 +101,7 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 				runningRequest = null;
 				clientThread.invokeLater(() ->
 				{
-					predictions = ImmutableList.of();
+					predictions = List.of();
 					update();
 				});
 				return;
