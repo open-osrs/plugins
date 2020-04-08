@@ -98,12 +98,6 @@ public class SkyboxPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onTick(GameTick event) {
-		System.out.println("Hiya~");
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "rabbit", "");
-	}
-
-	@Subscribe
 	private void onBeforeRender(BeforeRender r)
 	{
 		if (skybox == null || client.getGameState() != GameState.LOGGED_IN)
