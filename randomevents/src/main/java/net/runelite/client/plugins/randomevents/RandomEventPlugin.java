@@ -25,7 +25,6 @@
 
 package net.runelite.client.plugins.randomevents;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.Arrays;
 import java.util.Set;
@@ -58,7 +57,7 @@ import org.pf4j.Extension;
 @Slf4j
 public class RandomEventPlugin extends Plugin
 {
-	private static final Set<Integer> EVENT_NPCS = ImmutableSet.of(
+	private static final Set<Integer> EVENT_NPCS = Set.of(
 		NpcID.DR_JEKYLL, NpcID.DR_JEKYLL_314,
 		NpcID.BEE_KEEPER_6747,
 		NpcID.CAPT_ARNAV,
@@ -82,7 +81,7 @@ public class RandomEventPlugin extends Plugin
 		NpcID.GILES, NpcID.GILES_5441,
 		NpcID.FROG_5429
 	);
-	private static final Set<String> EVENT_OPTIONS = ImmutableSet.of(
+	private static final Set<String> EVENT_OPTIONS = Set.of(
 		"Talk-to",
 		"Dismiss"
 	);

@@ -25,7 +25,6 @@
  */
 package net.runelite.client.plugins.driftnet;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,7 +74,7 @@ public class DriftNetPlugin extends Plugin
 {
 	static final String CONFIG_GROUP = "driftnet";
 	private static final int UNDERWATER_REGION = 15008;
-	private static final String CHAT_PRODDING_FISH  = "You prod at the shoal of fish to scare it.";
+	private static final String CHAT_PRODDING_FISH = "You prod at the shoal of fish to scare it.";
 
 	@Inject
 	private Client client;
@@ -97,7 +96,7 @@ public class DriftNetPlugin extends Plugin
 	@Getter
 	private Map<NPC, Integer> taggedFish = new HashMap<>();
 	@Getter
-	private final List<DriftNet> NETS = ImmutableList.of(
+	private final List<DriftNet> NETS = List.of(
 		new DriftNet(NullObjectID.NULL_31433, Varbits.NORTH_NET_STATUS, Varbits.NORTH_NET_CATCH_COUNT),
 		new DriftNet(NullObjectID.NULL_31434, Varbits.SOUTH_NET_STATUS, Varbits.SOUTH_NET_CATCH_COUNT));
 

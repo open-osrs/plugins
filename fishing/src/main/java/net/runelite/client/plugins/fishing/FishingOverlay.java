@@ -29,9 +29,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Set;
 import javax.inject.Inject;
-import com.google.common.collect.ImmutableSet;
-import net.runelite.api.AnimationID;
 import javax.inject.Singleton;
+import net.runelite.api.AnimationID;
 import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
@@ -52,8 +51,8 @@ class FishingOverlay extends Overlay
 {
 	private static final String FISHING_SPOT = "Fishing spot";
 	static final String FISHING_RESET = "Reset";
-	
-	private static final Set<Integer> FISHING_ANIMATIONS = ImmutableSet.of(
+
+	private static final Set<Integer> FISHING_ANIMATIONS = Set.of(
 		AnimationID.FISHING_BARBTAIL_HARPOON,
 		AnimationID.FISHING_BAREHAND,
 		AnimationID.FISHING_BAREHAND_CAUGHT_SHARK_1,

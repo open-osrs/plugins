@@ -28,7 +28,6 @@
 package net.runelite.client.plugins.raids;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
@@ -134,7 +133,7 @@ public class RaidsPlugin extends Plugin
 	private static final Pattern ROTATION_REGEX = Pattern.compile("\\[(.*?)]");
 	private static final String LAYOUT_COMMAND = "!layout";
 	private static final Pattern RAID_COMPLETE_REGEX = Pattern.compile("Congratulations - your raid is complete! Duration: ([0-9:]+)");
-	private static final ImmutableSet<String> GOOD_CRABS_FIRST = ImmutableSet.of(
+	private static final Set<String> GOOD_CRABS_FIRST = Set.of(
 		"FSCCP.PCSCF - #WNWSWN#ESEENW", //both good crabs
 		"SCSPF.CCSPF - #ESWWNW#ESENES", //both good crabs
 		"SPCFC.CSPCF - #WWNEEE#WSWNWS", //both good crabs
@@ -142,7 +141,7 @@ public class RaidsPlugin extends Plugin
 		"SCPFC.CCSSF - #NEESEN#WSWWNE", //good crabs
 		"SCFPC.CSPCF - #WSWWNE#WSEENE" //good crabs first rare crabs second
 	);
-	private static final ImmutableSet<String> GOOD_CRABS_SECOND = ImmutableSet.of(
+	private static final Set<String> GOOD_CRABS_SECOND = Set.of(
 		"FSCCP.PCSCF - #WNWSWN#ESEENW", //both good crabs
 		"SCSPF.CCSPF - #ESWWNW#ESENES", //both good crabs
 		"SPCFC.CSPCF - #WWNEEE#WSWNWS", //both good crabs
@@ -155,12 +154,12 @@ public class RaidsPlugin extends Plugin
 		"FSCCP.PCSCF - #ENWWWS#NEESEN", //bad crabs first good crabs second
 		"FSCCS.PCPSF - #WSEEEN#WSWNWS" //bad crabs first good crabs second
 	);
-	private static final ImmutableSet<String> RARE_CRABS_FIRST = ImmutableSet.of(
+	private static final Set<String> RARE_CRABS_FIRST = Set.of(
 		"SCPFC.CSPCF - #NEEESW#WWNEEE", //rare crabs first good crabs second
 		"SCPFC.PCSCF - #WNEEES#NWSWNW", //rare crabs first bad crabs second
 		"SCPFC.CCPSF - #NWWWSE#WNEESE" //both rare crabs
 	);
-	private static final ImmutableSet<String> RARE_CRABS_SECOND = ImmutableSet.of(
+	private static final Set<String> RARE_CRABS_SECOND = Set.of(
 		"SCPFC.CCPSF - #NWWWSE#WNEESE", //both rare crabs
 		"FSCPC.CSCPF - #WNWWSE#EENWWW", //bad crabs first rare crabs second
 		"SCFPC.PCCSF - #WSEENE#WWWSEE", //bad crabs first rare crabs second

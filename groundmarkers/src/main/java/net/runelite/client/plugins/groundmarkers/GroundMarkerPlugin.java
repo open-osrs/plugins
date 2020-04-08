@@ -180,7 +180,7 @@ public class GroundMarkerPlugin extends Plugin
 	{
 		if (points.isEmpty())
 		{
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		List<GroundMarkerWorldPoint> worldPoints = new ArrayList<>();

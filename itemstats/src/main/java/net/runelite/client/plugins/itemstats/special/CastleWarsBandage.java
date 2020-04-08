@@ -24,8 +24,8 @@
  */
 package net.runelite.client.plugins.itemstats.special;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.stream.Stream;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
@@ -43,7 +43,7 @@ import static net.runelite.client.plugins.itemstats.stats.Stats.RUN_ENERGY;
 
 public class CastleWarsBandage implements Effect
 {
-	private static final ImmutableSet<Integer> BRACELETS = ImmutableSet.of(
+	private static final Set<Integer> BRACELETS = Set.of(
 		ItemID.CASTLE_WARS_BRACELET1, ItemID.CASTLE_WARS_BRACELET2, ItemID.CASTLE_WARS_BRACELET3
 	);
 

@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.boosts;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,14 +61,14 @@ import org.pf4j.Extension;
 )
 public class BoostsPlugin extends Plugin
 {
-	private static final Set<Skill> BOOSTABLE_COMBAT_SKILLS = ImmutableSet.of(
+	private static final Set<Skill> BOOSTABLE_COMBAT_SKILLS = Set.of(
 		Skill.ATTACK,
 		Skill.STRENGTH,
 		Skill.DEFENCE,
 		Skill.RANGED,
 		Skill.MAGIC);
 
-	private static final Set<Skill> BOOSTABLE_NON_COMBAT_SKILLS = ImmutableSet.of(
+	private static final Set<Skill> BOOSTABLE_NON_COMBAT_SKILLS = Set.of(
 		Skill.MINING, Skill.AGILITY, Skill.SMITHING, Skill.HERBLORE, Skill.FISHING, Skill.THIEVING,
 		Skill.COOKING, Skill.CRAFTING, Skill.FIREMAKING, Skill.FLETCHING, Skill.WOODCUTTING, Skill.RUNECRAFT,
 		Skill.SLAYER, Skill.FARMING, Skill.CONSTRUCTION, Skill.HUNTER);
@@ -358,7 +357,7 @@ public class BoostsPlugin extends Plugin
 			{
 				isChangedDown = true;
 			}
-			
+
 			if (boosted != base)
 			{
 				skillsToDisplay.add(skill);

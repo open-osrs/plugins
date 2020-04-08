@@ -9,6 +9,7 @@ plugins {
     java
     id("com.github.ben-manes.versions") version "0.28.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.13"
+    id("com.simonharrer.modernizer") version "1.8.0-1" apply false
 }
 
 apply<BootstrapPlugin>()
@@ -70,6 +71,7 @@ subprojects {
     apply(plugin = "checkstyle")
     apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "se.patrikerdes.use-latest-versions")
+    apply(plugin = "com.simonharrer.modernizer")
 
     dependencies {
         annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")

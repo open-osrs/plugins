@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.raids.solver;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
 import net.runelite.client.plugins.raids.RaidRoom;
@@ -41,12 +40,12 @@ import net.runelite.client.plugins.raids.RoomType;
 
 public class RotationSolver
 {
-	private static final ImmutableList<ImmutableList<RaidRoom>> ROTATIONS = ImmutableList.of
+	private static final List<List<RaidRoom>> ROTATIONS = List.of
 	(
-			ImmutableList.of(TEKTON, VASA, GUARDIANS, MYSTICS, SHAMANS, MUTTADILES, VANGUARDS, VESPULA),
-			ImmutableList.of(TEKTON, MUTTADILES, GUARDIANS, VESPULA, SHAMANS, VASA, VANGUARDS, MYSTICS),
-			ImmutableList.of(VESPULA, VANGUARDS, MUTTADILES, SHAMANS, MYSTICS, GUARDIANS, VASA, TEKTON),
-			ImmutableList.of(MYSTICS, VANGUARDS, VASA, SHAMANS, VESPULA, GUARDIANS, MUTTADILES, TEKTON)
+			List.of(TEKTON, VASA, GUARDIANS, MYSTICS, SHAMANS, MUTTADILES, VANGUARDS, VESPULA),
+			List.of(TEKTON, MUTTADILES, GUARDIANS, VESPULA, SHAMANS, VASA, VANGUARDS, MYSTICS),
+			List.of(VESPULA, VANGUARDS, MUTTADILES, SHAMANS, MYSTICS, GUARDIANS, VASA, TEKTON),
+			List.of(MYSTICS, VANGUARDS, VASA, SHAMANS, VESPULA, GUARDIANS, MUTTADILES, TEKTON)
 	);
 
 	public static boolean solve(RaidRoom[] rooms)
@@ -56,7 +55,7 @@ public class RotationSolver
 			return false;
 		}
 
-		List<ImmutableList<RaidRoom>> matches = new ArrayList<>();
+		List<List<RaidRoom>> matches = new ArrayList<>();
 		Integer start = null;
 		Integer index = null;
 		int known = 0;
@@ -87,7 +86,7 @@ public class RotationSolver
 		}
 
 		//Iterate over each rotation
-		for (ImmutableList<RaidRoom> rotation : ROTATIONS)
+		for (List<RaidRoom> rotation : ROTATIONS)
 		{
 			//Determine the index of the first known combat room in this rotation
 			int rotationStart = rotation.indexOf(rooms[start]);

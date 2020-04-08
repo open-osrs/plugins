@@ -25,13 +25,13 @@
  */
 package net.runelite.client.plugins.timetracking.hunter;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import lombok.AccessLevel;
@@ -50,7 +50,7 @@ public class BirdHouseTracker
 	// average time taken to harvest 10 birds, in seconds
 	static final int BIRD_HOUSE_DURATION = (int) Duration.ofMinutes(50).getSeconds();
 
-	private static final ImmutableSet<Integer> FOSSIL_ISLAND_REGIONS = ImmutableSet.of(14650, 14651, 14652, 14906, 14907, 15162, 15163);
+	private static final Set<Integer> FOSSIL_ISLAND_REGIONS = Set.of(14650, 14651, 14652, 14906, 14907, 15162, 15163);
 
 	private final Client client;
 	private final ItemManager itemManager;

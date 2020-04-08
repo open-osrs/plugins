@@ -1,10 +1,10 @@
 package net.runelite.client.plugins.chattranslation;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.Client;
@@ -48,7 +48,7 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 	private static final String TRANSLATE = "Translate";
 
 	// TODO: Find out if "Remove friend" is correct here, aka if clan tab should have the Translate option
-	private static final ImmutableList<String> AFTER_OPTIONS = ImmutableList.of("Message", "Add ignore", "Remove friend", "Kick");
+	private static final List<String> AFTER_OPTIONS = List.of("Message", "Add ignore", "Remove friend", "Kick");
 
 	private final Translator translator = new Translator();
 	private final Set<String> playerNames = new HashSet<>();

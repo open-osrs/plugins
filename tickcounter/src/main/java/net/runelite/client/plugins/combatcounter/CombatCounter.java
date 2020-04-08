@@ -201,14 +201,14 @@ public class CombatCounter extends Plugin
 		.add(1658) // Whip Flick, Lash, Deflect
 		.build();
 
-	private static final Set<Integer> RANGE_ANIMATIONS = ImmutableSet.of(
+	private static final Set<Integer> RANGE_ANIMATIONS = Set.of(
 		7552, // Armadyl Crossbow Accurate, Rapid, Longrange, Special
 		426, // Twisted Bow Accurate, Rapid, Longrange
 		7618, // Chinchompa Short, Medium, Long Fuse
 		7555 // Ballista Accurate, Rapid, Longrange
 	);
 
-	private static final Set<Integer> MAGE_ANIMATIONS = ImmutableSet.of(
+	private static final Set<Integer> MAGE_ANIMATIONS = Set.of(
 		1167, // Trident Accurate, Accurate, Longrange
 		1978, // Ancient Magicks Blitz
 		1979 // Ancient Magicks Barrage

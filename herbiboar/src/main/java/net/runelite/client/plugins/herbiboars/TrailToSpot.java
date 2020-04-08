@@ -25,7 +25,6 @@
  */
 package net.runelite.client.plugins.herbiboars;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import lombok.Value;
 import net.runelite.api.Varbits;
@@ -55,6 +54,6 @@ class TrailToSpot
 
 	Set<Integer> getFootprintIds()
 	{
-		return ImmutableSet.of(footprint, footprint + 1);
+		return Set.of(footprint, footprint + 1);
 	}
 }

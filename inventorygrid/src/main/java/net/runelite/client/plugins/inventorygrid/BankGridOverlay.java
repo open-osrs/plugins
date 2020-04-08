@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.inventorygrid;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -32,12 +31,13 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
-import java.awt.image.BufferedImage;
-import net.runelite.api.Client;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -55,7 +55,7 @@ class BankGridOverlay extends Overlay
 	private final ItemManager itemManager;
 	private final InventoryGridPlugin plugin;
 
-	private static final ImmutableList<Varbits> TAB_VARBITS = ImmutableList.of(
+	private static final List<Varbits> TAB_VARBITS = List.of(
 		Varbits.BANK_TAB_ONE_COUNT,
 		Varbits.BANK_TAB_TWO_COUNT,
 		Varbits.BANK_TAB_THREE_COUNT,

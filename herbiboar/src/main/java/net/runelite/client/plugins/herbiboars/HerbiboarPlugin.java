@@ -25,10 +25,8 @@
  */
 package net.runelite.client.plugins.herbiboars;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.inject.Provides;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +77,7 @@ import org.pf4j.Extension;
 @Getter
 public class HerbiboarPlugin extends Plugin
 {
-	private static final List<WorldPoint> END_LOCATIONS = ImmutableList.of(
+	private static final List<WorldPoint> END_LOCATIONS = List.of(
 		new WorldPoint(3693, 3798, 0),
 		new WorldPoint(3702, 3808, 0),
 		new WorldPoint(3703, 3826, 0),
@@ -91,7 +89,7 @@ public class HerbiboarPlugin extends Plugin
 		new WorldPoint(3681, 3863, 0)
 	);
 
-	private static final Set<Integer> START_OBJECT_IDS = ImmutableSet.of(
+	private static final Set<Integer> START_OBJECT_IDS = Set.of(
 		ROCK_30519,
 		MUSHROOM_30520,
 		ROCK_30521,
@@ -99,7 +97,7 @@ public class HerbiboarPlugin extends Plugin
 		DRIFTWOOD_30523
 	);
 
-	private static final List<Integer> HERBIBOAR_REGIONS = ImmutableList.of(
+	private static final List<Integer> HERBIBOAR_REGIONS = List.of(
 		14652,
 		14651,
 		14908,
@@ -144,7 +142,7 @@ public class HerbiboarPlugin extends Plugin
 	/**
 	 * Sequence of herbiboar spots searched along the current trail
 	 */
-	private final List<HerbiboarSearchSpot> currentPath = Lists.newArrayList();
+	private final List<HerbiboarSearchSpot> currentPath = new ArrayList<>();
 
 	private boolean inHerbiboarArea;
 	private TrailToSpot nextTrail;

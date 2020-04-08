@@ -26,8 +26,8 @@
  */
 package net.runelite.client.plugins.barbarianassault;
 
-import com.google.common.collect.ImmutableList;
 import java.awt.Color;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -40,7 +40,7 @@ import net.runelite.client.chat.ChatMessageBuilder;
 public class Wave
 {
 	@Getter(AccessLevel.NONE)
-	private static final ImmutableList<WidgetInfo> WIDGETS = ImmutableList.of(
+	private static final List<WidgetInfo> WIDGETS = List.of(
 		WidgetInfo.BA_FAILED_ATTACKER_ATTACKS,
 		WidgetInfo.BA_RUNNERS_PASSED,
 		WidgetInfo.BA_EGGS_COLLECTED,
@@ -50,7 +50,7 @@ public class Wave
 	);
 
 	@Getter(AccessLevel.NONE)
-	private static final ImmutableList<WidgetInfo> POINTSWIDGETS = ImmutableList.of(
+	private static final List<WidgetInfo> POINTSWIDGETS = List.of(
 		//Base
 		WidgetInfo.BA_BASE_POINTS,
 		//Attacker

@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.cluescrolls.clues;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -117,7 +116,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 		item(ItemID.CRYSTAL_HARPOON)
 	);
 
-	private static final Set<SkillChallengeClue> CLUES = ImmutableSet.of(
+	private static final Set<SkillChallengeClue> CLUES = Set.of(
 		// Charlie Tasks
 		new SkillChallengeClue("Cook a Pike", "i need to cook charlie a pike.", "i need to take the cooked pike to charlie.", item(ItemID.PIKE), item(ItemID.RAW_PIKE)),
 		new SkillChallengeClue("Cook a Trout", "i need to cook charlie a trout.", "i need to take the cooked trout to charlie.", item(ItemID.TROUT), item(ItemID.RAW_TROUT)),
@@ -149,7 +148,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 		new SkillChallengeClue("Smith a mithril 2h sword.", item(ItemID.HAMMER), xOfItem(ItemID.MITHRIL_BAR, 3)),
 		new SkillChallengeClue("Catch a raw shark.", ANY_HARPOON),
 		new SkillChallengeClue("Cut a yew log.", ANY_AXE),
-		new SkillChallengeClue("Fix a magical lamp in Dorgesh-Kaan.", new String[] { "Broken lamp" }, new int[] { 10834, 10835 }, item(ItemID.LIGHT_ORB)),
+		new SkillChallengeClue("Fix a magical lamp in Dorgesh-Kaan.", new String[]{"Broken lamp"}, new int[]{10834, 10835}, item(ItemID.LIGHT_ORB)),
 		new SkillChallengeClue("Burn a yew log.", item(ItemID.YEW_LOGS), item(ItemID.TINDERBOX)),
 		new SkillChallengeClue("Cook a swordfish", "cook a swordfish", item(ItemID.RAW_SWORDFISH)),
 		new SkillChallengeClue("Craft multiple cosmic runes from a single essence.", item(ItemID.PURE_ESSENCE)),
@@ -225,7 +224,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 	}
 
 	// Non-cryptic Sherlock Tasks
-	private SkillChallengeClue(String challenge, String[] objectNames, int[] objectRegions, ItemRequirement ... itemRequirements)
+	private SkillChallengeClue(String challenge, String[] objectNames, int[] objectRegions, ItemRequirement... itemRequirements)
 	{
 		this(challenge, challenge.toLowerCase(), false, objectNames, objectRegions, itemRequirements);
 	}
@@ -249,7 +248,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 	}
 
 	// Sherlock Tasks
-	private SkillChallengeClue(String challenge, String rawChallenge, boolean requireEquip, String[] objectNames, int[] objectRegions, ItemRequirement ... itemRequirements)
+	private SkillChallengeClue(String challenge, String rawChallenge, boolean requireEquip, String[] objectNames, int[] objectRegions, ItemRequirement... itemRequirements)
 	{
 		this.type = ChallengeType.SHERLOCK;
 		this.challenge = challenge;

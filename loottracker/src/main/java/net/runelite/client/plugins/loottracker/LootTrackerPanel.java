@@ -34,11 +34,9 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
 import javax.inject.Singleton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -303,7 +301,7 @@ class LootTrackerPanel extends PluginPanel
 			}
 		});
 
-		JComboBox dateFilterComboBox = new JComboBox<>(new Vector<>(Arrays.asList(LootRecordDateFilter.values())));
+		JComboBox dateFilterComboBox = new JComboBox<>(LootRecordDateFilter.values());
 		dateFilterComboBox.setSelectedItem(this.dateFilter);
 		dateFilterComboBox.setToolTipText("Filter the displayed loot records by date");
 		dateFilterComboBox.setMaximumSize(new Dimension(15, 0));

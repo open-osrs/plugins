@@ -24,11 +24,11 @@
  */
 package net.runelite.client.plugins.statusbars;
 
-import com.google.common.collect.Maps;
 import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -84,7 +84,7 @@ public class StatusBarsPlugin extends Plugin
 	private SpecialAttackRenderer specialAttackRenderer;
 
 	@Getter(AccessLevel.PACKAGE)
-	private final Map<BarMode, BarRenderer> barRenderers = Maps.newEnumMap(BarMode.class);
+	private final Map<BarMode, BarRenderer> barRenderers = new EnumMap<>(BarMode.class);
 
 	@Inject
 	private Client client;

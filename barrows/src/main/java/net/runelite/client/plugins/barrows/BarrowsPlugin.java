@@ -24,11 +24,11 @@
  */
 package net.runelite.client.plugins.barrows;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.inject.Provides;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
@@ -38,6 +38,7 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
+import net.runelite.api.Player;
 import net.runelite.api.SpriteID;
 import net.runelite.api.WallObject;
 import net.runelite.api.events.GameObjectChanged;
@@ -48,7 +49,6 @@ import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.Player;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -85,7 +85,7 @@ public class BarrowsPlugin extends Plugin
 		);
 
 	private static final Set<Integer> BARROWS_LADDERS = Sets.newHashSet(NullObjectID.NULL_20675, NullObjectID.NULL_20676, NullObjectID.NULL_20677);
-	private static final ImmutableList<WidgetInfo> POSSIBLE_SOLUTIONS = ImmutableList.of(
+	private static final List<WidgetInfo> POSSIBLE_SOLUTIONS = List.of(
 		WidgetInfo.BARROWS_PUZZLE_ANSWER1,
 		WidgetInfo.BARROWS_PUZZLE_ANSWER2,
 		WidgetInfo.BARROWS_PUZZLE_ANSWER3

@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.cluescrolls.clues;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Set;
@@ -53,7 +52,7 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 @Getter(AccessLevel.PUBLIC)
 public class MapClue extends ClueScroll implements ObjectClueScroll
 {
-	private static final Set<MapClue> CLUES = ImmutableSet.of(
+	private static final Set<MapClue> CLUES = Set.of(
 		new MapClue(CLUE_SCROLL_EASY_12179, new WorldPoint(3300, 3291, 0)),
 		new MapClue(CLUE_SCROLL_EASY_2713, new WorldPoint(3166, 3361, 0)),
 		new MapClue(CLUE_SCROLL_EASY_2716, new WorldPoint(3290, 3374, 0)),

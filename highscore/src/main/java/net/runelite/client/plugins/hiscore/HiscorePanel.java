@@ -28,7 +28,6 @@ package net.runelite.client.plugins.hiscore;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -83,7 +82,7 @@ public class HiscorePanel extends PluginPanel
 	/**
 	 * Real skills, ordered in the way they should be displayed in the panel.
 	 */
-	private static final List<HiscoreSkill> SKILLS = ImmutableList.of(
+	private static final List<HiscoreSkill> SKILLS = List.of(
 		ATTACK, HITPOINTS, MINING,
 		STRENGTH, AGILITY, SMITHING,
 		DEFENCE, HERBLORE, FISHING,
@@ -97,7 +96,7 @@ public class HiscorePanel extends PluginPanel
 	/**
 	 * Bosses, ordered in the way they should be displayed in the panel.
 	 */
-	private static final List<HiscoreSkill> BOSSES = ImmutableList.of(
+	private static final List<HiscoreSkill> BOSSES = List.of(
 		ABYSSAL_SIRE, ALCHEMICAL_HYDRA, BARROWS_CHESTS,
 		BRYOPHYTA, CALLISTO, CERBERUS,
 		CHAMBERS_OF_XERIC, CHAMBERS_OF_XERIC_CHALLENGE_MODE, CHAOS_ELEMENTAL,

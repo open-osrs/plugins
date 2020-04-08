@@ -23,7 +23,6 @@
  */
 package net.runelite.client.plugins.tmorph.ui;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -81,7 +80,7 @@ import org.jooq.impl.SQLDataType;
 @Slf4j
 public class TPanel extends PluginPanel
 {
-	private static final Set<KitType> BLACKLIST = ImmutableSet.of(KitType.AMMUNITION, KitType.RING, KitType.HAIR, KitType.JAW);
+	private static final Set<KitType> BLACKLIST = Set.of(KitType.AMMUNITION, KitType.RING, KitType.HAIR, KitType.JAW);
 
 	private final Client client;
 	private final DatabaseManager databaseManager;
