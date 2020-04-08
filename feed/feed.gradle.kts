@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -29,21 +27,6 @@ version = "0.0.3"
 
 project.extra["PluginName"] = "News Feed"
 project.extra["PluginDescription"] = "Show the latest RuneLite blog posts, OSRS news, and JMod Twitter posts"
-
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.guava)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
-}
 
 tasks {
     jar {

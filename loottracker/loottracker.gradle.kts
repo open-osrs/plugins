@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -31,20 +29,7 @@ project.extra["PluginName"] = "Loottracker"
 project.extra["PluginDescription"] = "Tracks loot from monsters and minigames"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.gson)
-    compileOnly(Libraries.jooq)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.rxjava)
+    compileOnly(group = "org.jooq", name = "jooq", version = "3.13.1")
 }
 
 tasks {

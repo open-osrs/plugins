@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -28,22 +26,6 @@ version = "0.0.10"
 
 project.extra["PluginName"] = "CoX Scouter"
 project.extra["PluginDescription"] = "Show helpful information for the Chambers of Xeric raid"
-
-dependencies {
-    
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
-}
 
 tasks {
     jar {

@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -31,19 +29,7 @@ project.extra["PluginName"] = "Discord"
 project.extra["PluginDescription"] = "Show your status and activity in the Discord user panel"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.annotations)
-    compileOnly(Libraries.discord)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
+    compileOnly(group = "net.runelite", name = "discord", version = "1.1")
 }
 
 tasks {

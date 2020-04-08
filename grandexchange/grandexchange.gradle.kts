@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -29,32 +27,6 @@ version = "0.0.7"
 
 project.extra["PluginName"] = "Grand Exchange"
 project.extra["PluginDescription"] = "Provide additional and/or easier access to Grand Exchange information"
-
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-    compileOnly("com.openosrs:http-api:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.gson)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.okhttp3)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.rxjava)
-
-    testImplementation("com.openosrs:runelite-api:$rlVersion")
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
-    testImplementation(Libraries.pf4j)
-    testImplementation(Libraries.guiceTestlib)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.mockitoCore)
-    testImplementation(Libraries.mockitoInline)
-}
 
 tasks {
     jar {

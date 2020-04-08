@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -29,27 +27,6 @@ version = "0.0.4"
 
 project.extra["PluginName"] = "Skybox"
 project.extra["PluginDescription"] = "Draws an oldschool styled skybox"
-
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-
-    testAnnotationProcessor(Libraries.lombok)
-
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
-    testImplementation(Libraries.guava)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.lombok)
-    testImplementation(Libraries.slf4jApi)
-}
 
 tasks {
     jar {
