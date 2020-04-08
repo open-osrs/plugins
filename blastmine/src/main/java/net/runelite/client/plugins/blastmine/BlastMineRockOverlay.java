@@ -24,13 +24,13 @@
  */
 package net.runelite.client.plugins.blastmine;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
@@ -55,7 +55,7 @@ public class BlastMineRockOverlay extends Overlay
 {
 	private static final int MAX_DISTANCE = 16;
 	private static final int WARNING_DISTANCE = 2;
-	private static final ImmutableSet<Integer> WALL_OBJECTS = ImmutableSet.of(
+	private static final Set<Integer> WALL_OBJECTS = Set.of(
 		NullObjectID.NULL_28570, NullObjectID.NULL_28571, NullObjectID.NULL_28572, NullObjectID.NULL_28573, NullObjectID.NULL_28574,
 		NullObjectID.NULL_28575, NullObjectID.NULL_28576, NullObjectID.NULL_28577, NullObjectID.NULL_28578,
 		ObjectID.HARD_ROCK, ObjectID.HARD_ROCK_28580, ObjectID.CAVITY, ObjectID.CAVITY_28582,

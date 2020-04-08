@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.questlist;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -72,7 +71,7 @@ import org.pf4j.Extension;
 public class QuestListPlugin extends Plugin
 {
 	private static final int ENTRY_PADDING = 8;
-	private static final List<String> QUEST_HEADERS = ImmutableList.of("Free Quests", "Members' Quests", "Miniquests");
+	private static final List<String> QUEST_HEADERS = List.of("Free Quests", "Members' Quests", "Miniquests");
 
 	private static final String MENU_OPEN = "Open";
 	private static final String MENU_CLOSE = "Close";

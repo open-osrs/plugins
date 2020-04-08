@@ -25,11 +25,11 @@
  */
 package net.runelite.client.plugins.kingdomofmiscellania;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -67,7 +67,7 @@ import org.pf4j.Extension;
 )
 public class KingdomPlugin extends Plugin
 {
-	private static final ImmutableSet<Integer> KINGDOM_REGION = ImmutableSet.of(10044, 10300);
+	private static final Set<Integer> KINGDOM_REGION = Set.of(10044, 10300);
 
 	@Inject
 	private Client client;

@@ -26,7 +26,6 @@ package net.runelite.client.plugins.devtools;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import static java.lang.Math.min;
@@ -78,7 +77,7 @@ import org.slf4j.LoggerFactory;
 @Getter(AccessLevel.PACKAGE)
 public class DevToolsPlugin extends Plugin
 {
-	private static final List<MenuOpcode> EXAMINE_MENU_ACTIONS = ImmutableList.of(MenuOpcode.EXAMINE_ITEM,
+	private static final List<MenuOpcode> EXAMINE_MENU_ACTIONS = List.of(MenuOpcode.EXAMINE_ITEM,
 		MenuOpcode.EXAMINE_ITEM_GROUND, MenuOpcode.EXAMINE_NPC, MenuOpcode.EXAMINE_OBJECT);
 
 	@Inject

@@ -25,7 +25,6 @@
 package net.runelite.client.plugins.inventorytags;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.List;
@@ -93,7 +92,7 @@ public class InventoryTagsPlugin extends Plugin
 	private static final WidgetMenuOption RESIZABLE_BOTTOM_LINE_INVENTORY_TAB_SAVE = new WidgetMenuOption(SAVE,
 		MENU_TARGET, WidgetInfo.RESIZABLE_VIEWPORT_BOTTOM_LINE_INVENTORY_TAB);
 
-	private static final List<String> GROUPS = ImmutableList.of(SETNAME_GROUP_12, SETNAME_GROUP_11, SETNAME_GROUP_10, SETNAME_GROUP_9,
+	private static final List<String> GROUPS = List.of(SETNAME_GROUP_12, SETNAME_GROUP_11, SETNAME_GROUP_10, SETNAME_GROUP_9,
 		SETNAME_GROUP_8, SETNAME_GROUP_7, SETNAME_GROUP_6, SETNAME_GROUP_5, SETNAME_GROUP_4, SETNAME_GROUP_3, SETNAME_GROUP_2, SETNAME_GROUP_1);
 
 	@Inject

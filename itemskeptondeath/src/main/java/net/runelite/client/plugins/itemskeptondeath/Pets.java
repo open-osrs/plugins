@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.itemskeptondeath;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import static net.runelite.api.ItemID.*;
 
@@ -34,7 +33,7 @@ final class Pets
 	{
 	}
 
-	private static final Set<Integer> PETS = ImmutableSet.of(
+	private static final Set<Integer> PETS = Set.of(
 		//Cats
 		HELL_CAT,
 		HELLKITTEN,

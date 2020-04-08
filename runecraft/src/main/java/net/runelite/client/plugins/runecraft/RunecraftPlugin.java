@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.runecraft;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,12 +79,12 @@ public class RunecraftPlugin extends Plugin
 	private static final String POUCH_DECAYED_MESSAGE = "Your pouch has decayed through use.";
 	private static final String POUCH_DECAYED_NOTIFICATION_MESSAGE = "Your rune pouch has decayed.";
 	private static final int FIRE_ALTAR = 10315;
-	private static final Set<Integer> DEGRADED_POUCHES = ImmutableSet.of(
+	private static final Set<Integer> DEGRADED_POUCHES = Set.of(
 		ItemID.MEDIUM_POUCH_5511,
 		ItemID.LARGE_POUCH_5513,
 		ItemID.GIANT_POUCH_5515
 	);
-	
+
 	private final Set<AbyssRifts> rifts = new HashSet<>();
 	private final Set<DecorativeObject> abyssObjects = new HashSet<>();
 	private int lastEssence;

@@ -10,8 +10,8 @@
 
 package net.runelite.client.plugins.learntoclick;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
+import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
@@ -39,7 +39,7 @@ import org.pf4j.Extension;
 )
 public class LearnToClickPlugin extends Plugin
 {
-	private static final ImmutableList<WidgetInfo> ORB_WIDGETS = ImmutableList.of(WidgetInfo.MINIMAP_WORLDMAP_ORB,
+	private static final List<WidgetInfo> ORB_WIDGETS = List.of(WidgetInfo.MINIMAP_WORLDMAP_ORB,
 		WidgetInfo.MINIMAP_SPEC_ORB);
 
 	@Inject

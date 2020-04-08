@@ -24,9 +24,6 @@
  */
 package net.runelite.client.plugins.itemstats;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
@@ -265,7 +262,7 @@ public class ItemStatPlugin extends Plugin
 
 		// STYLE BONUSES
 
-		final Set<String> stats = ImmutableSet.of(
+		final Set<String> stats = Set.of(
 			"Stab",
 			"Slash",
 			"Crush",
@@ -273,7 +270,7 @@ public class ItemStatPlugin extends Plugin
 			"Ranged"
 		);
 
-		final List<Integer> attackStats = ImmutableList.of(
+		final List<Integer> attackStats = List.of(
 			equipmentStats.getAstab(),
 			equipmentStats.getAslash(),
 			equipmentStats.getAcrush(),
@@ -281,7 +278,7 @@ public class ItemStatPlugin extends Plugin
 			equipmentStats.getArange()
 		);
 
-		final List<Integer> defenceStats = ImmutableList.of(
+		final List<Integer> defenceStats = List.of(
 			equipmentStats.getDstab(),
 			equipmentStats.getDslash(),
 			equipmentStats.getDcrush(),
@@ -316,7 +313,7 @@ public class ItemStatPlugin extends Plugin
 
 		yPos += TEXT_HEIGHT + 8;
 
-		final Map<String, Integer> miscStats = ImmutableMap.of(
+		final Map<String, Integer> miscStats = Map.of(
 			"Strength", equipmentStats.getStr(),
 			"Ranged Strength", equipmentStats.getRstr(),
 			"Magic Damage", equipmentStats.getMdmg(),
@@ -352,7 +349,7 @@ public class ItemStatPlugin extends Plugin
 	}
 
 	private static Widget createText(Widget parent, String text, int fontId, int textColor,
-										int x, int y, int width, int height)
+									int x, int y, int width, int height)
 	{
 		final Widget widget = parent.createChild(-1, WidgetType.TEXT);
 		widget.setText(text);

@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.cluescrolls.clues;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Set;
@@ -52,7 +51,7 @@ public class AnagramClue extends ClueScroll implements TextClueScroll, NpcClueSc
 	private static final String ANAGRAM_TEXT = "This anagram reveals who to speak to next: ";
 	private static final String ANAGRAM_TEXT_BEGINNER = "The anagram reveals who to speak to next: ";
 
-	private static final Set<AnagramClue> CLUES = ImmutableSet.of(
+	private static final Set<AnagramClue> CLUES = Set.of(
 		new AnagramClue("A BAKER", "Baraek", new WorldPoint(3217, 3434, 0), "Varrock square", "How many stalls are there in Varrock Square?", "5"),
 		new AnagramClue("A BASIC ANTI POT", "Captain Tobias", new WorldPoint(3026, 3216, 0), "Port Sarim", "How many ships are there docked at Port Sarim currently?", "6"),
 		new AnagramClue("A ELF KNOWS", "Snowflake", new WorldPoint(2872, 3934, 0), "Weiss"),

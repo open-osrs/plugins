@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.slayer;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -39,7 +38,7 @@ import net.runelite.client.ui.overlay.components.TextComponent;
 @Singleton
 class SlayerOverlay extends WidgetItemOverlay
 {
-	private final static Set<Integer> SLAYER_JEWELRY = ImmutableSet.of(
+	private final static Set<Integer> SLAYER_JEWELRY = Set.of(
 		ItemID.SLAYER_RING_1,
 		ItemID.SLAYER_RING_2,
 		ItemID.SLAYER_RING_3,
@@ -52,7 +51,7 @@ class SlayerOverlay extends WidgetItemOverlay
 		ItemID.EXPEDITIOUS_BRACELET
 	);
 
-	private final static Set<Integer> ALL_SLAYER_ITEMS = ImmutableSet.of(
+	private final static Set<Integer> ALL_SLAYER_ITEMS = Set.of(
 		ItemID.SLAYER_HELMET,
 		ItemID.SLAYER_HELMET_I,
 		ItemID.BLACK_SLAYER_HELMET,

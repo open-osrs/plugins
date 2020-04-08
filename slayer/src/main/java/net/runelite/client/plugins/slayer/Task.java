@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.slayer;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
@@ -77,7 +76,7 @@ enum Task
 	BLACK_DEMONS("Black demons", ItemID.BLACK_DEMON_MASK,
 		asList("Demonic gorilla", "Balfrug kreeyath", "Skotizo"), Collections.emptyList()),
 	BLACK_DRAGONS("Black dragons", ItemID.BLACK_DRAGON_MASK,
-		Collections.emptyList(), asList(NpcID.BABY_BLACK_DRAGON, NpcID.BABY_BLACK_DRAGON_1872 , NpcID.BABY_BLACK_DRAGON_7955)),
+		Collections.emptyList(), asList(NpcID.BABY_BLACK_DRAGON, NpcID.BABY_BLACK_DRAGON_1872, NpcID.BABY_BLACK_DRAGON_7955)),
 	BLOODVELD("Bloodveld", ItemID.BLOODVELD),
 	BLUE_DRAGONS("Blue dragons", ItemID.BLUE_DRAGON_MASK,
 		Collections.singletonList("Vorkath"), asList(NpcID.BABY_BLUE_DRAGON, NpcID.BABY_BLUE_DRAGON_242, NpcID.BABY_BLUE_DRAGON_243)),
@@ -246,7 +245,7 @@ enum Task
 	//</editor-fold>
 
 	private static final Map<String, Task> tasks;
-	static final List<String> LOCATIONS = ImmutableList.of(
+	static final List<String> LOCATIONS = List.of(
 		"", // no location is a valid location
 		"Abyss",
 		"Ancient Cavern",

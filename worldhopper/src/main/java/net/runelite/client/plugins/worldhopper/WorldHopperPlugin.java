@@ -27,7 +27,6 @@
 package net.runelite.client.plugins.worldhopper;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -108,8 +107,8 @@ public class WorldHopperPlugin extends Plugin
 
 	private static final String HOP_TO = "Hop-to";
 	private static final String KICK_OPTION = "Kick";
-	private static final ImmutableList<String> BEFORE_OPTIONS = ImmutableList.of("Add friend", "Remove friend", KICK_OPTION);
-	private static final ImmutableList<String> AFTER_OPTIONS = ImmutableList.of("Message");
+	private static final List<String> BEFORE_OPTIONS = List.of("Add friend", "Remove friend", KICK_OPTION);
+	private static final List<String> AFTER_OPTIONS = List.of("Message");
 
 	@Inject
 	private Client client;

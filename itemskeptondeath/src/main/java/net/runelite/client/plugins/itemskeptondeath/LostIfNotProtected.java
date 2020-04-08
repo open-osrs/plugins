@@ -24,13 +24,12 @@
  */
 package net.runelite.client.plugins.itemskeptondeath;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import net.runelite.api.ItemID;
 
 final class LostIfNotProtected
 {
-	private static final Set<Integer> ITEMS = ImmutableSet.of(
+	private static final Set<Integer> ITEMS = Set.of(
 		ItemID.AMULET_OF_THE_DAMNED,
 		ItemID.RING_OF_CHAROS, ItemID.RING_OF_CHAROSA,
 		ItemID.LUNAR_STAFF,

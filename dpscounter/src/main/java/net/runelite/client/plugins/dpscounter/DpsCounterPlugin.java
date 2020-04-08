@@ -24,9 +24,9 @@
  */
 package net.runelite.client.plugins.dpscounter;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import lombok.AccessLevel;
@@ -63,7 +63,7 @@ import org.pf4j.Extension;
 @Slf4j
 public class DpsCounterPlugin extends Plugin
 {
-	private static final ImmutableSet<Integer> BOSSES = ImmutableSet.of(
+	private static final Set<Integer> BOSSES = Set.of(
 		ABYSSAL_SIRE, ABYSSAL_SIRE_5887, ABYSSAL_SIRE_5888, ABYSSAL_SIRE_5889, ABYSSAL_SIRE_5890, ABYSSAL_SIRE_5891, ABYSSAL_SIRE_5908,
 		CALLISTO, CALLISTO_6609,
 		CERBERUS, CERBERUS_5863, CERBERUS_5866,

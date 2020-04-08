@@ -24,12 +24,12 @@
  */
 package net.runelite.client.plugins.cannon;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -67,7 +67,7 @@ import org.pf4j.Extension;
 )
 public class CannonPlugin extends Plugin
 {
-	private static final ImmutableSet<Integer> CANNON_PARTS = ImmutableSet.of(
+	private static final Set<Integer> CANNON_PARTS = Set.of(
 		ItemID.CANNON_BASE, ItemID.CANNON_STAND, ItemID.CANNON_BARRELS, ItemID.CANNON_FURNACE
 	);
 	private CannonCounter counter;

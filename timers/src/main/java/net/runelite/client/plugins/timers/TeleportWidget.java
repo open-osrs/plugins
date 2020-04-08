@@ -24,8 +24,7 @@
  */
 package net.runelite.client.plugins.timers;
 
-import com.google.common.collect.ImmutableList;
-import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.runelite.api.widgets.WidgetInfo;
 
@@ -34,14 +33,14 @@ enum TeleportWidget
 	HOME_TELEPORT,
 	MINIGAME_TELEPORT;
 
-	private static final Collection HOME_TELEPORT_IDS = ImmutableList.of(
+	private static final List<Integer> HOME_TELEPORT_IDS = List.of(
 		WidgetInfo.SPELL_LUMBRIDGE_HOME_TELEPORT.getId(),
 		WidgetInfo.SPELL_EDGEVILLE_HOME_TELEPORT.getId(),
 		WidgetInfo.SPELL_LUNAR_HOME_TELEPORT.getId(),
 		WidgetInfo.SPELL_ARCEUUS_HOME_TELEPORT.getId(),
 		WidgetInfo.SPELL_KOUREND_HOME_TELEPORT.getId()
 	);
-	private static final Collection MINIGAME_TELEPORT_IDS = ImmutableList.of(
+	private static final List<Integer> MINIGAME_TELEPORT_IDS = List.of(
 		WidgetInfo.MINIGAME_TELEPORT_BUTTON.getId()
 	);
 

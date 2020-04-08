@@ -27,7 +27,6 @@ package net.runelite.client.plugins.xptracker;
 
 import com.google.common.annotations.VisibleForTesting;
 import static com.google.common.base.MoreObjects.firstNonNull;
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -95,7 +94,7 @@ public class XpTrackerPlugin extends Plugin
 	private static final String MENUOP_ADD_CANVAS_TRACKER = "Add to canvas";
 	private static final String MENUOP_REMOVE_CANVAS_TRACKER = "Remove from canvas";
 
-	private static final List<Skill> COMBAT = ImmutableList.of(
+	private static final List<Skill> COMBAT = List.of(
 		Skill.ATTACK,
 		Skill.STRENGTH,
 		Skill.DEFENCE,
@@ -750,7 +749,7 @@ public class XpTrackerPlugin extends Plugin
 		final Skill skill = Skill.valueOf(Text.removeTags(event.getEntry().getTarget()).toUpperCase());
 
 		if (event.getEntry().getMenuOpcode() == MenuOpcode.RUNELITE_OVERLAY &&
-			event.getEntry().getTarget() != null )
+			event.getEntry().getTarget() != null)
 		{
 			String option = event.getEntry().getOption();
 			switch (option)

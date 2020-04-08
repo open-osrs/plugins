@@ -25,7 +25,6 @@
  */
 package net.runelite.client.plugins.fishing;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
@@ -34,6 +33,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -93,7 +93,7 @@ public class FishingPlugin extends Plugin
 
 	private Instant trawlerStartTime;
 
-	private static final ImmutableSet<Integer> FISHING_TOOLS = ImmutableSet.of(
+	private static final Set<Integer> FISHING_TOOLS = Set.of(
 		ItemID.DRAGON_HARPOON, ItemID.INFERNAL_HARPOON, ItemID.INFERNAL_HARPOON_UNCHARGED, ItemID.HARPOON,
 		ItemID.BARBTAIL_HARPOON, ItemID.BIG_FISHING_NET, ItemID.SMALL_FISHING_NET, ItemID.SMALL_FISHING_NET_6209,
 		ItemID.FISHING_ROD, ItemID.FLY_FISHING_ROD, ItemID.BARBARIAN_ROD, ItemID.OILY_FISHING_ROD,

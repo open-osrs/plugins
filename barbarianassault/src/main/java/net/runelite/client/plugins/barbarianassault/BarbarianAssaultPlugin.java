@@ -27,7 +27,6 @@
  */
 package net.runelite.client.plugins.barbarianassault;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -115,7 +114,7 @@ public class BarbarianAssaultPlugin extends Plugin implements KeyListener
 
 	private static final int BA_WAVE_NUM_INDEX = 2;
 
-	private static final ImmutableList<WidgetInfo> attackStyles = ImmutableList.of(WidgetInfo.COMBAT_STYLE_ONE,
+	private static final List<WidgetInfo> attackStyles = List.of(WidgetInfo.COMBAT_STYLE_ONE,
 		WidgetInfo.COMBAT_STYLE_TWO, WidgetInfo.COMBAT_STYLE_THREE, WidgetInfo.COMBAT_STYLE_FOUR);
 
 	@Getter(AccessLevel.PACKAGE)

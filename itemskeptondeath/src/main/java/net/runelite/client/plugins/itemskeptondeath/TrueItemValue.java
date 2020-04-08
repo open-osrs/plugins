@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.itemskeptondeath;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,11 +11,11 @@ import static net.runelite.api.ItemID.*;
 @RequiredArgsConstructor
 public enum TrueItemValue
 {
-	GRANITE_MAUL_HANDLE(GRANITE_MAUL_24225, ImmutableSet.of(ORNATE_MAUL_HANDLE, GRANITE_MAUL)),
-	GRANITE_MAUL_HANDLE_OR(GRANITE_MAUL_24227, ImmutableSet.of(ORNATE_MAUL_HANDLE, GRANITE_MAUL, GRANITE_CLAMP)),
-	TENTACLE_WHIP(ABYSSAL_TENTACLE, ImmutableSet.of(ABYSSAL_WHIP, KRAKEN_TENTACLE)),
-	TWISTED_SLAYERHELM(TWISTED_SLAYER_HELMET, ImmutableSet.of(TWISTED_HORNS, BLACK_MASK)),
-	TWISTED_SLAYERHELM_I(TWISTED_SLAYER_HELMET_I, ImmutableSet.of(TWISTED_HORNS, BLACK_MASK));
+	GRANITE_MAUL_HANDLE(GRANITE_MAUL_24225, Set.of(ORNATE_MAUL_HANDLE, GRANITE_MAUL)),
+	GRANITE_MAUL_HANDLE_OR(GRANITE_MAUL_24227, Set.of(ORNATE_MAUL_HANDLE, GRANITE_MAUL, GRANITE_CLAMP)),
+	TENTACLE_WHIP(ABYSSAL_TENTACLE, Set.of(ABYSSAL_WHIP, KRAKEN_TENTACLE)),
+	TWISTED_SLAYERHELM(TWISTED_SLAYER_HELMET, Set.of(TWISTED_HORNS, BLACK_MASK)),
+	TWISTED_SLAYERHELM_I(TWISTED_SLAYER_HELMET_I, Set.of(TWISTED_HORNS, BLACK_MASK));
 
 	private static final ImmutableMap<Integer, TrueItemValue> TRUE_ITEM_VALUE_MAP;
 

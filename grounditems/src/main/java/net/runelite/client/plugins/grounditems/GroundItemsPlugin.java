@@ -29,7 +29,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -43,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -134,10 +134,10 @@ public class GroundItemsPlugin extends Plugin
 	private static final int WALK = MenuOpcode.WALK.getId();
 	private static final int CAST_ON_ITEM = MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId();
 	private static final String TELEGRAB_TEXT = ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil.prependColorTag(" -> ", Color.WHITE);
-	private Map<Integer, Color> priceChecks = ImmutableMap.of();
+	private Map<Integer, Color> priceChecks = Map.of();
 	private final Queue<Integer> droppedItemQueue = EvictingQueue.create(16); // recently dropped items
 	LoadingCache<NamedQuantity, Boolean> hiddenItems;
-	static final ImmutableSet<Integer> herbloreItems = ImmutableSet.of
+	static final Set<Integer> herbloreItems = Set.of
 		(
 			//Grimy Herbs
 			GRIMY_GUAM_LEAF,
@@ -291,7 +291,7 @@ public class GroundItemsPlugin extends Plugin
 			POISON_IVY_SEED,
 			BELLADONNA_SEED
 		);
-	static final ImmutableSet<Integer> prayerItems = ImmutableSet.of
+	static final Set<Integer> prayerItems = Set.of
 		(
 			//Bones
 			BONES,

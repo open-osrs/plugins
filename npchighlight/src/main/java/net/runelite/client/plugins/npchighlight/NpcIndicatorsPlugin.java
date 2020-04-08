@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.npchighlight;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -103,7 +102,7 @@ public class NpcIndicatorsPlugin extends Plugin
 	private static final String TAG = "Tag";
 	private static final String UNTAG = "Un-tag";
 
-	private static final Set<MenuOpcode> NPC_MENU_ACTIONS = ImmutableSet.of(
+	private static final Set<MenuOpcode> NPC_MENU_ACTIONS = Set.of(
 		MenuOpcode.NPC_FIRST_OPTION,
 		MenuOpcode.NPC_SECOND_OPTION,
 		MenuOpcode.NPC_THIRD_OPTION,

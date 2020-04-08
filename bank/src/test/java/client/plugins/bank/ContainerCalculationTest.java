@@ -24,10 +24,10 @@
  */
 package client.plugins.bank;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
+import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
@@ -73,7 +73,7 @@ public class ContainerCalculationTest
 
 		Item whip = new Item(ItemID.ABYSSAL_WHIP, 1_000_000_000);
 
-		Item[] items = ImmutableList.of(
+		Item[] items = List.of(
 			coins,
 			whip
 		).toArray(new Item[0]);
