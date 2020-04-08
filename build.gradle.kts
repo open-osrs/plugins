@@ -16,7 +16,7 @@ apply<VersionPlugin>()
 
 allprojects {
     group = "com.openosrs"
-    version = ProjectVersions.rlVersion
+    version = ProjectVersions.openosrsVersion
     apply<MavenPublishPlugin>()
 }
 
@@ -75,13 +75,13 @@ subprojects {
         annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")
         annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.2.0")
 
-        compileOnly(group = "com.openosrs", name = "http-api", version = "3.2.1")
-        compileOnly(group = "com.openosrs", name = "runelite-api", version = "3.2.1")
-        compileOnly(group = "com.openosrs", name = "runelite-client", version = "3.2.1")
+        compileOnly(group = "com.openosrs", name = "http-api", version = ProjectVersions.openosrsVersion)
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = ProjectVersions.openosrsVersion)
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = ProjectVersions.openosrsVersion)
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.8")
         compileOnly(group = "com.google.guava", name = "guava", version = "28.2-jre")
-        compileOnly(group = "com.google.inject", name = "guice", version = "4.2.2", classifier = "no_aop")
+        compileOnly(group = "com.google.inject", name = "guice", version = "4.2.3", classifier = "no_aop")
         compileOnly(group = "com.google.code.gson", name = "gson", version = "2.8.6")
         compileOnly(group = "net.sf.jopt-simple", name = "jopt-simple", version = "5.0.4")
         compileOnly(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
@@ -94,16 +94,16 @@ subprojects {
 
         testAnnotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")
 
-        testImplementation(group = "com.openosrs", name = "http-api", version = "3.2.1")
-        testImplementation(group = "com.openosrs", name = "runelite-api", version = "3.2.1")
-        testImplementation(group = "com.openosrs", name = "runelite-client", version = "3.2.1")
+        testImplementation(group = "com.openosrs", name = "http-api", version = ProjectVersions.openosrsVersion)
+        testImplementation(group = "com.openosrs", name = "runelite-api", version = ProjectVersions.openosrsVersion)
+        testImplementation(group = "com.openosrs", name = "runelite-client", version = ProjectVersions.openosrsVersion)
 
         testImplementation(group = "org.pf4j", name = "pf4j", version = "3.2.0")
-        testImplementation(group = "com.google.inject.extensions", name = "guice-testlib", version = "4.2.2")
+        testImplementation(group = "com.google.inject.extensions", name = "guice-testlib", version = "4.2.3")
         testImplementation(group = "net.sf.jopt-simple", name = "jopt-simple", version = "5.0.4")
         testImplementation(group = "junit", name = "junit", version = "4.13")
-        testImplementation(group = "org.mockito", name = "mockito-core", version = "3.2.4")
-        testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.2.4")
+        testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
+        testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.3.3")
         testImplementation(group = "org.projectlombok", name = "lombok", version = "1.18.12")
         testImplementation(group = "org.hamcrest", name = "hamcrest-library", version = "2.2")
         testImplementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.30")

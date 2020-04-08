@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -31,7 +29,7 @@ project.extra["PluginName"] = "TMorph"
 project.extra["PluginDescription"] = "Want to wear a infernal cape? well now you can!"
 
 dependencies {
-    compileOnly(group = "org.jooq", name = "jooq", version = "3.13.0")
+    compileOnly(group = "org.jooq", name = "jooq", version = "3.13.1")
 }
 
 tasks {
