@@ -392,7 +392,6 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 				return object;
 			}
 		}
-
 		return null;
 	}
 
@@ -457,7 +456,7 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 
 		Set<ObjectPoint> objectPoints = points.computeIfAbsent(regionId, k -> new HashSet<>());
 
-		if (objects.remove(object))
+		if (objects.removeIf((o) -> o.getTileObject() == object))
 		{
 			// Find the object point that caused this object to be marked, there are two cases:
 			// 1) object is a multiloc, the name may have changed since marking - match from base id
