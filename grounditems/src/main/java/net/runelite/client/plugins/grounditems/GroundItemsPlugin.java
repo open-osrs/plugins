@@ -862,27 +862,27 @@ public class GroundItemsPlugin extends Plugin
 
 		if (config.insaneValuePrice() > 0)
 		{
-			priceCheckBuilder.add(new PriceHighlight(config.insaneValuePrice(), config.insaneValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.insaneValuePrice(), config.insaneValueColor()));
 		}
 
 		if (config.highValuePrice() > 0)
 		{
-			priceCheckBuilder.add(new PriceHighlight(config.highValuePrice(), config.highValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.highValuePrice(), config.highValueColor()));
 		}
 
 		if (config.mediumValuePrice() > 0)
 		{
-			priceCheckBuilder.add(new PriceHighlight(config.mediumValuePrice(), config.mediumValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.mediumValuePrice(), config.mediumValueColor()));
 		}
 
 		if (config.lowValuePrice() > 0)
 		{
-			priceCheckBuilder.add(new PriceHighlight(config.lowValuePrice(), config.lowValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.lowValuePrice(), config.lowValueColor()));
 		}
 
 		if (config.getHighlightOverValue() > 0)
 		{
-			priceCheckBuilder.add(new PriceHighlight(config.getHighlightOverValue(), config.highlightedColor());
+			priceCheckBuilder.add(new PriceHighlight(config.getHighlightOverValue(), config.highlightedColor()));
 		}
 
 		priceChecks = priceCheckBuilder.build();
