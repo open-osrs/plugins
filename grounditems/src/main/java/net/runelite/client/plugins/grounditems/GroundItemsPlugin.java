@@ -142,7 +142,7 @@ public class GroundItemsPlugin extends Plugin
 	private static final int WALK = MenuOpcode.WALK.getId();
 	private static final int CAST_ON_ITEM = MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId();
 	private static final String TELEGRAB_TEXT = ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil.prependColorTag(" -> ", Color.WHITE);
-	private List<PriceHighlight> priceChecks = ImmutableList.of();
+	private List<PriceHighlight> priceChecks = List.of();
 	private final Queue<Integer> droppedItemQueue = EvictingQueue.create(16); // recently dropped items
 	LoadingCache<NamedQuantity, Boolean> hiddenItems;
 	static final Set<Integer> herbloreItems = Set.of
@@ -1050,7 +1050,7 @@ public class GroundItemsPlugin extends Plugin
 					}
 					break;
 				default: // case HIGHEST
-					if (gePrice >highlight.getPrice() || haPrice > highlight.getPrice())
+					if (gePrice > highlight.getPrice() || haPrice > highlight.getPrice())
 					{
 						return highlight.getColor();
 					}
