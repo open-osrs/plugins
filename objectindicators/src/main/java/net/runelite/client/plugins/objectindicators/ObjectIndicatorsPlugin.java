@@ -392,7 +392,6 @@ public class ObjectIndicatorsPlugin extends Plugin implements KeyListener
 				return object;
 			}
 		}
-
 		return null;
 	}
 
