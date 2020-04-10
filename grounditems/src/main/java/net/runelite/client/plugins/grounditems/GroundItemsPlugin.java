@@ -28,7 +28,7 @@ package net.runelite.client.plugins.grounditems;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.EvictingQueue;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -52,6 +52,7 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Value;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemDefinition;
@@ -109,6 +110,13 @@ import org.pf4j.Extension;
 )
 public class GroundItemsPlugin extends Plugin
 {
+	@Value
+	static class PriceHighlight
+	{
+		private final int price;
+		private final Color color;
+	}
+	
 	@Getter(AccessLevel.PUBLIC)
 	public static final Map<GroundItem.GroundItemKey, GroundItem> collectedGroundItems = new LinkedHashMap<>();
 	// ItemID for coins
@@ -134,7 +142,7 @@ public class GroundItemsPlugin extends Plugin
 	private static final int WALK = MenuOpcode.WALK.getId();
 	private static final int CAST_ON_ITEM = MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId();
 	private static final String TELEGRAB_TEXT = ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil.prependColorTag(" -> ", Color.WHITE);
-	private Map<Integer, Color> priceChecks = Map.of();
+	private List<PriceHighlight> priceChecks = List.of();
 	private final Queue<Integer> droppedItemQueue = EvictingQueue.create(16); // recently dropped items
 	LoadingCache<NamedQuantity, Boolean> hiddenItems;
 	static final Set<Integer> herbloreItems = Set.of
@@ -850,31 +858,31 @@ public class GroundItemsPlugin extends Plugin
 			.build(new WildcardMatchLoader(hiddenItemList));
 
 		// Cache colors
-		ImmutableMap.Builder<Integer, Color> priceCheckBuilder = ImmutableMap.builder();
+		ImmutableList.Builder<PriceHighlight> priceCheckBuilder = ImmutableList.builder();
 
 		if (config.insaneValuePrice() > 0)
 		{
-			priceCheckBuilder.put(config.insaneValuePrice(), config.insaneValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.insaneValuePrice(), config.insaneValueColor()));
 		}
 
 		if (config.highValuePrice() > 0)
 		{
-			priceCheckBuilder.put(config.highValuePrice(), config.highValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.highValuePrice(), config.highValueColor()));
 		}
 
 		if (config.mediumValuePrice() > 0)
 		{
-			priceCheckBuilder.put(config.mediumValuePrice(), config.mediumValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.mediumValuePrice(), config.mediumValueColor()));
 		}
 
 		if (config.lowValuePrice() > 0)
 		{
-			priceCheckBuilder.put(config.lowValuePrice(), config.lowValueColor());
+			priceCheckBuilder.add(new PriceHighlight(config.lowValuePrice(), config.lowValueColor()));
 		}
 
 		if (config.getHighlightOverValue() > 0)
 		{
-			priceCheckBuilder.put(config.getHighlightOverValue(), config.highlightedColor());
+			priceCheckBuilder.add(new PriceHighlight(config.getHighlightOverValue(), config.highlightedColor()));
 		}
 
 		priceChecks = priceCheckBuilder.build();
@@ -1025,26 +1033,26 @@ public class GroundItemsPlugin extends Plugin
 		}
 
 		ValueCalculationMode mode = config.valueCalculationMode();
-		for (Map.Entry<Integer, Color> entry : priceChecks.entrySet())
+		for (PriceHighlight highlight : priceChecks)
 		{
 			switch (mode)
 			{
 				case GE:
-					if (gePrice > entry.getKey())
+					if (gePrice > highlight.getPrice())
 					{
-						return entry.getValue();
+						return highlight.getColor();
 					}
 					break;
 				case HA:
-					if (haPrice > entry.getKey())
+					if (haPrice > highlight.getPrice())
 					{
-						return entry.getValue();
+						return highlight.getColor();
 					}
 					break;
 				default: // case HIGHEST
-					if (gePrice > entry.getKey() || haPrice > entry.getKey())
+					if (gePrice > highlight.getPrice() || haPrice > highlight.getPrice())
 					{
-						return entry.getValue();
+						return highlight.getColor();
 					}
 					break;
 			}

@@ -118,8 +118,7 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 		rightClick = false;
 		middleClick = false;
 		menuHasEntries = false;
-
-		client.setCameraPitchRelaxerEnabled(config.relaxCameraPitch());
+		copyConfigs();
 		keyManager.registerKeyListener(this);
 		mouseManager.registerMouseListener(this);
 		overlayManager.add(cameraOverlay);
@@ -130,9 +129,18 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 	{
 		overlayManager.remove(cameraOverlay);
 		client.setCameraPitchRelaxerEnabled(false);
+		client.setInvertYaw(false);
+		client.setInvertPitch(false);
 		keyManager.unregisterKeyListener(this);
 		mouseManager.unregisterMouseListener(this);
 		controlDown = false;
+	}
+	
+	void copyConfigs()
+	{
+		client.setCameraPitchRelaxerEnabled(config.relaxCameraPitch());
+		client.setInvertYaw(config.invertYaw());
+		client.setInvertPitch(config.invertPitch());
 	}
 
 	@Subscribe
@@ -249,7 +257,7 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 			return;
 		}
 
-		client.setCameraPitchRelaxerEnabled(config.relaxCameraPitch());
+		copyConfigs();
 	}
 
 	@Override

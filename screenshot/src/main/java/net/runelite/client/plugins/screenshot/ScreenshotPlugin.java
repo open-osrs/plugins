@@ -287,8 +287,8 @@ public class ScreenshotPlugin extends Plugin
 		}
 
 		int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
-		if (config.screenshotFriendDeath() && event.getPlayer().getName() != null
-			&& (event.getPlayer().isFriend() || event.getPlayer().isClanMember()
+		if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
+			&& (player.isFriend() || player.isClanMember()
 			|| (client.getVar(Varbits.IN_RAID) == 1 || tob == 2 || tob == 3)))
 		{
 			takeScreenshot("Death " + player.getName(), "Deaths");
