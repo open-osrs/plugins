@@ -196,8 +196,6 @@ public class GroundItemsPlugin extends Plugin
 			LANTADYME + 1,
 			DWARF_WEED,
 			DWARF_WEED + 1,
-			TORSTOL,
-			TORSTOL + 1,
 
 			//Secondary ingredients
 			EYE_OF_NEWT,
@@ -219,7 +217,6 @@ public class GroundItemsPlugin extends Plugin
 			GOAT_HORN_DUST,
 			GOAT_HORN_DUST + 1,
 			DESERT_GOAT_HORN,
-			DESERT_GOAT_HORN + 1,
 			SNAPE_GRASS,
 			SNAPE_GRASS + 1,
 			MORT_MYRE_FUNGUS,
@@ -235,7 +232,6 @@ public class GroundItemsPlugin extends Plugin
 			POTATO_CACTUS,
 			POTATO_CACTUS + 1,
 			BIRD_NEST,
-			BIRD_NEST + 1,
 			BIRD_NEST_5071,
 			BIRD_NEST_5072,
 			BIRD_NEST_5073,
