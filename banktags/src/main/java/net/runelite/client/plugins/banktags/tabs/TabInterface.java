@@ -703,8 +703,8 @@ public class TabInterface
 			chatboxPanelManager.close();
 		}
 
-		if ((event.getIdentifier() == WidgetInfo.BANK_ITEM_CONTAINER.getId()
-			|| event.getIdentifier() == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getId())
+		if ((event.getParam1() == WidgetInfo.BANK_ITEM_CONTAINER.getId()
+			|| event.getParam1() == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getId())
 			&& event.getMenuOpcode() == MenuOpcode.CC_OP_LOW_PRIORITY
 			&& (event.getOption().equalsIgnoreCase("withdraw-x")
 			|| event.getOption().equalsIgnoreCase("deposit-x")))
