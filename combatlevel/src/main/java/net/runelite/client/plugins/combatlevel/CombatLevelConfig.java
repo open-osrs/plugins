@@ -40,6 +40,16 @@ public interface CombatLevelConfig extends Config
 	{
 		return true;
 	}
+	
+	@ConfigItem(
+		keyName = "showPreciseCombatLevel",
+		name = "Show precise combat level",
+		description = "Displays your combat level with accurate decimals."
+	)
+	default boolean showPreciseCombatLevel()
+	{
+		return true;
+	}
 
 	@ConfigItem(
 		keyName = "wildernessAttackLevelRange",
