@@ -94,17 +94,13 @@ public class AntiDragPlugin extends Plugin
 					clientUI.setCursor(config.selectedCursor().getCursorImage(), config.selectedCursor().toString());
 				}
 
-				final int delay = config.dragDelay();
-				client.setInventoryDragDelay(delay);
-				setBankDragDelay(delay);
+				setDragDelay();
 			}
 			else
 			{
 				overlayManager.remove(overlay);
-				client.setInventoryDragDelay(DEFAULT_DELAY);
-				// In this case, 0 is the default for bank item widgets.
-				setBankDragDelay(0);
 				clientUI.resetCursor();
+				resetDragDelay();
 			}
 		}
 	};
@@ -123,18 +119,15 @@ public class AntiDragPlugin extends Plugin
 				clientUI.setCursor(config.selectedCursor().getCursorImage(), config.selectedCursor().toString());
 			}
 
-			final int delay = config.dragDelay();
-			client.setInventoryDragDelay(delay);
-			setBankDragDelay(delay);
+			setDragDelay();
 		}
 
 		@Override
 		public void hotkeyReleased()
 		{
 			overlayManager.remove(overlay);
-			client.setInventoryDragDelay(DEFAULT_DELAY);
-			setBankDragDelay(DEFAULT_DELAY);
 			clientUI.resetCursor();
+			resetDragDelay();
 		}
 	};
 
@@ -152,19 +145,19 @@ public class AntiDragPlugin extends Plugin
 
 		if (config.alwaysOn())
 		{
-			client.setInventoryDragDelay(config.dragDelay());
+			setDragDelay();
 		}
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		client.setInventoryDragDelay(DEFAULT_DELAY);
 		keyManager.unregisterKeyListener(holdListener);
 		keyManager.unregisterKeyListener(toggleListener);
 		toggleDrag = false;
 		overlayManager.remove(overlay);
 		clientUI.resetCursor();
+		resetDragDelay();
 	}
 
 	@Subscribe
@@ -180,11 +173,12 @@ public class AntiDragPlugin extends Plugin
 					break;
 				case "alwaysOn":
 					client.setInventoryDragDelay(config.alwaysOn() ? config.dragDelay() : DEFAULT_DELAY);
+					setBankDragDelay(config.alwaysOn() ? config.dragDelay() : DEFAULT_DELAY);
 					break;
 				case "dragDelay":
 					if (config.alwaysOn())
 					{
-						client.setInventoryDragDelay(config.dragDelay());
+						setDragDelay();
 					}
 					break;
 				case ("changeCursor"):
@@ -216,8 +210,7 @@ public class AntiDragPlugin extends Plugin
 	{
 		if (!focusChanged.isFocused() && config.reqFocus() && !config.alwaysOn())
 		{
-			client.setInventoryDragDelay(DEFAULT_DELAY);
-			setBankDragDelay(DEFAULT_DELAY);
+			resetDragDelay();
 			overlayManager.remove(overlay);
 		}
 	}
@@ -254,5 +247,17 @@ public class AntiDragPlugin extends Plugin
 				item.setDragDeadTime(delay);
 			}
 		}
+	}
+	
+	private void setDragDelay()
+	{
+		client.setInventoryDragDelay(config.dragDelay());
+		setBankDragDelay(config.dragDelay());
+	}
+
+	private void resetDragDelay()
+	{
+		client.setInventoryDragDelay(DEFAULT_DELAY);
+		setBankDragDelay(DEFAULT_DELAY);
 	}
 }
