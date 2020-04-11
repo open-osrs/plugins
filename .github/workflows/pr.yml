@@ -279,6 +279,8 @@ jobs:
           git update-index --skip-worktree gradlew
 
           if ! git diff-index --quiet HEAD --; then
+              git diff-index --name-only HEAD --
+
               exit 1
           fi
 
