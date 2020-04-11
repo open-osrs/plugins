@@ -65,7 +65,7 @@ public class InputHandler {
 		return new MouseEvent(client.getCanvas(), id, System.currentTimeMillis(), 0, p.getX(), p.getY(), 1, false, button);
 	}
 	
-	private static void clickMouse(Client client, Point p, int button)
+	public static void clickMouse(Client client, Point p, int button)
 	{
 		client.getCanvas().dispatchEvent(createEvent(client, p, 501, button));
 		client.getCanvas().dispatchEvent(createEvent(client, p, 502, button));

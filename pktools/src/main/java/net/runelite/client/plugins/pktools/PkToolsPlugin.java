@@ -4,27 +4,32 @@ import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Actor;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.Player;
-import net.runelite.api.Prayer;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.InteractingChanged;
-import net.runelite.api.events.VarbitChanged;
+
+import net.runelite.api.*;
+import net.runelite.api.events.*;
+import net.runelite.api.kit.KitType;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.plugins.pktools.ScriptCommand.InputHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
-import org.pf4j.Extension;
 
+import org.pf4j.Extension;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
@@ -34,9 +39,15 @@ import java.util.List;
 		enabledByDefault = false,
 		type = PluginType.PVP
 )
-public class PkToolsPlugin extends Plugin
-{
+public class PkToolsPlugin extends Plugin {
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
+
 	private static final Duration WAIT = Duration.ofSeconds(5);
+
+	@Inject
+	public ItemManager itemManager;
 
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
@@ -83,31 +94,32 @@ public class PkToolsPlugin extends Plugin
 
 	private Instant lastTime;
 
+	//this is our current custom entry to swap in
+	public MenuEntry entry;
+
+	public boolean disabled;
+
 	@Provides
 	PkToolsConfig provideConfig(final ConfigManager configManager) {
 		return configManager.getConfig(PkToolsConfig.class);
 	}
 
 	@Override
-	protected void startUp() throws Exception
-	{
+	protected void startUp() throws Exception {
 		overlayManager.add(pkToolsOverlay);
 		keyManager.registerKeyListener(pkToolsHotkeyListener);
 	}
 
 	@Override
-	protected void shutDown() throws Exception
-	{
+	protected void shutDown() throws Exception {
 		lastTime = null;
 		overlayManager.remove(pkToolsOverlay);
 		keyManager.unregisterKeyListener(pkToolsHotkeyListener);
 	}
 
 	@Subscribe
-	public void onVarbitChanged(final VarbitChanged event)
-	{
-		if (client.getGameState() != GameState.LOGGED_IN)
-		{
+	public void onVarbitChanged(final VarbitChanged event) {
+		if (client.getGameState() != GameState.LOGGED_IN) {
 			return;
 		}
 
@@ -130,20 +142,17 @@ public class PkToolsPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onInteractingChanged(final InteractingChanged event)
-	{
+	public void onInteractingChanged(final InteractingChanged event) {
 		if (client.getGameState() != GameState.LOGGED_IN)
 			return;
 
-		if (event.getSource() != client.getLocalPlayer())
-		{
+		if (event.getSource() != client.getLocalPlayer()) {
 			return;
 		}
 
 		final Actor opponent = event.getTarget();
 
-		if (opponent == null)
-		{
+		if (opponent == null) {
 			lastTime = Instant.now();
 			return;
 		}
@@ -151,27 +160,106 @@ public class PkToolsPlugin extends Plugin
 		Player localPlayer = client.getLocalPlayer();
 		final List<Player> players = client.getPlayers();
 
-		for (final Player player : players)
-		{
-			if (player == localPlayer.getInteracting())
-			{
+		for (final Player player : players) {
+			if (player == localPlayer.getInteracting()) {
 				lastEnemy = player;
 			}
 		}
 	}
 
 	@Subscribe
-	public void onGameTick(final GameTick gameTick)
-	{
+	public void onGameTick(final GameTick gameTick) {
 		if (client.getGameState() != GameState.LOGGED_IN)
 			return;
 
-		if (lastEnemy != null && client.getLocalPlayer().getInteracting() == null)
-		{
-			if (Duration.between(lastTime, Instant.now()).compareTo(PkToolsPlugin.WAIT) > 0)
-			{
+		if (lastEnemy != null && client.getLocalPlayer().getInteracting() == null) {
+			if (Duration.between(lastTime, Instant.now()).compareTo(PkToolsPlugin.WAIT) > 0) {
 				lastEnemy = null;
 			}
 		}
+
+		this.executor.submit(() -> {
+			try {
+				boolean PROTECT_MELEE = client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) != 0;
+				boolean PROTECT_RANGED = client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
+				boolean PROTECT_MAGIC = client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
+
+				boolean shouldAutoSwap = config.autoPrayerSwitcher() == PkToolsAutoPrayerModes.AUTO || (config.autoPrayerSwitcher() == PkToolsAutoPrayerModes.HOTKEY && PkToolsHotkeyListener.prayer_hotkey);
+
+				if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
+					return;
+
+				if (lastEnemy == null)
+					return;
+
+				PlayerAppearance lastEnemyAppearance = lastEnemy.getPlayerAppearance();
+
+				if (lastEnemyAppearance == null)
+					return;
+
+				int WEAPON_INT = lastEnemyAppearance.getEquipmentId(KitType.WEAPON);
+
+				if (WEAPON_INT <= 0)
+					return;
+
+				if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (shouldAutoSwap && !PROTECT_MELEE) {
+						Widget prayer_widget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MELEE);
+
+						if (prayer_widget == null)
+							return;
+
+						if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+							return;
+						}
+
+						entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
+						InputHandler.click(client);
+					}
+				} else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (shouldAutoSwap && !PROTECT_RANGED) {
+						Widget prayer_widget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
+
+						if (prayer_widget == null)
+							return;
+
+						if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+							return;
+						}
+
+						entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
+						InputHandler.click(client);
+					}
+				} else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (shouldAutoSwap && !PROTECT_MAGIC) {
+						Widget prayer_widget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
+
+						if (prayer_widget == null)
+							return;
+
+						if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+							return;
+						}
+
+						entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
+						InputHandler.click(client);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	@Subscribe
+	public void onClientTick(ClientTick event) {
+
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event) {
+		if (entry != null)
+			event.setMenuEntry(entry);
+		entry = null;
 	}
 }

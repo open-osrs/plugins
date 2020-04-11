@@ -2,14 +2,7 @@ package net.runelite.client.plugins.cannonreloader;
 
 import com.google.inject.Provides;
 import lombok.Getter;
-import net.runelite.api.AnimationID;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.Perspective;
-import net.runelite.api.Player;
-import net.runelite.api.Point;
-import net.runelite.api.Projectile;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -23,6 +16,8 @@ import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
+import java.awt.event.MouseEvent;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.runelite.api.ObjectID.CANNON_BASE;
+import static net.runelite.api.ObjectID.DWARF_MULTICANNON;
 import static net.runelite.api.ProjectileID.CANNONBALL;
 import static net.runelite.api.ProjectileID.GRANITE_CANNONBALL;
 
@@ -46,8 +42,7 @@ public class CannonReloaderPlugin extends Plugin {
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
 	private static final int MAX_CBALLS = 30;
 	private static final int MAX_DISTANCE = 2500;
-	
-	private int nextReloadCount = (int) (Math.random() % 10 + 10);
+	private int nextReloadCount = 10;
 	private boolean skipProjectileCheckThisTick;
 
 	@Inject
@@ -58,22 +53,20 @@ public class CannonReloaderPlugin extends Plugin {
 	{
 		return configManager.getConfig(CannonReloaderConfig.class);
 	}
-	
-	@Getter
+
 	private int cballsLeft;
+
+	private Random r = new Random();
 
 	@Inject
 	private MenuManager menuManager;
-	
-	@Getter
+
 	private boolean cannonPlaced;
-	
-	@Getter
+
 	private WorldPoint cannonPosition;
-	
-	@Getter
+
 	private GameObject cannon;
-	
+
 	@Inject
 	private Client client;
 
@@ -83,6 +76,7 @@ public class CannonReloaderPlugin extends Plugin {
 	
 	@Override
 	protected void startUp() throws Exception {
+		nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 	}
 	
 	@Override
@@ -145,7 +139,7 @@ public class CannonReloaderPlugin extends Plugin {
 		}
 		
 		if (event.getMessage().startsWith("You load the cannon with")) {
-			nextReloadCount = (int) (Math.random() % 10 + 10);
+			nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 			
 			Matcher m = NUMBER_PATTERN.matcher(event.getMessage());
 			if (m.find()) {
@@ -209,11 +203,8 @@ public class CannonReloaderPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onGameTick(GameTick event) {
-		skipProjectileCheckThisTick = false;
-		
-		this.executor.submit(() ->
-		{
+	public void onClientTick(ClientTick event) {
+		this.executor.submit(() -> {
 			try {
 				if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
 					return;
@@ -235,33 +226,21 @@ public class CannonReloaderPlugin extends Plugin {
 
 				Point p = Perspective.localToCanvas(client, cannonPoint, cannon.getPlane(), 45);
 
-				//Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
-				
 				if (p == null)
 					return;
-				
-				if (client.getTickCount() % 5 != 1)
-					return;
 
-				/*
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin - MenuEntryAdded:
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Option: Fire
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Target: <col=ffff>Dwarf multicannon
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Identifier:     6
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Opcode: 3
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Param0: 52
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Param1: 55
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      ForceLeftClick: false
-				2020-04-05 19:51:54 [Client] INFO  n.r.c.p.e.EventDebuggerPlugin -      Modified:       false
-				*/
-				
-				menuManager.addPriorityEntry("Fire", "Dwarf multicannon");
-				client.insertMenuItem("Fire", "<col=ffff>Dwarf multicannon", 6,3,52,55,false);
+				client.insertMenuItem("Fire", "<col=ffff>Dwarf multicannon", MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), DWARF_MULTICANNON, cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(),false);
 				InputHandler.leftClick(client, p);
-				menuManager.removePriorityEntry("Fire", "Dwarf multicannon");
+				nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
+				Thread.sleep(config.clickDelay());
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				e.printStackTrace();
 			}
 		});
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event) {
+		skipProjectileCheckThisTick = false;
 	}
 }

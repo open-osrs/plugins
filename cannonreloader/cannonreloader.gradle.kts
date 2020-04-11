@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.10"
+version = "0.0.11"
 
 project.extra["PluginName"] = "Cannon Reloader"
 project.extra["PluginDescription"] = "Automatically reload your cannon"
@@ -52,6 +52,15 @@ tasks {
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
+        }
+    }
+
+    withType<Jar> {
+        doLast {
+            copy {
+                from("./build/libs/")
+                into("C:/Users/ben93/.runelite/externalmanager")
+            }
         }
     }
 }

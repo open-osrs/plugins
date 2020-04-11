@@ -1,9 +1,6 @@
 package net.runelite.client.plugins.pktools.ScriptCommand;
 
-import net.runelite.api.Client;
-import net.runelite.api.Point;
-import net.runelite.api.Skill;
-import net.runelite.api.Varbits;
+import net.runelite.api.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -12,331 +9,143 @@ import net.runelite.client.plugins.pktools.PkToolsConfig;
 import net.runelite.client.plugins.pktools.PkToolsOverlay;
 import net.runelite.client.plugins.pktools.PkToolsPlugin;
 
-import java.awt.event.KeyEvent;
-import java.time.Duration;
-import java.time.Instant;
-
 import static net.runelite.client.plugins.pktools.PkToolsHotkeyListener.getTag;
 
-public interface ScriptCommand
-{
+public interface ScriptCommand {
 	void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager);
 
-	default void clickPrayer(Client client, PkToolsConfig config, Point p)
-	{
-		try
-		{
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
-			Thread.sleep(config.clickDelay());
-			InputHandler.leftClick(client, p);
-			Thread.sleep(config.clickDelay());
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
+	default void clickPrayer(WidgetInfo widgetInfo, Client client, PkToolsPlugin plugin) {
+		try {
+			Widget prayer_widget = client.getWidget(widgetInfo);
+
+			if (prayer_widget == null)
+				return;
+
+			if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+				return;
+			}
+
+			plugin.entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
+			InputHandler.click(client);
 		}
-		catch (Exception e)
-		{
-			//swallow
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	default void clickSpell(WidgetInfo widgetInfo, Client client, PkToolsPlugin plugin) {
+		try {
+			Widget spell_widget = client.getWidget(widgetInfo);
+
+			if (spell_widget == null)
+				return;
+
+			plugin.entry = new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.WIDGET_TYPE_2.getId(), spell_widget.getItemId(), spell_widget.getId(), false);
+			InputHandler.click(client);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class RigourCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget RIGOUR = client.getWidget(WidgetInfo.PRAYER_RIGOUR);
-
-		Point p = InputHandler.getClickPoint(RIGOUR.getBounds());
-
-		if (p == null)
-		{
+class RigourCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getRigourVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 74) {
 			return;
 		}
 
-		if (plugin.getRigourVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 74)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_RIGOUR, client, plugin);
 	}
 }
 
-class AuguryCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget AUGURY = client.getWidget(WidgetInfo.PRAYER_AUGURY);
-
-		Point p = InputHandler.getClickPoint(AUGURY.getBounds());
-
-		if (p == null)
-		{
+class AuguryCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getAuguryVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 77) {
 			return;
 		}
 
-		if (plugin.getAuguryVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 77)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_AUGURY, client, plugin);
 	}
 }
 
-class PietyCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget PIETY = client.getWidget(WidgetInfo.PRAYER_PIETY);
-
-		Point p = InputHandler.getClickPoint(PIETY.getBounds());
-
-		if (p == null)
-		{
+class PietyCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getPietyVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 70) {
 			return;
 		}
 
-		if (plugin.getPietyVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 70)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_PIETY, client, plugin);
 	}
 }
 
-class IncredibleReflexesCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget INCREDIBLE_REFLEXES = client.getWidget(WidgetInfo.PRAYER_INCREDIBLE_REFLEXES);
-
-		Point p = InputHandler.getClickPoint(INCREDIBLE_REFLEXES.getBounds());
-
-		if (p == null)
-		{
+class IncredibleReflexesCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getIncredibleReflexesVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 31) {
 			return;
 		}
 
-		if (plugin.getIncredibleReflexesVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 31)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_INCREDIBLE_REFLEXES, client, plugin);
 	}
 }
 
-class UltimateStrengthCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget ULTIMATE_STRENGTH = client.getWidget(WidgetInfo.PRAYER_ULTIMATE_STRENGTH);
-
-		Point p = InputHandler.getClickPoint(ULTIMATE_STRENGTH.getBounds());
-
-		if (p == null)
-		{
+class UltimateStrengthCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getUltimateStrengthVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 34) {
 			return;
 		}
 
-		if (plugin.getUltimateStrengthVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 34)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_ULTIMATE_STRENGTH, client, plugin);
 	}
 }
 
-class SteelSkinCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget STEEL_SKIN = client.getWidget(WidgetInfo.PRAYER_STEEL_SKIN);
-
-		Point p = InputHandler.getClickPoint(STEEL_SKIN.getBounds());
-
-		if (p == null)
-		{
+class SteelSkinCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getSteelSkinVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 28) {
 			return;
 		}
 
-		if (plugin.getSteelSkinVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 28)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_STEEL_SKIN, client, plugin);
 	}
 }
 
-class EagleEyeCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget EAGLE_EYE = client.getWidget(WidgetInfo.PRAYER_EAGLE_EYE);
-
-		Point p = InputHandler.getClickPoint(EAGLE_EYE.getBounds());
-
-		if (p == null)
-		{
+class EagleEyeCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getEagleEyeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 44) {
 			return;
 		}
 
-		if (plugin.getEagleEyeVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 44)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_EAGLE_EYE, client, plugin);
 	}
 }
 
-class MysticMightCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget MYSTIC_MIGHT = client.getWidget(WidgetInfo.PRAYER_MYSTIC_MIGHT);
-
-		Point p = InputHandler.getClickPoint(MYSTIC_MIGHT.getBounds());
-
-		if (p == null)
-		{
+class MysticMightCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getMysticMightVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 45) {
 			return;
 		}
 
-		if (plugin.getMysticMightVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 45)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_MYSTIC_MIGHT, client, plugin);
 	}
 }
 
-class ProtectItemCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		Widget PROTECT_ITEM = client.getWidget(WidgetInfo.PRAYER_PROTECT_ITEM);
-
-		Point p = InputHandler.getClickPoint(PROTECT_ITEM.getBounds());
-
-		if (p == null)
-		{
+class ProtectItemCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		if (plugin.getProtectItemVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 21) {
 			return;
 		}
 
-		if (plugin.getProtectItemVarbit() != 0)
-		{
-			return;
-		}
-
-		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-		{
-			return;
-		}
-
-		if (client.getRealSkillLevel(Skill.PRAYER) < 21)
-		{
-			return;
-		}
-
-		clickPrayer(client, config, p);
+		clickPrayer(WidgetInfo.PRAYER_PROTECT_ITEM, client, plugin);
 	}
 }
 
-class ClickEnemyCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+class ClickEnemyCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
 			Point lastEnemyLoc = PkToolsOverlay.lastEnemyLocation;
 
-			if (lastEnemyLoc == null)
-			{
+			if (lastEnemyLoc == null) {
 				return;
 			}
 
@@ -345,445 +154,237 @@ class ClickEnemyCommand implements ScriptCommand
 			
 			InputHandler.leftClick(client, new Point(lastEnemyLoc.getX() + randx, lastEnemyLoc.getY() + randy));
 		}
-		catch (Exception e)
-		{
-			//swallow
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class FreezeCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
+class FreezeCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
 
-		try
-		{
+		try {
 			int boosted_level = client.getBoostedSkillLevel(Skill.MAGIC);
 
-			if (boosted_level < 82)
-			{
+			if (boosted_level < 82) {
 				return;
 			}
-			else if (boosted_level < 94)
-			{
-				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
-
-				Thread.sleep(config.clickDelay() * 2);
-
-				Widget IceBlitz = client.getWidget(WidgetInfo.SPELL_ICE_BLITZ);
-
-				Point p2 = InputHandler.getClickPoint(IceBlitz.getBounds());
-
-				if (p2 == null)
-				{
-					return;
-				}
-				
-				InputHandler.leftClick(client, p2);
+			else if (boosted_level < 94) {
+				clickSpell(WidgetInfo.SPELL_ICE_BLITZ, client, plugin);
 			}
-			else
-			{
-				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
-
-				Thread.sleep(config.clickDelay() * 2);
-
-				Widget IceBarrage = client.getWidget(WidgetInfo.SPELL_ICE_BARRAGE);
-
-				Point p1 = InputHandler.getClickPoint(IceBarrage.getBounds());
-
-
-				if (p1 == null)
-				{
-					return;
-				}
-				
-				InputHandler.leftClick(client, p1);
+			else {
+				clickSpell(WidgetInfo.SPELL_ICE_BARRAGE, client, plugin);
 			}
-			
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 		}
-		catch (Exception e)
-		{
-			//swallow
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class VengeanceCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-
-		try
-		{
-			int boosted_level = client.getBoostedSkillLevel(Skill.MAGIC);
-
-			if (boosted_level < 94)
-			{
+class VengeanceCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
+			if (client.getBoostedSkillLevel(Skill.MAGIC) < 94) {
 				return;
 			}
-			else
-			{
-				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
-				Thread.sleep(config.clickDelay() * 2);
 
-				Widget Vengeance = client.getWidget(WidgetInfo.SPELL_VENGEANCE);
-
-				Point p1 = InputHandler.getClickPoint(Vengeance.getBounds());
-
-				if (p1 == null)
-				{
-					return;
-				}
-				
-				InputHandler.leftClick(client, p1);
-			}
-			
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
+			clickSpell(WidgetInfo.SPELL_VENGEANCE, client, plugin);
 		}
-		catch (Exception e)
-		{
-			//swallow
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class TeleBlockCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
-			int boosted_level = client.getBoostedSkillLevel(Skill.MAGIC);
-
-			if (boosted_level < 85)
-			{
+class TeleBlockCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
+			if (client.getBoostedSkillLevel(Skill.MAGIC) < 85) {
 				return;
 			}
-			else
-			{
-				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
 
-				Thread.sleep(config.clickDelay() * 2);
-
-				Widget TeleBlock = client.getWidget(WidgetInfo.SPELL_TELE_BLOCK);
-
-				Point p1 = InputHandler.getClickPoint(TeleBlock.getBounds());
-
-				if (p1 == null)
-				{
-					return;
-				}
-				
-				InputHandler.leftClick(client, p1);
-			}
-
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
+			clickSpell(WidgetInfo.SPELL_TELE_BLOCK, client, plugin);
 		}
-		catch (Exception e)
-		{
-			//swallow
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class EntangleCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
-			int boosted_level = client.getBoostedSkillLevel(Skill.MAGIC);
-
-			if (boosted_level < 79)
-			{
+class EntangleCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
+			if (client.getBoostedSkillLevel(Skill.MAGIC) < 79) {
 				return;
 			}
-			else
-			{
-				InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.SPELLBOOK_TAB_HOTKEY));
 
-				Thread.sleep(config.clickDelay() * 2);
-
-				Widget Entangle = client.getWidget(WidgetInfo.SPELL_ENTANGLE);
-
-				Point p1 = InputHandler.getClickPoint(Entangle.getBounds());
-
-				if (p1 == null)
-				{
-					return;
-				}
-				
-				InputHandler.leftClick(client, p1);
-			}
-
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
+			clickSpell(WidgetInfo.SPELL_ENTANGLE, client, plugin);
 		}
-		catch (Exception e)
-		{
-			//swallow
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class SpecCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+class SpecCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
+			boolean spec_enabled = (client.getVar(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1);
+
+			if (spec_enabled)
+				return;
+
+			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
+			InputHandler.click(client);
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+}
+
+class DoubleSpecCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
+			boolean spec_enabled = (client.getVar(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1);
+
+			if (spec_enabled)
+				return;
+
+			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
+			InputHandler.click(client);
+
 			Thread.sleep(config.clickDelay());
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.COMBAT_TAB_HOTKEY));
-			Widget SPECBAR = client.getWidget(WidgetInfo.COMBAT_TOOLTIP);
-			if (overlay.getSpecCheck() == 0)
-			{
-				Instant SPECTIMER = Instant.now();
-				do
-				{
-					Thread.sleep(config.clickDelay());
-				} while (overlay.getSpecCheck() == 0 && Duration.between(SPECTIMER, Instant.now()).getSeconds() < 1);
-			}
-			if (overlay.getSpecCheck() == 1)
-			{
-				Thread.sleep(config.clickDelay() * 2);
-				Point p = InputHandler.getClickPoint(SPECBAR.getBounds());
-				if (p == null)
-				{
-					return;
-				}
-				InputHandler.leftClick(client, p);
-				Thread.sleep(config.clickDelay());
-				InputHandler.sendKey(client.getCanvas(), KeyEvent.VK_ESCAPE);
-				overlay.setSpecCheck(0);
-			}
-		}
-		catch (Exception e)
-		{
-			//throw
-		}
-	}
-}
 
-class DoubleSpecCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
+			InputHandler.click(client);
+
 			Thread.sleep(config.clickDelay());
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.COMBAT_TAB_HOTKEY));
-			Widget SPECBAR = client.getWidget(WidgetInfo.COMBAT_TOOLTIP);
-			if (overlay.getSpecCheck() == 0)
-			{
-				Instant SPECTIMER = Instant.now();
-				do
-				{
-					Thread.sleep(config.clickDelay());
-				} while (overlay.getSpecCheck() == 0 && Duration.between(SPECTIMER, Instant.now()).getSeconds() < 1);
-			}
-			if (overlay.getSpecCheck() == 1)
-			{
-				Thread.sleep(config.clickDelay() * 2);
-				Point p = InputHandler.getClickPoint(SPECBAR.getBounds());
-				if (p == null)
-				{
-					return;
-				}
-				InputHandler.leftClick(client, p);
-				Thread.sleep(config.clickDelay());
-				InputHandler.leftClick(client, p);
-				Thread.sleep(config.clickDelay());
-				InputHandler.sendKey(client.getCanvas(), KeyEvent.VK_ESCAPE);
-				overlay.setSpecCheck(0);
-			}
 		}
-		catch (Exception e)
-		{
-			//throw
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class Group1Command implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+class Group1Command implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
 			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-			if (inventory == null)
-			{
+			if (inventory == null) {
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-
-			Thread.sleep(config.clickDelay());
-
-			for (WidgetItem item : inventory.getWidgetItems())
-			{
-				String group = getTag(configManager, item.getId());
-
-				if ("Group 1".equalsIgnoreCase(group))
-				{
-					Point p = InputHandler.getClickPoint(item.getCanvasBounds());
-					if (p == null)
-					{
-						return;
-					}
-					InputHandler.leftClick(client, p);
+			for (WidgetItem item : inventory.getWidgetItems()) {
+				if ("Group 1".equalsIgnoreCase(getTag(configManager, item.getId()))) {
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					InputHandler.click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
 		}
-		catch (Throwable e)
-		{
-			//ignored
+		catch (Throwable e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class Group2Command implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+class Group2Command implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
 			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-			if (inventory == null)
-			{
+			if (inventory == null) {
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-
-			Thread.sleep(config.clickDelay());
-
-			for (WidgetItem item : inventory.getWidgetItems())
-			{
-				String group = getTag(configManager, item.getId());
-
-				if ("Group 2".equalsIgnoreCase(group))
-				{
-					Point p = InputHandler.getClickPoint(item.getCanvasBounds());
-					if (p == null)
-					{
-						return;
-					}
-					InputHandler.leftClick(client, p);
+			for (WidgetItem item : inventory.getWidgetItems()) {
+				if ("Group 2".equalsIgnoreCase(getTag(configManager, item.getId()))) {
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					InputHandler.click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
 		}
-		catch (Throwable e)
-		{
-			//ignored
+		catch (Throwable e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class Group3Command implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+class Group3Command implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
 			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-			if (inventory == null)
-			{
+			if (inventory == null) {
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-
-			Thread.sleep(config.clickDelay());
-
-			for (WidgetItem item : inventory.getWidgetItems())
-			{
-				String group = getTag(configManager, item.getId());
-
-				if ("Group 3".equalsIgnoreCase(group))
-				{
-					Point p = InputHandler.getClickPoint(item.getCanvasBounds());
-					if (p == null)
-					{
-						return;
-					}
-					InputHandler.leftClick(client, p);
+			for (WidgetItem item : inventory.getWidgetItems()) {
+				if ("Group 3".equalsIgnoreCase(getTag(configManager, item.getId()))) {
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					InputHandler.click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
 		}
-		catch (Throwable e)
-		{
-			//ignored
+		catch (Throwable e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class Group4Command implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+class Group4Command implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
 			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-			if (inventory == null)
-			{
+			if (inventory == null) {
 				return;
 			}
 
-			InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-
-			Thread.sleep(config.clickDelay());
-
-			for (WidgetItem item : inventory.getWidgetItems())
-			{
-				String group = getTag(configManager, item.getId());
-
-				if ("Group 4".equalsIgnoreCase(group))
-				{
-					Point p = InputHandler.getClickPoint(item.getCanvasBounds());
-					if (p == null)
-					{
-						return;
-					}
-					InputHandler.leftClick(client, p);
+			for (WidgetItem item : inventory.getWidgetItems()) {
+				if ("Group 4".equalsIgnoreCase(getTag(configManager, item.getId()))) {
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					InputHandler.click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
 		}
-		catch (Throwable e)
-		{
-			//ignored
+		catch (Throwable e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class WaitCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
+class WaitCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
+		try {
 			Thread.sleep(config.clickDelay());
 		}
-		catch (Exception ignored)
-		{
-			//swallow
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
 
-class ExceptionCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
+class ExceptionCommand implements ScriptCommand {
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager) {
 		System.out.println("Command could not be read.");
 	}
 }

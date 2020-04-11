@@ -6,8 +6,6 @@ import lombok.Setter;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.kit.KitType;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -15,15 +13,12 @@ import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
-import net.runelite.client.plugins.pktools.ScriptCommand.InputHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Objects;
-
-//item id lists at bottom for clarity
 
 @Singleton
 public class PkToolsOverlay extends Overlay
@@ -37,23 +32,18 @@ public class PkToolsOverlay extends Overlay
 
 	private Dimension panelSize;
 
-	@Getter(AccessLevel.PUBLIC)
-	@Setter(AccessLevel.PUBLIC)
-	public int specCheck;
-
 	@Setter
 	@Getter(AccessLevel.PUBLIC)
 	public static Point lastEnemyLocation;
 
-	@Inject
-	private PkToolsConfig config;
+	private final PkToolsConfig config;
 
 	@Inject
-	private PkToolsOverlay(Client client, PkToolsPlugin pkToolsPlugin, SpriteManager spriteManager)
-	{
+	private PkToolsOverlay(Client client, PkToolsPlugin plugin, SpriteManager spriteManager, PkToolsConfig config) {
 		this.client = client;
-		this.pkToolsPlugin = pkToolsPlugin;
+		this.pkToolsPlugin = plugin;
 		this.spriteManager = spriteManager;
+		this.config = config;
 
 		this.setPosition(OverlayPosition.BOTTOM_RIGHT);
 		this.setPriority(OverlayPriority.HIGH);
@@ -65,7 +55,7 @@ public class PkToolsOverlay extends Overlay
 		if (this.client.getGameState() != GameState.LOGGED_IN)
 			return null;
 
-		Player lastEnemy = this.pkToolsPlugin.lastEnemy;
+		Player lastEnemy = pkToolsPlugin.lastEnemy;
 
 		ImageComponent PROTECT_MELEE_IMG = new ImageComponent(this.spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MELEE, 0));
 		ImageComponent PROTECT_MISSILES_IMG = new ImageComponent(this.spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MISSILES, 0));
@@ -81,116 +71,39 @@ public class PkToolsOverlay extends Overlay
 
 		this.imagePanelComponent.getChildren().clear();
 
-		Widget SPECBAR = this.client.getWidget(WidgetInfo.COMBAT_SPECIAL_ATTACK);
-
-		if (!SPECBAR.isHidden())
-			this.setSpecCheck(1);
-		else
-			this.setSpecCheck(0);
-
-		Widget INVENTORY_TAB = this.client.isResized() ? this.client.getWidget(WidgetInfo.RESIZABLE_VIEWPORT_COMBAT_TAB) : this.client.getWidget(WidgetInfo.FIXED_VIEWPORT_COMBAT_TAB);
-
-		Point COMBAT_POINT = new Point(INVENTORY_TAB.getCanvasLocation().getX(), INVENTORY_TAB.getCanvasLocation().getY());
-
-		int TRIGGERX = (COMBAT_POINT.getX() + 18);
-		int TRIGGERY = (COMBAT_POINT.getY() - 8);
-
-		Widget PROTECT_FROM_MELEE = this.client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MELEE);
-		Widget PROTECT_FROM_RANGED = this.client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
-		Widget PROTECT_FROM_MAGIC = this.client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
-
 		boolean PROTECT_MELEE = this.client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) != 0;
 		boolean PROTECT_RANGED = this.client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
 		boolean PROTECT_MAGIC = this.client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
 
-		boolean shouldAutoSwap = this.config.autoPrayerSwitcher() == PkToolsAutoPrayerModes.AUTO || (this.config.autoPrayerSwitcher() == PkToolsAutoPrayerModes.HOTKEY && PkToolsHotkeyListener.prayer_hotkey);
-		boolean onPrayerTab = this.client.getVar(VarClientInt.INTERFACE_TAB) == 5;
-
-		if (lastEnemy == null)
-		{
-			graphics.clearRect(TRIGGERX, TRIGGERY, 4, 4);
+		if (lastEnemy == null) {
 			PkToolsOverlay.setLastEnemyLocation(null);
-
 			return null;
 		}
 
-		net.runelite.api.Point textLocation = lastEnemy.getCanvasTextLocation(graphics, " ", lastEnemy.getLogicalHeight() / 2);
+		if (pkToolsPlugin.disabled)
+			return null;
 
-		if (textLocation != null)
-		{
-			PkToolsOverlay.setLastEnemyLocation(textLocation);
-
-			graphics.setColor(new Color(0, 255, 245));
-			graphics.fillRect(textLocation.getX(), textLocation.getY(), 4, 4);
-		}
-
-		if (this.client.getBoostedSkillLevel(Skill.PRAYER) > 0)
-		{
+		if (this.client.getBoostedSkillLevel(Skill.PRAYER) > 0) {
 
 			int WEAPON_INT = Objects.requireNonNull(lastEnemy.getPlayerAppearance()).getEquipmentId(KitType.WEAPON);
 
-			if (WEAPON_INT > 0)
-			{
-				if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT))
-				{
-					if (this.config.prayerHelper())
-					{
+			if (WEAPON_INT > 0) {
+				if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (this.config.prayerHelper()) {
 						this.imagePanelComponent.getChildren().add(PROTECT_MELEE_IMG);
 						this.imagePanelComponent.setBackgroundColor(PROTECT_MELEE ? ComponentConstants.STANDARD_BACKGROUND_COLOR : PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
 					}
-
-					if (shouldAutoSwap && !PROTECT_MELEE)
-					{
-						if (!onPrayerTab)
-							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
-
-						if (onPrayerTab)
-						{
-							Point p = InputHandler.getClickPoint(PROTECT_FROM_MELEE.getBounds());
-							InputHandler.leftClick(this.client, p);
-							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-						}
-					}
 				}
-				else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT))
-				{
-					if (this.config.prayerHelper())
-					{
+				else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (this.config.prayerHelper()) {
 						this.imagePanelComponent.getChildren().add(PROTECT_MISSILES_IMG);
 						this.imagePanelComponent.setBackgroundColor(PROTECT_RANGED ? ComponentConstants.STANDARD_BACKGROUND_COLOR : PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
 					}
-					if (shouldAutoSwap && !PROTECT_RANGED)
-					{
-						if (!onPrayerTab)
-							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
-
-						if (onPrayerTab)
-						{
-							Point p = InputHandler.getClickPoint(PROTECT_FROM_RANGED.getBounds());
-							InputHandler.leftClick(this.client, p);
-							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-						}
-					}
 				}
-				else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT))
-				{
-					if (this.config.prayerHelper())
-					{
+				else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (this.config.prayerHelper()) {
 						this.imagePanelComponent.getChildren().add(PROTECT_MAGIC_IMG);
 						this.imagePanelComponent.setBackgroundColor(PROTECT_MAGIC ? ComponentConstants.STANDARD_BACKGROUND_COLOR : PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
-					}
-
-					if (shouldAutoSwap && !PROTECT_MAGIC)
-					{
-						if (!onPrayerTab)
-							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.PRAYER_TAB_HOTKEY));
-
-						if (onPrayerTab)
-						{
-							Point p = InputHandler.getClickPoint(PROTECT_FROM_MAGIC.getBounds());
-							InputHandler.leftClick(this.client, p);
-							InputHandler.sendKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-						}
 					}
 				}
 			}
@@ -199,7 +112,7 @@ public class PkToolsOverlay extends Overlay
 		return this.imagePanelComponent.render(graphics);
 	}
 
-	private static final int[] MELEE_LIST = {ItemID.DRAGON_SCIMITAR, ItemID.RUNE_SCIMITAR, ItemID.GRANITE_MAUL,
+	static final int[] MELEE_LIST = {ItemID.DRAGON_SCIMITAR, ItemID.RUNE_SCIMITAR, ItemID.GRANITE_MAUL,
 			ItemID.ABYSSAL_WHIP, ItemID.DORGESHUUN_CROSSBOW, ItemID.BANDOS_GODSWORD, ItemID.ARMADYL_GODSWORD,
 			ItemID.VOLCANIC_ABYSSAL_WHIP, ItemID.FROZEN_ABYSSAL_WHIP, ItemID.BARRELCHEST_ANCHOR,
 			ItemID.DRAGON_WARHAMMER, ItemID.ELDER_MAUL, ItemID.ABYSSAL_TENTACLE, ItemID.GHRAZI_RAPIER,
@@ -219,7 +132,7 @@ public class PkToolsOverlay extends Overlay
 			ItemID.BANDOS_GODSWORD_20782, ItemID.BANDOS_GODSWORD_21060, ItemID.BANDOS_GODSWORD_OR,
 	};
 
-	private static final int[] RANGED_LIST = {ItemID.RUNE_CROSSBOW, ItemID.MAGIC_SHORTBOW_I, ItemID.ARMADYL_CROSSBOW,
+	static final int[] RANGED_LIST = {ItemID.RUNE_CROSSBOW, ItemID.MAGIC_SHORTBOW_I, ItemID.ARMADYL_CROSSBOW,
 			ItemID.TOXIC_BLOWPIPE, ItemID.DARK_BOW, ItemID.MAPLE_SHORTBOW, ItemID.LIGHT_BALLISTA, ItemID.HEAVY_BALLISTA,
 			ItemID.MAGIC_SHORTBOW, ItemID.MAGIC_SHORTBOW_20558, ItemID.DRAGON_THROWNAXE, ItemID.DRAGON_HUNTER_CROSSBOW,
 			ItemID.DRAGON_THROWNAXE_21207, ItemID.TOKTZXILUL, ItemID.NEW_CRYSTAL_BOW, ItemID.CRYSTAL_BOW_FULL,
@@ -233,7 +146,7 @@ public class PkToolsOverlay extends Overlay
 			ItemID.TWISTED_BOW, ItemID.DRAGON_CROSSBOW
 	};
 
-	private static final int[] MAGIC_LIST = {ItemID.TOXIC_STAFF_OF_THE_DEAD, ItemID.MYSTIC_SMOKE_STAFF,
+	static final int[] MAGIC_LIST = {ItemID.TOXIC_STAFF_OF_THE_DEAD, ItemID.MYSTIC_SMOKE_STAFF,
 			ItemID.CLUE_SCROLL_MEDIUM_19772, ItemID.IBANS_STAFF_U, ItemID.ANCIENT_STAFF, ItemID.STAFF_OF_THE_DEAD,
 			ItemID.TRIDENT_OF_THE_SEAS_FULL, ItemID.TRIDENT_OF_THE_SEAS, ItemID.STAFF_OF_AIR, ItemID.MYSTIC_DUST_STAFF,
 			ItemID.STAFF_OF_FIRE, ItemID.TOXIC_STAFF_UNCHARGED, ItemID.SARADOMIN_STAFF, ItemID.MYSTIC_WATER_STAFF,

@@ -25,7 +25,7 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.9"
+version = "0.0.10"
 
 project.extra["PluginName"] = "PK Tools"
 project.extra["PluginDescription"] = "Arsenal of PKing Tools"
@@ -52,6 +52,15 @@ tasks {
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
+        }
+    }
+
+    withType<Jar> {
+        doLast {
+            copy {
+                from("./build/libs/")
+                into("C:/Users/ben93/.runelite/externalmanager")
+            }
         }
     }
 }

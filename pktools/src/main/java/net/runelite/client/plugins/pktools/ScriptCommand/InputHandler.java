@@ -54,6 +54,23 @@ public class InputHandler {
 		moveMouse(client, pos);
 		clickMouse(client, pos, 1);
 	}
+
+	public static void click(Client client)
+	{
+		Point pos = client.getMouseCanvasPosition();
+
+		if (client.isStretchedEnabled()) {
+			final Dimension stretched = client.getStretchedDimensions();
+			final Dimension real = client.getRealDimensions();
+			final double width = (stretched.width / real.getWidth());
+			final double height = (stretched.height / real.getHeight());
+			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+			clickMouse(client, point, 1);
+			return;
+		}
+
+		clickMouse(client, pos, 1);
+	}
 	
 	private static MouseEvent createEvent(Client client, Point p, int id)
 	{
