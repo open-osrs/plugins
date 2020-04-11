@@ -54,13 +54,4 @@ tasks {
             ))
         }
     }
-
-    withType<Jar> {
-        doLast {
-            copy {
-                from("./build/libs/")
-                into("C:/Users/ben93/.runelite/externalmanager")
-            }
-        }
-    }
 }
