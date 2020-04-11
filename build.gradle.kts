@@ -164,6 +164,20 @@ subprojects {
             exclude("**/LayoutSolver.java")
             exclude("**/RoomType.java")
         }
+
+        named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates") {
+            checkForGradleUpdate = false
+
+            resolutionStrategy {
+                componentSelection {
+                    all {
+                        if (candidate.displayName.contains("fernflower") || isNonStable(candidate.version)) {
+                            reject("Non stable")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
