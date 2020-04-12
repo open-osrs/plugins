@@ -26,9 +26,12 @@
  */
 package net.runelite.client.plugins.banlist;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.google.inject.Provides;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
@@ -358,8 +361,9 @@ public class BanListPlugin extends Plugin
 
 
 		Request secondRequest = new Request.Builder()
-			.url("https://runewatch.com/incident-index-page/")
+			.url("https://thatgamerblue.com/runewatch.json")
 			.build();
+
 		RuneLiteAPI.CLIENT.newCall(secondRequest).enqueue(new Callback()
 		{
 			@Override
@@ -372,27 +376,16 @@ public class BanListPlugin extends Plugin
 			{
 				try
 				{
-					if (response.body() == null)
+					runeWatchSet.clear();
+					Gson gson = new Gson();
+					List<String> names = gson.fromJson(response.body().string(), new TypeToken<List<String>>()
 					{
-						return;
-					}
-
-					String text = Objects.requireNonNull(response.body()).string();
-					String mytext = text.substring(text.indexOf("lcp_instance_0"), text.indexOf("strong>Evidence Quality Suggestion"));
-					String[] split = mytext.split("href=");
-					for (String x : split)
-					{
-						if (x.contains("title"))
-						{
-							x = x.substring(x.indexOf("title"), x.indexOf('>'));
-							x = x.substring(x.indexOf('=') + 2, x.length() - 1);
-							runeWatchSet.add(Text.standardize(x).toLowerCase());
-						}
-					}
+					}.getType());
+					runeWatchSet.addAll(names);
 				}
 				catch (Exception e)
 				{
-					log.error("Error parsing runewatch page", e);
+					log.error("Error parsing runewatch json.", e);
 				}
 			}
 		});
