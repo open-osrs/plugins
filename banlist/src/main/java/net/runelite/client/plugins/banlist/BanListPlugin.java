@@ -29,8 +29,10 @@ package net.runelite.client.plugins.banlist;
 import com.google.inject.Provides;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.ClanMember;
 import net.runelite.api.Client;
@@ -62,6 +64,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
+@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Ban List",
@@ -292,7 +295,7 @@ public class BanListPlugin extends Plugin
 			case WEDORAIDSSCAM_LIST:
 				final String wdr__scam_message = new ChatMessageBuilder()
 					.append(ChatColorType.HIGHLIGHT)
-					.append("Warning! " + playerName + " is on WeDoRaids\' scammer list!")
+					.append("Warning! " + playerName + " is on WeDoRaids' scammer list!")
 					.build();
 
 				chatMessageManager.queue(
@@ -305,7 +308,7 @@ public class BanListPlugin extends Plugin
 			case WEDORAIDSTOXIC_LIST:
 				final String wdr__toxic_message = new ChatMessageBuilder()
 					.append(ChatColorType.HIGHLIGHT)
-					.append("Warning! " + playerName + " is on WeDoRaids\' toxic list!")
+					.append("Warning! " + playerName + " is on WeDoRaids' toxic list!")
 					.build();
 
 				chatMessageManager.queue(
@@ -318,7 +321,7 @@ public class BanListPlugin extends Plugin
 			case RUNEWATCH_LIST:
 				final String rw_message = new ChatMessageBuilder()
 					.append(ChatColorType.HIGHLIGHT)
-					.append("Warning! " + playerName + " is on the Runewatch\'s potential scammer list!")
+					.append("Warning! " + playerName + " is on the Runewatch's potential scammer list!")
 					.build();
 
 				chatMessageManager.queue(
@@ -350,6 +353,7 @@ public class BanListPlugin extends Plugin
 		Request request = new Request.Builder()
 			.url("https://wdrdev.github.io/index")
 			.build();
+
 		fetchAndParseWdr(request, wdrScamSet);
 
 
@@ -364,19 +368,31 @@ public class BanListPlugin extends Plugin
 			}
 
 			@Override
-			public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
+			public void onResponse(@NotNull Call call, @NotNull Response response)
 			{
-				String text = response.body().string();
-				String mytext = text.substring(text.indexOf("lcp_instance_0"), text.indexOf("strong>Evidence Quality Suggestion"));
-				String[] split = mytext.split("href=");
-				for (String x : split)
+				try
 				{
-					if (x.contains("title"))
+					if (response.body() == null)
 					{
-						x = x.substring(x.indexOf("title"), x.indexOf('>'));
-						x = x.substring(x.indexOf('=') + 2, x.length() - 1);
-						runeWatchSet.add(Text.standardize(x).toLowerCase());
+						return;
 					}
+
+					String text = Objects.requireNonNull(response.body()).string();
+					String mytext = text.substring(text.indexOf("lcp_instance_0"), text.indexOf("strong>Evidence Quality Suggestion"));
+					String[] split = mytext.split("href=");
+					for (String x : split)
+					{
+						if (x.contains("title"))
+						{
+							x = x.substring(x.indexOf("title"), x.indexOf('>'));
+							x = x.substring(x.indexOf('=') + 2, x.length() - 1);
+							runeWatchSet.add(Text.standardize(x).toLowerCase());
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					log.error("Error parsing runewatch page", e);
 				}
 			}
 		});
@@ -384,6 +400,7 @@ public class BanListPlugin extends Plugin
 		Request thirdRequest = new Request.Builder()
 			.url("https://wdrdev.github.io/toxic")
 			.build();
+
 		fetchAndParseWdr(thirdRequest, wdrToxicSet);
 	}
 
@@ -397,14 +414,21 @@ public class BanListPlugin extends Plugin
 			}
 
 			@Override
-			public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
+			public void onResponse(@NotNull Call call, @NotNull Response response)
 			{
-				String text = response.body().string();
-				text = text.substring(text.indexOf("<p>") + 3, text.indexOf("</p>"));
-				text = text.replace("/", ",");
-				text = text.replace(", $", "");
+				try
+				{
+					String text = Objects.requireNonNull(response.body()).string();
+					text = text.substring(text.indexOf("<p>") + 3, text.indexOf("</p>"));
+					text = text.replace("/", ",");
+					text = text.replace(", $", "");
 
-				Text.fromCSV(text).forEach(str -> tgtSet.add(Text.standardize(str)));
+					Text.fromCSV(text).forEach(str -> tgtSet.add(Text.standardize(str)));
+				}
+				catch (Exception e)
+				{
+					log.error("Error parsing WDR page", e);
+				}
 			}
 		});
 	}
