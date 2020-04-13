@@ -46,27 +46,12 @@ public class PkToolsPlugin extends Plugin {
 
 	private static final Duration WAIT = Duration.ofSeconds(5);
 
-	@Inject
-	public ItemManager itemManager;
-
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
-	public int protectMeleeVarbit;
-
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
-	public int protectMageVarbit;
-
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
-	public int protectRangeVarbit;
-
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	public int pietyVarbit, auguryVarbit, rigourVarbit,
 			protectItemVarbit,
 			mysticMightVarbit, eagleEyeVarbit,
-			steelSkinVarbit, ultimateStrengthVarbit, incredibleReflexesVarbit;
+			steelSkinVarbit, ultimateStrengthVarbit, incredibleReflexesVarbit, protectMeleeVarbit, protectMageVarbit, protectRangeVarbit;
 
 	@Inject
 	public Client client;
@@ -89,6 +74,9 @@ public class PkToolsPlugin extends Plugin {
 	@Inject
 	private KeyManager keyManager;
 
+	@Inject
+	public ItemManager itemManager;
+
 	@Getter(AccessLevel.PACKAGE)
 	public Player lastEnemy;
 
@@ -96,8 +84,6 @@ public class PkToolsPlugin extends Plugin {
 
 	//this is our current custom entry to swap in
 	public MenuEntry entry;
-
-	public boolean disabled;
 
 	@Provides
 	PkToolsConfig provideConfig(final ConfigManager configManager) {
@@ -168,23 +154,62 @@ public class PkToolsPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onGameTick(final GameTick gameTick) {
+	public void onClientTick(ClientTick event) {
 		if (client.getGameState() != GameState.LOGGED_IN)
 			return;
 
+		lastEnemyTimer();
+		doAutoSwapPrayers();
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event) {
+		if (entry != null)
+			event.setMenuEntry(entry);
+		entry = null;
+	}
+
+	public void lastEnemyTimer() {
 		if (lastEnemy != null && client.getLocalPlayer().getInteracting() == null) {
 			if (Duration.between(lastTime, Instant.now()).compareTo(PkToolsPlugin.WAIT) > 0) {
 				lastEnemy = null;
 			}
 		}
+	}
+
+	public void activatePrayer(WidgetInfo widgetInfo) {
+		Widget prayer_widget = client.getWidget(widgetInfo);
+
+		if (prayer_widget == null)
+			return;
+
+		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+			return;
+		}
+
+		entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
+		InputHandler.click(client);
+
+		try {
+			Thread.sleep(config.clickDelay());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public void doAutoSwapPrayers() {
+		if (!config.autoPrayerSwitcher())
+			return;
+
+		if (!PkToolsHotkeyListener.autoprayer_enabled)
+			return;
 
 		this.executor.submit(() -> {
 			try {
 				boolean PROTECT_MELEE = client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) != 0;
 				boolean PROTECT_RANGED = client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
 				boolean PROTECT_MAGIC = client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
-
-				boolean shouldAutoSwap = config.autoPrayerSwitcher() == PkToolsAutoPrayerModes.AUTO || (config.autoPrayerSwitcher() == PkToolsAutoPrayerModes.HOTKEY && PkToolsHotkeyListener.prayer_hotkey);
 
 				if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
 					return;
@@ -202,64 +227,16 @@ public class PkToolsPlugin extends Plugin {
 				if (WEAPON_INT <= 0)
 					return;
 
-				if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT)) {
-					if (shouldAutoSwap && !PROTECT_MELEE) {
-						Widget prayer_widget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MELEE);
-
-						if (prayer_widget == null)
-							return;
-
-						if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
-							return;
-						}
-
-						entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
-						InputHandler.click(client);
-					}
-				} else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT)) {
-					if (shouldAutoSwap && !PROTECT_RANGED) {
-						Widget prayer_widget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
-
-						if (prayer_widget == null)
-							return;
-
-						if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
-							return;
-						}
-
-						entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
-						InputHandler.click(client);
-					}
-				} else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT)) {
-					if (shouldAutoSwap && !PROTECT_MAGIC) {
-						Widget prayer_widget = client.getWidget(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
-
-						if (prayer_widget == null)
-							return;
-
-						if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
-							return;
-						}
-
-						entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
-						InputHandler.click(client);
-					}
+				if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_MELEE) {
+					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MELEE);
+				} else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_RANGED) {
+					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
+				} else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_MAGIC) {
+					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
-	}
-
-	@Subscribe
-	public void onClientTick(ClientTick event) {
-
-	}
-
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if (entry != null)
-			event.setMenuEntry(entry);
-		entry = null;
 	}
 }

@@ -10,8 +10,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 @ConfigGroup("pktools")
-public interface PkToolsConfig extends Config
-{
+public interface PkToolsConfig extends Config {
 
 	String commands = "protectitem, rigour, augury, piety, " +
 			"incrediblereflexes, ultimatestrength, steelskin, eagleeye, mysticmight, " +
@@ -25,8 +24,7 @@ public interface PkToolsConfig extends Config
 			description = "",
 			position = 1
 	)
-	default Title label1()
-	{
+	default Title label1() {
 		return new Title();
 	}
 
@@ -36,8 +34,7 @@ public interface PkToolsConfig extends Config
 			description = "Activates script for this key.",
 			position = 2
 	)
-	default Keybind key1()
-	{
+	default Keybind key1()  {
 		return new Keybind(KeyEvent.VK_1, 0);
 	}
 
@@ -47,8 +44,7 @@ public interface PkToolsConfig extends Config
 			description = "Activates script for this key.",
 			position = 3
 	)
-	default Keybind key2()
-	{
+	default Keybind key2() {
 		return new Keybind(KeyEvent.VK_2, 0);
 	}
 
@@ -58,8 +54,7 @@ public interface PkToolsConfig extends Config
 			description = "Activates script for this key.",
 			position = 4
 	)
-	default Keybind key3()
-	{
+	default Keybind key3() {
 		return new Keybind(KeyEvent.VK_3, 0);
 	}
 
@@ -69,8 +64,7 @@ public interface PkToolsConfig extends Config
 			description = "Activates script for this key.",
 			position = 5
 	)
-	default Keybind key4()
-	{
+	default Keybind key4() {
 		return new Keybind(KeyEvent.VK_4, 0);
 	}
 
@@ -80,8 +74,7 @@ public interface PkToolsConfig extends Config
 			description = "Activates script for this key.",
 			position = 6
 	)
-	default Keybind key5()
-	{
+	default Keybind key5() {
 		return new Keybind(KeyEvent.VK_5, 0);
 	}
 
@@ -91,8 +84,7 @@ public interface PkToolsConfig extends Config
 			name = "Key 1 Script",
 			description = PkToolsConfig.commands
 	)
-	default String key1_script()
-	{
+	default String key1_script() {
 		return "group1\nwait\npiety";
 	}
 
@@ -102,8 +94,7 @@ public interface PkToolsConfig extends Config
 			name = "Key 2 Script",
 			description = PkToolsConfig.commands
 	)
-	default String key2_script()
-	{
+	default String key2_script() {
 		return "group2\nwait\nrigour";
 	}
 
@@ -113,8 +104,7 @@ public interface PkToolsConfig extends Config
 			name = "Key 3 Script",
 			description = PkToolsConfig.commands
 	)
-	default String key3_script()
-	{
+	default String key3_script() {
 		return "group3\nwait\naugury";
 	}
 
@@ -124,8 +114,7 @@ public interface PkToolsConfig extends Config
 			name = "Key 4 Script",
 			description = PkToolsConfig.commands
 	)
-	default String key4_script()
-	{
+	default String key4_script() {
 		return "group4\npiety\nspec\nclickenemy";
 	}
 
@@ -135,8 +124,7 @@ public interface PkToolsConfig extends Config
 			name = "Key 5 Script",
 			description = PkToolsConfig.commands
 	)
-	default String key5_script()
-	{
+	default String key5_script() {
 		return "freeze\nclickenemy";
 	}
 
@@ -146,30 +134,27 @@ public interface PkToolsConfig extends Config
 			description = "",
 			position = 12
 	)
-	default Title label2()
-	{
+	default Title label2() {
 		return new Title();
 	}
 
 	@ConfigItem(
 			position = 13,
-			keyName = "autoprayerswitcher",
+			keyName = "prayerswitcherEnabled",
 			name = "Auto Prayer Switcher",
-			description = "Automatic Prayer Switching mode using group hotkeys"
+			description = "Automatic Prayer Switching"
 	)
-	default PkToolsAutoPrayerModes autoPrayerSwitcher()
-	{
-		return PkToolsAutoPrayerModes.OFF;
+	default boolean autoPrayerSwitcher() {
+		return false;
 	}
 
 	@ConfigItem(
 			position = 14,
 			keyName = "autoPrayerSwitcherHotkey",
-			name = "Prayer Switch Hotkey",
-			description = "Hotkey to swap to the appropriate prayer"
+			name = "Prayer Switch Toggle Hotkey",
+			description = "Hotkey to toggle the prayer switcher on/off"
 	)
-	default Keybind prayerKey()
-	{
+	default Keybind prayerKey() {
 		return new Keybind(KeyEvent.VK_6, 0);
 	}
 
@@ -179,19 +164,17 @@ public interface PkToolsConfig extends Config
 			name = "Prayer Helper",
 			description = "Draws icons to suggest proper prayer switches"
 	)
-	default boolean prayerHelper()
-	{
+	default boolean prayerHelper() {
 		return true;
 	}
 
 	@ConfigItem(
-			position = 21,
+			position = 16,
 			keyName = "clickDelay",
 			name = "Click Delay",
 			description = "Sets the delay between clicks"
 	)
-	default int clickDelay()
-	{
+	default int clickDelay() {
 		return 30;
 	}
 }

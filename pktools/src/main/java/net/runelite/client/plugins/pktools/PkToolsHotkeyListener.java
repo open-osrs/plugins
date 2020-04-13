@@ -18,9 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 	private final Client client;
-	private static final int PAUSE = KeyEvent.VK_PAUSE;
 
-	static boolean prayer_hotkey;
+	static boolean autoprayer_enabled = true;
 
 	private Instant lastPress;
 
@@ -54,7 +53,7 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 			return;
 
 		if (e.getKeyCode() == this.config.prayerKey().getKeyCode())
-			PkToolsHotkeyListener.prayer_hotkey = true;
+			PkToolsHotkeyListener.autoprayer_enabled = !PkToolsHotkeyListener.autoprayer_enabled;
 
 		try {
 			if (this.lastPress != null && Duration.between(this.lastPress, Instant.now()).getNano() > 1000) {
@@ -66,14 +65,6 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 			}
 
 			final int key_code = e.getKeyCode();
-
-			if (key_code == PkToolsHotkeyListener.PAUSE) {
-				plugin.disabled = !plugin.disabled;
-			}
-
-			if (plugin.disabled) {
-				return;
-			}
 
 			executor.submit(() -> {
 				if (key_code == this.config.key1().getKeyCode()) {
@@ -115,7 +106,5 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 
 	@Override
 	public void keyReleased(final KeyEvent e) {
-		if (e.getKeyCode() == this.config.prayerKey().getKeyCode())
-			PkToolsHotkeyListener.prayer_hotkey = false;
 	}
 }

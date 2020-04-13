@@ -1,8 +1,5 @@
 package net.runelite.client.plugins.pktools;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.kit.KitType;
@@ -10,9 +7,7 @@ import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.ComponentConstants;
-import net.runelite.client.ui.overlay.components.ImageComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
+import net.runelite.client.ui.overlay.components.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,18 +20,15 @@ public class PkToolsOverlay extends Overlay
 {
 	private final Client client;
 	private final PkToolsPlugin pkToolsPlugin;
+	private final PkToolsConfig config;
 	private final SpriteManager spriteManager;
 	private final PanelComponent imagePanelComponent = new PanelComponent();
 
 	private static final Color NOT_ACTIVATED_BACKGROUND_COLOR = new Color(150, 0, 0, 150);
 
-	private Dimension panelSize;
+	Dimension panel_size = new Dimension(27, 40);
 
-	@Setter
-	@Getter(AccessLevel.PUBLIC)
 	public static Point lastEnemyLocation;
-
-	private final PkToolsConfig config;
 
 	@Inject
 	private PkToolsOverlay(Client client, PkToolsPlugin plugin, SpriteManager spriteManager, PkToolsConfig config) {
@@ -57,59 +49,51 @@ public class PkToolsOverlay extends Overlay
 
 		Player lastEnemy = pkToolsPlugin.lastEnemy;
 
-		ImageComponent PROTECT_MELEE_IMG = new ImageComponent(this.spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MELEE, 0));
-		ImageComponent PROTECT_MISSILES_IMG = new ImageComponent(this.spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MISSILES, 0));
-		ImageComponent PROTECT_MAGIC_IMG = new ImageComponent(this.spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MAGIC, 0));
+		ImageComponent PROTECT_MELEE_IMG = new ImageComponent(spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MELEE, 0));
+		ImageComponent PROTECT_MISSILES_IMG = new ImageComponent(spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MISSILES, 0));
+		ImageComponent PROTECT_MAGIC_IMG = new ImageComponent(spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MAGIC, 0));
 
-		if (this.panelSize == null)
-		{
-			this.panelSize = PROTECT_MAGIC_IMG.getBounds().getSize();
+		imagePanelComponent.getChildren().clear();
+		imagePanelComponent.getChildren().add(TitleComponent.builder().text("PK").color(PkToolsHotkeyListener.autoprayer_enabled ? Color.GREEN : Color.red).build());
+		imagePanelComponent.setBackgroundColor(ComponentConstants.STANDARD_BACKGROUND_COLOR);
+		imagePanelComponent.setPreferredSize(panel_size);
 
-			if (this.panelSize.getHeight() != 0 && this.panelSize.getWidth() != 0)
-				this.setPreferredSize(this.panelSize);
-		}
-
-		this.imagePanelComponent.getChildren().clear();
-
-		boolean PROTECT_MELEE = this.client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) != 0;
-		boolean PROTECT_RANGED = this.client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
-		boolean PROTECT_MAGIC = this.client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
+		boolean PROTECT_MELEE = client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) != 0;
+		boolean PROTECT_RANGED = client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
+		boolean PROTECT_MAGIC = client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
 
 		if (lastEnemy == null) {
-			PkToolsOverlay.setLastEnemyLocation(null);
-			return null;
-		}
-
-		if (pkToolsPlugin.disabled)
-			return null;
-
-		if (this.client.getBoostedSkillLevel(Skill.PRAYER) > 0) {
-
+			PkToolsOverlay.lastEnemyLocation = null;
+		} else {
 			int WEAPON_INT = Objects.requireNonNull(lastEnemy.getPlayerAppearance()).getEquipmentId(KitType.WEAPON);
 
 			if (WEAPON_INT > 0) {
 				if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT)) {
-					if (this.config.prayerHelper()) {
-						this.imagePanelComponent.getChildren().add(PROTECT_MELEE_IMG);
-						this.imagePanelComponent.setBackgroundColor(PROTECT_MELEE ? ComponentConstants.STANDARD_BACKGROUND_COLOR : PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
+					if (config.prayerHelper()) {
+						imagePanelComponent.getChildren().add(PROTECT_MELEE_IMG);
+
+						if (!PROTECT_MELEE)
+							imagePanelComponent.setBackgroundColor(PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
 					}
-				}
-				else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT)) {
-					if (this.config.prayerHelper()) {
-						this.imagePanelComponent.getChildren().add(PROTECT_MISSILES_IMG);
-						this.imagePanelComponent.setBackgroundColor(PROTECT_RANGED ? ComponentConstants.STANDARD_BACKGROUND_COLOR : PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
+				} else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (config.prayerHelper()) {
+						imagePanelComponent.getChildren().add(PROTECT_MISSILES_IMG);
+
+						if (!PROTECT_RANGED)
+							imagePanelComponent.setBackgroundColor(PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
 					}
-				}
-				else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT)) {
-					if (this.config.prayerHelper()) {
-						this.imagePanelComponent.getChildren().add(PROTECT_MAGIC_IMG);
-						this.imagePanelComponent.setBackgroundColor(PROTECT_MAGIC ? ComponentConstants.STANDARD_BACKGROUND_COLOR : PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
+				} else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT)) {
+					if (config.prayerHelper()) {
+						imagePanelComponent.getChildren().add(PROTECT_MAGIC_IMG);
+
+						if (!PROTECT_MAGIC)
+							imagePanelComponent.setBackgroundColor(PkToolsOverlay.NOT_ACTIVATED_BACKGROUND_COLOR);
 					}
 				}
 			}
 		}
 
-		return this.imagePanelComponent.render(graphics);
+		return imagePanelComponent.render(graphics);
 	}
 
 	static final int[] MELEE_LIST = {ItemID.DRAGON_SCIMITAR, ItemID.RUNE_SCIMITAR, ItemID.GRANITE_MAUL,
