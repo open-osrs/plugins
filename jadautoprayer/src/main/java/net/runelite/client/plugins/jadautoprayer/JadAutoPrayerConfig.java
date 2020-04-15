@@ -10,11 +10,11 @@ public interface JadAutoPrayerConfig extends Config
 	@ConfigItem(
 			position = 0,
 			keyName = "autoSwitchPrayers",
-			name = "Auto Prayer Switcher (BETA)",
+			name = "Auto Prayer Switcher",
 			description = "Automatically switches prayers against Jad."
 	)
 	default boolean autoSwitchPrayers()
 	{
-		return false;
+		return true;
 	}
 }

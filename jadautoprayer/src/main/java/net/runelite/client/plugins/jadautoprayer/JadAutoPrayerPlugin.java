@@ -4,25 +4,22 @@ import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
-import net.runelite.api.Prayer;
-import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.*;
+import net.runelite.api.events.*;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
@@ -34,6 +31,10 @@ import javax.inject.Inject;
 )
 public class JadAutoPrayerPlugin extends Plugin
 {
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+			new ThreadPoolExecutor.DiscardPolicy());
+
 	@Inject
 	private Client client;
 
@@ -42,16 +43,6 @@ public class JadAutoPrayerPlugin extends Plugin
 
 	@Inject
 	private JadAutoPrayerConfig config;
-
-	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private JadAutoPrayerOverlay overlay;
-
-	@Getter(AccessLevel.PACKAGE)
-	@Nullable
-	private JadAttack attack;
 
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
@@ -63,86 +54,100 @@ public class JadAutoPrayerPlugin extends Plugin
 
 	private NPC jad;
 
+	//this is our current custom entry to swap in
+	public MenuEntry entry;
+
 	@Provides
-	JadAutoPrayerConfig getConfig(final ConfigManager configManager)
-	{
+	JadAutoPrayerConfig getConfig(final ConfigManager configManager) {
 		return configManager.getConfig(JadAutoPrayerConfig.class);
 	}
 
 	@Override
-	protected void startUp() throws Exception
-	{
-		this.overlayManager.add(this.overlay);
+	protected void startUp() throws Exception {
 	}
 
 	@Override
-	protected void shutDown() throws Exception
-	{
-		this.overlayManager.remove(this.overlay);
+	protected void shutDown() throws Exception {
 		this.jad = null;
-		this.attack = null;
 	}
 
 	@Subscribe
-	public void onVarbitChanged(final VarbitChanged event)
-	{
-		if (this.client.getGameState() != GameState.LOGGED_IN)
-		{
+	public void onVarbitChanged(final VarbitChanged event) {
+		if (this.client.getGameState() != GameState.LOGGED_IN) {
 			return;
 		}
 
-		if (this.client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 1)
-		{
+		if (this.client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 1) {
 			this.setProtectMageVarbit(1);
-		} else
-		{
+		} else {
 			this.setProtectMageVarbit(0);
 		}
 
-		if (this.client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 1)
-		{
+		if (this.client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 1) {
 			this.setProtectRangeVarbit(1);
-		} else
-		{
+		} else {
 			this.setProtectRangeVarbit(0);
 		}
 	}
 
 	@Subscribe
-	public void onNpcSpawned(NpcSpawned event)
-	{
+	public void onNpcSpawned(NpcSpawned event) {
 		int id = event.getNpc().getId();
 
-		if (id == NpcID.TZTOKJAD || id == NpcID.TZTOKJAD_6506)
-		{
+		if (id == NpcID.TZTOKJAD || id == NpcID.TZTOKJAD_6506) {
 			this.jad = event.getNpc();
 		}
 	}
 
 	@Subscribe
-	public void onNpcDespawned(NpcDespawned event)
-	{
-		if (this.jad == event.getNpc())
-		{
+	public void onNpcDespawned(NpcDespawned event) {
+		if (this.jad == event.getNpc()) {
 			this.jad = null;
-			this.attack = null;
 		}
 	}
 
 	@Subscribe
-	public void onAnimationChanged(AnimationChanged event)
-	{
-		if (event.getActor() != this.jad)
-		{
+	public void onAnimationChanged(AnimationChanged event) {
+		if (event.getActor() != this.jad) {
 			return;
 		}
 
-		if (this.jad.getAnimation() == JadAttack.MAGIC.getAnimation())
-		{
-			this.attack = JadAttack.MAGIC;
-		} else if (this.jad.getAnimation() == JadAttack.RANGE.getAnimation())
-		{
-			this.attack = JadAttack.RANGE;
+		executor.submit(() -> {
+			final boolean PROTECT_RANGED = this.client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
+			final boolean PROTECT_MAGIC = this.client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
+
+			if (this.jad.getAnimation() == JadAttack.MAGIC.getAnimation() && !PROTECT_MAGIC) {
+				activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
+			} else if (this.jad.getAnimation() == JadAttack.RANGE.getAnimation() && !PROTECT_RANGED) {
+				activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
+			}
+		});
+	}
+
+	public void activatePrayer(WidgetInfo widgetInfo) {
+		Widget prayer_widget = client.getWidget(widgetInfo);
+
+		if (prayer_widget == null)
+			return;
+
+		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+			return;
 		}
+
+		entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
+		InputHandler.click(client);
+
+		try {
+			Thread.sleep(50);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event) {
+		if (entry != null)
+			event.setMenuEntry(entry);
+		entry = null;
 	}
 }

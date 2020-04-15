@@ -2,10 +2,11 @@ package net.runelite.client.plugins.praypotdrinker;
 
 import com.google.inject.Provides;
 import net.runelite.api.Client;
-import net.runelite.api.Point;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.Skill;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -20,8 +21,6 @@ import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -36,8 +35,7 @@ import java.util.concurrent.TimeUnit;
 		enabledByDefault = false,
 		type = PluginType.PVM
 )
-public class PrayPotDrinkerPlugin extends Plugin
-{
+public class PrayPotDrinkerPlugin extends Plugin {
 	@Inject
 	private Client client;
 
@@ -50,32 +48,30 @@ public class PrayPotDrinkerPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
+	private String[] potions;
+
+	private MenuEntry entry;
+
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 			new ThreadPoolExecutor.DiscardPolicy());
 
-	private String[] potions;
-
 	@Provides
-	PrayPotDrinkerConfig provideConfig(final ConfigManager configManager)
-	{
+	PrayPotDrinkerConfig provideConfig(final ConfigManager configManager) {
 		return configManager.getConfig(PrayPotDrinkerConfig.class);
 	}
 
 	@Override
-	protected void startUp() throws Exception
-	{
+	protected void startUp() throws Exception {
 		potions = config.potionNames().split(",");
 	}
 
 	@Override
-	protected void shutDown() throws Exception
-	{
+	protected void shutDown() throws Exception {
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
+	public void onConfigChanged(ConfigChanged event) {
 		if (!event.getGroup().equals("praypotdrinker"))
 			return;
 
@@ -83,19 +79,15 @@ public class PrayPotDrinkerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameTick(GameTick event)
-	{
-		this.executor.submit(() ->
-		{
-			try
-			{
+	public void onGameTick(GameTick event) {
+		this.executor.submit(() -> {
+			try {
 				//7 + 25%
 				int currentPrayerPoints = client.getBoostedSkillLevel(Skill.PRAYER);
 				int maxPrayerPoints = client.getRealSkillLevel(Skill.PRAYER);
 				int boostAmount = 7 + (int) Math.floor(maxPrayerPoints * .25);
 				
-				if (currentPrayerPoints + boostAmount > maxPrayerPoints)
-				{
+				if (currentPrayerPoints + boostAmount > maxPrayerPoints) {
 					return;
 				}
 
@@ -104,26 +96,32 @@ public class PrayPotDrinkerPlugin extends Plugin
 				if (inventory == null)
 					return;
 
-				for (WidgetItem item : inventory.getWidgetItems())
-				{
+				for (WidgetItem item : inventory.getWidgetItems()) {
 					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
-					if (Arrays.asList(potions).contains(name))
-					{
-						InputHandler.pressKey(client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-						Thread.sleep(50);
-						Point p = InputHandler.getClickPoint(item.getCanvasBounds());
-						InputHandler.leftClick(client, p);
+					if (Arrays.asList(potions).contains(name)) {
+						entry = getConsumableEntry(name, item.getId());
+						InputHandler.click(client);
 						Thread.sleep(50);
 						return;
 					}
 				}
-
-				notifier.notify("No more prayer potions left!", TrayIcon.MessageType.WARNING);
 			}
-			catch (Throwable e)
-			{
-				System.out.println(e.getMessage());
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 		});
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event) {
+		if (entry != null) {
+			event.setMenuEntry(entry);
+		}
+
+		entry = null;
+	}
+
+	private MenuEntry getConsumableEntry(String itemName, int itemId) {
+		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), 0, 9764864, false);
 	}
 }
