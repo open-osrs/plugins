@@ -33,6 +33,7 @@ import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -233,6 +234,15 @@ public class AntiDragPlugin extends Plugin
 		else
 		{
 			keyManager.unregisterKeyListener(toggleListener);
+		}
+	}
+	
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
+	{
+		if (widgetLoaded.getGroupId() == WidgetID.BANK_GROUP_ID)
+		{
+			setBankDragDelay(config.dragDelay());
 		}
 	}
 
