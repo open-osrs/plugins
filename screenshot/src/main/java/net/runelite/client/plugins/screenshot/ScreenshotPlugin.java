@@ -289,6 +289,14 @@ public class ScreenshotPlugin extends Plugin
 		{
 			takeScreenshot("Death", "Deaths");
 		}
+		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_KILL ||
+			config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
+		{
+			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting() == player)
+			{
+				takeScreenshot("KO " + player.getName(), "PvP Kills");
+			}
+		}
 
 		int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
 		if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
@@ -302,7 +310,8 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	private void onPlayerLootReceived(final PlayerLootReceived playerLootReceived)
 	{
-		if (config.screenshotKills())
+		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_LOOT ||
+		config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
 		{
 			final Player player = playerLootReceived.getPlayer();
 			final String name = player.getName();

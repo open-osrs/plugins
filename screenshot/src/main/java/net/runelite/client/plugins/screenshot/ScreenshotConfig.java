@@ -144,6 +144,17 @@ public interface ScreenshotConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "pvpKillsMode",
+		name = "Pvp Kills",
+		description = "Pvp Kill Screenshot mode",
+		position = 10
+	)
+	default PvPKillScreenshotMode pvpKillScreenshotMode()
+	{
+		return PvPKillScreenshotMode.ON_LOOT;
+	}
+
+	@ConfigItem(
 		keyName = "boss",
 		name = "Screenshot Boss Kills",
 		description = "Configures whether or not screenshots are automatically taken of boss kills",
