@@ -34,21 +34,19 @@ import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.ColorUtil;
 
 @Singleton
-public class BarrowsBrotherSlainOverlay extends Overlay
+public class BarrowsBrotherSlainOverlay extends OverlayPanel
 {
 	private final Client client;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	private BarrowsBrotherSlainOverlay(final BarrowsPlugin plugin, final Client client)
@@ -78,7 +76,6 @@ public class BarrowsBrotherSlainOverlay extends Overlay
 			potential.setHidden(true);
 		}
 
-		panelComponent.getChildren().clear();
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 
@@ -94,6 +91,6 @@ public class BarrowsBrotherSlainOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

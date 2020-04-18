@@ -55,7 +55,6 @@ public class BankSearch
 	{
 		clientThread.invoke(() ->
 		{
-
 			// This ensures that any chatbox input (e.g from search) will not remain visible when
 			// selecting/changing tab
 			if (closeInput)

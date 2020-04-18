@@ -38,17 +38,16 @@ import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.xptracker.XpTrackerService;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
 @Singleton
-class SmeltingOverlay extends Overlay
+class SmeltingOverlay extends OverlayPanel
 {
 	private static final int SMELT_TIMEOUT = 7;
 	static final String SMELTING_RESET = "Reset";
@@ -56,8 +55,6 @@ class SmeltingOverlay extends Overlay
 	private final Client client;
 	private final SmeltingPlugin plugin;
 	private final XpTrackerService xpTrackerService;
-
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	SmeltingOverlay(final Client client, final SmeltingPlugin plugin, final XpTrackerService xpTrackerService)
@@ -79,8 +76,6 @@ class SmeltingOverlay extends Overlay
 		{
 			return null;
 		}
-
-		panelComponent.getChildren().clear();
 
 		if (isSmelting() || Duration.between(session.getLastItemSmelted(), Instant.now()).getSeconds() < SMELT_TIMEOUT)
 		{
@@ -119,7 +114,7 @@ class SmeltingOverlay extends Overlay
 			panelComponent.getChildren().add(tableComponent);
 		}
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 
 	}
 

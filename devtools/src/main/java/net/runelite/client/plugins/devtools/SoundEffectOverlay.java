@@ -33,12 +33,11 @@ import net.runelite.api.Player;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AreaSoundEffectPlayed;
 import net.runelite.api.events.SoundEffectPlayed;
-import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
-class SoundEffectOverlay extends Overlay
+class SoundEffectOverlay extends OverlayPanel
 {
 	private final static int MAX_LINES = 16;
 	private final static Color COLOR_SOUND_EFFECT = Color.WHITE;
@@ -47,18 +46,17 @@ class SoundEffectOverlay extends Overlay
 
 	private final Client client;
 	private final DevToolsPlugin plugin;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	SoundEffectOverlay(Client client, DevToolsPlugin plugin)
 	{
 		this.client = client;
 		this.plugin = plugin;
-		panelComponent.setPreferredSize(new Dimension(200, 0));
 		panelComponent.getChildren().add(LineComponent.builder()
 			.left("Sound Effects")
 			.leftColor(Color.CYAN)
 			.build());
+		setClearChildren(false);
 		setPosition(OverlayPosition.TOP_LEFT);
 	}
 
@@ -70,7 +68,7 @@ class SoundEffectOverlay extends Overlay
 			return null;
 		}
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 
 	void onSoundEffectPlayed(SoundEffectPlayed event)

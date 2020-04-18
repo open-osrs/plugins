@@ -30,21 +30,19 @@ import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
-public class MotherlodeGemOverlay extends Overlay
+public class MotherlodeGemOverlay extends OverlayPanel
 {
 	private final MotherlodePlugin plugin;
 	private final MotherlodeConfig config;
 	private final MotherlodeSession motherlodeSession;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	MotherlodeGemOverlay(final MotherlodePlugin plugin, final MotherlodeConfig config, final MotherlodeSession motherlodeSession)
@@ -80,7 +78,6 @@ public class MotherlodeGemOverlay extends Overlay
 		int emeraldsFound = session.getEmeraldsFound();
 		int sapphiresFound = session.getSapphiresFound();
 
-		panelComponent.getChildren().clear();
 		panelComponent.getChildren().add(TitleComponent.builder().text("Gems found").build());
 
 		TableComponent tableComponent = new TableComponent();
@@ -108,6 +105,6 @@ public class MotherlodeGemOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

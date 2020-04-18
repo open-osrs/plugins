@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.7"
+version = "0.0.8"
 
 project.extra["PluginName"] = "Opponent Information"
 project.extra["PluginDescription"] = "Show name and hitpoints information about the NPC you are fighting"

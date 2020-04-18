@@ -41,16 +41,14 @@ import net.runelite.client.plugins.cluescrolls.clues.item.AnyRequirementCollecti
 import net.runelite.client.plugins.cluescrolls.clues.item.ItemRequirement;
 import static net.runelite.client.plugins.cluescrolls.clues.item.ItemRequirements.item;
 import net.runelite.client.plugins.cluescrolls.clues.item.SingleItemRequirement;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.ComponentConstants;
 import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 @Singleton
-public class ClueScrollOverlay extends Overlay
+public class ClueScrollOverlay extends OverlayPanel
 {
 	private static final ItemRequirement HAS_SPADE = new SingleItemRequirement(SPADE);
 	private static final ItemRequirement HAS_LIGHT = new AnyRequirementCollection("Light Source",
@@ -80,7 +78,6 @@ public class ClueScrollOverlay extends Overlay
 	public static final Color TITLED_CONTENT_COLOR = new Color(190, 190, 190);
 
 	private final ClueScrollPlugin plugin;
-	private final PanelComponent panelComponent = new PanelComponent();
 	private final Client client;
 
 	@Inject
@@ -103,9 +100,6 @@ public class ClueScrollOverlay extends Overlay
 		{
 			return null;
 		}
-
-		panelComponent.getChildren().clear();
-		panelComponent.setPreferredSize(new Dimension(ComponentConstants.STANDARD_WIDTH, 0));
 
 		clue.makeOverlayHint(panelComponent, plugin);
 
@@ -130,6 +124,6 @@ public class ClueScrollOverlay extends Overlay
 			panelComponent.getChildren().add(LineComponent.builder().left("Light Source!").leftColor(Color.RED).build());
 		}
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

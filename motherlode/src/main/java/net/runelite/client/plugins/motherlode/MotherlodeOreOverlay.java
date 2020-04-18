@@ -27,19 +27,17 @@ package net.runelite.client.plugins.motherlode;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
-public class MotherlodeOreOverlay extends Overlay
+public class MotherlodeOreOverlay extends OverlayPanel
 {
 	private final MotherlodePlugin plugin;
 	private final MotherlodeConfig config;
 	private final MotherlodeSession motherlodeSession;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	MotherlodeOreOverlay(final MotherlodePlugin plugin, final MotherlodeConfig config, final MotherlodeSession motherlodeSession)
@@ -74,7 +72,6 @@ public class MotherlodeOreOverlay extends Overlay
 			return null;
 		}
 
-		panelComponent.getChildren().clear();
 		panelComponent.getChildren().add(TitleComponent.builder().text("Ores found").build());
 
 		TableComponent tableComponent = new TableComponent();
@@ -112,6 +109,6 @@ public class MotherlodeOreOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

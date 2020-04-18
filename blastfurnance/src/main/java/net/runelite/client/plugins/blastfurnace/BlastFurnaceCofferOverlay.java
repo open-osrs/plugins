@@ -33,25 +33,23 @@ import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import static net.runelite.api.Varbits.BLAST_FURNACE_COFFER;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.QuantityFormatter;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 
 @Singleton
-class BlastFurnaceCofferOverlay extends Overlay
+class BlastFurnaceCofferOverlay extends OverlayPanel
 {
 	private static final float COST_PER_HOUR = 72000.0f;
 
 	private final Client client;
 	private final BlastFurnacePlugin plugin;
 	private final BlastFurnaceConfig config;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	private BlastFurnaceCofferOverlay(final Client client, final BlastFurnacePlugin plugin, final BlastFurnaceConfig config)
@@ -77,8 +75,6 @@ class BlastFurnaceCofferOverlay extends Overlay
 
 		Widget sack = client.getWidget(WidgetInfo.BLAST_FURNACE_COFFER);
 
-		panelComponent.getChildren().clear();
-
 		if (sack != null)
 		{
 			final int coffer = client.getVar(BLAST_FURNACE_COFFER);
@@ -100,6 +96,6 @@ class BlastFurnaceCofferOverlay extends Overlay
 			panelComponent.getChildren().add(tableComponent);
 		}
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

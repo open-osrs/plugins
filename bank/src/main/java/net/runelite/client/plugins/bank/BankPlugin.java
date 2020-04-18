@@ -27,7 +27,6 @@
 package net.runelite.client.plugins.bank;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.inject.Provides;
@@ -48,8 +47,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.SpriteID;
-import net.runelite.api.VarClientInt;
+import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
@@ -57,9 +55,8 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuShouldLeftClick;
 import net.runelite.api.events.ScriptCallbackEvent;
-import net.runelite.api.events.VarClientStrChanged;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.vars.InputType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -168,7 +165,6 @@ public class BankPlugin extends Plugin implements KeyListener
 		{
 			keyManager.registerKeyListener(this);
 		}
-		searchString = "";
 	}
 
 	@Override
@@ -178,6 +174,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		clientThread.invokeLater(() -> bankSearch.reset(false));
 		forceRightClickFlag = false;
 		itemQuantities = null;
+		searchString = null;
 	}
 
 	@Subscribe
@@ -292,30 +289,20 @@ public class BankPlugin extends Plugin implements KeyListener
 	}
 
 	@Subscribe
-	public void onVarClientStrChanged(VarClientStrChanged event)
+	public void onScriptPostFired(ScriptPostFired event)
 	{
-		String searchVar = client.getVar(VarClientStr.INPUT_TEXT);
-
-		if (!searchVar.equals(searchString))
+		if (event.getScriptId() != ScriptID.BANKMAIN_SEARCH_REFRESH)
 		{
-			Widget searchButtonBackground = client.getWidget(WidgetInfo.BANK_SEARCH_BUTTON_BACKGROUND);
-			if (searchButtonBackground != null && searchButtonBackground.hasListener())
-			{
-				searchButtonBackground.setOnTimerListener((Object[]) null);
-				searchButtonBackground.setHasListener(false);
-			}
-
-			clientThread.invokeLater(() -> bankSearch.layoutBank());
-			searchString = searchVar;
+			return;
 		}
 
-		if (client.getVar(VarClientInt.INPUT_TYPE) != InputType.SEARCH.getType() && Strings.isNullOrEmpty(client.getVar(VarClientStr.INPUT_TEXT)))
+		// vanilla only lays out the bank every 40 client ticks, so if the search input has changed,
+		// and the bank wasn't laid out this tick, lay it out early
+		final String inputText = client.getVar(VarClientStr.INPUT_TEXT);
+		if (searchString != inputText && client.getGameCycle() % 40 != 0)
 		{
-			Widget searchBackground = client.getWidget(WidgetInfo.BANK_SEARCH_BUTTON_BACKGROUND);
-			if (searchBackground != null)
-			{
-				searchBackground.setSpriteId(SpriteID.EQUIPMENT_SLOT_TILE);
-			}
+			clientThread.invokeLater(bankSearch::layoutBank);
+			searchString = inputText;
 		}
 	}
 
