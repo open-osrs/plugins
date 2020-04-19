@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Tim Lehner <Timothy.Lehner.2011@live.rhul.ac.uk>
+ * Copyright (c) 2020, chestnut1693 <chestnut1693@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,67 +28,86 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitleSection;
-import net.runelite.client.config.Title;
+import net.runelite.client.config.Range;
 
-@ConfigGroup("raidsthievingplugin")
-public interface RaidsThievingConfig extends Config
+@ConfigGroup("batslocator")
+public interface BatsLocatorConfig extends Config
 {
-	@ConfigTitleSection(
-		keyName = "colorsTitle",
-		position = 1,
-		name = "Colors",
-		description = ""
-	)
-	default Title colorsTitle()
+	enum DisplayMode
 	{
-		return new Title();
+		DOTS,
+		NUMBERS
 	}
 
 	@ConfigItem(
-		position = 2,
-		keyName = "hexColorPotentialBat",
-		name = "Potential Bat",
-		description = "Color of marker for chests which could have bat",
-		titleSection = "colorsTitle"
+		keyName = "unvisitedColor",
+		name = "Unvisited chest color",
+		description = "Configures the color of the unvisited chest dot and number",
+		position = 0
 	)
-	default Color getPotentialBatColor()
+	default Color unvisitedColor()
 	{
-		return Color.YELLOW;
+		return Color.magenta;
 	}
 
 	@ConfigItem(
-		position = 3,
-		keyName = "hexColorPoison",
-		name = "Poison trap",
-		description = "Color of chest with poison",
-		titleSection = "colorsTitle"
+		keyName = "batsColor",
+		name = "Bats chest color",
+		description = "Configures the color of the bats chest dot and number",
+		position = 1
 	)
-	default Color getPoisonTrapColor()
+	default Color batsColor()
 	{
-		return Color.GREEN;
-	}
-
-	@ConfigTitleSection(
-		keyName = "notificationTitle",
-		position = 4,
-		name = "Notification",
-		description = ""
-	)
-	default Title notificationTitle()
-	{
-		return new Title();
+		return Color.white;
 	}
 
 	@ConfigItem(
-		position = 5,
-		keyName = "batNotify",
-		name = "Notify when found",
-		description = "Send notification if you see bats being found.",
-		titleSection = "notificationTitle"
+		keyName = "poisonColor",
+		name = "Poison chest color",
+		description = "Configures the color of the poison chest dot and number",
+		position = 2
 	)
-	default boolean batFoundNotify()
+	default Color poisonColor()
 	{
-		return false;
+		return Color.green;
+	}
+
+	@Range(
+		max = 27
+	)
+	@ConfigItem(
+		keyName = "dotSize",
+		name = "Dot size",
+		description = "Configures the size of the transparent dots, solid dots are one third larger",
+		position = 3
+	)
+	default int dotSize()
+	{
+		return 9;
+	}
+
+	@Range(
+		max = 255
+	)
+	@ConfigItem(
+		keyName = "transparency",
+		name = "Transparency",
+		description = "Configures the transparency of the chest dots and numbers that are not likely to contain poison or bats",
+		position = 4
+	)
+	default int transparency()
+	{
+		return 75;
+	}
+
+	@ConfigItem(
+		keyName = "displayMode",
+		name = "Display mode",
+		description = "Configures displaying chest states as dots or numbers",
+		position = 5
+	)
+	default DisplayMode displayMode()
+	{
+		return DisplayMode.DOTS;
 	}
 }
