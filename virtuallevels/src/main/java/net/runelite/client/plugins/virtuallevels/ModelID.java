@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Beau Mitchell <beaumitch@gmail.com>
+ * Copyright (c) 2018 Magic fTail
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,42 +24,31 @@
  */
 package net.runelite.client.plugins.virtuallevels;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-
-@ConfigGroup("virtuallevels")
-public interface VirtualLevelsConfig extends Config
+final class ModelID
 {
-	@ConfigItem(
-		keyName = "virtualTotalLevel",
-		name = "Virtual Total Level",
-		description = "Count virtual levels towards total level",
-		position = 0
-	)
-	default boolean virtualTotalLevel()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "takeScreenshots",
-		name = "Take screenshots",
-		description = "Capture a screenshot of the client (similar to the Screenshot plugin) when reaching a new virtual level"
-	)
-	default boolean takeScreenshots()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "showFireworks",
-		name = "Show level-up fireworks",
-		description = "Show fireworks when reaching a new virtual level<br>" +
-			"\"Normal\" will display fireworks like those seen at levels 2-98, \"Max\" will show fireworks like seen at level 99"
-	)
-	default LevelUpFireworks showFireworks()
-	{
-		return LevelUpFireworks.MAX;
-	}
+	static final int ANVIL = 1251;
+	static final int WILLOW_TREE = 1570;
+	static final int SLAYER_SKILL_MODEL = 1733;
+	static final int FIREMAKING_SKILL_MODEL = 2260;
+	static final int STEEL_KITESHIELD = 2339;
+	static final int PURE_ESSENCE = 2349;
+	static final int RAW_TUNA = 2355;
+	static final int CLEAN_HERB = 2364;
+	static final int HAMMER = 2376;
+	static final int BLUE_WIZARD_HAT = 2483;
+	static final int CHISEL = 2489;
+	static final int HIGHWAYMAN_MASK = 2500;
+	static final int STEEL_PICKAXE = 2529;
+	static final int SHORTBOW = 2562;
+	static final int STEEL_LONGSWORD = 2602;
+	static final int STEEL_SWORD = 2604;
+	static final int STEEL_ARROW = 2711;
+	static final int PRAYER_SKILL_MODEL = 3325;
+	static final int STRENGTH_SKILL_MODEL = 3327;
+	static final int AGILITY_SKILL_MODEL = 3328;
+	static final int HEARTH = 3326;
+	static final int WATERING_CAN = 7331;
+	static final int SAW = 12309;
+	static final int FOOTPRINT = 19980;
+	static final int COOKING_SKILL_MODEL = 27611;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Beau Mitchell <beaumitch@gmail.com>
+ * Copyright (c) 2020, Jordan <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,42 +24,10 @@
  */
 package net.runelite.client.plugins.virtuallevels;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-
-@ConfigGroup("virtuallevels")
-public interface VirtualLevelsConfig extends Config
+public enum LevelUpFireworks
 {
-	@ConfigItem(
-		keyName = "virtualTotalLevel",
-		name = "Virtual Total Level",
-		description = "Count virtual levels towards total level",
-		position = 0
-	)
-	default boolean virtualTotalLevel()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "takeScreenshots",
-		name = "Take screenshots",
-		description = "Capture a screenshot of the client (similar to the Screenshot plugin) when reaching a new virtual level"
-	)
-	default boolean takeScreenshots()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "showFireworks",
-		name = "Show level-up fireworks",
-		description = "Show fireworks when reaching a new virtual level<br>" +
-			"\"Normal\" will display fireworks like those seen at levels 2-98, \"Max\" will show fireworks like seen at level 99"
-	)
-	default LevelUpFireworks showFireworks()
-	{
-		return LevelUpFireworks.MAX;
-	}
+	NONE,
+	NORMAL,
+	MAX
+	;
 }
