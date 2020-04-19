@@ -1055,8 +1055,13 @@ public class LootTrackerPlugin extends Plugin
 					inventorySnapshot = null;
 				}
 			}
-
 		}
+
+		if (eventType == null)
+		{
+			return;
+		}
+
 		if (CHEST_EVENT_TYPES.containsValue(eventType)
 			|| HERBIBOAR_EVENT.equals(eventType)
 			|| HESPORI_EVENT.equals(eventType)
