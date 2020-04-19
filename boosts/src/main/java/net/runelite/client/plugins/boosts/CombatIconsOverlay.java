@@ -62,7 +62,7 @@ class CombatIconsOverlay extends Overlay
 
 		panelComponent.getChildren().clear();
 		panelComponent.setPreferredSize(new Dimension(28, 0));
-		panelComponent.setWrapping(2);
+		panelComponent.setWrap(true);
 		panelComponent.setBackgroundColor(null);
 		panelComponent.setBorder(new Rectangle());
 

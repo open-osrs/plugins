@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Hydrox6 <ikada@protonmail.ch>
+ * Copyright (c) 2018 Magic fTail
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.inventoryviewer;
+package net.runelite.client.plugins.virtuallevels;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter(AccessLevel.PACKAGE)
-@RequiredArgsConstructor
-public enum InventoryViewerMode
+final class ModelID
 {
-	FULL("Full"),
-	GROUPED("Grouped");
-
-	private final String name;
-
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+	static final int ANVIL = 1251;
+	static final int WILLOW_TREE = 1570;
+	static final int SLAYER_SKILL_MODEL = 1733;
+	static final int FIREMAKING_SKILL_MODEL = 2260;
+	static final int STEEL_KITESHIELD = 2339;
+	static final int PURE_ESSENCE = 2349;
+	static final int RAW_TUNA = 2355;
+	static final int CLEAN_HERB = 2364;
+	static final int HAMMER = 2376;
+	static final int BLUE_WIZARD_HAT = 2483;
+	static final int CHISEL = 2489;
+	static final int HIGHWAYMAN_MASK = 2500;
+	static final int STEEL_PICKAXE = 2529;
+	static final int SHORTBOW = 2562;
+	static final int STEEL_LONGSWORD = 2602;
+	static final int STEEL_SWORD = 2604;
+	static final int STEEL_ARROW = 2711;
+	static final int PRAYER_SKILL_MODEL = 3325;
+	static final int STRENGTH_SKILL_MODEL = 3327;
+	static final int AGILITY_SKILL_MODEL = 3328;
+	static final int HEARTH = 3326;
+	static final int WATERING_CAN = 7331;
+	static final int SAW = 12309;
+	static final int FOOTPRINT = 19980;
+	static final int COOKING_SKILL_MODEL = 27611;
 }

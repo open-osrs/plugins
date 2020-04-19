@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.7"
 
 project.extra["PluginName"] = "Party"
 project.extra["PluginDescription"] = "Shows useful information about current party"

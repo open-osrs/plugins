@@ -24,9 +24,7 @@
  */
 package net.runelite.client.plugins.inventoryviewer;
 
-import com.google.inject.Provides;
 import javax.inject.Inject;
-import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -43,19 +41,11 @@ import org.pf4j.Extension;
 )
 public class InventoryViewerPlugin extends Plugin
 {
-	static final String CONFIG_GROUP_KEY = "inventoryviewer";
-
 	@Inject
 	private InventoryViewerOverlay overlay;
 
 	@Inject
 	private OverlayManager overlayManager;
-
-	@Provides
-	InventoryViewerConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(InventoryViewerConfig.class);
-	}
 
 	@Override
 	public void startUp()

@@ -33,21 +33,19 @@ import javax.inject.Singleton;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.Skill;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.ColorUtil;
 
 @Singleton
-class BoostsOverlay extends Overlay
+class BoostsOverlay extends OverlayPanel
 {
 	private final Client client;
-	private final PanelComponent panelComponent = new PanelComponent();
 	private final BoostsPlugin plugin;
 	private final BoostsConfig config;
 
@@ -89,13 +87,13 @@ class BoostsOverlay extends Overlay
 		{
 			tableComponent.addRow("Next - restore:", String.valueOf(plugin.getChangeTime(nextChange)));
 		}
-		
-		
+
+
 		final Set<Skill> boostedSkills = plugin.getSkillsToDisplay();
 
 		if (boostedSkills.isEmpty())
 		{
-			return panelComponent.render(graphics);
+			return super.render(graphics);
 		}
 
 		if (plugin.canShowBoosts())
@@ -129,7 +127,7 @@ class BoostsOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 
 	private Color getTextColor(int boost)

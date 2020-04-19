@@ -32,24 +32,34 @@ import net.runelite.client.config.ConfigItem;
 public interface VirtualLevelsConfig extends Config
 {
 	@ConfigItem(
-		keyName = "virtualMessage",
-		name = "Enable level up message for virtual levels",
-		description = "Configures whether or not to show level up messages for virtual levels",
+		keyName = "virtualTotalLevel",
+		name = "Virtual Total Level",
+		description = "Count virtual levels towards total level",
 		position = 0
 	)
-	default boolean virtualMessage()
+	default boolean virtualTotalLevel()
 	{
 		return true;
 	}
 
 	@ConfigItem(
-		keyName = "virtualTotalLevel",
-		name = "Virtual Total Level",
-		description = "Count virtual levels towards total level",
-		position = 1
+		keyName = "takeScreenshots",
+		name = "Take screenshots",
+		description = "Capture a screenshot of the client (similar to the Screenshot plugin) when reaching a new virtual level"
 	)
-	default boolean virtualTotalLevel()
+	default boolean takeScreenshots()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showFireworks",
+		name = "Show level-up fireworks",
+		description = "Show fireworks when reaching a new virtual level<br>" +
+			"\"Normal\" will display fireworks like those seen at levels 2-98, \"Max\" will show fireworks like seen at level 99"
+	)
+	default LevelUpFireworks showFireworks()
+	{
+		return LevelUpFireworks.MAX;
 	}
 }

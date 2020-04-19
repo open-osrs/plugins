@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Tim Lehner <Timothy.Lehner.2011@live.rhul.ac.uk>
+ * Copyright (c) 2020, Jordan <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,39 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.raidsthieving.BatSolver;
+package net.runelite.client.plugins.virtuallevels;
 
-// There are three distinct Thieving rooms, distinguished by the position of the entrance relative to the exit
-// e.g. If you enter the room and must turn left to get to the exit and trough, this is a LEFT_TURN
-
-import net.runelite.api.Point;
-
-public enum ThievingRoomType
+public enum LevelUpFireworks
 {
-	LEFT_TURN(3271, 5389),
-	RIGHT_TURN(3350, 5399),
-	STRAIGHT(3317, 5397);
-
-	private final int x;
-	private final int y;
-
-	ThievingRoomType(final int x, final int y)
-	{
-		this.x = x;
-		this.y = y;
-	}
-
-	public static ThievingRoomType identifyByInstancePoint(Point point)
-	{
-		for (ThievingRoomType type : ThievingRoomType.values())
-		{
-			if (Math.abs(type.x - point.getX()) <= 1 &&
-				Math.abs(type.y - point.getY()) <= 1)
-			{
-				return type;
-			}
-		}
-
-		return null;
-	}
+	NONE,
+	NORMAL,
+	MAX
+	;
 }

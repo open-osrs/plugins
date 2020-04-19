@@ -37,17 +37,16 @@ import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.xptracker.XpTrackerService;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
 @Singleton
-class FishingOverlay extends Overlay
+class FishingOverlay extends OverlayPanel
 {
 	private static final String FISHING_SPOT = "Fishing spot";
 	static final String FISHING_RESET = "Reset";
@@ -72,14 +71,16 @@ class FishingOverlay extends Overlay
 		AnimationID.FISHING_KARAMBWAN,
 		AnimationID.FISHING_NET,
 		AnimationID.FISHING_OILY_ROD,
-		AnimationID.FISHING_POLE_CAST);
+		AnimationID.FISHING_POLE_CAST,
+		AnimationID.FISHING_PEARL_ROD,
+		AnimationID.FISHING_PEARL_FLY_ROD,
+		AnimationID.FISHING_PEARL_BARBARIAN_ROD,
+		AnimationID.FISHING_PEARL_OILY_ROD);
 
 	private final Client client;
 	private final FishingPlugin plugin;
 	private final FishingConfig config;
 	private final XpTrackerService xpTrackerService;
-
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	public FishingOverlay(final Client client, final FishingPlugin plugin, final FishingConfig config, final XpTrackerService xpTrackerService)
@@ -102,7 +103,6 @@ class FishingOverlay extends Overlay
 			return null;
 		}
 
-		panelComponent.getChildren().clear();
 		if (client.getLocalPlayer().getInteracting() != null
 			&& client.getLocalPlayer().getInteracting().getName().contains(FISHING_SPOT)
 			&& client.getLocalPlayer().getInteracting().getSpotAnimation() != GraphicID.FLYING_FISH
@@ -137,6 +137,6 @@ class FishingOverlay extends Overlay
 			panelComponent.getChildren().add(tableComponent);
 		}
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

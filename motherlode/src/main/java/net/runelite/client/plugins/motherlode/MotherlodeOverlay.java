@@ -31,20 +31,18 @@ import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
-import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
-class MotherlodeOverlay extends Overlay
+class MotherlodeOverlay extends OverlayPanel
 {
 	private final MotherlodePlugin plugin;
 	private final MotherlodeConfig config;
 	private final MotherlodeSession motherlodeSession;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	static final String MINING_RESET = "Reset";
 
@@ -82,8 +80,6 @@ class MotherlodeOverlay extends Overlay
 			return null;
 		}
 
-		panelComponent.getChildren().clear();
-
 		if (config.showMiningState())
 		{
 			if (plugin.isMining())
@@ -110,6 +106,6 @@ class MotherlodeOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

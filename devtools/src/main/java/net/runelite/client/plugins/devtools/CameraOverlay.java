@@ -28,13 +28,13 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
-public class CameraOverlay extends Overlay
+public class CameraOverlay extends OverlayPanel
 {
 	private final Client client;
 	private final DevToolsPlugin plugin;
@@ -45,7 +45,6 @@ public class CameraOverlay extends Overlay
 	{
 		this.client = client;
 		this.plugin = plugin;
-		panelComponent.setPreferredSize(new Dimension(150, 0));
 		setPosition(OverlayPosition.TOP_LEFT);
 	}
 
@@ -56,8 +55,6 @@ public class CameraOverlay extends Overlay
 		{
 			return null;
 		}
-
-		panelComponent.getChildren().clear();
 
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
@@ -71,6 +68,6 @@ public class CameraOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

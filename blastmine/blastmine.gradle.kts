@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.4"
 
 project.extra["PluginName"] = "Blast Mine"
 project.extra["PluginDescription"] = "Show helpful information for the Blast Mine minigame"

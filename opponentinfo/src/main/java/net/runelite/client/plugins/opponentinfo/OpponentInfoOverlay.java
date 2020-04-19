@@ -33,29 +33,24 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import javax.inject.Inject;
 import net.runelite.api.Actor;
-import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.util.Text;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.ProgressBarComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-class OpponentInfoOverlay extends Overlay
+class OpponentInfoOverlay extends OverlayPanel
 {
 	private static final Color HP_GREEN = new Color(0, 146, 54, 230);
 	private static final Color HP_RED = new Color(102, 15, 16, 230);
 
-	private final Client client;
 	private final OpponentInfoPlugin opponentInfoPlugin;
 	private final OpponentInfoConfig opponentInfoConfig;
-
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	private int lastMaxHealth;
 	private int lastRatio = 0;
@@ -65,12 +60,10 @@ class OpponentInfoOverlay extends Overlay
 
 	@Inject
 	private OpponentInfoOverlay(
-		final Client client,
 		final OpponentInfoPlugin opponentInfoPlugin,
 		final OpponentInfoConfig opponentInfoConfig)
 	{
 		super(opponentInfoPlugin);
-		this.client = client;
 		this.opponentInfoPlugin = opponentInfoPlugin;
 		this.opponentInfoConfig = opponentInfoConfig;
 
@@ -108,8 +101,6 @@ class OpponentInfoOverlay extends Overlay
 		}
 
 		final FontMetrics fontMetrics = graphics.getFontMetrics();
-
-		panelComponent.getChildren().clear();
 
 		// Opponent name
 		int panelWidth = Math.max(ComponentConstants.STANDARD_WIDTH, fontMetrics.stringWidth(opponentName) + ComponentConstants.STANDARD_BORDER + ComponentConstants.STANDARD_BORDER);
@@ -159,7 +150,7 @@ class OpponentInfoOverlay extends Overlay
 				.build());
 		}
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 
 	static int getExactHp(int ratio, int health, int maxHp)

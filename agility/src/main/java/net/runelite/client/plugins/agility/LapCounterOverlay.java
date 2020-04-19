@@ -31,22 +31,19 @@ import java.time.Instant;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
 @Singleton
-class LapCounterOverlay extends Overlay
+class LapCounterOverlay extends OverlayPanel
 {
 	private final AgilityConfig config;
 	private final AgilityPlugin plugin;
-
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	private LapCounterOverlay(final AgilityConfig config, final AgilityPlugin plugin)
@@ -82,7 +79,6 @@ class LapCounterOverlay extends Overlay
 			return null;
 		}
 
-		panelComponent.getChildren().clear();
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 		tableComponent.addRow("Total Laps:", Integer.toString(session.getTotalLaps()));
@@ -99,6 +95,6 @@ class LapCounterOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

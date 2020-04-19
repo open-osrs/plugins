@@ -40,17 +40,16 @@ import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.xptracker.XpTrackerService;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 
 @Singleton
-class CookingOverlay extends Overlay
+class CookingOverlay extends OverlayPanel
 {
 	private static final int COOK_TIMEOUT = 3;
 	private static final DecimalFormat FORMAT = new DecimalFormat("#.#");
@@ -59,7 +58,6 @@ class CookingOverlay extends Overlay
 	private final Client client;
 	private final CookingPlugin plugin;
 	private final XpTrackerService xpTrackerService;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	private CookingOverlay(final Client client, final CookingPlugin plugin, final XpTrackerService xpTrackerService)
@@ -81,8 +79,6 @@ class CookingOverlay extends Overlay
 		{
 			return null;
 		}
-
-		panelComponent.getChildren().clear();
 
 		if (isCooking() || Duration.between(session.getLastCookingAction(), Instant.now()).getSeconds() < COOK_TIMEOUT)
 		{
@@ -106,7 +102,7 @@ class CookingOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 
 	private boolean isCooking()
