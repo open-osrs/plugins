@@ -201,7 +201,8 @@ public class PlayerIndicatorsPlugin extends Plugin
 	{
 		final Player player = event.getPlayer();
 
-		if (!config.showAgilityLevel() || resultCache.containsKey(player.getName()) || (client.getVar(Varbits.IN_WILDERNESS) == 0 && !WorldType.isAllPvpWorld(client.getWorldType())))
+		if (!config.showAgilityLevel() || resultCache.containsKey(player.getName()) 
+			|| (client.getVar(Varbits.IN_WILDERNESS) == 0 && !WorldType.isAllPvpWorld(client.getWorldType())))
 		{
 			return;
 		}
