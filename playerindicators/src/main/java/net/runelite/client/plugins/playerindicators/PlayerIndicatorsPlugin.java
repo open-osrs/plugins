@@ -47,6 +47,8 @@ import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import static net.runelite.api.MenuOpcode.*;
 import net.runelite.api.Player;
+import net.runelite.api.Varbits;
+import net.runelite.api.WorldType;
 import net.runelite.api.events.ClanMemberJoined;
 import net.runelite.api.events.ClanMemberLeft;
 import net.runelite.api.events.InteractingChanged;
@@ -199,22 +201,29 @@ public class PlayerIndicatorsPlugin extends Plugin
 	{
 		final Player player = event.getPlayer();
 
-		if (!config.showAgilityLevel() || resultCache.containsKey(player.getName()))
+		if (!config.showAgilityLevel() || resultCache.containsKey(player.getName())
+			|| (client.getVar(Varbits.IN_WILDERNESS) == 0 && !WorldType.isAllPvpWorld(client.getWorldType())))
 		{
 			return;
 		}
 
 		executorService.submit(() ->
 		{
+			int timeout = 0;
 			HiscoreResult result;
 			do
 			{
+				if (timeout >= 10)
+				{
+					return;
+				}
 				try
 				{
 					result = HISCORE_CLIENT.lookup(player.getName());
 				}
 				catch (IOException ex)
 				{
+					timeout++;
 					result = null;
 					try
 					{
@@ -543,7 +552,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 		TEXT,
 		ICONS
 	}
-	
+
 	public enum PlayerIndicationLocation
 	{
 		/**
