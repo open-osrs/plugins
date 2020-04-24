@@ -138,6 +138,11 @@ public class ClockManager
 				{
 					notifier.notify("[" + timer.getName() + "] has finished counting down.");
 				}
+				
+				if (timer.isLoop())
+				{
+					timer.start();
+				}
 			}
 		}
 
