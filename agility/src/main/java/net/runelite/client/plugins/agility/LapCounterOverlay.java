@@ -93,6 +93,11 @@ class LapCounterOverlay extends OverlayPanel
 			tableComponent.addRow("Laps until goal:", Integer.toString(session.getLapsTillGoal()));
 		}
 
+		if (config.lapsPerHour() && session.getLapsPerHour() > 0)
+		{
+			tableComponent.addRow("Laps per hour:", Integer.toString(session.getLapsPerHour()));
+		}
+
 		panelComponent.getChildren().add(tableComponent);
 
 		return super.render(graphics);
