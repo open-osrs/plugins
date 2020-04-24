@@ -218,6 +218,7 @@ public class IdleNotifierPlugin extends Plugin
 				MAGIC_ENCHANTING_AMULET_1,
 				MAGIC_ENCHANTING_AMULET_2,
 				MAGIC_ENCHANTING_AMULET_3,
+				MAGIC_ENCHANTING_BOLTS,
 				/* Prayer */
 				USING_GILDED_ALTAR,
 				/* Farming */
