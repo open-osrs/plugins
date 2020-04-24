@@ -35,7 +35,6 @@ import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.FontID;
 import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.ScriptID;
@@ -405,15 +404,7 @@ public class ItemStatPlugin extends Plugin
 			return 0;
 		}
 
-		for (final Item item : inventory.getItems())
-		{
-			if (item.getId() == ItemID.COINS_995)
-			{
-				return item.getQuantity();
-			}
-		}
-
-		return 0;
+		return inventory.count(ItemID.COINS_995);
 	}
 
 	private Widget getInventoryContainer()
