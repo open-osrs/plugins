@@ -108,7 +108,7 @@ public class RoguesDenPlugin extends Plugin
 	@Subscribe
 	private void onItemContainerChanged(ItemContainerChanged event)
 	{
-		if (event.getItemContainer() != client.getItemContainer(InventoryID.INVENTORY))
+		if (event.getContainerId() != InventoryID.INVENTORY.getId())
 		{
 			return;
 		}
