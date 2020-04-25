@@ -99,7 +99,7 @@ public class PrayPotDrinkerPlugin extends Plugin {
 				for (WidgetItem item : inventory.getWidgetItems()) {
 					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
 					if (Arrays.asList(potions).contains(name)) {
-						entry = getConsumableEntry(name, item.getId());
+						entry = getConsumableEntry(name, item.getId(), item.getIndex());
 						InputHandler.click(client);
 						Thread.sleep(50);
 						return;
@@ -121,7 +121,7 @@ public class PrayPotDrinkerPlugin extends Plugin {
 		entry = null;
 	}
 
-	private MenuEntry getConsumableEntry(String itemName, int itemId) {
-		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), 0, 9764864, false);
+	private MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex) {
+		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
 	}
 }
