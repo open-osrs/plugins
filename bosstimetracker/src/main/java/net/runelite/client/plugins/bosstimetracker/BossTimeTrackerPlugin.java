@@ -24,6 +24,7 @@
  */
 package net.runelite.client.plugins.bosstimetracker;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
@@ -36,8 +37,10 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import static net.runelite.api.ItemID.FIRE_CAPE;
 import static net.runelite.api.ItemID.INFERNAL_CAPE;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -53,7 +56,7 @@ import org.pf4j.Extension;
 	name = "Boss Time Tracker",
 	enabledByDefault = false,
 	description = "Display elapsed time in the Fight Caves and Inferno",
-	tags = {"inferno", "fight", "caves", "cape", "timer", "tzhaar", "pvm"},
+	tags = {"inferno", "fight", "caves", "cape", "timer", "tzhaar", "pvm", "noa", "nightmare", "of", "ashihama"},
 	type = PluginType.PVM
 )
 public class BossTimeTrackerPlugin extends Plugin
@@ -66,6 +69,15 @@ public class BossTimeTrackerPlugin extends Plugin
 	private static final String CONFIG_TIME = "time";
 	private static final String CONFIG_STARTED = "started";
 	private static final String CONFIG_LASTTIME = "lasttime";
+	private static final int NM_ROOM_MASK = 66994112;
+	private static final int NM_ROOM = 58205888;
+	private BossTimeTrackerInfoBox nib;
+
+	int fight_timer = -1, phase_timer = -1, subph_timer = -1;
+
+	int last_nmstate = -1;
+
+	int[] phase_splits = new int[4];
 
 	@Inject
 	private InfoBoxManager infoBoxManager;
@@ -86,6 +98,7 @@ public class BossTimeTrackerPlugin extends Plugin
 	private Instant lastTime;
 	private Boolean started = false;
 	private boolean loggingIn;
+	private ILoggingEvent e;
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
@@ -117,6 +130,34 @@ public class BossTimeTrackerPlugin extends Plugin
 				break;
 			default:
 				break;
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick e)
+	{
+		if (!noa_instance())
+		{
+			try
+			{
+				shutDown();
+			}
+			catch (Exception e1)
+			{
+				e1.printStackTrace();
+			}
+			return;
+		}
+		int nmstate = this.client.getVarps()[1683];
+		if (nmstate != -1 && nmstate != 9432 && this.nib == null)
+		{
+			this.nib = new BossTimeTrackerInfoBox(this.client, this);
+			this.infoBoxManager.addInfoBox(this.nib);
+		}
+		if (nmstate != this.last_nmstate)
+		{
+			onNightmareStateChanged(nmstate);
+			this.last_nmstate = nmstate;
 		}
 	}
 
@@ -172,6 +213,72 @@ public class BossTimeTrackerPlugin extends Plugin
 		}
 
 		createTimer(startTime, lastTime);
+		{
+			if (e.getMessage().contains("All four totems are fully charged."))
+			{
+				onNightmareStateChanged(9999);
+			}
+		}
+	}
+
+	private void onNightmareStateChanged(int nmstate)
+	{
+		int tick_count = this.client.getTickCount();
+		int phase = (this.phase_splits[1] == -1) ? 1 : ((this.phase_splits[2] == -1) ? 2 : 3);
+		if (nmstate == 9425 || nmstate == 9426 || nmstate == 9427)
+		{
+			this.phase_timer = tick_count;
+			this.subph_timer = tick_count;
+			if (nmstate == 9425)
+			{
+				this.fight_timer = tick_count;
+			}
+		}
+		else if (nmstate == 9428 || nmstate == 9429 || nmstate == 9430)
+		{
+			msg(tick_count, phase, false);
+			this.subph_timer = tick_count;
+		}
+		else if (nmstate == 9999)
+		{
+			tick_count += 5;
+			msg(tick_count, phase, true);
+			this.phase_splits[phase] = tick_count - this.phase_timer;
+			if (phase == 3)
+			{
+				this.phase_splits[0] = tick_count - this.fight_timer;
+			}
+		}
+	}
+
+	private void msg(int tick_count, int phase, boolean pillars)
+	{
+		StringBuilder msg = new StringBuilder();
+		msg.append("Nightmare P");
+		msg.append(phase);
+		msg.append(pillars ? " pillars " : " boss ");
+		msg.append("complete! Duration: <col=ff0000>");
+		msg.append(ntpib(tick_count - this.subph_timer));
+		msg.append("</col> Total: <col=ff0000>");
+		msg.append(ntpib(tick_count - this.fight_timer));
+		msg.append("</col>");
+		this.client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg.toString(), null);
+	}
+
+	private boolean noa_instance()
+	{
+		WorldPoint wp = this.client.getLocalPlayer().getWorldArea().toWorldPoint();
+		int x = wp.getX() - this.client.getBaseX();
+		int y = wp.getY() - this.client.getBaseY();
+		int template = this.client.getInstanceTemplateChunks()[this.client.getPlane()][x / 8][y / 8];
+		return ((template & 0x3FE3FC0) == 58205888);
+	}
+
+	private String ntpib(int ticks)
+	{
+		int m = ticks / 100;
+		int s = (ticks - m * 100) * 6 / 10;
+		return m + ((s < 10) ? ":0" : ":") + s;
 	}
 
 	private void updateInfoBoxState()
@@ -236,8 +343,17 @@ public class BossTimeTrackerPlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown()
+	protected void shutDown() throws Exception
 	{
+		{
+			this.last_nmstate = this.fight_timer = this.phase_timer = this.subph_timer = -1;
+			Arrays.fill(this.phase_splits, -1);
+			if (this.nib != null)
+			{
+				this.infoBoxManager.removeInfoBox(this.nib);
+				this.nib = null;
+			}
+		}
 		removeTimer();
 		resetConfig();
 		resetVars();
