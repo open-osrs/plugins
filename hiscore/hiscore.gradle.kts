@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
-project.extra["PluginName"] = "Highscore"
-project.extra["PluginDescription"] = "Enable the highscore panel and an optional Lookup option on players"
+project.extra["PluginName"] = "Hiscore"
+project.extra["PluginDescription"] = "Enable the hiscore panel and an optional Lookup option on players"
 
 tasks {
     jar {
