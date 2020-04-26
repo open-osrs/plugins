@@ -42,30 +42,6 @@ public interface BronzeManConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "notifyImgUnlock",
-		name = "Image unlocked notification",
-		description = "Configure whether to send the notification image when you unlock a new item.",
-		position = 0,
-		titleSection = "unlockNotifications"
-	)
-	default boolean notifyImgUnlock()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "notifyChatUnlock",
-		name = "Chat unlocked notification",
-		description = "Configure whether to send the chat notification when you unlock a new item.",
-		position = 1,
-		titleSection = "unlockNotifications"
-	)
-	default boolean notifyChatUnlock()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "resetCommand",
 		name = "Enable resetunlocks command",
 		description = "Enables the !resetunlocks command used for wiping your unlocked items.",
@@ -124,4 +100,86 @@ public interface BronzeManConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		keyName = "progressionPaused",
+		name = "",
+		description = "",
+		position = 5,
+		titleSection = "chatCommands",
+		hidden = true
+	)
+	default boolean progressionPaused()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "progressionPaused",
+		name = "",
+		description = "",
+		position = 6,
+		titleSection = "chatCommands"
+	)
+	void progressionPaused(boolean condition);
+
+	@ConfigItem(
+		keyName = "screenshotUnlocks",
+		name = "Screenshot Unlocks",
+		description = "Take a screenshot of item unlocks",
+		position = 0,
+		titleSection = "unlockNotifications"
+	)
+	default boolean screenshotUnlocks()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "itemUnlockChatMessage",
+		name = "Item Unlock Chat Notification",
+		description = "Sends out a chat message when you unlocked a new item.",
+		position = 1,
+		titleSection = "unlockNotifications"
+	)
+	default boolean itemUnlockChatMessage()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "hardcoreBronzeMan",
+		name = "Hardcore Bronzeman",
+		description = "Wipes your unlocks on death and pauses unlocking new items until you type !continue",
+		position = 0,
+		titleSection = "gameModeOptions"
+	)
+	default boolean hardcoreBronzeMan()
+	{
+		return false;
+	}
+
+	//hidden items start here
+	@ConfigItem(
+		keyName = "startItemsUnlocked",
+		name = "",
+		description = "",
+		position = 1,
+		titleSection = "gameModeOptions",
+		hidden = true
+	)
+	default boolean startItemsUnlocked()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "startItemsUnlocked",
+		name = "",
+		description = "",
+		position = 2,
+		titleSection = "gameModeOptions"
+	)
+	void startItemsUnlocked(boolean condition);
+
 }
