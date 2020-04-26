@@ -172,9 +172,9 @@ class SceneUploader
 				tilePaint.setUvBufferOffset(-1);
 			}
 			Point tilePoint = tile.getSceneLocation();
-			int len = upload(tilePaint, 
-				tile.getRenderLevel(), tilePoint.getX(), tilePoint.getY(), 
-				vertexBuffer, uvBuffer
+			int len = upload(tilePaint,
+				tile.getRenderLevel(), tilePoint.getX(), tilePoint.getY(),
+				vertexBuffer, uvBuffer,
 				0, 0, false);
 			tilePaint.setBufferLen(len);
 			offset += len;
@@ -197,9 +197,9 @@ class SceneUploader
 				sceneTileModel.setUvBufferOffset(-1);
 			}
 			Point tilePoint = tile.getSceneLocation();
-			int len = upload(sceneTileModel, 
-				tilePoint.getX(), tilePoint.getY(), 
-				vertexBuffer, uvBuffer
+			int len = upload(sceneTileModel,
+				tilePoint.getX(), tilePoint.getY(),
+				vertexBuffer, uvBuffer,
 				0, 0, false);
 			sceneTileModel.setBufferLen(len);
 			offset += len;
@@ -267,7 +267,8 @@ class SceneUploader
 		}
 	}
 
-	int upload(TilePaint tile, int tileZ, int tileX, int tileY, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer, int offsetX, int offsetY, boolean padUvs)
+	int upload(TilePaint tile, int tileZ, int tileX, int tileY, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer,
+				int offsetX, int offsetY, boolean padUvs)
 	{
 		final int[][][] tileHeights = client.getTileHeights();
 
@@ -325,7 +326,8 @@ class SceneUploader
 		return 6;
 	}
 
-	int upload(TileModel sceneTileModel, int tileX, int tileY, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer, int offsetX, int offsetY, boolean padUvs)
+	int upload(TileModel sceneTileModel, int tileX, int tileY, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer,
+				int offsetX, int offsetY, boolean padUvs)
 	{
 		final int[] faceX = sceneTileModel.getFaceX();
 		final int[] faceY = sceneTileModel.getFaceY();
@@ -457,14 +459,14 @@ class SceneUploader
 
 			for (int i = 0; i < triangleCount; ++i)
 			{
-				len += pushFace(model, faces[i], false, vertexBuffer, uvBuffer, 0, 0, 0, 0);
+				len += pushFace(model, i, false, vertexBuffer, uvBuffer, 0, 0, 0, 0);
 			}
 		}
 		else
 		{
 			for (int i = 0; i < triangleCount; ++i)
 			{
-				len += pushFace(model, i, vertexBuffer, uvBuffer);
+				len += pushFace(model, i, false, vertexBuffer, uvBuffer, 0, 0, 0, 0);
 			}
 		}
 
@@ -476,7 +478,7 @@ class SceneUploader
 	}
 
 	int pushFace(Model model, int face, boolean padUvs, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer,
-		int xOffset, int yOffset, int zOffset, int orientation)
+					int xOffset, int yOffset, int zOffset, int orientation)
 	{
 		final int[] vertexX = model.getVerticesX();
 		final int[] vertexY = model.getVerticesY();
@@ -532,9 +534,9 @@ class SceneUploader
 
 			if (padUvs || faceTextures != null)
 			{
-				uvBuffer.put(0, 0, 0, 0f);
-				uvBuffer.put(0, 0, 0, 0f);
-				uvBuffer.put(0, 0, 0, 0f);
+				uvBuffer.put(0, 0, 0);
+				uvBuffer.put(0, 0, 0);
+				uvBuffer.put(0, 0, 0);
 			}
 			return 3;
 		}
@@ -606,15 +608,15 @@ class SceneUploader
 			if (faceTextures != null && u != null && v != null && (uf = u[face]) != null && (vf = v[face]) != null)
 			{
 				float texture = faceTextures[face] + 1f;
-				uvBuffer.put(texture, uf[0], vf[0], 0f);
-				uvBuffer.put(texture, uf[1], vf[1], 0f);
-				uvBuffer.put(texture, uf[2], vf[2], 0f);
+				uvBuffer.put(texture, uf[0], vf[0]);
+				uvBuffer.put(texture, uf[1], vf[1]);
+				uvBuffer.put(texture, uf[2], vf[2]);
 			}
 			else
 			{
-				uvBuffer.put(0f, 0f, 0f, 0f);
-				uvBuffer.put(0f, 0f, 0f, 0f);
-				uvBuffer.put(0f, 0f, 0f, 0f);
+				uvBuffer.put(0f, 0f, 0f);
+				uvBuffer.put(0f, 0f, 0f);
+				uvBuffer.put(0f, 0f, 0f);
 			}
 		}
 

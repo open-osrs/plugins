@@ -87,6 +87,7 @@ import static net.runelite.client.plugins.gpu.GLUtil.glGenFrameBuffer;
 import static net.runelite.client.plugins.gpu.GLUtil.glGenRenderbuffer;
 import static net.runelite.client.plugins.gpu.GLUtil.glGenTexture;
 import static net.runelite.client.plugins.gpu.GLUtil.glGenVertexArrays;
+import static net.runelite.client.plugins.gpu.GLUtil.glGetFloat;
 import static net.runelite.client.plugins.gpu.GLUtil.glGetInteger;
 import net.runelite.client.plugins.gpu.config.AnisotropicFilteringMode;
 import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
@@ -136,7 +137,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 	@Inject
 	private PluginManager pluginManager;
-	
+
 	private boolean useComputeShaders;
 
 	private Canvas canvas;
@@ -253,6 +254,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	private int centerY;
 	private int yaw;
 	private int pitch;
+
 	// fields for non-compute draw
 	private boolean drawingModel;
 	private int modelX, modelY, modelZ;
@@ -296,7 +298,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 				{
 					return false;
 				}
-				
+
 				useComputeShaders = config.useComputeShaders();
 
 				canvas.setIgnoreRepaint(true);
@@ -478,7 +480,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 		glProgram = PROGRAM.compile(gl, template);
 		glUiProgram = UI_PROGRAM.compile(gl, template);
-		
+
 		if (useComputeShaders)
 		{
 			glComputeProgram = COMPUTE_PROGRAM.compile(gl, template);
@@ -800,7 +802,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			targetBufferOffset += 2 * 3;
 		}
 	}
-	
+
 	@Override
 	public void drawSceneModel(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z,
 							TileModel model, int tileZ, int tileX, int tileY,
@@ -983,7 +985,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 		gl.glBufferSubData(gl.GL_UNIFORM_BUFFER, 0, uniformBuffer.limit() * Integer.BYTES, uniformBuffer);
 		gl.glBindBuffer(gl.GL_UNIFORM_BUFFER, 0);
-		
+
 		gl.glBindBufferBase(gl.GL_UNIFORM_BUFFER, 0, uniformBufferId);
 
 		// Draw 3d scene
@@ -1377,7 +1379,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	/**
 	 * Check is a model is visible and should be drawn.
 	 */
-	private boolean isNotVisible(Model model, int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int _x, int _y, int _z, long hash)
+	private boolean isVisible(Model model, int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int _x, int _y, int _z, long hash)
 	{
 		final int XYZMag = model.getXYZMag();
 		final int zoom = client.get3dZoom();
@@ -1435,7 +1437,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	{
 		if (!useComputeShaders)
 		{
-			Model model = renderable instanceof Model ? (Model) renderable : renderable.getModel();
+			Model model = entity instanceof Model ? (Model) entity : entity.getModel();
 			if (model != null)
 			{
 				model.calculateBoundsCylinder();
@@ -1458,7 +1460,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 				drawingModel = true;
 
-				renderable.draw(orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
+				entity.draw(orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
 
 				drawingModel = false;
 			}
@@ -1471,7 +1473,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			model.calculateBoundsCylinder();
 			model.calculateExtreme(orientation);
 
-			if (isNotVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
+			if (isVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
 			{
 				return;
 			}
@@ -1535,7 +1537,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 				model.calculateBoundsCylinder();
 				model.calculateExtreme(orientation);
 
-				if (isNotVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
+				if (isVisible(model, orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash))
 				{
 					return;
 				}
@@ -1574,7 +1576,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean drawFace(Model model, int face)
 	{
@@ -1621,7 +1623,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 			getScaledValue(t.getScaleX(), width),
 			getScaledValue(t.getScaleY(), height));
 	}
-	
+
 	private int getDrawDistance()
 	{
 		final int limit = useComputeShaders ? MAX_DISTANCE : DEFAULT_DISTANCE;

@@ -43,9 +43,53 @@ public interface GpuPluginConfig extends Config
 		keyName = "drawingTitle",
 		name = "Drawing",
 		description = "",
-		position = 1
+		position = 0
 	)
 	default Title drawingTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigTitleSection(
+		keyName = "scalingTitle",
+		name = "Scaling",
+		description = "",
+		position = 1
+	)
+	default Title scalingTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigTitleSection(
+		keyName = "ppTitle",
+		name = "Post processing",
+		description = "",
+		position = 2
+	)
+	default Title ppTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigTitleSection(
+		keyName = "fogTitle",
+		name = "Fog",
+		description = "",
+		position = 3
+	)
+	default Title fogTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigTitleSection(
+		keyName = "effectsTitle",
+		name = "Effects",
+		description = "",
+		position = 4
+	)
+	default Title effectsTitle()
 	{
 		return new Title();
 	}
@@ -58,7 +102,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "drawDistance",
 		name = "Draw Distance",
 		description = "Draw distance",
-		position = 2,
+		position = 0,
 		titleSection = "drawingTitle"
 	)
 	default int drawDistance()
@@ -70,35 +114,25 @@ public interface GpuPluginConfig extends Config
 		keyName = "smoothBanding",
 		name = "Remove Color Banding",
 		description = "Smooths out the color banding that is present in the CPU renderer",
-		position = 3,
+		position = 1,
 		titleSection = "drawingTitle"
 	)
 	default boolean smoothBanding()
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "useComputeShaders",
 		name = "Compute Shaders",
 		description = "Offloads face sorting to GPU, enabling extended draw distance. Requires plugin restart.",
-		position = 4,
-		titleSection = "drawingTitle"
+		position = 2,
+		titleSection = "drawingTitle",
+		hidden = true
 	)
 	default boolean useComputeShaders()
 	{
 		return true;
-	}
-
-	@ConfigTitleSection(
-		keyName = "scalingTitle",
-		name = "Scaling",
-		description = "",
-		position = 5
-	)
-	default Title scalingTitle()
-	{
-		return new Title();
 	}
 
 	@ConfigItem(
@@ -106,29 +140,18 @@ public interface GpuPluginConfig extends Config
 		name = "UI scaling mode",
 		description = "Sampling function to use for the UI in stretched mode",
 		titleSection = "scalingTitle",
-		position = 6
+		position = 0
 	)
 	default UIScalingMode uiScalingMode()
 	{
 		return UIScalingMode.CATMULL_ROM;
 	}
 
-	@ConfigTitleSection(
-		keyName = "ppTitle",
-		name = "Post processing",
-		description = "",
-		position = 7
-	)
-	default Title ppTitle()
-	{
-		return new Title();
-	}
-
 	@ConfigItem(
 		keyName = "antiAliasingMode",
 		name = "Anti Aliasing",
 		description = "Configures the anti-aliasing mode",
-		position = 8,
+		position = 0,
 		titleSection = "ppTitle"
 	)
 	default AntiAliasingMode antiAliasingMode()
@@ -140,23 +163,12 @@ public interface GpuPluginConfig extends Config
 		keyName = "anisotropicFilteringMode",
 		name = "Anisotropic Filtering",
 		description = "Configures the anisotropic filtering mode",
-		position = 9,
+		position = 1,
 		titleSection = "ppTitle"
 	)
 	default AnisotropicFilteringMode anisotropicFilteringMode()
 	{
 		return AnisotropicFilteringMode.DISABLED;
-	}
-
-	@ConfigTitleSection(
-		keyName = "fogTitle",
-		name = "Fog",
-		description = "",
-		position = 10
-	)
-	default Title fogTitle()
-	{
-		return new Title();
 	}
 
 	@Range(
@@ -166,7 +178,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogDepth",
 		name = "Depth",
 		description = "Distance from the scene edge the fog starts",
-		position = 11,
+		position = 0,
 		titleSection = "fogTitle"
 	)
 	default int fogDepth()
@@ -181,7 +193,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogCircularity",
 		name = "Roundness",
 		description = "Fog circularity in %",
-		position = 12,
+		position = 1,
 		titleSection = "fogTitle"
 	)
 	default int fogCircularity()
@@ -196,7 +208,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogDensity",
 		name = "Density",
 		description = "Relative fog thickness",
-		position = 13,
+		position = 2,
 		titleSection = "fogTitle"
 	)
 	default int fogDensity()
@@ -204,22 +216,11 @@ public interface GpuPluginConfig extends Config
 		return 10;
 	}
 
-	@ConfigTitleSection(
-		keyName = "effectsTitle",
-		name = "Effects",
-		description = "",
-		position = 14
-	)
-	default Title effectsTitle()
-	{
-		return new Title();
-	}
-
 	@ConfigItem(
 		keyName = "ambientLighting",
 		name = "Ambient Lighting",
 		description = "Produces global lighting based on current fog color",
-		position = 15,
+		position = 0,
 		titleSection = "effectsTitle"
 	)
 	default boolean ambientLighting()
