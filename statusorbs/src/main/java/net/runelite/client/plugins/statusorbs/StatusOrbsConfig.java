@@ -154,11 +154,25 @@ public interface StatusOrbsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showRunOrbText",
+		name = "show run orb text",
+		description = "show run orb text",
+		position = 10,
+		titleSection = "run"
+	)
+	default boolean showRunOrbText()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "replaceOrbText",
 		name = "Replace run orb text with run time left",
 		description = "Show the remaining run time (in seconds) next in the energy orb",
-		position = 10,
-		titleSection = "run"
+		position = 11,
+		titleSection = "run",
+		hidden = true,
+		unhide = "showRunOrbText"
 	)
 	default boolean replaceOrbText()
 	{

@@ -157,28 +157,31 @@ public class StatusOrbsOverlay extends Overlay
 
 		if (bounds.contains(mousePosition.getX(), mousePosition.getY()))
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.append("Weight: ").append(client.getWeight()).append(" kg</br>");
-
-			if (config.replaceOrbText())
+			if (config.showRunOrbText())
 			{
-				sb.append("Run Energy: ").append(client.getEnergy()).append("%");
-			}
-			else
-			{
-				sb.append("Run Time Remaining: ").append(plugin.getEstimatedRunTimeRemaining(false));
-			}
+				StringBuilder sb = new StringBuilder();
+				sb.append("Weight: ").append(client.getWeight()).append(" kg</br>");
 
-			int secondsUntil100 = plugin.getEstimatedRecoverTimeRemaining();
-			if (secondsUntil100 > 0)
-			{
-				final int minutes = (int) Math.floor(secondsUntil100 / 60.0);
-				final int seconds = (int) Math.floor(secondsUntil100 - (minutes * 60.0));
+				if (config.replaceOrbText())
+				{
+					sb.append("Run Energy: ").append(client.getEnergy()).append("%");
+				}
+				else
+				{
+					sb.append("Run Time Remaining: ").append(plugin.getEstimatedRunTimeRemaining(false));
+				}
 
-				sb.append("</br>").append("100% Energy In: ").append(minutes).append(':').append(StringUtils.leftPad(Integer.toString(seconds), 2, "0"));
+				int secondsUntil100 = plugin.getEstimatedRecoverTimeRemaining();
+				if (secondsUntil100 > 0)
+				{
+					final int minutes = (int) Math.floor(secondsUntil100 / 60.0);
+					final int seconds = (int) Math.floor(secondsUntil100 - (minutes * 60.0));
+
+					sb.append("</br>").append("100% Energy In: ").append(minutes).append(':').append(StringUtils.leftPad(Integer.toString(seconds), 2, "0"));
+				}
+
+				tooltipManager.add(new Tooltip(sb.toString()));
 			}
-
-			tooltipManager.add(new Tooltip(sb.toString()));
 		}
 
 		if (config.showRun())
