@@ -199,11 +199,26 @@ public interface AgilityConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "lapsPerHour",
+		name = "Show Laps Per Hour",
+		description = "Shows how many laps you can expect to complete per hour.",
+		position = 14,
+		unhide = "showLapCount",
+		titleSection = "lapsTitle"
+	)
+	default boolean lapsPerHour()
+	{
+		return true;
+	}
+
 	@ConfigTitleSection(
 		keyName = "agilityArenaTitle",
 		name = "Agility Arena",
 		description = "",
-		position = 14
+		position = 15,
+		unhide = "showLapCount",
+		titleSection = "lapsTitle"
 	)
 	default Title agilityArenaTitle()
 	{
@@ -214,7 +229,7 @@ public interface AgilityConfig extends Config
 		keyName = "agilityArenaTimer",
 		name = "Agility Arena timer",
 		description = "Configures whether Agility Arena timer is displayed",
-		position = 15,
+		position = 16,
 		titleSection = "agilityArenaTitle"
 	)
 	default boolean showAgilityArenaTimer()

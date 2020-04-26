@@ -153,15 +153,13 @@ public class CustomCursorPlugin extends Plugin
 					return;
 				}
 
-				final Item[] items = equipment.getItems();
-				final int weaponIdx = EquipmentInventorySlot.WEAPON.getSlotIdx();
-				if (items == null || weaponIdx >= items.length)
+				Item weapon = equipment.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
+				if (weapon == null)
 				{
 					clientUI.resetCursor();
 					return;
 				}
 
-				final Item weapon = items[EquipmentInventorySlot.WEAPON.getSlotIdx()];
 				final BufferedImage image = itemManager.getImage(weapon.getId());
 
 				if (weapon.getQuantity() > 0)

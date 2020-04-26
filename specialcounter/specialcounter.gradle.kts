@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.7"
+version = "0.0.8"
 
 project.extra["PluginName"] = "Special Attack Counter"
 project.extra["PluginDescription"] = "Track special attacks used on NPCs"
