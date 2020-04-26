@@ -33,7 +33,7 @@ tasks {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Id" to "highscore-plugin",
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
