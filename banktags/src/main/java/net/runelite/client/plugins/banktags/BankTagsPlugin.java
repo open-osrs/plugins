@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -495,7 +496,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 			chatboxPanelManager.openTextInput(name + " tags:<br>(append " + VAR_TAG_SUFFIX + " for variation tag)")
 				.addCharValidator(FILTERED_CHARS)
 				.value(initialValue)
-				.onDone((newValue) ->
+				.onDone((Consumer<String>) (newValue) ->
 					clientThread.invoke(() ->
 					{
 						// Split inputted tags to vartags (ending with *) and regular tags

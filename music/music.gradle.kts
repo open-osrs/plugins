@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Music"
 project.extra["PluginDescription"] = "Adds search and filter for the music list, and additional volume control"
