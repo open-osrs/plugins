@@ -554,6 +554,11 @@ public class WorldHopperPlugin extends Plugin
 			}
 
 			world = worlds.get(worldIdx);
+			
+			if (config.quickHopRegionFilter() != RegionFilterMode.NONE && world.getRegion() != config.quickHopRegionFilter().getRegion())
+			{
+				continue;
+			}
 
 			EnumSet<WorldType> types = world.getTypes().clone();
 

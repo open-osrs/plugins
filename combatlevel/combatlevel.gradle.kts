@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Combat Level"
 project.extra["PluginDescription"] = "Show a more accurate combat level in Combat Options panel and other combat level functions"

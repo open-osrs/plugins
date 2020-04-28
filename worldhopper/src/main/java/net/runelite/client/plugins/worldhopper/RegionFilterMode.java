@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, Liam Edwards <http://github.com/Spedwards>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.worldhopper;
 
-version = "0.0.10"
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import net.runelite.http.api.worlds.WorldRegion;
 
-project.extra["PluginName"] = "Bank Tags"
-project.extra["PluginDescription"] = "Enable tagging of bank items and searching of bank tags"
+@NoArgsConstructor
+@AllArgsConstructor
+public enum RegionFilterMode
+{
+	NONE,
+	AUSTRALIA(WorldRegion.AUSTRALIA),
+	GERMANY(WorldRegion.GERMANY),
+	UNITED_KINGDOM(WorldRegion.UNITED_KINGDOM)
+		{
+			@Override
+			public String toString()
+			{
+				return "U.K.";
+			}
+		},
+	UNITED_STATES(WorldRegion.UNITED_STATES_OF_AMERICA)
+		{
+			@Override
+			public String toString()
+			{
+				return "USA";
+			}
+		};
 
-dependencies {
-    compileOnly(project(":cluescroll"))
-
-    testImplementation(project(":cluescroll"))
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("cluescroll"),
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Getter
+	private WorldRegion region;
 }
