@@ -313,6 +313,7 @@ public class BronzeManPlugin extends Plugin
 		searchButton.setOnOpListener((JavaScriptCallback) e -> closeSearch());
 		ChatboxTextInput searchInput = chatboxPanelManager.openTextInput("Search unlock list")
 			.onChanged(s -> clientThread.invokeLater(() -> updateFilter(s.trim())))
+			.onDone(s -> false)
 			.onClose(() ->
 			{
 				clientThread.invokeLater(() -> updateFilter(""));
