@@ -2,18 +2,20 @@ package net.runelite.client.plugins.cannonreloader;
 
 import com.google.inject.Provides;
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -102,7 +104,7 @@ public class CannonReloaderPlugin extends Plugin {
 		if (gameObject.getId() == BROKEN_MULTICANNON_14916 && cannonPlaced) {
 			if (cannonPosition.equals(gameObject.getWorldLocation())) {
 				entry = new MenuEntry("Repair", "<col=ffff>Broken multicannon", gameObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
-				InputHandler.click(client);
+				click();
 				try {
 					Thread.sleep(50);
 				} catch (Exception e) { /*ignored*/ }
@@ -232,7 +234,7 @@ public class CannonReloaderPlugin extends Plugin {
 					return;
 
 				entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
-				InputHandler.click(client);
+				click();
 				nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 				Thread.sleep(config.clickDelay());
 			} catch (Exception e) {
@@ -253,5 +255,25 @@ public class CannonReloaderPlugin extends Plugin {
 		}
 
 		entry = null;
+	}
+
+	public void click() {
+		Point pos = client.getMouseCanvasPosition();
+
+		if (client.isStretchedEnabled()) {
+			final Dimension stretched = client.getStretchedDimensions();
+			final Dimension real = client.getRealDimensions();
+			final double width = (stretched.width / real.getWidth());
+			final double height = (stretched.height / real.getHeight());
+			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			return;
+		}
+
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
 	}
 }

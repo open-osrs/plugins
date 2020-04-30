@@ -5,18 +5,16 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum PkToolsPrayerSwaps
-{
-	NONE("Off"),
-	PIETY("Piety"),
-	RIGOUR("Rigour"),
-	AUGURY("Augury");
+public enum PkToolsPrayerSwaps {
+    NONE("Off"),
+    PIETY("Piety"),
+    RIGOUR("Rigour"),
+    AUGURY("Augury");
 
-	private final String name;
+    private final String name;
 
-	@Override
-	public String toString()
-	{
-		return this.name;
-	}
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

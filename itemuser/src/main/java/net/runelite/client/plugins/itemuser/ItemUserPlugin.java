@@ -8,8 +8,6 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.util.Text;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -25,7 +23,7 @@ import org.pf4j.Extension;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -138,15 +136,13 @@ public class ItemUserPlugin extends Plugin {
             return;
 
         executor.submit(() -> {
-            InputHandler.pressKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
-
             for (WidgetItem item : items) {
                 entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_USE.getId(), item.getIndex(), 9764864, false);
-                InputHandler.click(client);
+                click();
                 sleep(config.clickDelay());
 
                 entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName() + "<col=ffffff> -> <col=ffff>" + client.getObjectDefinition(object.getId()).getName(), object.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), object.getSceneMinLocation().getX(), object.getSceneMinLocation().getY(), false);
-                InputHandler.click(client);
+                click();
                 sleep(config.clickDelay());
             }
         });
@@ -178,5 +174,25 @@ public class ItemUserPlugin extends Plugin {
         }
 
         entry = null;
+    }
+
+    public void click() {
+        Point pos = client.getMouseCanvasPosition();
+
+        if (client.isStretchedEnabled()) {
+            final Dimension stretched = client.getStretchedDimensions();
+            final Dimension real = client.getRealDimensions();
+            final double width = (stretched.width / real.getWidth());
+            final double height = (stretched.height / real.getHeight());
+            final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+            client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+            client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+            client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+            return;
+        }
+
+        client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+        client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+        client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
     }
 }

@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -95,14 +96,34 @@ public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListe
             }
 
             plugin.entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(firstItem.getId()).getName(), firstItem.getId(), MenuOpcode.ITEM_USE.getId(), firstItem.getIndex(), 9764864, false);
-            InputHandler.click(client);
+            click();
             Thread.sleep(config.clickDelay());
 
             plugin.entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(firstItem.getId()).getName() + "<col=ffffff> -> <col=ff9040>" + itemManager.getItemDefinition(secondItem.getId()).getName(), secondItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(), secondItem.getIndex(), 9764864, false);
-            InputHandler.click(client);
+            click();
             Thread.sleep(config.clickDelay());
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void click() {
+        Point pos = client.getMouseCanvasPosition();
+
+        if (client.isStretchedEnabled()) {
+            final Dimension stretched = client.getStretchedDimensions();
+            final Dimension real = client.getRealDimensions();
+            final double width = (stretched.width / real.getWidth());
+            final double height = (stretched.height / real.getHeight());
+            final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+            client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+            client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+            client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+            return;
+        }
+
+        client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+        client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+        client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
     }
 }

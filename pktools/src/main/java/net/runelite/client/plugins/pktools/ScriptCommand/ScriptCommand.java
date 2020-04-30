@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.pktools.ScriptCommand;
 
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -8,6 +9,9 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.pktools.PkToolsConfig;
 import net.runelite.client.plugins.pktools.PkToolsOverlay;
 import net.runelite.client.plugins.pktools.PkToolsPlugin;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 import static net.runelite.client.plugins.pktools.PkToolsHotkeyListener.getTag;
 
@@ -26,7 +30,7 @@ public interface ScriptCommand {
 			}
 
 			plugin.entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
-			InputHandler.click(client);
+			click(client);
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -42,11 +46,31 @@ public interface ScriptCommand {
 				return;
 
 			plugin.entry = new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.WIDGET_TYPE_2.getId(), spell_widget.getItemId(), spell_widget.getId(), false);
-			InputHandler.click(client);
+			click(client);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	default void click(Client client) {
+		Point pos = client.getMouseCanvasPosition();
+
+		if (client.isStretchedEnabled()) {
+			final Dimension stretched = client.getStretchedDimensions();
+			final Dimension real = client.getRealDimensions();
+			final double width = (stretched.width / real.getWidth());
+			final double height = (stretched.height / real.getHeight());
+			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			return;
+		}
+
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
 	}
 }
 
@@ -152,7 +176,7 @@ class ClickEnemyCommand implements ScriptCommand {
 			int randx = (int) (Math.random() * 5 + 1);
 			int randy = (int) (Math.random() * 5 + 1);
 			
-			InputHandler.leftClick(client, new Point(lastEnemyLoc.getX() + randx, lastEnemyLoc.getY() + randy));
+			//InputHandler.leftClick(client, new Point(lastEnemyLoc.getX() + randx, lastEnemyLoc.getY() + randy));
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -241,7 +265,7 @@ class SpecCommand implements ScriptCommand {
 				return;
 
 			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
-			InputHandler.click(client);
+			click(client);
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -259,12 +283,12 @@ class DoubleSpecCommand implements ScriptCommand {
 				return;
 
 			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
-			InputHandler.click(client);
+			click(client);
 
 			Thread.sleep(config.clickDelay());
 
 			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
-			InputHandler.click(client);
+			click(client);
 
 			Thread.sleep(config.clickDelay());
 		}
@@ -287,7 +311,7 @@ class Group1Command implements ScriptCommand {
 			for (WidgetItem item : inventory.getWidgetItems()) {
 				if ("Group 1".equalsIgnoreCase(getTag(configManager, item.getId()))) {
 					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					InputHandler.click(client);
+					click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
@@ -311,7 +335,7 @@ class Group2Command implements ScriptCommand {
 			for (WidgetItem item : inventory.getWidgetItems()) {
 				if ("Group 2".equalsIgnoreCase(getTag(configManager, item.getId()))) {
 					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					InputHandler.click(client);
+					click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
@@ -335,7 +359,7 @@ class Group3Command implements ScriptCommand {
 			for (WidgetItem item : inventory.getWidgetItems()) {
 				if ("Group 3".equalsIgnoreCase(getTag(configManager, item.getId()))) {
 					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					InputHandler.click(client);
+					click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
@@ -359,7 +383,7 @@ class Group4Command implements ScriptCommand {
 			for (WidgetItem item : inventory.getWidgetItems()) {
 				if ("Group 4".equalsIgnoreCase(getTag(configManager, item.getId()))) {
 					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(),MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					InputHandler.click(client);
+					click(client);
 					Thread.sleep(config.clickDelay());
 				}
 			}
