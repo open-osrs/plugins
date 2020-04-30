@@ -1,18 +1,12 @@
-package net.runelite.client.plugins.praypotdrinker;
+package net.runelite.client.plugins.specialattackuser;
 
 import com.google.inject.Provides;
-import net.runelite.api.*;
 import net.runelite.api.Point;
+import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetItem;
-import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -21,7 +15,6 @@ import org.pf4j.Extension;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -29,26 +22,18 @@ import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
-		name = "Prayer Pot Drinker",
-		description = "Automatically drink pray pots",
-		tags = {"combat", "notifications", "prayer"},
+		name = "Special Attack User",
+		description = "Automatically enables special attack",
+		tags = {"combat", "special", "attack", "spec"},
 		enabledByDefault = false,
 		type = PluginType.PVM
 )
-public class PrayPotDrinkerPlugin extends Plugin {
+public class SpecialAttackUserPlugin extends Plugin {
 	@Inject
 	private Client client;
 
 	@Inject
-	private PrayPotDrinkerConfig config;
-
-	@Inject
-	private Notifier notifier;
-
-	@Inject
-	private ItemManager itemManager;
-
-	private String[] potions;
+	private SpecialAttackUserConfig config;
 
 	private MenuEntry entry;
 
@@ -57,13 +42,13 @@ public class PrayPotDrinkerPlugin extends Plugin {
 			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Provides
-	PrayPotDrinkerConfig provideConfig(final ConfigManager configManager) {
-		return configManager.getConfig(PrayPotDrinkerConfig.class);
+	SpecialAttackUserConfig provideConfig(final ConfigManager configManager) {
+		return configManager.getConfig(SpecialAttackUserConfig.class);
 	}
 
 	@Override
 	protected void startUp() throws Exception {
-		potions = config.potionNames().split(",");
+
 	}
 
 	@Override
@@ -71,43 +56,25 @@ public class PrayPotDrinkerPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged event) {
-		if (!event.getGroup().equals("praypotdrinker"))
-			return;
-
-		potions = config.potionNames().split(",");
-	}
-
-	@Subscribe
 	public void onGameTick(GameTick event) {
 		if (client.getGameState() != GameState.LOGGED_IN)
 			return;
 
+		boolean spec_enabled = (client.getVar(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1);
+
+		if (spec_enabled)
+			return;
+
+		//value returns 1000 for 100% spec, 500 for 50%, etc
+		int spec_percent = client.getVar(VarPlayer.SPECIAL_ATTACK_PERCENT);
+
+		if (spec_percent < config.specialPercent() * 10)
+			return;
+
 		this.executor.submit(() -> {
 			try {
-				//7 + 25%
-				int currentPrayerPoints = client.getBoostedSkillLevel(Skill.PRAYER);
-				int maxPrayerPoints = client.getRealSkillLevel(Skill.PRAYER);
-				int boostAmount = 7 + (int) Math.floor(maxPrayerPoints * .25);
-				
-				if (currentPrayerPoints + boostAmount > maxPrayerPoints) {
-					return;
-				}
-
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-
-				if (inventory == null)
-					return;
-
-				for (WidgetItem item : inventory.getWidgetItems()) {
-					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
-					if (Arrays.asList(potions).contains(name)) {
-						entry = getConsumableEntry(name, item.getId(), item.getIndex());
-						click();
-						Thread.sleep(50);
-						return;
-					}
-				}
+				entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
+				click();
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -122,10 +89,6 @@ public class PrayPotDrinkerPlugin extends Plugin {
 		}
 
 		entry = null;
-	}
-
-	private MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex) {
-		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
 	}
 
 	public void click() {
