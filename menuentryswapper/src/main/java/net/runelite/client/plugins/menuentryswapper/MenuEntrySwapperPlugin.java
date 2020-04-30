@@ -363,11 +363,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 				{
 					continue;
 				}
-				if (config.hideDestroyCoalbag() && entry.getTarget().contains("Coal bag"))
+				if (config.hideDestroyCoalbag() && (entry.getTarget().contains("Coal bag") || entry.getTarget().contains("Open coal sack")))
 				{
 					continue;
 				}
-				if (config.hideDestroyHerbsack() && entry.getTarget().contains("Herb sack"))
+				if (config.hideDestroyHerbsack() && (entry.getTarget().contains("Herb sack") || entry.getTarget().contains("Open herb sack")))
 				{
 					continue;
 				}
@@ -379,7 +379,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				{
 					continue;
 				}
-				if (config.hideDestroyGembag() && (entry.getTarget().contains("Gem bag") || entry.getTarget().contains("open gem bag")))
+				if (config.hideDestroyGembag() && (entry.getTarget().contains("Gem bag") || entry.getTarget().contains("Open gem bag")))
 				{
 					continue;
 				}
