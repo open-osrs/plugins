@@ -141,16 +141,26 @@ public interface RandomEventConfig extends Config
 	{
 		return false;
 	}
+	
+	@ConfigItem(
+		keyName = "notifyDrJekyll",
+		name = "Notify on Dr Jekyll",
+		description = "",
+		position = 10
+	)
+	default boolean notifyDrJekyll()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "notifyAll",
 		name = "Notify for all events",
 		description = "",
-		position = 10
+		position = 11
 	)
 	default boolean notifyAllEvents()
 	{
 		return false;
 	}
 }
-
