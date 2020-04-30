@@ -205,7 +205,7 @@ public class RandomEventPlugin extends Plugin
 				return config.notifyDunce();
 			case NpcID.DR_JEKYLL:
 			case NpcID.DR_JEKYLL_314:
-				return config.notifyDrJekyll
+				return config.notifyDrJekyll();
 			default:
 				return false;
 		}
