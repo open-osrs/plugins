@@ -1,12 +1,10 @@
 package net.runelite.client.plugins.cannonreloader;
 
 import com.google.inject.Provides;
-import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.queries.TileObjectQuery;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.menus.MenuManager;
@@ -16,7 +14,6 @@ import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.awt.event.MouseEvent;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -27,6 +24,7 @@ import java.util.regex.Pattern;
 
 import static net.runelite.api.ObjectID.CANNON_BASE;
 import static net.runelite.api.ObjectID.DWARF_MULTICANNON;
+import static net.runelite.api.ObjectID.BROKEN_MULTICANNON_14916;
 import static net.runelite.api.ProjectileID.CANNONBALL;
 import static net.runelite.api.ProjectileID.GRANITE_CANNONBALL;
 
@@ -58,14 +56,13 @@ public class CannonReloaderPlugin extends Plugin {
 
 	private Random r = new Random();
 
-	@Inject
-	private MenuManager menuManager;
-
 	private boolean cannonPlaced;
 
 	private WorldPoint cannonPosition;
 
 	private GameObject cannon;
+
+	private MenuEntry entry;
 
 	@Inject
 	private Client client;
@@ -92,11 +89,23 @@ public class CannonReloaderPlugin extends Plugin {
 		GameObject gameObject = event.getGameObject();
 		
 		Player localPlayer = client.getLocalPlayer();
+
 		if (gameObject.getId() == CANNON_BASE && !cannonPlaced) {
 			if (localPlayer != null && localPlayer.getWorldLocation().distanceTo(gameObject.getWorldLocation()) <= 2
 					&& localPlayer.getAnimation() == AnimationID.BURYING_BONES) {
 				cannonPosition = gameObject.getWorldLocation();
 				cannon = gameObject;
+			}
+		}
+
+		//Object ID = 14916
+		if (gameObject.getId() == BROKEN_MULTICANNON_14916 && cannonPlaced) {
+			if (cannonPosition.equals(gameObject.getWorldLocation())) {
+				entry = new MenuEntry("Repair", "<col=ffff>Broken multicannon", gameObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
+				InputHandler.click(client);
+				try {
+					Thread.sleep(50);
+				} catch (Exception e) { /*ignored*/ }
 			}
 		}
 	}
@@ -183,23 +192,16 @@ public class CannonReloaderPlugin extends Plugin {
 			cballsLeft = 0;
 		}
 
-		if (event.getMessage().equalsIgnoreCase("Your cannon has broken!")) {
-			this.executor.submit(() ->
-			{
+		//broken cannon is now handled in onGameObjectSpawned
+		/*if (event.getMessage().equalsIgnoreCase("Your cannon has broken!")) {
+			this.executor.submit(() -> {
 				if (!cannonPlaced || cannonPosition == null)
 					return;
 
-				Point p = InputHandler.getClickPoint(cannon.getClickbox().getBounds());
-
-				if (p == null)
-					return;
-
-				if (client.getTickCount() % 5 != 1)
-					return;
-
-				InputHandler.leftClick(client, p);
+				entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
+				InputHandler.click(client);
 			});
-		}
+		}*/
 	}
 
 	@Subscribe
@@ -229,8 +231,8 @@ public class CannonReloaderPlugin extends Plugin {
 				if (p == null)
 					return;
 
-				client.insertMenuItem("Fire", "<col=ffff>Dwarf multicannon", MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), DWARF_MULTICANNON, cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(),false);
-				InputHandler.leftClick(client, p);
+				entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
+				InputHandler.click(client);
 				nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 				Thread.sleep(config.clickDelay());
 			} catch (Exception e) {
@@ -242,5 +244,14 @@ public class CannonReloaderPlugin extends Plugin {
 	@Subscribe
 	public void onGameTick(GameTick event) {
 		skipProjectileCheckThisTick = false;
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event) {
+		if (entry != null) {
+			event.setMenuEntry(entry);
+		}
+
+		entry = null;
 	}
 }
