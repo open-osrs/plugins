@@ -1,28 +1,22 @@
 package net.runelite.client.plugins.bronzeman;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * @author Seth Davis
- * @Email <sethdavis321@gmail.com>
- * @Discord Reminisce#1707
- */
 public class ItemUnlock
 {
 
-	@Getter(AccessLevel.PACKAGE)
+	@Getter
 	private final int itemId;
 
-	@Getter(AccessLevel.PACKAGE)
+	@Getter
 	private long initTime;
 
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
+	@Getter
+	@Setter
 	private int locationY;
 
-	ItemUnlock(int itemId)
+	public ItemUnlock(int itemId)
 	{
 		this.itemId = itemId;
 		this.locationY = -20;
@@ -40,13 +34,15 @@ public class ItemUnlock
 	/**
 	 * Returns whether or not an items has been displayed as unlocked yet
 	 **/
-	public boolean displayed(int queue)
+	public boolean finishedDisplaying(int queue)
 	{
-		if (queue >= 2)
+		if (queue > 2)
 		{
 			return System.currentTimeMillis() > initTime + (750);
 		}
-		return System.currentTimeMillis() > initTime + (5000);
+		else
+		{
+			return System.currentTimeMillis() > initTime + (4000);
+		}
 	}
-
 }
