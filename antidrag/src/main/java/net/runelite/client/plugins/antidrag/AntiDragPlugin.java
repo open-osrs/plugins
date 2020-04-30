@@ -31,7 +31,9 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -76,6 +78,13 @@ public class AntiDragPlugin extends Plugin
 	private KeyManager keyManager;
 
 	private boolean toggleDrag;
+
+	@Provides
+	AntiDragConfig getConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(AntiDragConfig.class);
+	}
+
 
 	private final HotkeyListener toggleListener = new HotkeyListener(() -> config.key())
 	{
@@ -131,12 +140,6 @@ public class AntiDragPlugin extends Plugin
 		}
 	};
 
-	@Provides
-	AntiDragConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(AntiDragConfig.class);
-	}
-
 	@Override
 	protected void startUp()
 	{
@@ -161,6 +164,15 @@ public class AntiDragPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
+	{
+		if (widgetLoaded.getGroupId() == WidgetID.BANK_GROUP_ID || widgetLoaded.getGroupId() == WidgetID.BANK_INVENTORY_GROUP_ID)
+		{
+			setBankDragDelay(config.alwaysOn() ? config.bankDragDelay() : DEFAULT_DELAY);
+		}
+	}
+
+	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
 		if (event.getGroup().equals("antiDrag"))
@@ -173,13 +185,11 @@ public class AntiDragPlugin extends Plugin
 					break;
 				case "alwaysOn":
 					client.setInventoryDragDelay(config.alwaysOn() ? config.dragDelay() : DEFAULT_DELAY);
-					setBankDragDelay(config.alwaysOn() ? config.dragDelay() : DEFAULT_DELAY);
+					setBankDragDelay(config.alwaysOn() ? config.bankDragDelay() : DEFAULT_DELAY);
 					break;
 				case "dragDelay":
-					if (config.alwaysOn())
-					{
+				case "bankDragDelay":
 						setDragDelay();
-					}
 					break;
 				case ("changeCursor"):
 					clientUI.resetCursor();
@@ -239,6 +249,8 @@ public class AntiDragPlugin extends Plugin
 	private void setBankDragDelay(int delay)
 	{
 		final Widget bankItemContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+		final Widget bankInventoryContainer = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
+
 		if (bankItemContainer != null)
 		{
 			Widget[] items = bankItemContainer.getDynamicChildren();
@@ -247,12 +259,20 @@ public class AntiDragPlugin extends Plugin
 				item.setDragDeadTime(delay);
 			}
 		}
+		if (bankInventoryContainer != null)
+		{
+			Widget[] items = bankInventoryContainer.getDynamicChildren();
+			for (Widget item : items)
+			{
+				item.setDragDeadTime(delay);
+			}
+		}
 	}
-	
+
 	private void setDragDelay()
 	{
 		client.setInventoryDragDelay(config.dragDelay());
-		setBankDragDelay(config.dragDelay());
+		setBankDragDelay(config.bankDragDelay());
 	}
 
 	private void resetDragDelay()
