@@ -101,10 +101,21 @@ public interface AntiDragConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "bankDragDelay",
+		name = "Bank Drag Delay",
+		description = "Configures the bank drag delay in client ticks (20ms)",
+		position = 5
+	)
+	default int bankDragDelay()
+	{
+		return Constants.GAME_TICK_LENGTH / Constants.CLIENT_TICK_LENGTH; // one game tick
+	}
+
+	@ConfigItem(
 		keyName = "reqFocus",
 		name = "Reset on focus loss",
 		description = "Disable antidrag when losing focus (like alt tabbing)",
-		position = 5,
+		position = 6,
 		hidden = true,
 		unhide = "toggleKeyBind || holdKeyBind"
 	)
@@ -117,7 +128,7 @@ public interface AntiDragConfig extends Config
 		keyName = "overlay",
 		name = "Enable overlay",
 		description = "Do you really need a description?",
-		position = 6,
+		position = 7,
 		hidden = true,
 		unhide = "toggleKeyBind || holdKeyBind"
 	)
@@ -133,7 +144,7 @@ public interface AntiDragConfig extends Config
 		description = "Change the overlay color, duh",
 		hidden = true,
 		unhide = "toggleKeyBind || holdKeyBind",
-		position = 7
+		position = 8
 	)
 	default Color color()
 	{
@@ -144,7 +155,7 @@ public interface AntiDragConfig extends Config
 		keyName = "changeCursor",
 		name = "Change Cursor",
 		description = "Change cursor when you have anti-drag enabled.",
-		position = 8,
+		position = 9,
 		hidden = true,
 		unhide = "toggleKeyBind || holdKeyBind"
 	)
@@ -159,7 +170,7 @@ public interface AntiDragConfig extends Config
 		description = "Select which cursor you wish to use",
 		hidden = true,
 		unhide = "changeCursor",
-		position = 9
+		position = 10
 	)
 	default CustomCursor selectedCursor()
 	{
