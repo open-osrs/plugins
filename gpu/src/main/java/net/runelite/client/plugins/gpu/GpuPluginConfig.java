@@ -128,7 +128,7 @@ public interface GpuPluginConfig extends Config
 		description = "Offloads face sorting to GPU, enabling extended draw distance. Requires plugin restart.",
 		position = 2,
 		titleSection = "drawingTitle",
-		hidden = true
+		warning = "NOTE: This may cause graphical glitches if disabling on windows, It's advised to leave enabled!"
 	)
 	default boolean useComputeShaders()
 	{
