@@ -61,11 +61,11 @@ class CombatIconsOverlay extends Overlay
 		}
 
 		panelComponent.getChildren().clear();
+		panelComponent.setOverrideResize(true);
 		panelComponent.setPreferredSize(new Dimension(28, 0));
 		panelComponent.setWrap(true);
 		panelComponent.setBackgroundColor(null);
 		panelComponent.setBorder(new Rectangle());
-
 
 		final Set<Skill> boostedSkills = plugin.getSkillsToDisplay();
 
