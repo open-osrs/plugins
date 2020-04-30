@@ -1,4 +1,4 @@
-import ProjectVersions.rlVersion
+import ProjectVersions.openosrsVersion
 
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
@@ -34,8 +34,8 @@ dependencies {
     annotationProcessor(Libraries.lombok)
     annotationProcessor(Libraries.pf4j)
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
+    compileOnly("com.openosrs:runelite-api:$openosrsVersion")
+    compileOnly("com.openosrs:runelite-client:$openosrsVersion")
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.lombok)

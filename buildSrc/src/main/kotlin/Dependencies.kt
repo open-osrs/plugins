@@ -24,14 +24,13 @@
  */
 
 object ProjectVersions {
-    const val rlVersion = "3.3.0"
+    const val openosrsVersion = "3.3.0"
     const val apiVersion = "0.0.1"
 }
 
 object Libraries {
     private object Versions {
         const val annotations = "19.0.0"
-        const val apacheCommonsText = "1.8"
         const val discord = "1.1"
         const val gson = "2.8.6"
         const val guava = "28.2-jre"
@@ -52,26 +51,19 @@ object Libraries {
     }
 
     const val annotations = "org.jetbrains:annotations:${Versions.annotations}"
-    const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.apacheCommonsText}"
     const val discord = "net.runelite:discord:${Versions.discord}"
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
     const val guava = "com.google.guava:guava:${Versions.guava}"
     const val guice = "com.google.inject:guice:${Versions.guice}:no_aop"
-    const val guiceTestlib = "com.google.inject.extensions:guice-testlib:${Versions.guice}"
     const val hamcrest = "org.hamcrest:hamcrest-library:${Versions.hamcrest}"
-    const val jogampJogl = "org.jogamp.jogl:jogl-all:${Versions.jogamp}"
-    const val jogampGluegen = "org.jogamp.gluegen:gluegen-rt:${Versions.jogamp}"
     const val jopt = "net.sf.jopt-simple:jopt-simple:${Versions.jopt}"
     const val jooq = "org.jooq:jooq:${Versions.jooq}"
     const val junit = "junit:junit:${Versions.junit}"
     const val logback = "ch.qos.logback:logback-classic:${Versions.logback}"
     const val lombok = "org.projectlombok:lombok:${Versions.lombok}"
-    const val mockitoCore = "org.mockito:mockito-core:${Versions.mockito}"
-    const val mockitoInline = "org.mockito:mockito-inline:${Versions.mockito}"
     const val okhttp3 = "com.squareup.okhttp3:okhttp:${Versions.okhttp3}"
     const val pf4j = "org.pf4j:pf4j:${Versions.pf4j}"
     const val rxjava = "io.reactivex.rxjava3:rxjava:${Versions.rxjava}"
-    const val slf4jApi = "org.slf4j:slf4j-api:${Versions.slf4j}"
     const val substance = "org.pushing-pixels:radiance-substance:${Versions.radiance}"
 
 }
