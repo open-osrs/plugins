@@ -1,11 +1,10 @@
 package net.runelite.client.plugins.itemuser;
 
 import com.google.inject.Provides;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
+import net.runelite.api.*;
 import net.runelite.api.Point;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.util.Text;
@@ -36,167 +35,148 @@ import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
-		name = "Item User",
-		description = "Automatically uses items on an object",
-		tags = {"skilling", "item", "object", "user"},
-		enabledByDefault = false,
-		type = PluginType.SKILLING
+        name = "Item User",
+        description = "Automatically uses items on an object",
+        tags = {"skilling", "item", "object", "user"},
+        enabledByDefault = false,
+        type = PluginType.SKILLING
 )
-public class ItemUserPlugin extends Plugin
-{
+public class ItemUserPlugin extends Plugin {
 
-	@Inject
-	private Client client;
+    @Inject
+    private Client client;
 
-	@Inject
-	private ConfigManager configManager;
+    @Inject
+    private ConfigManager configManager;
 
-	@Inject
-	ItemUserConfig config;
+    @Inject
+    ItemUserConfig config;
 
-	@Inject
-	private KeyManager keyManager;
+    @Inject
+    private KeyManager keyManager;
 
-	@Inject
-	private ItemManager itemManager;
+    @Inject
+    private ItemManager itemManager;
 
-	@Inject
-	private MenuManager menuManager;
+    @Inject
+    private MenuManager menuManager;
 
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-			new ThreadPoolExecutor.DiscardPolicy());
+    private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+    private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+            new ThreadPoolExecutor.DiscardPolicy());
 
-	private GameObject object;
-	private final List<WidgetItem> items = new ArrayList<>();
-	private String item_name;
-	private boolean iterating;
-	private int iterTicks;
+    private GameObject object;
+    private final List<WidgetItem> items = new ArrayList<>();
+    private String item_name;
+    private boolean iterating;
+    private int iterTicks;
 
-	private final HotkeyListener toggle = new HotkeyListener(() -> config.useItemsKeybind())
-	{
-		@Override
-		public void hotkeyPressed()
-		{
-			List<WidgetItem> list = new InventoryWidgetItemQuery()
-					.idEquals(config.itemId())
-					.result(client)
-					.list;
+    private MenuEntry entry;
 
-			items.addAll(list);
-			object = findNearestGameObject(config.objectId());
-			item_name = Text.standardize(itemManager.getItemDefinition(config.itemId()).getName());
-		}
-	};
+    private final HotkeyListener toggle = new HotkeyListener(() -> config.useItemsKeybind()) {
+        @Override
+        public void hotkeyPressed() {
+            List<WidgetItem> list = new InventoryWidgetItemQuery()
+                    .idEquals(config.itemId())
+                    .result(client)
+                    .list;
 
-	@Override
-	protected void startUp() throws Exception
-	{
-		this.keyManager.registerKeyListener(toggle);
-	}
+            items.addAll(list);
+            object = findNearestGameObject(config.objectId());
+            item_name = Text.standardize(itemManager.getItemDefinition(config.itemId()).getName());
+        }
+    };
 
-	@Override
-	protected void shutDown() throws Exception
-	{
-		this.keyManager.unregisterKeyListener(toggle);
-	}
+    @Override
+    protected void startUp() throws Exception {
+        this.keyManager.registerKeyListener(toggle);
+    }
 
-	@Subscribe
-	private void onGameTick(final GameTick event)
-	{
-		if (items.isEmpty())
-		{
-			if (iterating)
-			{
-				iterTicks++;
-				if (iterTicks > 10)
-				{
-					iterating = false;
-				}
-			}
-			else
-			{
-				if (iterTicks > 0)
-				{
-					iterTicks = 0;
-				}
-			}
-			return;
-		}
+    @Override
+    protected void shutDown() throws Exception {
+        this.keyManager.unregisterKeyListener(toggle);
+    }
 
-		useItems();
-		items.clear();
-	}
+    @Subscribe
+    private void onGameTick(final GameTick event) {
+        if (items.isEmpty()) {
+            if (iterating) {
+                iterTicks++;
+                if (iterTicks > 10) {
+                    iterating = false;
+                }
+            } else {
+                if (iterTicks > 0) {
+                    iterTicks = 0;
+                }
+            }
+            return;
+        }
 
-	private void sleep(long ms)
-	{
-		try {
-			Thread.sleep(ms);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+        useItems();
+        items.clear();
+    }
 
-	private void useItems()
-	{
-		iterating = true;
+    private void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-		if (items == null || items.isEmpty())
-			return;
+    private void useItems() {
+        iterating = true;
 
-		if (item_name.isBlank() || item_name.isEmpty())
-			return;
+        if (items == null || items.isEmpty())
+            return;
 
-		if (object == null)
-			return;
+        if (item_name.isBlank() || item_name.isEmpty())
+            return;
 
-		List<Rectangle> item_rects = new ArrayList<>();
+        if (object == null)
+            return;
 
-		for (WidgetItem item : items)
-		{
-			item_rects.add(item.getCanvasBounds());
-		}
+        executor.submit(() -> {
+            InputHandler.pressKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
 
-		menuManager.addPriorityEntry("use", item_name);
+            for (WidgetItem item : items) {
+                entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_USE.getId(), item.getIndex(), 9764864, false);
+                InputHandler.click(client);
+                sleep(config.clickDelay());
 
-		executor.submit(() ->
-		{
-			InputHandler.pressKey(this.client.getCanvas(), InputHandler.getTabHotkey(client, Varbits.INVENTORY_TAB_HOTKEY));
+                entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName() + "<col=ffffff> -> <col=ffff>" + client.getObjectDefinition(object.getId()).getName(), object.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), object.getSceneMinLocation().getX(), object.getSceneMinLocation().getY(), false);
+                InputHandler.click(client);
+                sleep(config.clickDelay());
+            }
+        });
+    }
 
-			for (Rectangle rect : item_rects)
-			{
-				Point item1_point = InputHandler.getClickPoint(rect);
-				InputHandler.leftClick(this.client, item1_point);
-				sleep(this.config.clickDelay());
+    @Nullable
+    public GameObject findNearestGameObject(int... ids) {
+        assert client.isClientThread();
 
-				Point item2_point = InputHandler.getClickPoint(object.getConvexHull().getBounds());
-				InputHandler.leftClick(this.client, item2_point);
-				sleep(this.config.clickDelay());
-			}
-		});
+        if (client.getLocalPlayer() == null) {
+            return null;
+        }
 
-		menuManager.removePriorityEntry("use", item_name);
-	}
+        return new GameObjectQuery()
+                .idEquals(ids)
+                .result(client)
+                .nearestTo(client.getLocalPlayer());
+    }
 
-	@Nullable
-	public GameObject findNearestGameObject(int... ids)
-	{
-		assert client.isClientThread();
+    @Provides
+    ItemUserConfig provideConfig(final ConfigManager configManager) {
+        return configManager.getConfig(ItemUserConfig.class);
+    }
 
-		if (client.getLocalPlayer() == null)
-		{
-			return null;
-		}
+    @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event) {
+        if (entry != null) {
+            event.setMenuEntry(entry);
+        }
 
-		return new GameObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
-	}
-
-	@Provides
-	ItemUserConfig provideConfig(final ConfigManager configManager)
-	{
-		return configManager.getConfig(ItemUserConfig.class);
-	}
+        entry = null;
+    }
 }
