@@ -73,6 +73,9 @@ public class NMZHelperPlugin extends Plugin {
             return;
         }
 
+        if (!config.autoOverload())
+            return;
+
         String msg = Text.removeTags(event.getMessage()); //remove color
         if (msg.contains("The effects of overload have worn off, and you feel normal again.") || msg.contains("25 secs to go...")) {
             this.executor.submit(() -> {
