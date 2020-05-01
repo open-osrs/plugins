@@ -27,12 +27,15 @@ package net.runelite.client.plugins.virtuallevels;
 
 import com.google.inject.Provides;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.AccessLevel;
@@ -43,6 +46,7 @@ import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
+import net.runelite.api.SpriteID;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -53,12 +57,14 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.PluginChanged;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.DrawManager;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageCapture;
 import net.runelite.client.util.ImageUploadStyle;
 import org.pf4j.Extension;
@@ -104,6 +110,24 @@ public class VirtualLevelsPlugin extends Plugin
 	@Inject
 	private ImageCapture imageCapture;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private VirtualLevelsOverlay overlay;
+
+	@Inject
+	private SpriteManager spriteManager;
+
+	@Inject
+	private ScheduledExecutorService executor;
+
+	@Inject
+	private ConfigManager configManager;
+
+	@Getter(AccessLevel.PACKAGE)
+	private BufferedImage reportButton;
+
 	private final Map<Skill, Integer> previousXpMap = new EnumMap<>(Skill.class);
 	private final List<Skill> skillsLeveledUp = new ArrayList<>();
 
@@ -119,11 +143,16 @@ public class VirtualLevelsPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		clientThread.invoke(this::initializePreviousXpMap);
+
+		overlayManager.add(overlay);
+		spriteManager.getSpriteAsync(SpriteID.CHATBOX_REPORT_BUTTON, 0, s -> reportButton = s);
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		overlayManager.remove(overlay);
+
 		clientThread.invoke(this::simulateSkillChange);
 
 		if (input != null && chatboxPanelManager.getCurrentInput() == input)
@@ -299,14 +328,40 @@ public class VirtualLevelsPlugin extends Plugin
 			return;
 		}
 
-		drawManager.requestNextFrameListener((image) ->
+		final String fileName = skill.getName() + '(' + Experience.getLevelForXp(client.getSkillExperience(skill)) + ')';
+		final String subDir = "Levels";
+
+		Consumer<Image> imageCallback = (img) ->
 		{
-			final String fileName = skill.getName() + '(' + Experience.getLevelForXp(client.getSkillExperience(skill)) + ')';
-			final String subDir = "Levels";
+			// This callback is on the game thread, move to the executor thread
+			executor.submit(() -> takeScreenshot(fileName, subDir, img));
+		};
 
-			final BufferedImage screenshot = new BufferedImage(clientUi.getWidth(), clientUi.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			final Graphics graphics = screenshot.getGraphics();
+		if (configManager.getConfiguration("screenshot", "displayDate").equals("true"))
+		{
+			overlay.queueForTimestamp(imageCallback);
+		}
+		else
+		{
+			drawManager.requestNextFrameListener(imageCallback);
+		}
+	}
 
+	void takeScreenshot(String fileName, String subDir, Image image)
+	{
+		final boolean includeFrame = configManager.getConfiguration("screenshot", "includeFrame").equals("true");
+
+		BufferedImage screenshot = includeFrame
+			? new BufferedImage(clientUi.getWidth(), clientUi.getHeight(), BufferedImage.TYPE_INT_ARGB)
+			: new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+		Graphics graphics = screenshot.getGraphics();
+
+		int gameOffsetX = 0;
+		int gameOffsetY = 0;
+
+		if (includeFrame)
+		{
 			// Draw the client frame onto the screenshot
 			try
 			{
@@ -319,13 +374,18 @@ public class VirtualLevelsPlugin extends Plugin
 
 			// Evaluate the position of the game inside the frame
 			final Point canvasOffset = clientUi.getCanvasOffset();
-			final int gameOffsetX = canvasOffset.getX();
-			final int gameOffsetY = canvasOffset.getY();
+			gameOffsetX = canvasOffset.getX();
+			gameOffsetY = canvasOffset.getY();
+		}
 
-			// Draw the game onto the screenshot
-			graphics.drawImage(image, gameOffsetX, gameOffsetY, null);
-			imageCapture.takeScreenshot(screenshot, fileName, subDir, false, ImageUploadStyle.NEITHER);
-		});
+		// Draw the game onto the screenshot
+		graphics.drawImage(image, gameOffsetX, gameOffsetY, null);
+		imageCapture.takeScreenshot(
+			screenshot,
+			fileName,
+			subDir,
+			configManager.getConfiguration("screenshot", "notifyWhenTaken").equals("true"),
+			ImageUploadStyle.valueOf(configManager.getConfiguration("screenshot", "uploadScreenshot")));
 	}
 
 	private void simulateSkillChange()
