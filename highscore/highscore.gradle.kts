@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.6"
+version = "0.1.0"
 
 project.extra["PluginName"] = "Hiscore"
 project.extra["PluginDescription"] = "Enable the hiscore panel and an optional Lookup option on players"
