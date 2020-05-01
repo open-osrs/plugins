@@ -96,7 +96,7 @@ class TargetWeaknessOverlay extends Overlay
 			return -1;
 		}
 
-		final int healthScale = target.getHealth();
+		final int healthScale = target.getHealthScale();
 		final int healthRatio = target.getHealthRatio();
 		final int maxHealth = npcManager.getHealth(target.getId());
 

@@ -324,7 +324,7 @@ public class OpponentInfoPlugin extends Plugin
 		}
 
 		if (showHitpoints &&
-			actor.getHealth() > 0)
+			actor.getHealthScale() > 0)
 		{
 			int lvlIndex = target.lastIndexOf("(level-");
 			if (lvlIndex != -1)
@@ -371,7 +371,7 @@ public class OpponentInfoPlugin extends Plugin
 		boolean hasAggro = actor.getRSInteracting() - 32768 == client.getLocalPlayerIndex();
 		boolean hadAggro = target.charAt(0) == '*';
 		boolean isTarget = client.getLocalPlayer().getRSInteracting() == index;
-		boolean hasHp = showHitpoints && actor instanceof NPC && actor.getHealth() > 0;
+		boolean hasHp = showHitpoints && actor instanceof NPC && actor.getHealthScale() > 0;
 
 		boolean aggroChanged = showAttackers && hasAggro != hadAggro;
 		boolean targetChanged = showAttacking && isTarget != target.startsWith(attackingColTag, aggroChanged ? 1 : 0);
@@ -441,7 +441,7 @@ public class OpponentInfoPlugin extends Plugin
 	private String getHpString(Actor actor, boolean withColorTag)
 	{
 		int maxHp = getMaxHp(actor);
-		int health = actor.getHealth();
+		int health = actor.getHealthScale();
 		int ratio = actor.getHealthRatio();
 
 		final String result;

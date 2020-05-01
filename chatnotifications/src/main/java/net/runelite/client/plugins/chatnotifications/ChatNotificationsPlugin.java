@@ -28,12 +28,12 @@ package net.runelite.client.plugins.chatnotifications;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.inject.Provides;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static java.util.regex.Pattern.quote;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.runelite.api.Client;
@@ -227,7 +227,10 @@ public class ChatNotificationsPlugin extends Plugin
 		if (usernameMatcher == null && client.getLocalPlayer() != null && client.getLocalPlayer().getName() != null)
 		{
 			String username = client.getLocalPlayer().getName();
-			usernameMatcher = Pattern.compile("\\b(" + quote(username) + ")\\b", Pattern.CASE_INSENSITIVE);
+			String pattern = Arrays.stream(username.split(" "))
+				.map(s -> s.isEmpty() ? "" : Pattern.quote(s))
+				.collect(Collectors.joining("[\u00a0\u0020]")); // space or nbsp
+			usernameMatcher = Pattern.compile("\\b" + pattern + "\\b", Pattern.CASE_INSENSITIVE);
 			usernameReplacer = "<col" + ChatColorType.HIGHLIGHT.name() + "><u>" + username + "</u><col" + ChatColorType.NORMAL.name() + ">";
 		}
 
