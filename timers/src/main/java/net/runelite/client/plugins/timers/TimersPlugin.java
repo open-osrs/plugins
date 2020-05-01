@@ -640,6 +640,14 @@ public class TimersPlugin extends Plugin
 					case "magic":
 						createGameTimer(DIVINE_MAGIC);
 						break;
+
+					case "bastion":
+						createGameTimer(DIVINE_BASTION);
+						break;
+
+					case "battlemage":
+						createGameTimer(DIVINE_BATTLEMAGE);
+						break;
 				}
 			}
 		}
