@@ -32,15 +32,7 @@ subprojects {
         jcenter {
             content {
                 excludeGroupByRegex("com\\.openosrs.*")
-            }
-        }
-
-        exclusiveContent {
-            forRepository {
-                mavenLocal()
-            }
-            filter {
-                includeGroupByRegex("com\\.openosrs.*")
+                excludeGroupByRegex("com\\.runelite.*")
             }
         }
 
@@ -54,7 +46,6 @@ subprojects {
                 includeModule("net.runelite", "discord")
             }
         }
-
         exclusiveContent {
             forRepository {
                 maven {
@@ -63,6 +54,15 @@ subprojects {
             }
             filter {
                 includeModule("com.openosrs.rxrelay3", "rxrelay")
+            }
+        }
+
+        exclusiveContent {
+            forRepository {
+                mavenLocal()
+            }
+            filter {
+                includeGroupByRegex("com\\.openosrs.*")
             }
         }
     }
