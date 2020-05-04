@@ -27,6 +27,8 @@ package net.runelite.client.plugins.devtools;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.inject.Provides;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import java.awt.image.BufferedImage;
 import static java.lang.Math.min;
 import java.util.Arrays;
@@ -65,6 +67,8 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.MiscUtils;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.pf4j.Extension;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +150,14 @@ public class DevToolsPlugin extends Plugin
 	private DevToolsButton logMenuActions;
 	private DevToolsButton soundEffects;
 	private DevToolsButton scriptInspector;
+	private DevToolsButton console;
 	private NavigationButton navButton;
+
+	private Binding binding = new Binding();
+	private CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+	private ImportCustomizer importCustomizer = new ImportCustomizer();
+	@Getter
+	private GroovyShell groovyShell;
 
 	@Provides
 	DevToolsConfig provideConfig(ConfigManager configManager)
@@ -157,6 +168,25 @@ public class DevToolsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		importCustomizer.addStarImports("net.runelite.client", "net.runelite.api", "java.lang.math",
+			"net.runelite.api.annotations", "net.runelite.api.coords", "net.runelite.api.events",
+			"net.runelite.api.geometry", "net.runelite.api.hooks", "net.runelite.api.kit",
+			"net.runelite.api.model", "net.runelite.api.overlay", "net.runelite.api.queries", "java.util",
+			"java.util.stream", "net.runelite.api.util", "net.runelite.api.vars", "net.runelite.api.widgets",
+			"net.runelite.api.events.player.headicon", "net.runelite.client.account", "net.runelite.client.callback",
+			"net.runelite.client.chat", "net.runelite.client.config", "net.runelite.client.database",
+			"net.runelite.client.database.data", "net.runelite.client.database.data.tables",
+			"net.runelite.client.database.data.tables.records", "net.runelite.client.discord",
+			"net.runelite.client.discord.events", "net.runelite.client.eventbus", "net.runelite.client.events",
+			"net.runelite.client.game", "net.runelite.client.game.chatbox", "net.runelite.client.graphics",
+			"net.runelite.client.input", "net.runelite.client.menus", "net.runelite.client.rs", "net.runelite.client.task",
+			"net.runelite.client.util", "net.runelite.client.util.ping", "net.runelite.client.ws", "net.runelite.client.plugins");
+		compilerConfiguration.addCompilationCustomizers(importCustomizer);
+		groovyShell = new GroovyShell(binding, compilerConfiguration);
+		binding.setVariable("client", client);
+		binding.setVariable("eventBus", eventBus);
+		binding.setVariable("binding", binding);
+		binding.setVariable("groovyShell", groovyShell);
 
 		players = new DevToolsButton("Players");
 		npcs = new DevToolsButton("NPCs");
@@ -195,6 +225,8 @@ public class DevToolsPlugin extends Plugin
 		soundEffects = new DevToolsButton("Sound Effects");
 		logMenuActions = new DevToolsButton("Menu Actions");
 		scriptInspector = new DevToolsButton("Script Inspector");
+
+		console = new DevToolsButton("Console");
 
 		overlayManager.add(overlay);
 		overlayManager.add(locationOverlay);
@@ -424,6 +456,26 @@ public class DevToolsPlugin extends Plugin
 					.type(ChatMessageType.GAMEMESSAGE)
 					.runeLiteFormattedMessage(new ChatMessageBuilder().append(message).build())
 					.build());
+				break;
+			}
+			case "eval":
+			{
+				try
+				{
+					StringBuilder stringBuilder = new StringBuilder();
+					for (String s : args)
+					{
+						stringBuilder.append(s);
+					}
+					String command = stringBuilder.toString();
+					Object result = groovyShell.evaluate(command);
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", result.toString(), null);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", e.toString(), null);
+				}
 				break;
 			}
 		}

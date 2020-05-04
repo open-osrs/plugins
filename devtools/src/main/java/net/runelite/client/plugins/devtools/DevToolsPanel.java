@@ -47,6 +47,7 @@ class DevToolsPanel extends PluginPanel
 	private final WidgetInspector widgetInspector;
 	private final VarInspector varInspector;
 	private final ScriptInspector scriptInspector;
+	private final Console console;
 	private final InfoBoxManager infoBoxManager;
 
 	@Inject
@@ -57,7 +58,8 @@ class DevToolsPanel extends PluginPanel
 		VarInspector varInspector,
 		ScriptInspector scriptInspector,
 		Notifier notifier,
-		InfoBoxManager infoBoxManager)
+		InfoBoxManager infoBoxManager,
+		Console console)
 	{
 		super();
 		this.client = client;
@@ -67,6 +69,7 @@ class DevToolsPanel extends PluginPanel
 		this.scriptInspector = scriptInspector;
 		this.notifier = notifier;
 		this.infoBoxManager = infoBoxManager;
+		this.console = console;
 
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 
@@ -181,6 +184,19 @@ class DevToolsPanel extends PluginPanel
 		final JButton clearInfoboxBtn = new JButton("Clear Infobox");
 		clearInfoboxBtn.addActionListener(e -> infoBoxManager.removeIf(i -> true));
 		container.add(clearInfoboxBtn);
+
+		container.add(plugin.getConsole());
+		plugin.getConsole().addActionListener((ev) ->
+		{
+			if (plugin.getConsole().isActive())
+			{
+				console.close();
+			}
+			else
+			{
+				console.open();
+			}
+		});
 
 		return container;
 	}
