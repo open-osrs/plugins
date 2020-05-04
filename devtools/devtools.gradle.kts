@@ -28,8 +28,18 @@ version = "0.0.13"
 project.extra["PluginName"] = "Developer Tools"
 project.extra["PluginDescription"] = "Enables the developer tools"
 
+dependencies {
+    implementation(group = "org.codehaus.groovy", name = "groovy", version = "3.0.3")
+}
+
 tasks {
     jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from(configurations.runtimeClasspath.get()
+                .map { if (it.isDirectory) it else zipTree(it) })
+        val sourcesMain = sourceSets.main.get()
+        from(sourcesMain.output)
+
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
