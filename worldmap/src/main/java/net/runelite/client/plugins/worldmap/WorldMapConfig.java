@@ -240,4 +240,26 @@ public interface WorldMapConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = WorldMapPlugin.CONFIG_KEY_DUNGEON_TOOLTIPS,
+		name = "Show dungeon tooltips",
+		description = "Indicates the names of dungeons",
+		position = 20
+	)
+	default boolean dungeonTooltips()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = WorldMapPlugin.CONFIG_KEY_HUNTER_AREA_TOOLTIPS,
+		name = "Show hunter area tooltips",
+		description = "Indicates the creatures inside a hunting area",
+		position = 21
+	)
+	default boolean hunterAreaTooltips()
+	{
+		return true;
+	}
 }

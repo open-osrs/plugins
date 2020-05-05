@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Anthony <https://github.com/while-loop>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,21 +22,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-version = "0.0.4"
+package net.runelite.client.plugins.xptracker;
 
-project.extra["PluginName"] = "Player-owned House"
-project.extra["PluginDescription"] = "Show minimap icons and mark unlit/lit burners"
+import java.util.function.Function;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import static net.runelite.client.plugins.xptracker.XpInfoBox.TWO_DECIMAL_FORMAT;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+@Getter
+@AllArgsConstructor
+public enum XpProgressBarLabel
+{
+	PERCENTAGE((snap) -> TWO_DECIMAL_FORMAT.format(snap.getSkillProgressToGoal()) + "%"),
+	TIME_TO_LEVEL(XpSnapshotSingle::getTimeTillGoal),
+	;
+
+	private final Function<XpSnapshotSingle, String> valueFunc;
 }

@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.17"
+version = "0.0.18"
 
 project.extra["PluginName"] = "Loottracker"
 project.extra["PluginDescription"] = "Tracks loot from monsters and minigames"

@@ -58,6 +58,7 @@ public class GroundItem
 
 	@Nullable
 	private Instant spawnTime;
+	private boolean stackable;
 
 	int getHaPrice()
 	{
