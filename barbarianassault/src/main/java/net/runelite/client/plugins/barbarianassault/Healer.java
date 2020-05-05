@@ -43,7 +43,7 @@ class Healer
 		List.of(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}),
 		List.of(new int[]{2, 3, 4}, new int[]{0, 0, 0}, new int[]{24, 0, 0}),
 		List.of(new int[]{1, 6, 2}, new int[]{0, 0, 3}, new int[]{0, 0, 0}),
-		List.of(new int[]{2, 5, 2, 0}, new int[]{1, 0, 1, 6}, new int[]{0, 0, 0, 0}),
+		List.of(new int[]{2, 5, 2, 0}, new int[]{1, 0, 1, 6}, new int[]{36, 0, 36, 0}),
 		List.of(new int[]{2, 7, 2, 1, 0}, new int[]{0, 0, 0, 2, 6}, new int[]{18, 0, 24, 0, 0}),
 		List.of(new int[]{3, 5, 2, 2, 0, 0}, new int[]{0, 0, 0, 1, 10, 11}, new int[]{18, 0, 24, 27, 0, 0}),
 		List.of(new int[]{3, 5, 6, 1, 0, 0, 0}, new int[]{0, 0, 0, 1, 1, 6, 4}, new int[]{21, 27, 0, 0, 0, 0, 0}),
