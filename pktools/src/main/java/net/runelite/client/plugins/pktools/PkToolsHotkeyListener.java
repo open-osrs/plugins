@@ -19,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 	private final Client client;
 
-	static boolean autoprayer_enabled = true;
-
 	private Instant lastPress;
 
 	@Inject
@@ -53,7 +51,9 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 			return;
 
 		if (e.getKeyCode() == this.config.prayerKey().getKeyCode())
-			PkToolsHotkeyListener.autoprayer_enabled = !PkToolsHotkeyListener.autoprayer_enabled;
+			configManager.setConfiguration("pktools", "autoPrayerSwitcherEnabled", !config.autoPrayerSwitcherEnabled());
+
+
 
 		try {
 			if (this.lastPress != null && Duration.between(this.lastPress, Instant.now()).getNano() > 1000) {
@@ -105,6 +105,5 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 	public void keyTyped(final KeyEvent e) { }
 
 	@Override
-	public void keyReleased(final KeyEvent e) {
-	}
+	public void keyReleased(final KeyEvent e) { }
 }

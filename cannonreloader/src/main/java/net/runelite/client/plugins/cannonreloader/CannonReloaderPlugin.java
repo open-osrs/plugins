@@ -193,17 +193,6 @@ public class CannonReloaderPlugin extends Plugin {
 			
 			cballsLeft = 0;
 		}
-
-		//broken cannon is now handled in onGameObjectSpawned
-		/*if (event.getMessage().equalsIgnoreCase("Your cannon has broken!")) {
-			this.executor.submit(() -> {
-				if (!cannonPlaced || cannonPosition == null)
-					return;
-
-				entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
-				InputHandler.click(client);
-			});
-		}*/
 	}
 
 	@Subscribe
@@ -213,28 +202,9 @@ public class CannonReloaderPlugin extends Plugin {
 				if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
 					return;
 
-				LocalPoint cannonPoint = LocalPoint.fromWorld(client, cannonPosition);
-
-				if (cannonPoint == null)
-					return;
-
-				Player localPlayer = client.getLocalPlayer();
-
-				if (localPlayer == null)
-					return;
-
-				LocalPoint localLocation = localPlayer.getLocalLocation();
-
-				if (localLocation.distanceTo(cannonPoint) > MAX_DISTANCE)
-					return;
-
-				Point p = Perspective.localToCanvas(client, cannonPoint, cannon.getPlane(), 45);
-
-				if (p == null)
-					return;
-
 				entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
 				click();
+
 				nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 				Thread.sleep(config.clickDelay());
 			} catch (Exception e) {

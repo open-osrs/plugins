@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.13"
+version = "0.0.14"
 
 project.extra["PluginName"] = "Cannon Reloader"
 project.extra["PluginDescription"] = "Automatically reload your cannon"

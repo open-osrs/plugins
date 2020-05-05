@@ -54,7 +54,7 @@ public class PkToolsOverlay extends Overlay
 		ImageComponent PROTECT_MAGIC_IMG = new ImageComponent(spriteManager.getSprite(SpriteID.PRAYER_PROTECT_FROM_MAGIC, 0));
 
 		imagePanelComponent.getChildren().clear();
-		imagePanelComponent.getChildren().add(TitleComponent.builder().text("PK").color(PkToolsHotkeyListener.autoprayer_enabled ? Color.GREEN : Color.red).build());
+		imagePanelComponent.getChildren().add(TitleComponent.builder().text("PK").color(config.autoPrayerSwitcherEnabled() ? Color.GREEN : Color.red).build());
 		imagePanelComponent.setBackgroundColor(ComponentConstants.STANDARD_BACKGROUND_COLOR);
 		imagePanelComponent.setPreferredSize(panel_size);
 

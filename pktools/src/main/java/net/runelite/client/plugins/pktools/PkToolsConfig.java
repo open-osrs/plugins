@@ -140,7 +140,7 @@ public interface PkToolsConfig extends Config {
 
 	@ConfigItem(
 			position = 13,
-			keyName = "prayerswitcherEnabled",
+			keyName = "autoPrayerSwitcher",
 			name = "Auto Prayer Switcher",
 			description = "Automatic Prayer Switching"
 	)
@@ -160,6 +160,15 @@ public interface PkToolsConfig extends Config {
 
 	@ConfigItem(
 			position = 15,
+			keyName = "autoPrayerSwitcherEnabled",
+			name = "Prayer Switcher Enabled",
+			description = "",
+			hidden = true
+	)
+	default boolean autoPrayerSwitcherEnabled() { return false; }
+
+	@ConfigItem(
+			position = 16,
 			keyName = "prayerHelper",
 			name = "Prayer Helper",
 			description = "Draws icons to suggest proper prayer switches"
@@ -169,7 +178,7 @@ public interface PkToolsConfig extends Config {
 	}
 
 	@ConfigItem(
-			position = 16,
+			position = 17,
 			keyName = "clickDelay",
 			name = "Click Delay",
 			description = "Sets the delay between clicks"

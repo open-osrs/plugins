@@ -205,7 +205,7 @@ public class PkToolsPlugin extends Plugin {
         if (!config.autoPrayerSwitcher())
             return;
 
-        if (!PkToolsHotkeyListener.autoprayer_enabled)
+        if (!config.autoPrayerSwitcherEnabled())
             return;
 
         this.executor.submit(() -> {

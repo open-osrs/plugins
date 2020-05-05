@@ -13,7 +13,7 @@ public interface NMZHelperConfig extends Config {
             position = 1
     )
     default int absorptionThreshold() {
-        return 300;
+        return 200;
     }
 
     @ConfigItem(
@@ -35,4 +35,12 @@ public interface NMZHelperConfig extends Config {
     default boolean autoRockCake() {
         return true;
     }
+
+    @ConfigItem(
+            keyName = "maxRockCakeDelay",
+            name = "Max Rock Cake Delay",
+            description = "The maximum ticks to wait before rock caking when HP is above 1.",
+            position = 4
+    )
+    default int maxRockCakeDelay() { return 20; }
 }

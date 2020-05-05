@@ -50,6 +50,8 @@ public class NMZHelperPlugin extends Plugin {
 
     private static final int[] NMZ_MAP_REGION = {9033};
 
+    private int rockCakeDelay = 0;
+
     private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
     private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
             new ThreadPoolExecutor.DiscardPolicy());
@@ -69,34 +71,15 @@ public class NMZHelperPlugin extends Plugin {
 
     @Subscribe
     private void onChatMessage(ChatMessage event) {
-        if (event.getType() != ChatMessageType.GAMEMESSAGE || !isInNightmareZone()) {
+        if (!isInNightmareZone()) {
             return;
         }
 
-        if (!config.autoOverload())
-            return;
-
         String msg = Text.removeTags(event.getMessage()); //remove color
-        if (msg.contains("The effects of overload have worn off, and you feel normal again.") || msg.contains("25 secs to go...")) {
-            this.executor.submit(() -> {
-                try {
-                    Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-                    if (inventory == null)
-                        return;
-
-                    for (WidgetItem item : inventory.getWidgetItems()) {
-                        if (isOverloadPotion(item)) {
-                            entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
-                            click();
-                            Thread.sleep(100);
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+        if (event.getType() == ChatMessageType.SPAM
+                && msg.contains("You drink some of your overload potion.")) {
+            rockCakeDelay = 12;
         }
     }
 
@@ -108,8 +91,7 @@ public class NMZHelperPlugin extends Plugin {
         if (!isInNightmareZone())
             return;
 
-        //checkAbsorption();
-        //checkRockCake();
+        checkRockCake();
     }
 
     @Subscribe
@@ -120,28 +102,60 @@ public class NMZHelperPlugin extends Plugin {
         if (!isInNightmareZone())
             return;
 
+        checkOverload();
         checkAbsorption();
-        checkRockCake();
     }
 
     private void checkRockCake() {
         if (!config.autoRockCake())
             return;
 
+        //check if overloaded
+        if (!isOverloaded())
+            return;
+
+        if (rockCakeDelay > 0) {
+            rockCakeDelay--;
+            return;
+        }
+
         //check if we're already rock caked down to 1 hp
         if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= 1)
             return;
 
-        //check if our hitpoints is 50 lower than max
-        boolean overloaded = (client.getRealSkillLevel(Skill.HITPOINTS) - client.getBoostedSkillLevel(Skill.HITPOINTS)) >= 50;
+        guzzleRockCake();
 
-        if (!overloaded)
+        //delay rock click by random number of ticks (max specified in config)
+        if (client.getRealSkillLevel(Skill.HITPOINTS) - client.getBoostedSkillLevel(Skill.HITPOINTS) >= 10)
+            rockCakeDelay = (int)(Math.random() * ((config.maxRockCakeDelay() - 1) + 1)) + 1;
+    }
+
+    private boolean isOverloaded() {
+        int overloadVarbit = client.getVar(Varbits.NMZ_OVERLOAD);
+
+        return overloadVarbit != 0;
+    }
+
+    private void checkOverload() {
+        if (isOverloaded())
             return;
 
-        //check if we're boosted by an overload currently
-        if (client.getBoostedSkillLevel(Skill.ATTACK) <= client.getRealSkillLevel(Skill.ATTACK))
+        if (!config.autoOverload())
             return;
 
+        drinkOverload();
+    }
+
+    private void checkAbsorption() {
+        int absorptionPoints = client.getVar(Varbits.NMZ_ABSORPTION);
+
+        if (absorptionPoints >= config.absorptionThreshold())
+            return;
+
+        drinkAbsorption();
+    }
+
+    private void guzzleRockCake() {
         this.executor.submit(() -> {
             try {
                 Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
@@ -161,15 +175,9 @@ public class NMZHelperPlugin extends Plugin {
                 e.printStackTrace();
             }
         });
-
     }
 
-    private void checkAbsorption() {
-        int absorptionPoints = client.getVar(Varbits.NMZ_ABSORPTION);
-
-        if (absorptionPoints >= config.absorptionThreshold())
-            return;
-
+    private void drinkAbsorption() {
         executor.submit(() -> {
             try {
                 Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
@@ -179,6 +187,28 @@ public class NMZHelperPlugin extends Plugin {
 
                 for (WidgetItem item : inventory.getWidgetItems()) {
                     if (isAbsorptionPotion(item)) {
+                        entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
+                        click();
+                        Thread.sleep(100);
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void drinkOverload() {
+        executor.submit(() -> {
+            try {
+                Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+
+                if (inventory == null)
+                    return;
+
+                for (WidgetItem item : inventory.getWidgetItems()) {
+                    if (isOverloadPotion(item)) {
                         entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
                         click();
                         Thread.sleep(100);
