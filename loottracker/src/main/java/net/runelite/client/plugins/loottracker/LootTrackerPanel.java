@@ -480,6 +480,12 @@ class LootTrackerPanel extends PluginPanel
 		final LootTrackerRecord record = new LootTrackerRecord(eventName, localUsername, subTitle, type, items, Instant.now());
 
 		records.add(record);
+
+		if (hideIgnoredItems && plugin.isEventIgnored(eventName))
+		{
+			return;
+		}
+
 		LootTrackerBox box = buildBox(record);
 		if (box != null)
 		{
@@ -598,7 +604,7 @@ class LootTrackerPanel extends PluginPanel
 			// Check to see if we should even show this record
 			if (this.hideIgnoredItems)
 			{
-				if (this.plugin.isIgnoredNPC(records.get(i).getTitle()))
+				if (this.plugin.isIgnoredNPC(records.get(i).getTitle()) || plugin.isEventIgnored(records.get(i).getTitle()))
 				{
 					continue;
 				}
@@ -670,6 +676,11 @@ class LootTrackerPanel extends PluginPanel
 			}
 		}
 
+		final boolean isIgnored = plugin.isEventIgnored(record.getTitle());
+		if (hideIgnoredItems && isIgnored)
+		{
+			return null;
+		}
 
 		// Group all similar loot together
 		if (groupLoot)
@@ -691,13 +702,18 @@ class LootTrackerPanel extends PluginPanel
 
 		// Create box
 		final LootTrackerBox box = new LootTrackerBox(record.getTimestamp().toEpochMilli(), itemManager, record.getTitle(), record.getType(),
-			record.getSubTitle(), hideIgnoredItems, config.priceType(), config.showPriceType(), config.displayDate(), plugin::toggleItem);
+			record.getSubTitle(), hideIgnoredItems, config.priceType(), config.showPriceType(), config.displayDate(), plugin::toggleItem,
+			plugin::toggleEvent, isIgnored);
 		box.combine(record);
 
-		// Create popup menu
-		final JPopupMenu popupMenu = new JPopupMenu();
-		popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
-		box.setComponentPopupMenu(popupMenu);
+		// Use the existing popup menu or create a new one
+		JPopupMenu popupMenu = box.getComponentPopupMenu();
+		if (popupMenu == null)
+		{
+			popupMenu = new JPopupMenu();
+			popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
+			box.setComponentPopupMenu(popupMenu);
+		}
 
 		// Create collapse event
 		box.addMouseListener(new MouseAdapter()
@@ -820,6 +836,11 @@ class LootTrackerPanel extends PluginPanel
 						continue;
 					}
 				}
+			}
+
+			if (hideIgnoredItems && plugin.isEventIgnored(record.getTitle()))
+			{
+				continue;
 			}
 
 			int present = record.getItems().length;

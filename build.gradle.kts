@@ -44,6 +44,8 @@ subprojects {
             }
             filter {
                 includeModule("net.runelite", "discord")
+                includeModule("net.runelite.jogl", "jogl-all")
+                includeModule("net.runelite.gluegen", "gluegen-rt")
             }
         }
         exclusiveContent {

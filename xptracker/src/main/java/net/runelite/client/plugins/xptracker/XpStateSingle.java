@@ -130,24 +130,29 @@ class XpStateSingle
 		return (xpGained / xpGoal) * 100;
 	}
 
-	private String getTimeTillLevel()
+	private long getSecondsTillLevel()
 	{
 		long seconds = getTimeElapsedInSeconds();
 
 		if (seconds <= 0 || xpGained <= 0)
 		{
 			// Infinity symbol
-			return "\u221e";
+			return -1;
 		}
 
 		// formula is xpRemaining / xpPerSecond
 		// xpPerSecond being xpGained / seconds
 		// This can be simplified so division is only done once and we can work in whole numbers!
-		long remainingSeconds = (getXpRemaining() * seconds) / xpGained;
+		return (getXpRemaining() * seconds) / xpGained;
+	}
 
-		// Java 8 doesn't have good duration / period objects to represent spans of time that can be formatted
-		// Rather than importing another dependency like joda time (which is practically built into java 10)
-		// below will be a custom formatter that handles spans larger than 1 day
+	private String getTimeTillLevel()
+	{
+		long remainingSeconds = getSecondsTillLevel();
+		if (remainingSeconds < 0)
+		{
+			return "\u221e";
+		}
 
 		long durationDays = remainingSeconds / (24 * 60 * 60);
 		long durationHours = (remainingSeconds % (24 * 60 * 60)) / (60 * 60);
@@ -162,7 +167,29 @@ class XpStateSingle
 		{
 			return String.format("1 day %02d:%02d:%02d", durationHours, durationMinutes, durationSeconds);
 		}
-		else if (durationHours > 0)
+
+		// durationDays = 0 if we got here.
+		// return time remaining in hh:mm:ss or mm:ss format
+		return getTimeTillLevelShort();
+	}
+
+	/**
+	 * Get time to level in `hh:mm:ss` or `mm:ss` format,
+	 * where `hh` can be > 24.
+	 * @return
+	 */
+	private String getTimeTillLevelShort()
+	{
+		long remainingSeconds = getSecondsTillLevel();
+		if (remainingSeconds < 0)
+		{
+			return "\u221e";
+		}
+
+		long durationHours = remainingSeconds / (60 * 60);
+		long durationMinutes = (remainingSeconds % (60 * 60)) / 60;
+		long durationSeconds = remainingSeconds % 60;
+		if (durationHours > 0)
 		{
 			return String.format("%02d:%02d:%02d", durationHours, durationMinutes, durationSeconds);
 		}
@@ -268,6 +295,7 @@ class XpStateSingle
 			.actionsRemainingToGoal(getActionsRemaining())
 			.actionsPerHour(getActionsHr())
 			.timeTillGoal(getTimeTillLevel())
+			.timeTillGoalShort(getTimeTillLevelShort())
 			.startGoalXp(startLevelExp)
 			.endGoalXp(endLevelExp)
 			.build();

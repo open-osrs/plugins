@@ -48,7 +48,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -264,6 +264,7 @@ public class LootTrackerPlugin extends Plugin
 
 	private List<String> ignoredItems = new ArrayList<>();
 	private List<String> ignoredNPCs = new ArrayList<>();
+	private List<String> ignoredEvents = new ArrayList<>();
 	private Multiset<Integer> inventorySnapshot;
 	@Getter(AccessLevel.PACKAGE)
 	private LootTrackerClient lootTrackerClient;
@@ -273,12 +274,14 @@ public class LootTrackerPlugin extends Plugin
 	private boolean gotPet = false;
 	private final Map<String, UUID> userUuidMap = new HashMap<>();
 
-	private static Collection<ItemStack> stack(Collection<ItemStack> items)
+	@VisibleForTesting
+	Collection<ItemStack> stack(Collection<ItemStack> items)
 	{
 		final List<ItemStack> list = new ArrayList<>();
 
-		for (final ItemStack item : items)
+		for (ItemStack item : items)
 		{
+			item = LootTrackerMapping.map(item, itemManager);
 			int quantity = 0;
 			for (final ItemStack i : list)
 			{
@@ -354,6 +357,7 @@ public class LootTrackerPlugin extends Plugin
 			if (event.getKey().equals("ignoredItems"))
 			{
 				ignoredItems = Text.fromCSV(config.getIgnoredItems());
+				ignoredEvents = Text.fromCSV(config.getIgnoredEvents());
 				SwingUtilities.invokeLater(panel::updateIgnoredRecords);
 			}
 			if (event.getKey().equals("ignoredNPCs"))
@@ -375,6 +379,7 @@ public class LootTrackerPlugin extends Plugin
 	{
 		ignoredItems = Text.fromCSV(config.getIgnoredItems());
 		ignoredNPCs = Text.fromCSV(config.getIgnoredNPCs());
+		ignoredEvents = Text.fromCSV(config.getIgnoredEvents());
 
 		panel = new LootTrackerPanel(this, itemManager, config);
 		spriteManager.getSpriteAsync(SpriteID.TAB_INVENTORY, 0, panel::loadHeaderIcon);
@@ -1309,7 +1314,7 @@ public class LootTrackerPlugin extends Plugin
 
 	void toggleItem(String name, boolean ignore)
 	{
-		final Set<String> ignoredItemSet = new HashSet<>(ignoredItems);
+		final Set<String> ignoredItemSet = new LinkedHashSet<>(ignoredItems);
 
 		if (ignore)
 		{
@@ -1336,7 +1341,7 @@ public class LootTrackerPlugin extends Plugin
 	 */
 	void toggleNPC(String name, boolean ignore)
 	{
-		final Set<String> ignoredNPCSet = new HashSet<>(ignoredNPCs);
+		final Set<String> ignoredNPCSet = new LinkedHashSet<>(ignoredNPCs);
 		if (ignore)
 		{
 			ignoredNPCSet.add(name);
@@ -1359,6 +1364,28 @@ public class LootTrackerPlugin extends Plugin
 	boolean isIgnoredNPC(String name)
 	{
 		return ignoredNPCs.contains(name);
+	}
+
+	void toggleEvent(String name, boolean ignore)
+	{
+		final Set<String> ignoredSet = new LinkedHashSet<>(ignoredEvents);
+
+		if (ignore)
+		{
+			ignoredSet.add(name);
+		}
+		else
+		{
+			ignoredSet.remove(name);
+		}
+
+		config.setIgnoredEvents(Text.toCSV(ignoredSet));
+		// the config changed will update the panel
+	}
+
+	boolean isEventIgnored(String name)
+	{
+		return ignoredEvents.contains(name);
 	}
 
 	@VisibleForTesting

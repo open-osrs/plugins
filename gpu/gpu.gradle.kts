@@ -23,21 +23,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.13"
+version = "0.0.14"
 
 project.extra["PluginName"] = "GPU"
 project.extra["PluginDescription"] = "Utilizes the GPU"
 
 dependencies {
-    compileOnly(group = "org.jogamp.jogl", name = "jogl-all", version = "2.3.2")
-    compileOnly(group = "org.jogamp.gluegen", name = "gluegen-rt", version = "2.3.2")
+    implementation(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429")
+    implementation(group = "net.runelite.jogl", name = "jogl-all", version = "2.4.0-rc-20200429")
 
-    testImplementation(group = "org.jogamp.jogl", name = "jogl-all", version = "2.3.2")
-    testImplementation(group = "org.jogamp.gluegen", name = "gluegen-rt", version = "2.3.2")
+    runtimeOnly(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429", classifier = "natives-linux-amd64")
+    runtimeOnly(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429", classifier = "natives-windows-amd64")
+    runtimeOnly(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429", classifier = "natives-windows-i586")
+    runtimeOnly(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429", classifier = "natives-macosx-universal")
+    runtimeOnly(group = "net.runelite.jogl", name = "jogl-all", version = "2.4.0-rc-20200429", classifier = "natives-linux-amd64")
+    runtimeOnly(group = "net.runelite.jogl", name = "jogl-all", version = "2.4.0-rc-20200429", classifier = "natives-windows-amd64")
+    runtimeOnly(group = "net.runelite.jogl", name = "jogl-all", version = "2.4.0-rc-20200429", classifier = "natives-windows-i586")
+    runtimeOnly(group = "net.runelite.jogl", name = "jogl-all", version = "2.4.0-rc-20200429", classifier = "natives-macosx-universal")
+
+    testImplementation(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429")
+    testImplementation(group = "net.runelite.jogl", name = "jogl-all", version = "2.4.0-rc-20200429")
 }
 
 tasks {
     jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from(configurations.runtimeClasspath.get()
+                .map { if (it.isDirectory) it else zipTree(it) })
+        val sourcesMain = sourceSets.main.get()
+        from(sourcesMain.output)
+
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
