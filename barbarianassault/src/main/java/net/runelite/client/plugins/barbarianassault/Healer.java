@@ -41,15 +41,15 @@ class Healer
 	private static final List<List<int[]>> CODES = List.of(
 		// List.of(firstCallFood, secondCallFood, lastFoodTime),
 		List.of(new int[]{1, 1}, new int[]{0, 0}, new int[]{0, 0}),
-		List.of(new int[]{1, 1, 2}, new int[]{0, 0, 0}, new int[]{0, 0, 21}),
-		List.of(new int[]{1, 6, 2}, new int[]{0, 0, 0}, new int[]{0, 0, 0}),
-		List.of(new int[]{2, 5, 2, 0}, new int[]{0, 0, 7, 10}, new int[]{0, 0, 0, 0}),
-		List.of(new int[]{2, 5, 2, 3, 0}, new int[]{0, 0, 0, 0, 7}, new int[]{0, 0, 21, 30, 0}),
-		List.of(new int[]{3, 5, 2, 2, 0, 0}, new int[]{0, 0, 0, 2, 9, 10}, new int[]{12, 18, 21, 0, 0, 0}),
-		List.of(new int[]{3, 7, 1, 1, 0, 0, 0}, new int[]{2, 0, 1, 1, 2, 4, 10}, new int[]{0, 21, 0, 0, 30, 45, 0}),
-		List.of(new int[]{1, 9, 1, 1, 0, 0, 0}, new int[]{1, 0, 1, 1, 2, 2, 10}, new int[]{0, 0, 0, 0, 33, 42, 0}),
-		List.of(new int[]{2, 8, 1, 1, 0, 0, 0, 0}, new int[]{1, 0, 1, 1, 2, 1, 1, 10}, new int[]{0, 21, 0, 0, 0, 0, 0, 0, 0}),
-		List.of(new int[]{2, 5, 1, 1, 0, 0, 0}, new int[]{1, 0, 1, 1, 4, 4, 8}, new int[]{21, 33, 0, 33, 30, 45, 0}));
+		List.of(new int[]{2, 3, 4}, new int[]{0, 0, 0}, new int[]{24, 0, 0}),
+		List.of(new int[]{1, 6, 2}, new int[]{0, 0, 3}, new int[]{0, 0, 0}),
+		List.of(new int[]{2, 5, 2, 0}, new int[]{1, 0, 1, 6}, new int[]{36, 0, 36, 0}),
+		List.of(new int[]{2, 7, 2, 1, 0}, new int[]{0, 0, 0, 2, 6}, new int[]{18, 0, 24, 0, 0}),
+		List.of(new int[]{3, 5, 2, 2, 0, 0}, new int[]{0, 0, 0, 1, 10, 11}, new int[]{18, 0, 24, 27, 0, 0}),
+		List.of(new int[]{3, 5, 6, 1, 0, 0, 0}, new int[]{0, 0, 0, 1, 1, 6, 4}, new int[]{21, 27, 0, 0, 0, 0, 0}),
+		List.of(new int[]{2, 8, 1, 1, 0, 0, 0}, new int[]{1, 0, 1, 1, 3, 1, 0}, new int[]{36, 0, 0, 39, 45, 0, 0}),
+		List.of(new int[]{2, 8, 1, 1, 0, 0, 0, 0}, new int[]{1, 0, 1, 1, 1, 1, 1, 0}, new int[]{33, 0, 33, 42, 0, 0, 0, 0, 0}),
+		List.of(new int[]{2, 5, 1, 1, 0, 0, 0}, new int[]{1, 0, 1, 1, 3, 1, 0}, new int[]{33, 0, 0, 33, 48, 0, 0}));
 
 	private final NPC npc;
 
