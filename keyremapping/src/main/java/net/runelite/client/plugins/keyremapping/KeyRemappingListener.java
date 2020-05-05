@@ -150,7 +150,7 @@ class KeyRemappingListener implements KeyListener
 				}
 				else if (config.f12().matches(e))
 				{
-					mappedKeyCode = KeyEvent.VK_F1;
+					mappedKeyCode = KeyEvent.VK_F12;
 				}
 				else if (config.esc().matches(e))
 				{
