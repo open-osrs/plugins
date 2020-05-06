@@ -32,7 +32,6 @@ import net.runelite.client.config.Range;
 import net.runelite.client.config.Title;
 import static net.runelite.client.plugins.gpu.GpuPlugin.MAX_DISTANCE;
 import static net.runelite.client.plugins.gpu.GpuPlugin.MAX_FOG_DEPTH;
-import net.runelite.client.plugins.gpu.config.AnisotropicFilteringMode;
 import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
 import net.runelite.client.plugins.gpu.config.UIScalingMode;
 
@@ -128,7 +127,7 @@ public interface GpuPluginConfig extends Config
 		description = "Offloads face sorting to GPU, enabling extended draw distance. Requires plugin restart.",
 		position = 2,
 		titleSection = "drawingTitle",
-		warning = "NOTE: This may cause graphical glitches if disabling on windows, It's advised to leave enabled!"
+		warning = "This option requires a plugin restart and disables draw distance.\nOnly use as a last resort."
 	)
 	default boolean useComputeShaders()
 	{
@@ -159,18 +158,6 @@ public interface GpuPluginConfig extends Config
 		return AntiAliasingMode.DISABLED;
 	}
 
-	@ConfigItem(
-		keyName = "anisotropicFilteringMode",
-		name = "Anisotropic Filtering",
-		description = "Configures the anisotropic filtering mode",
-		position = 1,
-		titleSection = "ppTitle"
-	)
-	default AnisotropicFilteringMode anisotropicFilteringMode()
-	{
-		return AnisotropicFilteringMode.DISABLED;
-	}
-
 	@Range(
 		max = MAX_FOG_DEPTH
 	)
@@ -196,7 +183,7 @@ public interface GpuPluginConfig extends Config
 		position = 1,
 		titleSection = "fogTitle"
 	)
-	default int fogCircularity()
+	default int fogCornerRadius()
 	{
 		return 30;
 	}
@@ -214,17 +201,5 @@ public interface GpuPluginConfig extends Config
 	default int fogDensity()
 	{
 		return 10;
-	}
-
-	@ConfigItem(
-		keyName = "ambientLighting",
-		name = "Ambient Lighting",
-		description = "Produces global lighting based on current fog color",
-		position = 0,
-		titleSection = "effectsTitle"
-	)
-	default boolean ambientLighting()
-	{
-		return false;
 	}
 }

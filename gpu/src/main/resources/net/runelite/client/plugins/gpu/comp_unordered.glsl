@@ -29,7 +29,7 @@
 
 layout(local_size_x = 6) in;
 
-#include common_func.glsl
+#include common.glsl
 
 void main() {
   uint groupId = gl_WorkGroupID.x;

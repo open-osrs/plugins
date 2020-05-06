@@ -25,26 +25,17 @@
 package net.runelite.client.plugins.gpu;
 
 import com.jogamp.opengl.GL4;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class GLUtil
+class GLUtil
 {
 	private static final int ERR_LEN = 1024;
 
 	private static final int[] buf = new int[1];
-	private static final float[] fbuf = new float[1];
 
-	static int glGetInteger(GL4 gl)
+	static int glGetInteger(GL4 gl, int pname)
 	{
-		gl.glGetIntegerv(com.jogamp.opengl.GL.GL_MAX_SAMPLES, buf, 0);
+		gl.glGetIntegerv(pname, buf, 0);
 		return buf[0];
-	}
-
-	static float glGetFloat(GL4 gl)
-	{
-		gl.glGetFloatv(com.jogamp.opengl.GL.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, fbuf, 0);
-		return fbuf[0];
 	}
 
 	static int glGetShader(GL4 gl, int shader, int pname)

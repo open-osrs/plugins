@@ -53,17 +53,11 @@ float catmull_rom(float x)
     float t3 = t * t * t;
 
     if (t < 1)
-    {
         return 1.5 * t3 - 2.5 * t2 + 1.0;
-    }
     else if (t < 2)
-    {
         return -0.5 * t3 + 2.5 * t2 - 4.0 * t + 2.0;
-    }
     else
-    {
         return 0.0;
-    }
 }
 
 float mitchell(float x)
@@ -78,17 +72,11 @@ float mitchell(float x)
     float t3 = t * t * t;
 
     if (t < 1)
-    {
         return 7.0/6.0 * t3 + -2.0 * t2 + 8.0/9.0;
-    }
     else if (t < 2)
-    {
         return -7.0/18.0 * t3 + 2.0 * t2 - 10.0/3.0 * t + 16.0/9.0;
-    }
     else
-    {
         return 0.0;
-    }
 }
 
 #define CR_AR_STRENGTH 0.9
