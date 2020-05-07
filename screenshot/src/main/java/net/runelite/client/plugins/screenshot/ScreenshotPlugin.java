@@ -85,6 +85,7 @@ import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.OverlayRenderer;
 import net.runelite.client.util.HotkeyListener;
 import net.runelite.client.util.ImageCapture;
 import net.runelite.client.util.ImageUtil;
@@ -157,6 +158,9 @@ public class ScreenshotPlugin extends Plugin
 
 	@Inject
 	private DrawManager drawManager;
+
+	@Inject
+	private OverlayRenderer overlayRenderer;
 
 	@Inject
 	private ScheduledExecutorService executor;
@@ -285,6 +289,14 @@ public class ScreenshotPlugin extends Plugin
 		{
 			takeScreenshot("Death", "Deaths");
 		}
+		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_KILL ||
+			config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
+		{
+			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting() == player)
+			{
+				takeScreenshot("KO " + player.getName(), "PvP Kills");
+			}
+		}
 
 		int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
 		if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
@@ -298,7 +310,8 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	private void onPlayerLootReceived(final PlayerLootReceived playerLootReceived)
 	{
-		if (config.screenshotKills())
+		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_LOOT ||
+		config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
 		{
 			final Player player = playerLootReceived.getPlayer();
 			final String name = player.getName();
@@ -577,12 +590,17 @@ public class ScreenshotPlugin extends Plugin
 	 */
 	private void takeScreenshot(String fileName)
 	{
+		if (!config.includeOverlays())
+		{
+			overlayRenderer.setShouldRender(false);
+		}
 		if (client.getGameState() == GameState.LOGIN_SCREEN)
 		{
 			// Prevent the screenshot from being captured
 			log.info("Login screenshot prevented");
 			return;
 		}
+
 
 		Consumer<Image> imageCallback = (img) ->
 		{
@@ -615,6 +633,10 @@ public class ScreenshotPlugin extends Plugin
 			log.info("Login screenshot prevented");
 			return;
 		}
+		if (!config.includeOverlays())
+		{
+			overlayRenderer.setShouldRender(false);
+		}
 
 		Consumer<Image> imageCallback = (img) ->
 		{
@@ -635,6 +657,10 @@ public class ScreenshotPlugin extends Plugin
 
 	private void takeScreenshot(String fileName, String subDir, Image image)
 	{
+		if (!config.includeOverlays())
+		{
+			overlayRenderer.setShouldRender(false);
+		}
 		BufferedImage screenshot = config.includeFrame()
 			? new BufferedImage(clientUi.getWidth(), clientUi.getHeight(), BufferedImage.TYPE_INT_ARGB)
 			: new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
@@ -665,6 +691,7 @@ public class ScreenshotPlugin extends Plugin
 		// Draw the game onto the screenshot
 		graphics.drawImage(image, gameOffsetX, gameOffsetY, null);
 		imageCapture.takeScreenshot(screenshot, fileName, subDir, config.notifyWhenTaken(), config.uploadScreenshot());
+		overlayRenderer.setShouldRender(true);
 	}
 
 	@VisibleForTesting
