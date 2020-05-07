@@ -24,11 +24,10 @@
  */
 package net.runelite.client.plugins.gpu.config;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter(AccessLevel.PUBLIC)
+@Getter
 @RequiredArgsConstructor
 public enum AntiAliasingMode
 {

@@ -47,7 +47,5 @@ void main()
     TexCoord = aTexCoord;
 
     if (samplingMode == SAMPLING_XBR)
-    {
         xbrTable = xbr_vert(TexCoord, sourceDimensions);
-    }
 }
