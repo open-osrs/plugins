@@ -26,7 +26,7 @@
 version = "0.0.1"
 
 project.extra["PluginName"] = "Mirror"
-project.extra["PluginDescription"] = "Chmmmmmmm"
+project.extra["PluginDescription"] = "Creates a second window that contains the game screen minus the AFTER_MIRROR overlay"
 
 tasks {
     jar {
