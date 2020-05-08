@@ -13,10 +13,10 @@ public interface ItemUserConfig extends Config
 {
 
 	@ConfigItem(
-			keyName = "itemId",
-			name = "Item ID",
-			description = "The ID of the item you want to use on the object.",
-			position = 0
+		keyName = "itemId",
+		name = "Item ID",
+		description = "The ID of the item you want to use on the object.",
+		position = 0
 	)
 	default int itemId()
 	{
@@ -24,10 +24,10 @@ public interface ItemUserConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "objectId",
-			name = "Object ID",
-			description = "The ID of the object to use the item on.",
-			position = 1
+		keyName = "objectId",
+		name = "Object ID",
+		description = "The ID of the object to use the item on.",
+		position = 1
 	)
 	default int objectId()
 	{
@@ -35,10 +35,10 @@ public interface ItemUserConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "useItemsKeybind",
-			name = "Use Keybind",
-			description = "The keybind to use the items",
-			position = 2
+		keyName = "useItemsKeybind",
+		name = "Use Keybind",
+		description = "The keybind to use the items",
+		position = 2
 	)
 	default Keybind useItemsKeybind()
 	{
@@ -46,10 +46,10 @@ public interface ItemUserConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "clickDelay",
-			name = "Click Delay",
-			description = "The keybind to drop the items",
-			position = 3
+		keyName = "clickDelay",
+		name = "Click Delay",
+		description = "The keybind to drop the items",
+		position = 3
 	)
 	default int clickDelay()
 	{

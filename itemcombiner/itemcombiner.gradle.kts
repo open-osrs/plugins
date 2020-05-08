@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.11"
+version = "0.0.12"
 
 project.extra["PluginName"] = "Item Combiner"
 project.extra["PluginDescription"] = "Automatically uses items on another item"

@@ -32,13 +32,14 @@ import static net.runelite.api.ProjectileID.GRANITE_CANNONBALL;
 
 @Extension
 @PluginDescriptor(
-		name = "Cannon Reloader",
-		description = "Automatically reload your cannon",
-		tags = { "combat", "notifications", "ranged" },
-		enabledByDefault = false,
-		type = PluginType.PVM
+	name = "Cannon Reloader",
+	description = "Automatically reload your cannon",
+	tags = {"combat", "notifications", "ranged"},
+	enabledByDefault = false,
+	type = PluginType.PVM
 )
-public class CannonReloaderPlugin extends Plugin {
+public class CannonReloaderPlugin extends Plugin
+{
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
 	private static final int MAX_CBALLS = 30;
 	private static final int MAX_DISTANCE = 2500;
@@ -71,15 +72,17 @@ public class CannonReloaderPlugin extends Plugin {
 
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-			new ThreadPoolExecutor.DiscardPolicy());
-	
+		new ThreadPoolExecutor.DiscardPolicy());
+
 	@Override
-	protected void startUp() throws Exception {
+	protected void startUp() throws Exception
+	{
 		nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 	}
-	
+
 	@Override
-	protected void shutDown() throws Exception {
+	protected void shutDown() throws Exception
+	{
 		cannonPlaced = false;
 		cannonPosition = null;
 		cballsLeft = 0;
@@ -87,46 +90,58 @@ public class CannonReloaderPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onGameObjectSpawned(GameObjectSpawned event) {
+	public void onGameObjectSpawned(GameObjectSpawned event)
+	{
 		GameObject gameObject = event.getGameObject();
-		
+
 		Player localPlayer = client.getLocalPlayer();
 
-		if (gameObject.getId() == CANNON_BASE && !cannonPlaced) {
+		if (gameObject.getId() == CANNON_BASE && !cannonPlaced)
+		{
 			if (localPlayer != null && localPlayer.getWorldLocation().distanceTo(gameObject.getWorldLocation()) <= 2
-					&& localPlayer.getAnimation() == AnimationID.BURYING_BONES) {
+				&& localPlayer.getAnimation() == AnimationID.BURYING_BONES)
+			{
 				cannonPosition = gameObject.getWorldLocation();
 				cannon = gameObject;
 			}
 		}
 
 		//Object ID = 14916
-		if (gameObject.getId() == BROKEN_MULTICANNON_14916 && cannonPlaced) {
-			if (cannonPosition.equals(gameObject.getWorldLocation())) {
+		if (gameObject.getId() == BROKEN_MULTICANNON_14916 && cannonPlaced)
+		{
+			if (cannonPosition.equals(gameObject.getWorldLocation()))
+			{
 				entry = new MenuEntry("Repair", "<col=ffff>Broken multicannon", gameObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
 				click();
-				try {
+				try
+				{
 					Thread.sleep(50);
-				} catch (Exception e) { /*ignored*/ }
+				}
+				catch (Exception e)
+				{ /*ignored*/ }
 			}
 		}
 	}
 
 	@Subscribe
-	private void onProjectileMoved(ProjectileMoved event) {
+	private void onProjectileMoved(ProjectileMoved event)
+	{
 		Projectile projectile = event.getProjectile();
-		
-		if ((projectile.getId() == CANNONBALL || projectile.getId() == GRANITE_CANNONBALL) && cannonPosition != null) {
+
+		if ((projectile.getId() == CANNONBALL || projectile.getId() == GRANITE_CANNONBALL) && cannonPosition != null)
+		{
 			WorldPoint projectileLoc = WorldPoint.fromLocal(client, projectile.getX1(), projectile.getY1(), client.getPlane());
-			
+
 			//Check to see if projectile x,y is 0 else it will continuously decrease while ball is flying.
-			if (projectileLoc.equals(cannonPosition) && projectile.getX() == 0 && projectile.getY() == 0) {
+			if (projectileLoc.equals(cannonPosition) && projectile.getX() == 0 && projectile.getY() == 0)
+			{
 				// When there's a chat message about cannon reloaded/unloaded/out of ammo,
 				// the message event runs before the projectile event. However they run
 				// in the opposite order on the server. So if both fires in the same tick,
 				// we don't want to update the cannonball counter if it was set to a specific
 				// amount.
-				if (!skipProjectileCheckThisTick) {
+				if (!skipProjectileCheckThisTick)
+				{
 					cballsLeft--;
 				}
 			}
@@ -134,26 +149,32 @@ public class CannonReloaderPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onChatMessage(ChatMessage event) {
-		if (event.getType() != ChatMessageType.SPAM && event.getType() != ChatMessageType.GAMEMESSAGE) {
+	public void onChatMessage(ChatMessage event)
+	{
+		if (event.getType() != ChatMessageType.SPAM && event.getType() != ChatMessageType.GAMEMESSAGE)
+		{
 			return;
 		}
-		
-		if (event.getMessage().equals("You add the furnace.")) {
+
+		if (event.getMessage().equals("You add the furnace."))
+		{
 			cannonPlaced = true;
 			cballsLeft = 0;
 		}
-		
-		if (event.getMessage().contains("You pick up the cannon")) {
+
+		if (event.getMessage().contains("You pick up the cannon"))
+		{
 			cannonPlaced = false;
 			cballsLeft = 0;
 		}
-		
-		if (event.getMessage().startsWith("You load the cannon with")) {
+
+		if (event.getMessage().startsWith("You load the cannon with"))
+		{
 			nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
-			
+
 			Matcher m = NUMBER_PATTERN.matcher(event.getMessage());
-			if (m.find()) {
+			if (m.find())
+			{
 				// The cannon will usually refill to MAX_CBALLS, but if the
 				// player didn't have enough cannonballs in their inventory,
 				// it could fill up less than that. Filling the cannon to
@@ -162,75 +183,96 @@ public class CannonReloaderPlugin extends Plugin {
 				// from the cannon due to the projectiels not being in memory,
 				// so our counter can be higher than it is supposed to be.
 				int amt = Integer.parseInt(m.group());
-				if (cballsLeft + amt >= MAX_CBALLS) {
+				if (cballsLeft + amt >= MAX_CBALLS)
+				{
 					skipProjectileCheckThisTick = true;
 					cballsLeft = MAX_CBALLS;
-				} else {
+				}
+				else
+				{
 					cballsLeft += amt;
 				}
-			} else if (event.getMessage().equals("You load the cannon with one cannonball.")) {
-				if (cballsLeft + 1 >= MAX_CBALLS) {
+			}
+			else if (event.getMessage().equals("You load the cannon with one cannonball."))
+			{
+				if (cballsLeft + 1 >= MAX_CBALLS)
+				{
 					skipProjectileCheckThisTick = true;
 					cballsLeft = MAX_CBALLS;
-				} else {
+				}
+				else
+				{
 					cballsLeft++;
 				}
 			}
 		}
-		
-		if (event.getMessage().contains("Your cannon is out of ammo!")) {
+
+		if (event.getMessage().contains("Your cannon is out of ammo!"))
+		{
 			skipProjectileCheckThisTick = true;
-			
+
 			// If the player was out of range of the cannon, some cannonballs
 			// may have been used without the client knowing, so having this
 			// extra check is a good idea.
 			cballsLeft = 0;
 		}
-		
+
 		if (event.getMessage().startsWith("You unload your cannon and receive Cannonball")
-				|| event.getMessage().startsWith("You unload your cannon and receive Granite cannonball")) {
+			|| event.getMessage().startsWith("You unload your cannon and receive Granite cannonball"))
+		{
 			skipProjectileCheckThisTick = true;
-			
+
 			cballsLeft = 0;
 		}
 	}
 
 	@Subscribe
-	public void onClientTick(ClientTick event) {
+	public void onClientTick(ClientTick event)
+	{
 		this.executor.submit(() -> {
-			try {
+			try
+			{
 				if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
+				{
 					return;
+				}
 
 				entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
 				click();
 
 				nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 				Thread.sleep(config.clickDelay());
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
 			}
 		});
 	}
 
 	@Subscribe
-	public void onGameTick(GameTick event) {
+	public void onGameTick(GameTick event)
+	{
 		skipProjectileCheckThisTick = false;
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if (entry != null) {
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (entry != null)
+		{
 			event.setMenuEntry(entry);
 		}
 
 		entry = null;
 	}
 
-	public void click() {
+	public void click()
+	{
 		Point pos = client.getMouseCanvasPosition();
 
-		if (client.isStretchedEnabled()) {
+		if (client.isStretchedEnabled())
+		{
 			final Dimension stretched = client.getStretchedDimensions();
 			final Dimension real = client.getRealDimensions();
 			final double width = (stretched.width / real.getWidth());

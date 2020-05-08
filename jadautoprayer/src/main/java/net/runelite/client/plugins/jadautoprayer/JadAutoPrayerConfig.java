@@ -8,10 +8,10 @@ import net.runelite.client.config.ConfigItem;
 public interface JadAutoPrayerConfig extends Config
 {
 	@ConfigItem(
-			position = 0,
-			keyName = "autoSwitchPrayers",
-			name = "Auto Prayer Switcher",
-			description = "Automatically switches prayers against Jad."
+		position = 0,
+		keyName = "autoSwitchPrayers",
+		name = "Auto Prayer Switcher",
+		description = "Automatically switches prayers against Jad."
 	)
 	default boolean autoSwitchPrayers()
 	{

@@ -17,57 +17,64 @@ import javax.inject.Inject;
 
 @Extension
 @PluginDescriptor(
-        name = "Event Debugger",
-        description = "",
-        tags = {"combat", "notifications", "health", "food", "eat"},
-        enabledByDefault = false,
-        type = PluginType.UTILITY
+	name = "Event Debugger",
+	description = "",
+	tags = {"combat", "notifications", "health", "food", "eat"},
+	enabledByDefault = false,
+	type = PluginType.UTILITY
 )
 @Slf4j
 public class EventDebuggerPlugin extends Plugin
 {
-    @Inject
-    private Client client;
+	@Inject
+	private Client client;
 
-    @Inject
-    private Notifier notifier;
+	@Inject
+	private Notifier notifier;
 
-    @Inject
-    private EventDebuggerConfig config;
+	@Inject
+	private EventDebuggerConfig config;
 
-    @Provides
-    EventDebuggerConfig provideConfig(final ConfigManager configManager) {
-        return configManager.getConfig(EventDebuggerConfig.class);
-    }
+	@Provides
+	EventDebuggerConfig provideConfig(final ConfigManager configManager)
+	{
+		return configManager.getConfig(EventDebuggerConfig.class);
+	}
 
-    @Override
-    protected void startUp() throws Exception {
-    }
+	@Override
+	protected void startUp() throws Exception
+	{
+	}
 
-    @Override
-    protected void shutDown() throws Exception {
-    }
+	@Override
+	protected void shutDown() throws Exception
+	{
+	}
 
-    @Subscribe
-    public void onGameTick(final GameTick event) {
+	@Subscribe
+	public void onGameTick(final GameTick event)
+	{
 
-    }
+	}
 
-    @Subscribe
-    public void onMenuEntryAdded(final MenuEntryAdded event) {
+	@Subscribe
+	public void onMenuEntryAdded(final MenuEntryAdded event)
+	{
 
-        if (!config.menuEntryAdded())
-            return;
+		if (!config.menuEntryAdded())
+		{
+			return;
+		}
 
-        log.info("MenuEntryAdded:");
-        log.info("\tOption:\t" + event.getOption());
-        log.info("\tTarget:\t" + event.getTarget());
-        log.info("\tIdentifier:\t" + event.getIdentifier());
-        log.info("\tOpcode:\t" + event.getOpcode());
-        log.info("\tParam0:\t" + event.getParam0());
-        log.info("\tParam1:\t" + event.getParam1());
-        log.info("\tForceLeftClick:\t" + event.isForceLeftClick());
-        log.info("\tModified:\t" + event.isModified());
+		log.info("MenuEntryAdded:");
+		log.info("\tOption:\t" + event.getOption());
+		log.info("\tTarget:\t" + event.getTarget());
+		log.info("\tIdentifier:\t" + event.getIdentifier());
+		log.info("\tOpcode:\t" + event.getOpcode());
+		log.info("\tParam0:\t" + event.getParam0());
+		log.info("\tParam1:\t" + event.getParam1());
+		log.info("\tForceLeftClick:\t" + event.isForceLeftClick());
+		log.info("\tModified:\t" + event.isModified());
 
-    }
+	}
 }

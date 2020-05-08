@@ -16,7 +16,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
+public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener
+{
 	private final Client client;
 
 	private Instant lastPress;
@@ -35,10 +36,11 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-			new ThreadPoolExecutor.DiscardPolicy());
+		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Inject
-	private PkToolsHotkeyListener(final Client client, final PkToolsConfig config, final PkToolsPlugin plugin, final PkToolsOverlay overlay) {
+	private PkToolsHotkeyListener(final Client client, final PkToolsConfig config, final PkToolsPlugin plugin, final PkToolsOverlay overlay)
+	{
 		this.client = client;
 		this.config = config;
 		this.plugin = plugin;
@@ -46,55 +48,76 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public void keyPressed(KeyEvent e)
+	{
 		if (this.client.getGameState() != GameState.LOGGED_IN)
+		{
 			return;
+		}
 
 		if (e.getKeyCode() == this.config.prayerKey().getKeyCode())
+		{
 			configManager.setConfiguration("pktools", "autoPrayerSwitcherEnabled", !config.autoPrayerSwitcherEnabled());
+		}
 
 
-
-		try {
-			if (this.lastPress != null && Duration.between(this.lastPress, Instant.now()).getNano() > 1000) {
+		try
+		{
+			if (this.lastPress != null && Duration.between(this.lastPress, Instant.now()).getNano() > 1000)
+			{
 				this.lastPress = null;
 			}
 
-			if (this.lastPress != null) {
+			if (this.lastPress != null)
+			{
 				return;
 			}
 
 			final int key_code = e.getKeyCode();
 
 			executor.submit(() -> {
-				if (key_code == this.config.key1().getKeyCode()) {
+				if (key_code == this.config.key1().getKeyCode())
+				{
 					this.processCommands(this.config.key1_script(), this.client, this.config, this.plugin, this.overlay, this.configManager);
-				} else if (key_code == this.config.key2().getKeyCode()) {
+				}
+				else if (key_code == this.config.key2().getKeyCode())
+				{
 					this.processCommands(this.config.key2_script(), this.client, this.config, this.plugin, this.overlay, this.configManager);
-				} else if (key_code == this.config.key3().getKeyCode()) {
+				}
+				else if (key_code == this.config.key3().getKeyCode())
+				{
 					this.processCommands(this.config.key3_script(), this.client, this.config, this.plugin, this.overlay, this.configManager);
-				} else if (key_code == this.config.key4().getKeyCode()) {
+				}
+				else if (key_code == this.config.key4().getKeyCode())
+				{
 					this.processCommands(this.config.key4_script(), this.client, this.config, this.plugin, this.overlay, this.configManager);
-				} else if (key_code == this.config.key5().getKeyCode()) {
+				}
+				else if (key_code == this.config.key5().getKeyCode())
+				{
 					this.processCommands(this.config.key5_script(), this.client, this.config, this.plugin, this.overlay, this.configManager);
 				}
 			});
 		}
-		catch (final Throwable ex) {
+		catch (final Throwable ex)
+		{
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
 
-	private void processCommands(final String command, final Client client, final PkToolsConfig config, final PkToolsPlugin plugin, final PkToolsOverlay overlay, final ConfigManager configManager) {
-		for (final String c : command.split("\\s*\n\\s*")) {
+	private void processCommands(final String command, final Client client, final PkToolsConfig config, final PkToolsPlugin plugin, final PkToolsOverlay overlay, final ConfigManager configManager)
+	{
+		for (final String c : command.split("\\s*\n\\s*"))
+		{
 			ScriptCommandFactory.builder(c).execute(client, config, plugin, overlay, configManager);
 		}
 	}
 
-	public static String getTag(final ConfigManager configManager, final int itemId) {
+	public static String getTag(final ConfigManager configManager, final int itemId)
+	{
 		final String tag = configManager.getConfiguration("inventorytags", "item_" + itemId);
-		if (tag == null || tag.isEmpty()) {
+		if (tag == null || tag.isEmpty())
+		{
 			return "";
 		}
 
@@ -102,8 +125,12 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener {
 	}
 
 	@Override
-	public void keyTyped(final KeyEvent e) { }
+	public void keyTyped(final KeyEvent e)
+	{
+	}
 
 	@Override
-	public void keyReleased(final KeyEvent e) { }
+	public void keyReleased(final KeyEvent e)
+	{
+	}
 }

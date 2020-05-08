@@ -16,52 +16,58 @@ import javax.inject.Inject;
 
 @Extension
 @PluginDescriptor(
-        name = "Item Combiner",
-        description = "Automatically uses items on another item",
-        tags = {"skilling", "item", "object", "combiner"},
-        enabledByDefault = false,
-        type = PluginType.SKILLING
+	name = "Item Combiner",
+	description = "Automatically uses items on another item",
+	tags = {"skilling", "item", "object", "combiner"},
+	enabledByDefault = false,
+	type = PluginType.SKILLING
 )
-public class ItemCombinerPlugin extends Plugin {
+public class ItemCombinerPlugin extends Plugin
+{
 
-    @Inject
-    private Client client;
+	@Inject
+	private Client client;
 
-    @Inject
-    private ConfigManager configManager;
+	@Inject
+	private ConfigManager configManager;
 
-    @Inject
-    ItemCombinerConfig config;
+	@Inject
+	ItemCombinerConfig config;
 
-    @Inject
-    private ItemCombinerHotkeyListener itemCombinerHotkeyListener;
+	@Inject
+	private ItemCombinerHotkeyListener itemCombinerHotkeyListener;
 
-    @Inject
-    private KeyManager keyManager;
+	@Inject
+	private KeyManager keyManager;
 
-    MenuEntry entry;
+	MenuEntry entry;
 
-    @Provides
-    ItemCombinerConfig provideConfig(final ConfigManager configManager) {
-        return configManager.getConfig(ItemCombinerConfig.class);
-    }
+	@Provides
+	ItemCombinerConfig provideConfig(final ConfigManager configManager)
+	{
+		return configManager.getConfig(ItemCombinerConfig.class);
+	}
 
-    @Override
-    protected void startUp() throws Exception {
-        this.keyManager.registerKeyListener(this.itemCombinerHotkeyListener);
-    }
+	@Override
+	protected void startUp() throws Exception
+	{
+		this.keyManager.registerKeyListener(this.itemCombinerHotkeyListener);
+	}
 
-    @Override
-    protected void shutDown() throws Exception {
-        this.keyManager.unregisterKeyListener(this.itemCombinerHotkeyListener);
-    }
+	@Override
+	protected void shutDown() throws Exception
+	{
+		this.keyManager.unregisterKeyListener(this.itemCombinerHotkeyListener);
+	}
 
-    @Subscribe
-    public void onMenuOptionClicked(MenuOptionClicked event) {
-        if (entry != null) {
-            event.setMenuEntry(entry);
-        }
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (entry != null)
+		{
+			event.setMenuEntry(entry);
+		}
 
-        entry = null;
-    }
+		entry = null;
+	}
 }

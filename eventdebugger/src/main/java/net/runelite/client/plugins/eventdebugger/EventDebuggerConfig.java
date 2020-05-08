@@ -7,10 +7,13 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("eventdebugger")
 public interface EventDebuggerConfig extends Config
 {
-    @ConfigItem(
-            keyName = "menuEntryAdded",
-            name = "MenuEntryAdded",
-            description = ""
-    )
-    default boolean menuEntryAdded() { return false; }
+	@ConfigItem(
+		keyName = "menuEntryAdded",
+		name = "MenuEntryAdded",
+		description = ""
+	)
+	default boolean menuEntryAdded()
+	{
+		return false;
+	}
 }

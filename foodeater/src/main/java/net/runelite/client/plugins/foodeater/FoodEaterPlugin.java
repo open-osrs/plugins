@@ -27,13 +27,14 @@ import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
-		name = "Food Eater",
-		description = "Automatically eats food",
-		tags = {"combat", "notifications", "health", "food", "eat"},
-		enabledByDefault = false,
-		type = PluginType.PVM
+	name = "Food Eater",
+	description = "Automatically eats food",
+	tags = {"combat", "notifications", "health", "food", "eat"},
+	enabledByDefault = false,
+	type = PluginType.PVM
 )
-public class FoodEaterPlugin extends Plugin {
+public class FoodEaterPlugin extends Plugin
+{
 	@Inject
 	private Client client;
 
@@ -50,39 +51,50 @@ public class FoodEaterPlugin extends Plugin {
 
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-			new ThreadPoolExecutor.DiscardPolicy());
+		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Provides
-	FoodEaterConfig provideConfig(final ConfigManager configManager) {
+	FoodEaterConfig provideConfig(final ConfigManager configManager)
+	{
 		return configManager.getConfig(FoodEaterConfig.class);
 	}
 
 	@Override
-	protected void startUp() throws Exception {
+	protected void startUp() throws Exception
+	{
 	}
 
 	@Override
-	protected void shutDown() throws Exception {
+	protected void shutDown() throws Exception
+	{
 	}
 
 	@Subscribe
-	public void onGameTick(final GameTick event) {
+	public void onGameTick(final GameTick event)
+	{
 		this.executor.submit(() -> {
-			try {
+			try
+			{
 				int health = this.client.getBoostedSkillLevel(Skill.HITPOINTS);
 
 				if (health > this.config.minimumHealth())
+				{
 					return;
+				}
 
 				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
 				if (inventory == null)
+				{
 					return;
+				}
 
-				for (WidgetItem item : inventory.getWidgetItems()) {
+				for (WidgetItem item : inventory.getWidgetItems())
+				{
 					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
 
-					if (name.equalsIgnoreCase(this.config.foodToEat())) {
+					if (name.equalsIgnoreCase(this.config.foodToEat()))
+					{
 						entry = getConsumableEntry(name, item.getId(), item.getIndex());
 						click();
 						Thread.sleep(50);
@@ -90,29 +102,35 @@ public class FoodEaterPlugin extends Plugin {
 					}
 				}
 			}
-			catch (Exception e) {
+			catch (Exception e)
+			{
 				e.printStackTrace();
 			}
 		});
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if (entry != null) {
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (entry != null)
+		{
 			event.setMenuEntry(entry);
 		}
 
 		entry = null;
 	}
 
-	private MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex) {
+	private MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex)
+	{
 		return new MenuEntry("Eat", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
 	}
 
-	public void click() {
+	public void click()
+	{
 		Point pos = client.getMouseCanvasPosition();
 
-		if (client.isStretchedEnabled()) {
+		if (client.isStretchedEnabled())
+		{
 			final Dimension stretched = client.getStretchedDimensions();
 			final Dimension real = client.getRealDimensions();
 			final double width = (stretched.width / real.getWidth());

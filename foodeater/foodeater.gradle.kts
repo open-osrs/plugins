@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.12"
+version = "0.0.13"
 
 project.extra["PluginName"] = "Food Eater"
 project.extra["PluginDescription"] = "Automatically eats food"

@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.11"
+version = "0.0.12"
 
 project.extra["PluginName"] = "Jad Auto Prayer"
 project.extra["PluginDescription"] = "Auto click proper prayers against Jad"
