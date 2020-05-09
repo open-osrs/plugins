@@ -45,6 +45,29 @@ public interface ScriptCommand
 		}
 	}
 
+	//use this for spells that are one click cast
+	default void castSpell(WidgetInfo widgetInfo, Client client, PkToolsPlugin plugin)
+	{
+		try
+		{
+			Widget spell_widget = client.getWidget(widgetInfo);
+
+			if (spell_widget == null)
+			{
+				return;
+			}
+
+			plugin.entry = new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.CC_OP.getId(), spell_widget.getItemId(), spell_widget.getId(), false);
+			click(client);
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	//use this for spells that are cast on a player or item
 	default void clickSpell(WidgetInfo widgetInfo, Client client, PkToolsPlugin plugin)
 	{
 		try
@@ -193,6 +216,45 @@ class MysticMightCommand implements ScriptCommand
 	}
 }
 
+class ProtectFromMagicCommand implements ScriptCommand
+{
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	{
+		if (plugin.getProtectMageVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 37)
+		{
+			return;
+		}
+
+		clickPrayer(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC, client, plugin);
+	}
+}
+
+class ProtectFromMissilesCommand implements ScriptCommand
+{
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	{
+		if (plugin.getProtectRangeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 40)
+		{
+			return;
+		}
+
+		clickPrayer(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES, client, plugin);
+	}
+}
+
+class ProtectFromMeleeCommand implements ScriptCommand
+{
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	{
+		if (plugin.getProtectMeleeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 43)
+		{
+			return;
+		}
+
+		clickPrayer(WidgetInfo.PRAYER_PROTECT_FROM_MELEE, client, plugin);
+	}
+}
+
 class ProtectItemCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
@@ -273,7 +335,7 @@ class VengeanceCommand implements ScriptCommand
 				return;
 			}
 
-			clickSpell(WidgetInfo.SPELL_VENGEANCE, client, plugin);
+			castSpell(WidgetInfo.SPELL_VENGEANCE, client, plugin);
 		}
 		catch (Exception e)
 		{

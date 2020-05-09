@@ -22,6 +22,12 @@ public class ScriptCommandFactory
 				return new EagleEyeCommand();
 			case "mysticmight":
 				return new MysticMightCommand();
+			case "protectfrommagic":
+				return new ProtectFromMagicCommand();
+			case "protectfrommelee":
+				return new ProtectFromMeleeCommand();
+			case "protectfrommissiles":
+				return new ProtectFromMissilesCommand();
 			case "clickenemy":
 				return new ClickEnemyCommand();
 			case "freeze":

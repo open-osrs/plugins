@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.16"
+version = "0.0.17"
 
 project.extra["PluginName"] = "PK Tools"
 project.extra["PluginDescription"] = "Arsenal of PKing Tools"
