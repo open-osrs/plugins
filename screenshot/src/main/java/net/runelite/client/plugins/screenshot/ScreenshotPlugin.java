@@ -228,6 +228,7 @@ public class ScreenshotPlugin extends Plugin
 		overlayManager.remove(screenshotOverlay);
 		clientToolbar.removeNavigation(titleBarButton);
 		keyManager.unregisterKeyListener(hotkeyListener);
+		overlayRenderer.setShouldRender(true);
 	}
 
 	@Subscribe
@@ -653,6 +654,7 @@ public class ScreenshotPlugin extends Plugin
 		{
 			drawManager.requestNextFrameListener(imageCallback);
 		}
+		overlayRenderer.setShouldRender(true);
 	}
 
 	private void takeScreenshot(String fileName, String subDir, Image image)
