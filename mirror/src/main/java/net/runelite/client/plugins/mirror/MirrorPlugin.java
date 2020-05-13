@@ -50,6 +50,7 @@ public class MirrorPlugin extends Plugin
 
 	@Inject
 	private Client client;
+
 	public static JFrame jframe;
 	public final Canvas canvas = new Canvas();
 
