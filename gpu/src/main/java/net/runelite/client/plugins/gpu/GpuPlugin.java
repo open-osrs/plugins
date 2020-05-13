@@ -1248,13 +1248,19 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		final int width = bufferProvider.getWidth();
 		final int height = bufferProvider.getHeight();
 
+
+		// Handle Mirror
+		// We still need to draw AFTER_MIRROR irregardless of Mirror being active
 		interfaceImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		final int[] interfaceImagePixels = ( (DataBufferInt) interfaceImage.getRaster().getDataBuffer() ).getData();
 		System.arraycopy(pixels, 0, interfaceImagePixels, 0, pixels.length - 1);
-		mirrorEvent.image = new BufferedImage(client.getCanvasWidth(), client.getCanvasHeight(), BufferedImage.TYPE_INT_ARGB);
-		mirrorEvent.image.getGraphics().drawImage(currentRender(), 0, 0, null);
-		mirrorEvent.image.getGraphics().drawImage(interfaceImage, 0, 0, null);
-		eventBus.post(DrawFinished.class, mirrorEvent);
+		if (client.isMirrored())
+		{
+			mirrorEvent.image = new BufferedImage(client.getCanvasWidth(), client.getCanvasHeight(), BufferedImage.TYPE_INT_ARGB);
+			mirrorEvent.image.getGraphics().drawImage(currentRender(), 0, 0, null);
+			mirrorEvent.image.getGraphics().drawImage(interfaceImage, 0, 0, null);
+			eventBus.post(DrawFinished.class, mirrorEvent);
+		}
 		Hooks.renderer.render((Graphics2D)interfaceImage.getGraphics(), OverlayLayer.AFTER_MIRROR);
 		System.arraycopy(interfaceImagePixels, 0, pixels, 0, interfaceImagePixels.length - 1);
 
