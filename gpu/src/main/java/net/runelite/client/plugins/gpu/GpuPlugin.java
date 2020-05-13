@@ -72,7 +72,6 @@ import net.runelite.api.TilePaint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -99,7 +98,6 @@ import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
 import net.runelite.client.plugins.gpu.config.UIScalingMode;
 import net.runelite.client.plugins.gpu.template.Template;
 import net.runelite.client.ui.DrawManager;
-import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.OSType;
 import org.pf4j.Extension;
@@ -1261,6 +1259,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 		final int width = bufferProvider.getWidth();
 		final int height = bufferProvider.getHeight();
 
+		/*
 		// Handle Mirror
 		// We still need to draw AFTER_MIRROR irregardless of Mirror being active
 		interfaceImage = toBufferedImage(pixels, width, height);
@@ -1277,6 +1276,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 		}
 		Hooks.renderer.render((Graphics2D) interfaceImage.getGraphics(), OverlayLayer.AFTER_MIRROR);
 		pixels = ((DataBufferInt) interfaceImage.getRaster().getDataBuffer()).getData();
+		*/
 
 		gl.glEnable(gl.GL_BLEND);
 
