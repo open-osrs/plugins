@@ -39,6 +39,7 @@ import com.jogamp.opengl.GLFBODrawable;
 import com.jogamp.opengl.GLProfile;
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -72,13 +73,14 @@ import net.runelite.api.TilePaint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.DrawFinished;
 import net.runelite.client.input.MouseListener;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
 import net.runelite.client.plugins.PluginManager;
@@ -97,11 +99,14 @@ import static net.runelite.client.plugins.gpu.GLUtil.glGetInteger;
 import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
 import net.runelite.client.plugins.gpu.config.UIScalingMode;
 import net.runelite.client.plugins.gpu.template.Template;
+import net.runelite.client.plugins.mirror.MirrorPlugin;
 import net.runelite.client.ui.DrawManager;
+import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.OSType;
 import org.pf4j.Extension;
 
+@PluginDependency(MirrorPlugin.class)
 @PluginDescriptor(
 	name = "GPU",
 	description = "Utilizes the GPU",
@@ -120,13 +125,10 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 	private static final int DEFAULT_DISTANCE = 25;
 	static final int MAX_DISTANCE = 90;
 	static final int MAX_FOG_DEPTH = 100;
-	private final DrawFinished mirrorEvent = new DrawFinished();
 	private int mouseX = 0;
 	private int mouseY = 0;
 	private final Image cursor = ImageUtil.getResourceStreamFromClass(GpuPlugin.class, "cursor.png");
-	private Image tempImage;
 	private BufferedImage tempBufferedImage;
-	private BufferedImage interfaceImage;
 
 	@Inject
 	private Client client;
@@ -294,6 +296,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 	private int uniBlockLarge;
 	private int uniBlockMain;
 	private int uniSmoothBanding;
+	private Graphics tempGraphics;
 
 	@Override
 	protected void startUp()
@@ -1259,24 +1262,33 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 		final int width = bufferProvider.getWidth();
 		final int height = bufferProvider.getHeight();
 
-		/*
+		
 		// Handle Mirror
-		// We still need to draw AFTER_MIRROR irregardless of Mirror being active
-		interfaceImage = toBufferedImage(pixels, width, height);
+		// We still need to draw AFTER_MIRROR regardless of Mirror being active
 		if (client.isMirrored())
 		{
-			if (tempImage == null || tempImage.getWidth(null) != width || tempImage.getHeight(null) != height)
-				tempImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			if (MirrorPlugin.bufferedImage == null)
+				MirrorPlugin.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-			tempImage.getGraphics().drawImage(currentRender(), 0, 0, null);
-			tempImage.getGraphics().drawImage(interfaceImage, 0, 0, null);
-			tempImage.getGraphics().drawImage(cursor, mouseX, mouseY, null);
-			mirrorEvent.image = tempImage;
-			eventBus.post(DrawFinished.class, mirrorEvent);
+			tempGraphics = MirrorPlugin.bufferedImage.getGraphics();
+
+			if (tempGraphics != null)
+			{
+				if (MirrorPlugin.canvas.getWidth() != width || MirrorPlugin.canvas.getHeight() != height)
+				{
+					MirrorPlugin.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+					MirrorPlugin.canvas.setSize(width, height);
+					MirrorPlugin.jframe.setSize(width + 15, height + 40);
+				}
+
+				tempGraphics.drawImage(currentRender(), 0, 0, null);
+				tempGraphics.drawImage(toBufferedImage(pixels, width, height), 0, 0, null);
+				tempGraphics.drawImage(cursor, mouseX, mouseY, null);
+
+				MirrorPlugin.canvas.getGraphics().drawImage(MirrorPlugin.bufferedImage, 0, 0, null);
+			}
 		}
-		Hooks.renderer.render((Graphics2D) interfaceImage.getGraphics(), OverlayLayer.AFTER_MIRROR);
-		pixels = ((DataBufferInt) interfaceImage.getRaster().getDataBuffer()).getData();
-		*/
+		Hooks.renderer.render(Hooks.lastGraphics, OverlayLayer.AFTER_MIRROR);
 
 		gl.glEnable(gl.GL_BLEND);
 

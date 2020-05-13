@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.19"
+version = "0.0.20"
 
 project.extra["PluginName"] = "GPU"
 project.extra["PluginDescription"] = "Utilizes the GPU"
@@ -31,6 +31,7 @@ project.extra["PluginDescription"] = "Utilizes the GPU"
 dependencies {
     implementation(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429")
     implementation(group = "net.runelite.jogl", name = "jogl-all", version = "2.4.0-rc-20200429")
+    compileOnly(project(":mirror"))
 
     runtimeOnly(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429", classifier = "natives-linux-amd64")
     runtimeOnly(group = "net.runelite.gluegen", name = "gluegen-rt", version = "2.4.0-rc-20200429", classifier = "natives-windows-amd64")
@@ -58,6 +59,7 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to nameToId("mirror"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

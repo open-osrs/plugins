@@ -33,6 +33,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 import java.awt.Canvas;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import javax.swing.JFrame;
 
 /**
@@ -52,7 +55,8 @@ public class MirrorPlugin extends Plugin
 	private Client client;
 
 	public static JFrame jframe;
-	public final Canvas canvas = new Canvas();
+	public static final Canvas canvas = new Canvas();
+	public static BufferedImage bufferedImage;
 
 	@Override
 	public void startUp()
@@ -65,6 +69,9 @@ public class MirrorPlugin extends Plugin
 			jframe.add(canvas);
 		}
 		client.setMirrored(true);
+
+		if (!jframe.isVisible())
+			jframe.setVisible(true);
 	}
 
 	@Override
@@ -84,9 +91,9 @@ public class MirrorPlugin extends Plugin
 		if (!jframe.isVisible())
 			jframe.setVisible(true);
 
-		if (canvas.getWidth() != event.image.getWidth(canvas) + 14 || (canvas.getHeight() != event.image.getHeight(canvas) + 40))
+		if (canvas.getWidth() != event.image.getWidth(canvas) + 15 || (canvas.getHeight() != event.image.getHeight(canvas) + 40))
 			{
-				canvas.setSize(event.image.getWidth(canvas) + 14, event.image.getHeight(canvas) + 40);
+				canvas.setSize(event.image.getWidth(canvas) + 15, event.image.getHeight(canvas) + 40);
 				jframe.setSize(canvas.getSize());
 			}
 		canvas.getGraphics().drawImage(event.image, 0, 0, jframe);
