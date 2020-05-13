@@ -1234,14 +1234,14 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		tempUvOffset = 0;
 
 		// Texture on UI
-		drawUi(canvasHeight, canvasWidth, true);
+		drawUi(canvasHeight, canvasWidth);
 
 		glDrawable.swapBuffers();
 
 		drawManager.processDrawComplete(this::screenshot);
 	}
 
-	private void drawUi(final int canvasHeight, final int canvasWidth, boolean mirror)
+	private void drawUi(final int canvasHeight, final int canvasWidth)
 	{
 		final BufferProvider bufferProvider = client.getBufferProvider();
 		final int[] pixels = bufferProvider.getPixels();
