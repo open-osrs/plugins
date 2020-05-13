@@ -34,6 +34,7 @@ import static net.runelite.client.plugins.gpu.GpuPlugin.MAX_DISTANCE;
 import static net.runelite.client.plugins.gpu.GpuPlugin.MAX_FOG_DEPTH;
 import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
 import net.runelite.client.plugins.gpu.config.UIScalingMode;
+import net.runelite.client.plugins.gpu.config.WindowsScalingMode;
 
 @ConfigGroup("gpu")
 public interface GpuPluginConfig extends Config
@@ -201,5 +202,32 @@ public interface GpuPluginConfig extends Config
 	default int fogDensity()
 	{
 		return 10;
+	}
+
+	@ConfigTitleSection(
+			keyName = "mirror",
+			name = "Mirror",
+			description = "",
+			position = 5
+	)
+	default Title mirrorTitle()
+	{
+		return new Title();
+	}
+
+	@Range(
+			min = 100,
+			max = 500
+	)
+	@ConfigItem(
+			keyName = "windowsScale",
+			name = "Windows Scale",
+			description = "Set this to the scale you use in Windows if mirror comes out incorrectly.",
+			position = 2,
+			titleSection = "mirrorTitle"
+	)
+	default WindowsScalingMode windowsScale()
+	{
+		return WindowsScalingMode.ONE;
 	}
 }
