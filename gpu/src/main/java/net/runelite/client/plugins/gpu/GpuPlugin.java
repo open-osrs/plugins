@@ -71,8 +71,11 @@ import net.runelite.api.TilePaint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.DrawFinished;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
@@ -93,6 +96,7 @@ import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
 import net.runelite.client.plugins.gpu.config.UIScalingMode;
 import net.runelite.client.plugins.gpu.template.Template;
 import net.runelite.client.ui.DrawManager;
+import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.util.OSType;
 import org.pf4j.Extension;
 
@@ -114,6 +118,9 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	private static final int DEFAULT_DISTANCE = 25;
 	static final int MAX_DISTANCE = 90;
 	static final int MAX_FOG_DEPTH = 100;
+	private final DrawFinished mirrorEvent = new DrawFinished();
+	private BufferedImage interfaceImage;
+	private BufferedImage mirrorImage;
 
 	@Inject
 	private Client client;
@@ -135,6 +142,9 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 	@Inject
 	private PluginManager pluginManager;
+
+	@Inject
+	private EventBus eventBus;
 
 	private boolean useComputeShaders;
 
@@ -1224,19 +1234,29 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		tempUvOffset = 0;
 
 		// Texture on UI
-		drawUi(canvasHeight, canvasWidth);
+		drawUi(canvasHeight, canvasWidth, true);
 
 		glDrawable.swapBuffers();
 
 		drawManager.processDrawComplete(this::screenshot);
 	}
 
-	private void drawUi(final int canvasHeight, final int canvasWidth)
+	private void drawUi(final int canvasHeight, final int canvasWidth, boolean mirror)
 	{
 		final BufferProvider bufferProvider = client.getBufferProvider();
 		final int[] pixels = bufferProvider.getPixels();
 		final int width = bufferProvider.getWidth();
 		final int height = bufferProvider.getHeight();
+
+		interfaceImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		final int[] interfaceImagePixels = ( (DataBufferInt) interfaceImage.getRaster().getDataBuffer() ).getData();
+		System.arraycopy(pixels, 0, interfaceImagePixels, 0, pixels.length - 1);
+		mirrorEvent.image = new BufferedImage(client.getCanvasWidth(), client.getCanvasHeight(), BufferedImage.TYPE_INT_ARGB);
+		mirrorEvent.image.getGraphics().drawImage(currentRender(), 0, 0, null);
+		mirrorEvent.image.getGraphics().drawImage(interfaceImage, 0, 0, null);
+		eventBus.post(DrawFinished.class, mirrorEvent);
+		Hooks.renderer.render((Graphics2D)interfaceImage.getGraphics(), OverlayLayer.AFTER_MIRROR);
+		System.arraycopy(interfaceImagePixels, 0, pixels, 0, interfaceImagePixels.length - 1);
 
 		gl.glEnable(gl.GL_BLEND);
 
@@ -1244,7 +1264,9 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		vertexBuffer.ensureCapacity(pixels.length);
 
 		IntBuffer interfaceBuffer = vertexBuffer.getBuffer();
+
 		interfaceBuffer.put(pixels);
+
 		vertexBuffer.flip();
 
 		gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA);
@@ -1336,6 +1358,46 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		}
 
 		return image;
+	}
+
+	private Image currentRender()
+	{
+
+		//JOGL reads actual pixels, not canvas, so we must specify real dimensions
+		int width  = (int)(client.getCanvasWidth() * ((float)config.windowsScale().getScale() / 100));
+		int height = (int)(client.getCanvasHeight() * ((float)config.windowsScale().getScale() / 100));
+
+		if (client.isStretchedEnabled())
+		{
+			Dimension dim = client.getStretchedDimensions();
+			width  = dim.width;
+			height = dim.height;
+		}
+
+		ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4)
+				.order(ByteOrder.nativeOrder());
+
+		gl.glReadBuffer(gl.GL_BACK);
+		gl.glReadPixels(0, 0, width, height, GL.GL_RGBA, gl.GL_UNSIGNED_BYTE, buffer);
+
+		mirrorImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		int[] pixels = ((DataBufferInt) mirrorImage.getRaster().getDataBuffer()).getData();
+
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				int r = buffer.get() & 0xff;
+				int g = buffer.get() & 0xff;
+				int b = buffer.get() & 0xff;
+				buffer.get(); // alpha
+
+				pixels[(height - y - 1) * width + x] = (r << 16) | (g << 8) | b;
+			}
+		}
+
+		//and then scale down to actual canvas size
+		return mirrorImage.getScaledInstance(client.getCanvasWidth(), client.getCanvasHeight(), Image.SCALE_SMOOTH);
 	}
 
 	@Override
