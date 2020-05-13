@@ -273,7 +273,7 @@ public class ClueScrollPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onChatMessage(ChatMessage event)
+	void onChatMessage(ChatMessage event)
 	{
 		if (event.getType() != ChatMessageType.GAMEMESSAGE && event.getType() != ChatMessageType.SPAM)
 		{
@@ -503,7 +503,7 @@ public class ClueScrollPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onGameTick(final GameTick event)
+	void onGameTick(final GameTick event)
 	{
 		objectsToMark.clear();
 

@@ -38,6 +38,7 @@ import net.runelite.api.coords.WorldPoint;
 @Getter(AccessLevel.PACKAGE)
 class MemorizedNpc
 {
+	private int npcId;
 	private int npcIndex;
 	private Set<String> npcNames;
 	private int npcSize;
@@ -59,6 +60,7 @@ class MemorizedNpc
 		this.npcNames = new HashSet<>();
 		this.npcNames.add(npc.getName());
 		this.npcIndex = npc.getIndex();
+		this.npcId = npc.getId();
 		this.possibleRespawnLocations = new ArrayList<>();
 		this.respawnTime = -1;
 		this.diedOnTick = -1;

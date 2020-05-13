@@ -219,7 +219,7 @@ public class ChatHistoryPlugin extends Plugin implements KeyListener
 		// Use second entry as first one can be walk here with transparent chatbox
 		final MenuEntry entry = event.getMenuEntries()[event.getMenuEntries().length - 2];
 
-		if (entry.getOpcode() != MenuOpcode.CC_OP_LOW_PRIORITY.getId())
+		if (entry.getOpcode() != MenuOpcode.CC_OP_LOW_PRIORITY.getId() && entry.getOpcode() != MenuOpcode.RUNELITE.getId())
 		{
 			return;
 		}

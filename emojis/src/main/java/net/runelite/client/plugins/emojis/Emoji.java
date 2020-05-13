@@ -87,6 +87,7 @@ public enum Emoji
 	HEART_EYES("(*.*)"),
 	FACEPALM("M-)"),
 	PENSIVE("V_V"),
+	ACORN("<lt>D~") // <D~
 	;
 
 	public static final Map<String, Emoji> emojiMap;
