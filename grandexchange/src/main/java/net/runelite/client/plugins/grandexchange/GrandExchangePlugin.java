@@ -191,7 +191,7 @@ public class GrandExchangePlugin extends Plugin
 	/**
 	 * Logic from {@link org.apache.commons.text.similarity.FuzzyScore}
 	 */
-	private static List<Integer> findFuzzyIndices(String term, String query)
+	static List<Integer> findFuzzyIndices(String term, String query)
 	{
 		List<Integer> indices = new ArrayList<>();
 

@@ -312,7 +312,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	}
 
 	@Subscribe
-	private void onScriptCallbackEvent(ScriptCallbackEvent event)
+	void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
 		String eventName = event.getEventName();
 

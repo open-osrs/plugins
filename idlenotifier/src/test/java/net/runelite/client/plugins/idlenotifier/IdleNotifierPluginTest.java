@@ -52,8 +52,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -96,6 +98,9 @@ public class IdleNotifierPluginTest
 	private NPC randomEvent;
 
 	@Mock
+	private NPC fishingSpot;
+
+	@Mock
 	private Player player;
 
 	@Before
@@ -104,16 +109,23 @@ public class IdleNotifierPluginTest
 		Guice.createInjector(BoundFieldModule.of(this)).injectMembers(this);
 
 		// Mock monster
-		final String[] monsterActions = new String[]{"Attack", "Examine"};
+		final String[] monsterActions = new String[] { "Attack", "Examine" };
 		final NPCDefinition monsterComp = mock(NPCDefinition.class);
 		when(monsterComp.getActions()).thenReturn(monsterActions);
 		when(monster.getDefinition()).thenReturn(monsterComp);
 
 		// Mock random event
-		final String[] randomEventActions = new String[]{"Talk-to", "Dismiss", "Examine"};
+		final String[] randomEventActions = new String[] { "Talk-to", "Dismiss", "Examine" };
 		final NPCDefinition randomEventComp = mock(NPCDefinition.class);
 		when(randomEventComp.getActions()).thenReturn(randomEventActions);
 		when(randomEvent.getDefinition()).thenReturn(randomEventComp);
+
+		// Mock Fishing Spot
+		final String[] fishingSpotActions = new String[] { "Use-rod", "Examine" };
+		final NPCDefinition fishingSpotComp = mock(NPCDefinition.class);
+		when(fishingSpotComp.getActions()).thenReturn(fishingSpotActions);
+		when(fishingSpot.getDefinition()).thenReturn(fishingSpotComp);
+		when(fishingSpot.getName()).thenReturn("Fishing spot");
 
 		// Mock player
 		when(player.getName()).thenReturn(PLAYER_NAME);
@@ -132,7 +144,8 @@ public class IdleNotifierPluginTest
 		when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
 		when(client.getKeyboardIdleTicks()).thenReturn(42);
 		when(client.getMouseLastPressedMillis()).thenReturn(System.currentTimeMillis() - 100_000L);
-		when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.DEADMAN));
+
+		when(client.getWorldType()).thenReturn(EnumSet.noneOf(WorldType.class));
 	}
 
 	@Test
@@ -269,6 +282,31 @@ public class IdleNotifierPluginTest
 		plugin.onGameTick(GameTick.INSTANCE);
 		plugin.onGameTick(GameTick.INSTANCE);
 		verify(notifier, times(1)).notify(any());
+	}
+
+	@Test
+	public void testSendOneNotificationForAnimationAndInteract()
+	{
+		when(player.getInteracting()).thenReturn(fishingSpot);
+		when(player.getAnimation()).thenReturn(AnimationID.FISHING_POLE_CAST);
+
+		AnimationChanged animationChanged = new AnimationChanged();
+		animationChanged.setActor(player);
+
+		plugin.onInteractingChanged(new InteractingChanged(player, fishingSpot));
+		plugin.onAnimationChanged(animationChanged);
+		plugin.onGameTick(GameTick.INSTANCE);
+
+		verify(notifier, never()).notify(anyString());
+
+		when(player.getAnimation()).thenReturn(AnimationID.IDLE);
+		lenient().when(player.getInteracting()).thenReturn(null);
+
+		plugin.onAnimationChanged(animationChanged);
+		plugin.onInteractingChanged(new InteractingChanged(player, null));
+		plugin.onGameTick(GameTick.INSTANCE);
+
+		verify(notifier).notify("[" + PLAYER_NAME + "] is now idle!");
 	}
 
 	@Test

@@ -386,6 +386,19 @@ public class DiscordPlugin extends Plugin
 			return;
 		}
 
+		final EnumSet<WorldType> worldType = client.getWorldType();
+
+		if (worldType.contains(WorldType.DEADMAN))
+		{
+			discordState.triggerEvent(DiscordGameEventType.PLAYING_DEADMAN);
+			return;
+		}
+		else if (WorldType.isPvpWorld(worldType))
+		{
+			discordState.triggerEvent(DiscordGameEventType.PLAYING_PVP);
+			return;
+		}
+
 		DiscordGameEventType discordGameEventType = DiscordGameEventType.fromRegion(playerRegionID);
 
 		// NMZ uses the same region ID as KBD. KBD is always on plane 0 and NMZ is always above plane 0
@@ -419,12 +432,6 @@ public class DiscordPlugin extends Plugin
 		}
 
 		final EnumSet<WorldType> worldType = client.getWorldType();
-
-		// Do not show location in PVP activities
-		if (WorldType.isPvpWorld(worldType))
-		{
-			return false;
-		}
 
 		switch (event.getDiscordAreaType())
 		{

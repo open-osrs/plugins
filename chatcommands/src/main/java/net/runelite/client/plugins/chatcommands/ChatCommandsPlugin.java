@@ -591,7 +591,7 @@ public class ChatCommandsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick event)
+	void onGameTick(GameTick event)
 	{
 		if (client.getLocalPlayer() == null)
 		{
@@ -656,7 +656,7 @@ public class ChatCommandsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onWidgetLoaded(WidgetLoaded widget)
+	void onWidgetLoaded(WidgetLoaded widget)
 	{
 		switch (widget.getGroupId())
 		{

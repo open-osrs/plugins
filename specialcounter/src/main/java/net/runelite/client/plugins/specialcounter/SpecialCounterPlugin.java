@@ -147,7 +147,7 @@ public class SpecialCounterPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onVarbitChanged(VarbitChanged event)
+	void onVarbitChanged(VarbitChanged event)
 	{
 		int specialPercentage = client.getVar(VarPlayer.SPECIAL_ATTACK_PERCENT);
 

@@ -93,7 +93,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "World Hopper",
 	description = "Allows you to quickly hop worlds",
-	type = PluginType.UTILITY
+	type = PluginType.UTILITY,
+	tags = {"ping", "switcher"}
 )
 @Slf4j
 public class WorldHopperPlugin extends Plugin
