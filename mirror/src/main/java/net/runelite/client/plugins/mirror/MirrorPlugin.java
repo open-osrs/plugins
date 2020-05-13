@@ -24,20 +24,16 @@
  */
 package net.runelite.client.plugins.mirror;
 
+import com.google.inject.Inject;
+import net.runelite.api.Client;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.DrawFinished;
-import net.runelite.client.input.MouseListener;
-import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
 import java.awt.Canvas;
-import java.awt.Image;
-import javax.inject.Inject;
 import javax.swing.JFrame;
-import java.awt.event.MouseEvent;
 
 /**
 	Mirror Plugin - Creates a new window that draws only the game canvas, and ignores the AFTER_MIRROR Overlay layer
@@ -49,17 +45,13 @@ import java.awt.event.MouseEvent;
 	type = PluginType.UTILITY,
 	enabledByDefault = false
 )
-public class MirrorPlugin extends Plugin implements MouseListener
+public class MirrorPlugin extends Plugin
 {
 
-	private int mouseX = 0;
-	private int mouseY = 0;
+	@Inject
+	private Client client;
 	public static JFrame jframe;
 	public final Canvas canvas = new Canvas();
-	private final Image cursor = ImageUtil.getResourceStreamFromClass(MirrorPlugin.class, "cursor.png");
-
-	@Inject
-	private MouseManager mouseManager;
 
 	@Override
 	public void startUp()
@@ -71,7 +63,7 @@ public class MirrorPlugin extends Plugin implements MouseListener
 			canvas.setSize(1280, 720);
 			jframe.add(canvas);
 		}
-		mouseManager.registerMouseListener(this);
+		client.setMirrored(true);
 	}
 
 	@Override
@@ -82,13 +74,12 @@ public class MirrorPlugin extends Plugin implements MouseListener
 			jframe.dispose();
 			jframe = null;
 		}
-		mouseManager.unregisterMouseListener(this);
+		client.setMirrored(false);
 	}
 
 	@Subscribe
 	private void onDrawFinished(DrawFinished event)
 	{
-
 		if (!jframe.isVisible())
 			jframe.setVisible(true);
 
@@ -97,54 +88,6 @@ public class MirrorPlugin extends Plugin implements MouseListener
 				canvas.setSize(event.image.getWidth(canvas) + 14, event.image.getHeight(canvas) + 40);
 				jframe.setSize(canvas.getSize());
 			}
-		event.image.getGraphics().drawImage(cursor, mouseX, mouseY, canvas);
-		canvas.getGraphics().drawImage(event.image, 0, 0, canvas);
-	}
-
-
-	@Override
-	public MouseEvent mouseClicked(MouseEvent mouseEvent)
-	{
-		return mouseEvent;
-	}
-
-	@Override
-	public MouseEvent mousePressed(MouseEvent mouseEvent)
-	{
-		return mouseEvent;
-	}
-
-	@Override
-	public MouseEvent mouseReleased(MouseEvent mouseEvent)
-	{
-		return mouseEvent;
-	}
-
-	@Override
-	public MouseEvent mouseEntered(MouseEvent mouseEvent)
-	{
-		return mouseEvent;
-	}
-
-	@Override
-	public MouseEvent mouseExited(MouseEvent mouseEvent)
-	{
-		return mouseEvent;
-	}
-
-	@Override
-	public MouseEvent mouseDragged(MouseEvent mouseEvent)
-	{
-		mouseX = mouseEvent.getX();
-		mouseY = mouseEvent.getY();
-		return mouseEvent;
-	}
-
-	@Override
-	public MouseEvent mouseMoved(MouseEvent mouseEvent)
-	{
-		mouseX = mouseEvent.getX();
-		mouseY = mouseEvent.getY();
-		return mouseEvent;
+		canvas.getGraphics().drawImage(event.image, 0, 0, jframe);
 	}
 }
