@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Jordan Atwood <jordan.atwood423@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,27 +22,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.cluescrolls.clues;
 
-version = "0.0.11"
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
-project.extra["PluginName"] = "Item Stats"
-project.extra["PluginDescription"] = "Show information about food and potion effects"
-
-dependencies {
-    testCompileOnly(group = "org.apache.commons", name = "commons-text", version = "1.8")
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.name),
-                    "Plugin-Provider" to "OpenOSRS",
-                    "Plugin-Dependencies" to "",
-                    "Plugin-Description" to "Show information about food and potion effects",
-                    "Plugin-License" to "3-Clause BSD License"
-            ))
-        }
-    }
+public class HotColdClueTest
+{
+	@Test
+	public void forTextEmptyString()
+	{
+		assertNull(HotColdClue.forText(""));
+	}
 }
