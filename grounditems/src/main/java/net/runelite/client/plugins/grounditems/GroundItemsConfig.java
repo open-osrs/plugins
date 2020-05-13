@@ -33,6 +33,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
+import net.runelite.client.plugins.grounditems.config.HighlightTier;
 import net.runelite.client.plugins.grounditems.config.ItemHighlightMode;
 import net.runelite.client.plugins.grounditems.config.MenuHighlightMode;
 import net.runelite.client.plugins.grounditems.config.PriceDisplayMode;
@@ -144,19 +145,6 @@ public interface GroundItemsConfig extends Config
 	default ValueCalculationMode valueCalculationMode()
 	{
 		return ValueCalculationMode.HIGHEST;
-	}
-
-	@ConfigItem(
-		keyName = "highlightOverValue2",
-		name = "Highlight > Value",
-		description = "Configures highlighted ground items over either GE or HA value",
-		position = 9,
-		titleSection = "highlightedTitle"
-	)
-	@Units(Units.GP)
-	default int getHighlightOverValue()
-	{
-		return 0;
 	}
 
 	@ConfigItem(
@@ -287,10 +275,22 @@ public interface GroundItemsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "notifyTier",
+		name = "Notify >= Tier",
+		description = "Configures what tier of highlight will cause a drop",
+		position = 20,
+		titleSection = "highlightTitle"
+	)
+	default HighlightTier notifyTier()
+	{
+		return HighlightTier.OFF;
+	}
+
+	@ConfigItem(
 		keyName = "itemHighlightMode",
 		name = "Item Highlight Mode",
 		description = "Configures how ground items will be highlighted",
-		position = 20,
+		position = 21,
 		titleSection = "highlightTitle"
 	)
 	default ItemHighlightMode itemHighlightMode()
@@ -302,7 +302,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "menuHighlightMode",
 		name = "Menu Highlight Mode",
 		description = "Configures what to highlight in right-click menu",
-		position = 21,
+		position = 22,
 		titleSection = "highlightTitle"
 	)
 	default MenuHighlightMode menuHighlightMode()
@@ -314,7 +314,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "lowValueTitle",
 		name = "Low value",
 		description = "",
-		position = 22
+		position = 23
 	)
 	default Title lowValueTitle()
 	{
@@ -325,7 +325,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "lowValueColor",
 		name = "Low value color",
 		description = "Configures the color for low value items",
-		position = 23,
+		position = 24,
 		titleSection = "lowValueTitle"
 	)
 	@Alpha
@@ -338,7 +338,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "lowValuePrice",
 		name = "Low value price",
 		description = "Configures the start price for low value items",
-		position = 24,
+		position = 25,
 		titleSection = "lowValueTitle"
 	)
 	@Units(Units.GP)
@@ -351,7 +351,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "notifyLowValueDrops",
 		name = "Notify for low value drops",
 		description = "Configures whether or not to notify for drops of low value",
-		position = 25,
+		position = 26,
 		titleSection = "lowValueTitle"
 	)
 	default boolean notifyLowValueDrops()
@@ -363,7 +363,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "mediumValueTitle",
 		name = "Medium value",
 		description = "",
-		position = 26
+		position = 27
 	)
 	default Title mediumValueTitle()
 	{
@@ -374,7 +374,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "mediumValueColor",
 		name = "Medium value color",
 		description = "Configures the color for medium value items",
-		position = 27,
+		position = 28,
 		titleSection = "mediumValueTitle"
 	)
 	@Alpha
@@ -387,7 +387,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "mediumValuePrice",
 		name = "Medium value price",
 		description = "Configures the start price for medium value items",
-		position = 28,
+		position = 29,
 		titleSection = "mediumValueTitle"
 	)
 	@Units(Units.GP)
@@ -400,7 +400,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "notifyMediumValueDrops",
 		name = "Notify for medium value drops",
 		description = "Configures whether or not to notify for drops of medium value",
-		position = 29,
+		position = 30,
 		titleSection = "mediumValueTitle"
 	)
 	default boolean notifyMediumValueDrops()
@@ -412,7 +412,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "highValueTitle",
 		name = "High value",
 		description = "",
-		position = 30
+		position = 31
 	)
 	default Title highValueTitle()
 	{
@@ -423,7 +423,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "highValueColor",
 		name = "High value color",
 		description = "Configures the color for high value items",
-		position = 31,
+		position = 32,
 		titleSection = "highValueTitle"
 	)
 	@Alpha
@@ -436,7 +436,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "highValuePrice",
 		name = "High value price",
 		description = "Configures the start price for high value items",
-		position = 32,
+		position = 33,
 		titleSection = "highValueTitle"
 	)
 	@Units(Units.GP)
@@ -449,7 +449,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "notifyHighValueDrops",
 		name = "Notify for high value drops",
 		description = "Configures whether or not to notify for drops of high value",
-		position = 33,
+		position = 34,
 		titleSection = "highValueTitle"
 	)
 	default boolean notifyHighValueDrops()
@@ -461,7 +461,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "insaneValueTitle",
 		name = "Insane value",
 		description = "",
-		position = 34
+		position = 35
 	)
 	default Title insaneValueTitle()
 	{
@@ -472,7 +472,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "insaneValueColor",
 		name = "Insane value items color",
 		description = "Configures the color for insane value items",
-		position = 35,
+		position = 36,
 		titleSection = "insaneValueTitle"
 	)
 	@Alpha
@@ -485,7 +485,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "insaneValuePrice",
 		name = "Insane value price",
 		description = "Configures the start price for insane value items",
-		position = 36,
+		position = 37,
 		titleSection = "insaneValueTitle"
 	)
 	@Units(Units.GP)
@@ -498,7 +498,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "notifyInsaneValueDrops",
 		name = "Notify for insane value drops",
 		description = "Configures whether or not to notify for drops of insane value",
-		position = 37,
+		position = 38,
 		titleSection = "insaneValueTitle"
 	)
 	default boolean notifyInsaneValueDrops()
@@ -510,7 +510,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "priceTitle",
 		name = "Price",
 		description = "",
-		position = 38
+		position = 39
 	)
 	default Title priceTitle()
 	{
@@ -521,7 +521,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "priceDisplayMode",
 		name = "Price Display Mode",
 		description = "Configures what price types are shown alongside of ground item name",
-		position = 39,
+		position = 40,
 		titleSection = "priceTitle"
 	)
 	default PriceDisplayMode priceDisplayMode()
@@ -533,7 +533,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "sortByGEPrice",
 		name = "Sort by GE price",
 		description = "Sorts ground items by GE price, instead of alch value",
-		position = 40,
+		position = 41,
 		titleSection = "priceTitle"
 	)
 	default boolean sortByGEPrice()
@@ -545,7 +545,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "miscTitle",
 		name = "Miscellaneous",
 		description = "",
-		position = 41
+		position = 42
 	)
 	default Title miscTitle()
 	{
@@ -556,7 +556,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "showMenuItemQuantities",
 		name = "Show Menu Item Quantities",
 		description = "Configures whether or not to show the item quantities in the menu",
-		position = 42,
+		position = 43,
 		titleSection = "miscTitle"
 	)
 	default boolean showMenuItemQuantities()
@@ -568,7 +568,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "collapseEntries",
 		name = "Collapse ground item menu entries",
 		description = "Collapses ground item menu entries together and appends count",
-		position = 43,
+		position = 44,
 		titleSection = "miscTitle"
 	)
 	default boolean collapseEntries()
@@ -580,7 +580,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "onlyShowLoot",
 		name = "Only show loot",
 		description = "Only shows drops from NPCs and players",
-		position = 44,
+		position = 45,
 		titleSection = "miscTitle"
 	)
 	default boolean onlyShowLoot()
@@ -592,7 +592,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "showGroundItemDuration",
 		name = "Show time remaining",
 		description = "Turn on a countdown timer to show how long an item will remain on the ground",
-		position = 45,
+		position = 46,
 		titleSection = "miscTitle"
 	)
 	default TimerDisplayMode showGroundItemDuration()
@@ -604,7 +604,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "doubleTapDelay",
 		name = "Delay for double-tap ALT to hide",
 		description = "Decrease this number if you accidentally hide ground items often. (0 = Disabled)",
-		position = 46,
+		position = 47,
 		titleSection = "miscTitle"
 	)
 	@Units(Units.MILLISECONDS)
@@ -617,7 +617,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "toggleOutline",
 		name = "Text Outline",
 		description = "Use an outline around text instead of a text shadow",
-		position = 47,
+		position = 48,
 		titleSection = "miscTitle"
 	)
 	default boolean toggleOutline()
@@ -630,7 +630,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "bordercolor",
 		name = "Border color",
 		description = "Change the border color",
-		position = 48,
+		position = 49,
 		titleSection = "miscTitle"
 	)
 	default Color bordercolor()
@@ -642,7 +642,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "showTimer",
 		name = "Show ground item tick countdown timer",
 		description = "Shows how many ticks left until disappearing.",
-		position = 49,
+		position = 50,
 		titleSection = "miscTitle"
 	)
 	default boolean showTimer()
@@ -654,7 +654,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "xpTitle",
 		name = "XP",
 		description = "Highlights various items that give xp",
-		position = 50
+		position = 51
 	)
 	default Title xpTitle()
 	{
@@ -665,7 +665,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "highlightHerblore",
 		name = "Highlight Herblore xp",
 		description = "Highlight Herblore xp related items.",
-		position = 51,
+		position = 52,
 		titleSection = "xpTitle"
 	)
 	default boolean highlightHerblore()
@@ -677,7 +677,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "herbloreColor",
 		name = "Herblore Color",
 		description = "Color of Herblore xp items.",
-		position = 52,
+		position = 53,
 		titleSection = "xpTitle"
 	)
 	@Alpha
@@ -690,7 +690,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "highlightPrayer",
 		name = "Highlight Prayer xp",
 		description = "Highlight Prayer xp related items.",
-		position = 53,
+		position = 54,
 		titleSection = "xpTitle"
 	)
 	default boolean highlightPrayer()
@@ -702,7 +702,7 @@ public interface GroundItemsConfig extends Config
 		keyName = "prayerColor",
 		name = "Prayer Color",
 		description = "Color of Prayer xp items.",
-		position = 54,
+		position = 55,
 		titleSection = "xpTitle"
 	)
 	@Alpha

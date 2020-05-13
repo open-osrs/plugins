@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Trevor <https://github.com/TrevorMartz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.cluescrolls.clues;
 
-version = "0.0.3"
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-project.extra["PluginName"] = "NPC Indicators"
-project.extra["PluginDescription"] = "Highlight NPCs on-screen and/or on the minimap"
+@AllArgsConstructor
+@Getter
+public enum Enemy
+{
+	//appears in hard clue emote steps in the wilderness
+	DOUBLE_AGENT_65("Double Agent level 65"),
+	//appears in hard clue emote steps not in the wilderness
+	DOUBLE_AGENT_108("Double Agent level 108"),
+	//appears for master clue emote steps all areas
+	DOUBLE_AGENT_141("Double Agent level 141"),
+	//appears for hard clue coordinate steps in the wilderness
+	ZAMORAK_WIZARD("Zamorak Wizard"),
+	//appears for hard clue coordinate steps not in the wilderness
+	SARADOMIN_WIZARD("Saradomin Wizard"),
+	//appears for elite clue coordinate steps all areas
+	ARMADYLIAN_OR_BANDOSIAN_GUARD("Armadylian OR Bandosian Guard"),
+	//appears for master clue coordinate and hot cold clues when single-way combat
+	BRASSICAN_MAGE("Brassican Mage"),
+	//appears for master clue coordinate and hot cold clues when multi-way combat
+	ANCIENT_WIZARDS("Ancient Wizard Trio"),
+	//There is a master hot cold step that overlaps the border of multi and single according to the wiki.
+	BRASSICAN_OR_WIZARDS("Brassican Mage OR Ancient Wizards");
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private final String text;
 }

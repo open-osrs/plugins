@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -57,6 +58,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PlayerDeath;
+import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
@@ -103,6 +105,8 @@ public class ScreenshotPlugin extends Plugin
 {
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
+	private static final String CHEST_LOOTED_MESSAGE = "You find some treasure in the chest!";
+	private static final Map<Integer, String> CHEST_LOOT_EVENTS = Map.of(12127, "The Gauntlet");
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+)");
 	private static final Pattern LEVEL_UP_PATTERN = Pattern.compile(".*Your ([a-zA-Z]+) (?:level is|are)? now (\\d+)\\.");
 	private static final Pattern BOSSKILL_MESSAGE_PATTERN = Pattern.compile("Your (.+) kill count is: <col=ff0000>(\\d+)</col>.");
@@ -175,6 +179,8 @@ public class ScreenshotPlugin extends Plugin
 
 	private NavigationButton titleBarButton;
 
+	private String kickPlayerName;
+
 	private final HotkeyListener hotkeyListener = new HotkeyListener(() -> config.hotkey())
 	{
 		@Override
@@ -224,6 +230,7 @@ public class ScreenshotPlugin extends Plugin
 		overlayManager.remove(screenshotOverlay);
 		clientToolbar.removeNavigation(titleBarButton);
 		keyManager.unregisterKeyListener(hotkeyListener);
+		kickPlayerName = null;
 	}
 
 	@Subscribe
@@ -308,9 +315,25 @@ public class ScreenshotPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onScriptCallbackEvent(ScriptCallbackEvent e)
+	{
+		if (!"confirmClanKick".equals(e.getEventName()))
+		{
+			return;
+		}
+
+		final String[] stringStack = client.getStringStack();
+		final int stringSize = client.getStringStackSize();
+		kickPlayerName = stringStack[stringSize - 1];
+	}
+
+	@Subscribe
 	void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE && event.getType() != ChatMessageType.SPAM && event.getType() != ChatMessageType.TRADE)
+		if (event.getType() != ChatMessageType.GAMEMESSAGE
+			&& event.getType() != ChatMessageType.SPAM
+			&& event.getType() != ChatMessageType.TRADE
+			&& event.getType() != ChatMessageType.FRIENDSCHATNOTIFICATION)
 		{
 			return;
 		}
@@ -368,6 +391,17 @@ public class ScreenshotPlugin extends Plugin
 			}
 		}
 
+		if (config.screenshotCcKick() && chatMessage.equals("Your request to kick/ban this user was successful."))
+		{
+			if (kickPlayerName == null)
+			{
+				return;
+			}
+
+			takeScreenshot("Kick " + kickPlayerName, "Clan Chat Kicks");
+			kickPlayerName = null;
+		}
+
 		if (config.screenshotPet() && PET_MESSAGES.stream().anyMatch(chatMessage::contains))
 		{
 			String fileName = "Pet";
@@ -383,6 +417,16 @@ public class ScreenshotPlugin extends Plugin
 				String bossKillcount = m.group(2);
 				String fileName = bossName + "(" + bossKillcount + ")";
 				takeScreenshot(fileName, "Boss Kills");
+			}
+		}
+
+		if (chatMessage.equals(CHEST_LOOTED_MESSAGE) && config.screenshotRewards())
+		{
+			final int regionID = client.getLocalPlayer().getWorldLocation().getRegionID();
+			String eventName = CHEST_LOOT_EVENTS.get(regionID);
+			if (eventName != null)
+			{
+				takeScreenshot(eventName, "Chest Loot");
 			}
 		}
 

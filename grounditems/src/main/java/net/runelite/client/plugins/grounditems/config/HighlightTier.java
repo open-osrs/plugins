@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.grounditems.config;
 
-version = "0.0.3"
+import net.runelite.client.plugins.grounditems.GroundItemsConfig;
 
-project.extra["PluginName"] = "NPC Indicators"
-project.extra["PluginDescription"] = "Highlight NPCs on-screen and/or on the minimap"
+public enum HighlightTier
+{
+	OFF,
+	LOW,
+	MEDIUM,
+	HIGH,
+	INSANE;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	public int getValueFromTier(GroundItemsConfig config)
+	{
+		switch (this)
+		{
+			case LOW:
+				return config.lowValuePrice();
+			case MEDIUM:
+				return config.mediumValuePrice();
+			case HIGH:
+				return config.highValuePrice();
+			case INSANE:
+				return config.insaneValuePrice();
+			default:
+				throw new UnsupportedOperationException();
+		}
+	}
 }

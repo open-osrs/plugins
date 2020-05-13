@@ -74,6 +74,7 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
+import net.runelite.api.ItemID;
 import net.runelite.api.MessageNode;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
@@ -163,6 +164,9 @@ public class LootTrackerPlugin extends Plugin
 	static final String HERBIBOAR_LOOTED_MESSAGE = "You harvest herbs from the herbiboar, whereupon it escapes.";
 	private static final String HERBIBOAR_EVENT = "Herbiboar";
 	private static final Pattern HERBIBOAR_HERB_SACK_PATTERN = Pattern.compile(".+(Grimy .+?) herb.+");
+
+	// Seed Pack loot handling
+	private static final String SEEDPACK_EVENT = "Seed pack";
 
 	// Wintertodt loot handling
 	private static final Pattern WINTERTODT_NUMBER_PATTERN = Pattern.compile("Your subdued Wintertodt count is: ([0-9]*).");
@@ -1070,6 +1074,7 @@ public class LootTrackerPlugin extends Plugin
 		if (CHEST_EVENT_TYPES.containsValue(eventType)
 			|| HERBIBOAR_EVENT.equals(eventType)
 			|| HESPORI_EVENT.equals(eventType)
+			|| SEEDPACK_EVENT.equals(eventType)
 			|| GAUNTLET_EVENT.equals(eventType)
 			|| WINTERTODT_EVENT.equals(eventType)
 			|| lootRecordType == LootRecordType.PICKPOCKET)
@@ -1088,6 +1093,13 @@ public class LootTrackerPlugin extends Plugin
 		if (event.getOption().equals("Pickpocket"))
 		{
 			lastPickpocketTarget = Text.removeTags(event.getTarget());
+		}
+
+		if (event.getOption().equals("Take") && event.getIdentifier() == ItemID.SEED_PACK)
+		{
+			eventType = SEEDPACK_EVENT;
+			lootRecordType = LootRecordType.EVENT;
+			takeInventorySnapshot();
 		}
 
 		if (event.getParam1() != WidgetInfo.INVENTORY.getId())
