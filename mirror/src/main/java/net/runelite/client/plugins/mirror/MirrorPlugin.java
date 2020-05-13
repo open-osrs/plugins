@@ -24,6 +24,7 @@
  */
 package net.runelite.client.plugins.mirror;
 
+import net.runelite.api.Client;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.DrawFinished;
 import net.runelite.client.input.MouseListener;
@@ -52,6 +53,9 @@ import java.awt.event.MouseEvent;
 public class MirrorPlugin extends Plugin implements MouseListener
 {
 
+	@Inject
+	private Client client;
+
 	private int mouseX = 0;
 	private int mouseY = 0;
 	public static JFrame jframe;
@@ -72,6 +76,7 @@ public class MirrorPlugin extends Plugin implements MouseListener
 			jframe.add(canvas);
 		}
 		mouseManager.registerMouseListener(this);
+		client.setMirrored(true);
 	}
 
 	@Override
@@ -83,6 +88,7 @@ public class MirrorPlugin extends Plugin implements MouseListener
 			jframe = null;
 		}
 		mouseManager.unregisterMouseListener(this);
+		client.setMirrored(false);
 	}
 
 	@Subscribe
