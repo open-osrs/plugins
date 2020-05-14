@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.9"
+version = "0.0.10"
 
 project.extra["PluginName"] = "Screenshot"
 project.extra["PluginDescription"] = "Enable the manual and automatic taking of screenshots"

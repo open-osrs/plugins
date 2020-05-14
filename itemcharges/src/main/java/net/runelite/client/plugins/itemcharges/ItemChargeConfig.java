@@ -480,10 +480,21 @@ public interface ItemChargeConfig extends Config
 	void chronicle(int chronicle);
 
 	@ConfigItem(
+		keyName = "showPotionDoseCount",
+		name = "Show Potion Doses",
+		description = "Configures if potion doses are shown",
+		position = 25
+	)
+	default boolean showPotionDoseCount()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "showRingOfForgingCount",
 		name = "Show Ring of Forging Charges",
 		description = "Configures if the Ring of Forging charge count is shown",
-		position = 25
+		position = 26
 	)
 	default boolean showRingOfForgingCount()
 	{
@@ -512,7 +523,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "ringOfForgingNotification",
 		name = "Ring of Forging Notification",
 		description = "Configures if the Ring of Forging breaking notification is enabled",
-		position = 26
+		position = 27
 	)
 	default boolean ringOfForgingNotification()
 	{
@@ -523,7 +534,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showSackCharges",
 		name = "Show Sack Quantity",
 		description = "Configures if the number of vegetables in sacks is shown",
-		position = 27
+		position = 28
 	)
 	default boolean showSackCharges()
 	{
@@ -534,7 +545,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showBasketCharges",
 		name = "Show Basket Quantity",
 		description = "Configures if the number of fruit in a basket is shown",
-		position = 28
+		position = 29
 	)
 	default boolean showBasketCharges()
 	{
@@ -545,7 +556,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showKharedstsMemoirsCharges",
 		name = "Show Kharedst's Memoirs Charges",
 		description = "Configures if Kharedst's Memoirs item charge is shown",
-		position = 29
+		position = 30
 	)
 	default boolean showKharedstsMemoirsCharges()
 	{
@@ -556,7 +567,7 @@ public interface ItemChargeConfig extends Config
 		keyName = "showInfoboxes",
 		name = "Show Infoboxes",
 		description = "Configures whether to show an infobox equipped charge items",
-		position = 30
+		position = 31
 	)
 	default boolean showInfoboxes()
 	{
