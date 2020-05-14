@@ -104,6 +104,7 @@ import net.runelite.client.ui.DrawManager;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.OSType;
+import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @PluginDependency(MirrorPlugin.class)
@@ -129,6 +130,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 	private int mouseY = 0;
 	private final Image cursor = ImageUtil.getResourceStreamFromClass(GpuPlugin.class, "cursor.png");
 	private BufferedImage tempBufferedImage;
+	private boolean drawThreadRunning = false;
 
 	@Inject
 	private Client client;
@@ -1262,32 +1264,42 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 		final int width = bufferProvider.getWidth();
 		final int height = bufferProvider.getHeight();
 
-		
-		// Handle Mirror
-		// We still need to draw AFTER_MIRROR regardless of Mirror being active
-		if (client.isMirrored())
-		{
-			if (MirrorPlugin.bufferedImage == null)
-				MirrorPlugin.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-			tempGraphics = MirrorPlugin.bufferedImage.getGraphics();
-
-			if (tempGraphics != null)
+			// Handle Mirror
+			// We still need to draw AFTER_MIRROR regardless of Mirror being active
+			if (client.isMirrored())
 			{
-				if (MirrorPlugin.canvas.getWidth() != width || MirrorPlugin.canvas.getHeight() != height)
-				{
+				if (MirrorPlugin.bufferedImage == null)
 					MirrorPlugin.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-					MirrorPlugin.canvas.setSize(width, height);
-					MirrorPlugin.jframe.setSize(width + 15, height + 40);
+
+				tempGraphics = MirrorPlugin.bufferedImage.getGraphics();
+
+				if (tempGraphics != null)
+				{
+					if (MirrorPlugin.canvas.getWidth() != width || MirrorPlugin.canvas.getHeight() != height)
+					{
+						MirrorPlugin.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+						MirrorPlugin.canvas.setSize(width, height);
+						MirrorPlugin.jframe.setSize(width + 15, height + 40);
+					}
+
+					Image i = currentRender();
+					int[] a = ArrayUtils.clone(pixels);
+
+					Thread t = new Thread(() ->
+					{
+						drawThreadRunning = true;
+						tempGraphics.drawImage(i, 0, 0, null);
+						tempGraphics.drawImage(toBufferedImage(a, width, height), 0, 0, null);
+						tempGraphics.drawImage(cursor, mouseX, mouseY, null);
+						MirrorPlugin.canvas.getGraphics().drawImage(MirrorPlugin.bufferedImage, 0, 0, null);
+						drawThreadRunning = false;
+					});
+
+					if (!drawThreadRunning)
+						t.start();
 				}
-
-				tempGraphics.drawImage(currentRender(), 0, 0, null);
-				tempGraphics.drawImage(toBufferedImage(pixels, width, height), 0, 0, null);
-				tempGraphics.drawImage(cursor, mouseX, mouseY, null);
-
-				MirrorPlugin.canvas.getGraphics().drawImage(MirrorPlugin.bufferedImage, 0, 0, null);
 			}
-		}
+
 		Hooks.renderer.render(Hooks.lastGraphics, OverlayLayer.AFTER_MIRROR);
 
 		gl.glEnable(gl.GL_BLEND);
@@ -1403,10 +1415,19 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 
 	private Image currentRender()
 	{
+		int width;
+		int height;
 
-		//JOGL reads actual pixels, not canvas, so we must specify real dimensions
-		int width  = (int)(client.getCanvasWidth() * ((float)config.windowsScale().getScale() / 100));
-		int height = (int)(client.getCanvasHeight() * ((float)config.windowsScale().getScale() / 100));
+		if (client.isStretchedEnabled())
+		{
+			width  = (int)(((float)client.getCanvasWidth() * client.getScalingFactor()) * ((float)config.windowsScale().getScale() / 100));
+			height  = (int)(((float)client.getCanvasHeight() * client.getScalingFactor()) * ((float)config.windowsScale().getScale() / 100));
+		}
+		else
+		{
+			width  = (int)(client.getCanvasWidth() * ((float)config.windowsScale().getScale() / 100));
+			height = (int)(client.getCanvasHeight() * ((float)config.windowsScale().getScale() / 100));
+		}
 
 		ByteBuffer tempBuffer = ByteBuffer.allocateDirect(width * height * 4)
 				.order(ByteOrder.nativeOrder());
@@ -1429,9 +1450,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 				pixels[(height - y - 1) * width + x] = (r << 16) | (g << 8) | b;
 			}
 		}
-
-		//and then scale down to actual canvas size
-		return mirrorImage.getScaledInstance(client.getCanvasWidth(), client.getCanvasHeight(), Image.SCALE_SMOOTH);
+		return mirrorImage;
 	}
 
 	@Override
