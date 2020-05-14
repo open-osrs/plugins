@@ -33,9 +33,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
 import java.awt.Canvas;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import javax.swing.JFrame;
 
 /**
