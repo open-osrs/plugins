@@ -82,4 +82,17 @@ public interface InterfaceStylesConfig extends Config
 	{
 		return false;
 	}
+	
+	@Range(
+		max = 255
+	)
+	@ConfigItem(
+		keyName = "menuAlpha",
+		name = "Menu alpha",
+		description = "Configures the transparency of the right-click menu"
+	)
+	default int menuAlpha()
+	{
+		return 255;
+	}
 }
