@@ -136,6 +136,10 @@ public class KingdomPlugin extends Plugin
 				removeKingdomInfobox();
 			}
 		}
+		if (client.getGameState() == GameState.LOGGED_IN && (!isInKingdom() && !config.showInfoboxAnywhere()))
+		{
+			removeKingdomInfobox();
+		}
 	}
 
 	@Subscribe
@@ -161,6 +165,10 @@ public class KingdomPlugin extends Plugin
 			{
 				removeKingdomInfobox();
 			}
+		}
+		if (client.getGameState() == GameState.LOGGED_IN && (!isInKingdom() && !config.showInfoboxAnywhere()))
+		{
+			removeKingdomInfobox();
 		}
 	}
 
@@ -190,6 +198,10 @@ public class KingdomPlugin extends Plugin
 			{
 				removeKingdomInfobox();
 			}
+		}
+		if (client.getGameState() == GameState.LOGGED_IN && (!isInKingdom() && !config.showInfoboxAnywhere()))
+		{
+			removeKingdomInfobox();
 		}
 	}
 
