@@ -95,7 +95,7 @@ class Obstacles
 		ROPE_BRIDGE_36233, TIGHTROPE_36234, ROPE_BRIDGE_36235, TIGHTROPE_36236, TIGHTROPE_36237, DARK_HOLE_36238
 	);
 	
-	static final Set<Integer> PORTAL_OBSTACLE_IDS = ImmutableSet.of(
+	static final Set<Integer> PORTAL_OBSTACLE_IDS = Set.of(
 		// Prifddinas portals
 		NULL_36241, NULL_36242, NULL_36243, NULL_36244, NULL_36245, NULL_36246
 	);
