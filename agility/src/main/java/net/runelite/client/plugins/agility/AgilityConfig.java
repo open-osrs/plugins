@@ -96,12 +96,24 @@ public interface AgilityConfig extends Config
 	{
 		return true;
 	}
+	
+	@ConfigItem(
+		keyName = "highlightPortals",
+		name = "Highlight Portals",
+		description = "Enable/disable the highlighting of Prifddinas portals",
+		position = 6,
+		titleSection = "highlightTitle"
+	)
+	default boolean highlightPortals()
+	{
+		return true;
+	}
 
 	@ConfigItem(
 		keyName = "highlightShortcuts",
 		name = "Highlight Agility Shortcuts",
 		description = "Enable/disable the highlighting of Agility shortcuts",
-		position = 6,
+		position = 7,
 		titleSection = "highlightTitle"
 	)
 	default boolean highlightShortcuts()
@@ -113,7 +125,7 @@ public interface AgilityConfig extends Config
 		keyName = "showTrapOverlay",
 		name = "Highlight Traps",
 		description = "Enable/disable the highlighting of traps on Agility courses",
-		position = 7,
+		position = 8,
 		titleSection = "highlightTitle"
 	)
 	default boolean showTrapOverlay()
@@ -125,7 +137,7 @@ public interface AgilityConfig extends Config
 		keyName = "highlightStick",
 		name = "Highlight Stick",
 		description = "Highlight the retrievable stick in the Werewolf Agility Course",
-		position = 8,
+		position = 9,
 		titleSection = "highlightTitle"
 	)
 	default boolean highlightStick()
@@ -137,7 +149,7 @@ public interface AgilityConfig extends Config
 		keyName = "lapsTitle",
 		name = "Laps",
 		description = "",
-		position = 9
+		position = 10
 	)
 	default Title lapsTitle()
 	{
@@ -148,7 +160,7 @@ public interface AgilityConfig extends Config
 		keyName = "showLapCount",
 		name = "Show Lap Count",
 		description = "Enable/disable the lap counter",
-		position = 10,
+		position = 11,
 		titleSection = "lapsTitle"
 	)
 	default boolean showLapCount()
@@ -160,7 +172,7 @@ public interface AgilityConfig extends Config
 		keyName = "lapTimeout",
 		name = "Hide Lap Count",
 		description = "Time in minutes until the lap counter hides/resets",
-		position = 11,
+		position = 12,
 		hidden = true,
 		unhide = "showLapCount",
 		titleSection = "lapsTitle"
@@ -175,7 +187,7 @@ public interface AgilityConfig extends Config
 		keyName = "lapsToLevel",
 		name = "Show Laps Until Level",
 		description = "Show number of laps remaining until next level is reached.",
-		position = 12,
+		position = 13,
 		hidden = true,
 		unhide = "showLapCount",
 		titleSection = "lapsTitle"
@@ -189,7 +201,7 @@ public interface AgilityConfig extends Config
 		keyName = "lapsToGoal",
 		name = "Show Laps Until Goal",
 		description = "Show number of laps remaining until experience tracker goal is reached",
-		position = 13,
+		position = 14,
 		hidden = true,
 		unhide = "showLapCount",
 		titleSection = "lapsTitle"
@@ -203,7 +215,7 @@ public interface AgilityConfig extends Config
 		keyName = "lapsPerHour",
 		name = "Show Laps Per Hour",
 		description = "Shows how many laps you can expect to complete per hour.",
-		position = 14,
+		position = 15,
 		unhide = "showLapCount",
 		titleSection = "lapsTitle"
 	)
@@ -216,7 +228,7 @@ public interface AgilityConfig extends Config
 		keyName = "agilityArenaTitle",
 		name = "Agility Arena",
 		description = "",
-		position = 15,
+		position = 16,
 		unhide = "showLapCount",
 		titleSection = "lapsTitle"
 	)
@@ -229,7 +241,7 @@ public interface AgilityConfig extends Config
 		keyName = "agilityArenaTimer",
 		name = "Agility Arena timer",
 		description = "Configures whether Agility Arena timer is displayed",
-		position = 16,
+		position = 17,
 		titleSection = "agilityArenaTitle"
 	)
 	default boolean showAgilityArenaTimer()
@@ -241,7 +253,7 @@ public interface AgilityConfig extends Config
 		keyName = "agilityArenaNotifier",
 		name = "Agility Arena notifier",
 		description = "Notify on ticket location change in Agility Arena",
-		position = 16,
+		position = 18,
 		titleSection = "agilityArenaTitle"
 	)
 	default boolean notifyAgilityArena()
@@ -253,7 +265,7 @@ public interface AgilityConfig extends Config
 		keyName = "colorsTitle",
 		name = "Colors",
 		description = "",
-		position = 17
+		position = 19
 	)
 	default Title colorsTitle()
 	{
@@ -264,7 +276,7 @@ public interface AgilityConfig extends Config
 		keyName = "overlayColor",
 		name = "Global Overlay Color",
 		description = "Color of Agility overlay",
-		position = 18,
+		position = 20,
 		titleSection = "colorsTitle"
 	)
 	default Color getOverlayColor()
@@ -276,7 +288,7 @@ public interface AgilityConfig extends Config
 		keyName = "trapHighlight",
 		name = "Trap Overlay Color",
 		description = "Color of Agility trap overlay",
-		position = 19,
+		position = 21,
 		hidden = true,
 		unhide = "showTrapOverlay",
 		titleSection = "colorsTitle"
@@ -290,7 +302,7 @@ public interface AgilityConfig extends Config
 		keyName = "markHighlight",
 		name = "Mark Highlight Color",
 		description = "Color of highlighted Marks of Grace",
-		position = 20,
+		position = 22,
 		hidden = true,
 		unhide = "highlightMarks",
 		titleSection = "colorsTitle"
@@ -300,11 +312,23 @@ public interface AgilityConfig extends Config
 		return Color.RED;
 	}
 	
+		@ConfigItem(
+		keyName = "portalsHighlight",
+		name = "Portals Highlight Color",
+		description = "Color of highlighted Prifddinas portals",
+		position = 23,
+		titleSection = "colorsTitle"
+	)
+	default Color getPortalsColor()
+	{
+		return Color.MAGENTA;
+	}
+	
 	@ConfigItem(
 		keyName = "stickHighlightColor",
 		name = "Stick Highlight Color",
 		description = "Color of highlighted stick",
-		position = 21,
+		position = 24,
 		titleSection = "colorsTitle"
 	)
 	default Color stickHighlightColor()
