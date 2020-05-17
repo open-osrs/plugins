@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Kingdom of Miscellania"
 project.extra["PluginDescription"] = "Show various informations about your Kingdom of Miscellania"
