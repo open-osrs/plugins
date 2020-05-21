@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.20"
+version = "0.0.21"
 
 project.extra["PluginName"] = "GPU"
 project.extra["PluginDescription"] = "Utilizes the GPU"

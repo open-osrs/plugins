@@ -50,50 +50,6 @@ public interface GpuPluginConfig extends Config
 		return new Title();
 	}
 
-	@ConfigTitleSection(
-		keyName = "scalingTitle",
-		name = "Scaling",
-		description = "",
-		position = 1
-	)
-	default Title scalingTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigTitleSection(
-		keyName = "ppTitle",
-		name = "Post processing",
-		description = "",
-		position = 2
-	)
-	default Title ppTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigTitleSection(
-		keyName = "fogTitle",
-		name = "Fog",
-		description = "",
-		position = 3
-	)
-	default Title fogTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigTitleSection(
-		keyName = "effectsTitle",
-		name = "Effects",
-		description = "",
-		position = 4
-	)
-	default Title effectsTitle()
-	{
-		return new Title();
-	}
-
 	@Range(
 		min = 20,
 		max = MAX_DISTANCE
@@ -102,7 +58,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "drawDistance",
 		name = "Draw Distance",
 		description = "Draw distance",
-		position = 0,
+		position = 1,
 		titleSection = "drawingTitle"
 	)
 	default int drawDistance()
@@ -114,7 +70,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "smoothBanding",
 		name = "Remove Color Banding",
 		description = "Smooths out the color banding that is present in the CPU renderer",
-		position = 1,
+		position = 2,
 		titleSection = "drawingTitle"
 	)
 	default boolean smoothBanding()
@@ -126,7 +82,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "useComputeShaders",
 		name = "Compute Shaders",
 		description = "Offloads face sorting to GPU, enabling extended draw distance. Requires plugin restart.",
-		position = 2,
+		position = 3,
 		titleSection = "drawingTitle",
 		warning = "This option requires a plugin restart and disables draw distance.\nOnly use as a last resort."
 	)
@@ -135,28 +91,61 @@ public interface GpuPluginConfig extends Config
 		return true;
 	}
 
+	@ConfigTitleSection(
+		keyName = "scalingTitle",
+		name = "Scaling",
+		description = "",
+		position = 4
+	)
+	default Title scalingTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "uiScalingMode",
 		name = "UI scaling mode",
 		description = "Sampling function to use for the UI in stretched mode",
 		titleSection = "scalingTitle",
-		position = 0
+		position = 5
 	)
 	default UIScalingMode uiScalingMode()
 	{
 		return UIScalingMode.CATMULL_ROM;
 	}
 
+	@ConfigTitleSection(
+		keyName = "ppTitle",
+		name = "Post processing",
+		description = "",
+		position = 6
+	)
+	default Title ppTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "antiAliasingMode",
 		name = "Anti Aliasing",
 		description = "Configures the anti-aliasing mode",
-		position = 0,
+		position = 7,
 		titleSection = "ppTitle"
 	)
 	default AntiAliasingMode antiAliasingMode()
 	{
 		return AntiAliasingMode.DISABLED;
+	}
+
+	@ConfigTitleSection(
+		keyName = "fogTitle",
+		name = "Fog",
+		description = "",
+		position = 8
+	)
+	default Title fogTitle()
+	{
+		return new Title();
 	}
 
 	@Range(
@@ -166,7 +155,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogDepth",
 		name = "Depth",
 		description = "Distance from the scene edge the fog starts",
-		position = 0,
+		position = 9,
 		titleSection = "fogTitle"
 	)
 	default int fogDepth()
@@ -181,7 +170,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogCircularity",
 		name = "Roundness",
 		description = "Fog circularity in %",
-		position = 1,
+		position = 10,
 		titleSection = "fogTitle"
 	)
 	default int fogCornerRadius()
@@ -201,14 +190,14 @@ public interface GpuPluginConfig extends Config
 	)
 	default int fogDensity()
 	{
-		return 10;
+		return 11;
 	}
 
 	@ConfigTitleSection(
-			keyName = "mirror",
-			name = "Mirror",
-			description = "",
-			position = 5
+		keyName = "mirrorTitle",
+		name = "Mirror",
+		description = "",
+		position = 12
 	)
 	default Title mirrorTitle()
 	{
@@ -216,15 +205,15 @@ public interface GpuPluginConfig extends Config
 	}
 
 	@Range(
-			min = 100,
-			max = 500
+		min = 100,
+		max = 500
 	)
 	@ConfigItem(
-			keyName = "windowsScale",
-			name = "Windows Scale",
-			description = "Set this to the scale you use in Windows if mirror comes out incorrectly.",
-			position = 2,
-			titleSection = "mirrorTitle"
+		keyName = "windowsScale",
+		name = "Windows Scale",
+		description = "Set this to the scale you use in Windows if mirror comes out incorrectly.",
+		position = 13,
+		titleSection = "mirrorTitle"
 	)
 	default WindowsScalingMode windowsScale()
 	{
