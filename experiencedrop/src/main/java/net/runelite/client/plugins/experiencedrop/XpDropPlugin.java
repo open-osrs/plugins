@@ -393,8 +393,8 @@ public class XpDropPlugin extends Plugin
 	{
 		double damageDealt = diff / HITPOINT_RATIO;
 
-		// DeadMan mode has an XP modifier of 10x
-		if (client.getWorldType().contains(WorldType.DEADMAN))
+		// DeadMan mode Tournament has an XP modifier of 10x in safezone, 15x outside.
+		if (client.getWorldType().contains(WorldType.DEADMAN_TOURNAMENT))
 		{
 			if (client.getVar(VarClientInt.DMM_SAFEZONE) == 0)
 			{
@@ -404,6 +404,13 @@ public class XpDropPlugin extends Plugin
 			{
 				DMM_MULTIPLIER_RATIO = 10;
 			}
+			damageDealt = damageDealt / DMM_MULTIPLIER_RATIO;
+		}
+		// DeadMan mode W45 has an XP modifier of 10x
+		else if (!client.getWorldType().contains(WorldType.DEADMAN_TOURNAMENT)
+			&& client.getWorldType().contains(WorldType.DEADMAN))
+		{
+			DMM_MULTIPLIER_RATIO = 10;
 			damageDealt = damageDealt / DMM_MULTIPLIER_RATIO;
 		}
 
