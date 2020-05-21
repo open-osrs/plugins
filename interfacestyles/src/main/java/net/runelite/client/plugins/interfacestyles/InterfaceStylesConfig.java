@@ -83,7 +83,7 @@ public interface InterfaceStylesConfig extends Config
 	{
 		return false;
 	}
-	
+
 	@Range(
 		max = 255
 	)

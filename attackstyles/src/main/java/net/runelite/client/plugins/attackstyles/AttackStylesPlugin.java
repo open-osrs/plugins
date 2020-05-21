@@ -36,17 +36,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.ScriptID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.events.WidgetHiddenChanged;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import static net.runelite.api.widgets.WidgetID.COMBAT_GROUP_ID;
 import net.runelite.api.widgets.WidgetInfo;
-import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -137,26 +135,12 @@ public class AttackStylesPlugin extends Plugin
 	}
 
 	@Subscribe
-	@VisibleForTesting
-	void onWidgetHiddenChanged(WidgetHiddenChanged event)
+	private void onScriptPostFired(ScriptPostFired scriptPostFired)
 	{
-		if (event.getWidget().isSelfHidden() || TO_GROUP(event.getWidget().getId()) != COMBAT_GROUP_ID)
+		if (scriptPostFired.getScriptId() == ScriptID.COMBAT_INTERFACE_SETUP)
 		{
-			return;
+			processWidgets();
 		}
-
-		processWidgets();
-	}
-
-	@Subscribe
-	private void onWidgetLoaded(WidgetLoaded event)
-	{
-		if (event.getGroupId() != COMBAT_GROUP_ID)
-		{
-			return;
-		}
-
-		processWidgets();
 	}
 
 	/**
@@ -205,6 +189,8 @@ public class AttackStylesPlugin extends Plugin
 				castingModeVarbit);
 			updateWarning(weaponSwitch);
 
+			// this isn't required, but will hide styles 1 tick earlier than the script event, which fires
+			// 1 tick after the combat options is unhidden
 			if (weaponSwitch)
 			{
 				processWidgets();

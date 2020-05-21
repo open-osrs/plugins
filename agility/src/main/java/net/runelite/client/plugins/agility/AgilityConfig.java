@@ -96,7 +96,7 @@ public interface AgilityConfig extends Config
 	{
 		return true;
 	}
-	
+
 	@ConfigItem(
 		keyName = "highlightPortals",
 		name = "Highlight Portals",
@@ -132,7 +132,7 @@ public interface AgilityConfig extends Config
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "highlightStick",
 		name = "Highlight Stick",
@@ -311,8 +311,8 @@ public interface AgilityConfig extends Config
 	{
 		return Color.RED;
 	}
-	
-		@ConfigItem(
+
+	@ConfigItem(
 		keyName = "portalsHighlight",
 		name = "Portals Highlight Color",
 		description = "Color of highlighted Prifddinas portals",
@@ -323,7 +323,7 @@ public interface AgilityConfig extends Config
 	{
 		return Color.MAGENTA;
 	}
-	
+
 	@ConfigItem(
 		keyName = "stickHighlightColor",
 		name = "Stick Highlight Color",
