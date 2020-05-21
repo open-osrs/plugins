@@ -25,6 +25,9 @@
 package net.runelite.client.plugins.mirror;
 
 import com.google.inject.Inject;
+import java.awt.Canvas;
+import java.awt.image.BufferedImage;
+import javax.swing.JFrame;
 import net.runelite.api.Client;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.DrawFinished;
@@ -32,12 +35,9 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
-import java.awt.Canvas;
-import java.awt.image.BufferedImage;
-import javax.swing.JFrame;
 
 /**
-	Mirror Plugin - Creates a new window that draws only the game canvas, and ignores the AFTER_MIRROR Overlay layer
+ * Mirror Plugin - Creates a new window that draws only the game canvas, and ignores the AFTER_MIRROR Overlay layer
  */
 @Extension
 @PluginDescriptor(
@@ -69,7 +69,9 @@ public class MirrorPlugin extends Plugin
 		client.setMirrored(true);
 
 		if (!jframe.isVisible())
+		{
 			jframe.setVisible(true);
+		}
 	}
 
 	@Override
@@ -87,13 +89,15 @@ public class MirrorPlugin extends Plugin
 	private void onDrawFinished(DrawFinished event)
 	{
 		if (!jframe.isVisible())
+		{
 			jframe.setVisible(true);
+		}
 
 		if (canvas.getWidth() != event.image.getWidth(canvas) + 15 || (canvas.getHeight() != event.image.getHeight(canvas) + 40))
-			{
-				canvas.setSize(event.image.getWidth(canvas) + 15, event.image.getHeight(canvas) + 40);
-				jframe.setSize(canvas.getSize());
-			}
+		{
+			canvas.setSize(event.image.getWidth(canvas) + 15, event.image.getHeight(canvas) + 40);
+			jframe.setSize(canvas.getSize());
+		}
 		canvas.getGraphics().drawImage(event.image, 0, 0, jframe);
 	}
 }
