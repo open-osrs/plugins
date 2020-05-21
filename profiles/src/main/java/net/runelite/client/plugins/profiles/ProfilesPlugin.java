@@ -27,7 +27,9 @@ package net.runelite.client.plugins.profiles;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ScheduledExecutorService;
+import java.security.GeneralSecurityException;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
@@ -49,6 +51,7 @@ import org.pf4j.Extension;
 	tags = {"profile", "account", "login", "log in", "pklite"},
 	type = PluginType.MISCELLANEOUS
 )
+@Slf4j
 public class ProfilesPlugin extends Plugin
 {
 	@Inject
@@ -111,7 +114,7 @@ public class ProfilesPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged event) throws Exception
+	private void onConfigChanged(ConfigChanged event)
 	{
 		if (event.getGroup().equals("profiles") && event.getKey().equals("rememberPassword"))
 		{
@@ -122,7 +125,14 @@ public class ProfilesPlugin extends Plugin
 		if (event.getGroup().equals("profiles") && !event.getKey().equals("rememberPassword"))
 		{
 			panel = injector.getInstance(ProfilesPanel.class);
-			panel.redrawProfiles();
+			try
+			{
+				panel.redrawProfiles();
+			}
+			catch (GeneralSecurityException gse)
+			{
+				log.error("Error redrawing profiles panel", gse);
+			}
 		}
 	}
 

@@ -101,7 +101,8 @@ public interface AgilityConfig extends Config
 		keyName = "highlightPortals",
 		name = "Highlight Portals",
 		description = "Enable/disable the highlighting of Prifddinas portals",
-		position = 6
+		position = 6,
+		titleSection = "highlightTitle"
 	)
 	default boolean highlightPortals()
 	{
@@ -109,21 +110,10 @@ public interface AgilityConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "portalsHighlight",
-		name = "Portals Highlight Color",
-		description = "Color of highlighted Prifddinas portals",
-		position = 7
-	)
-	default Color getPortalsColor()
-	{
-		return Color.MAGENTA;
-	}
-
-	@ConfigItem(
 		keyName = "highlightShortcuts",
 		name = "Highlight Agility Shortcuts",
 		description = "Enable/disable the highlighting of Agility shortcuts",
-		position = 8,
+		position = 7,
 		titleSection = "highlightTitle"
 	)
 	default boolean highlightShortcuts()
@@ -135,19 +125,19 @@ public interface AgilityConfig extends Config
 		keyName = "showTrapOverlay",
 		name = "Highlight Traps",
 		description = "Enable/disable the highlighting of traps on Agility courses",
-		position = 9,
+		position = 8,
 		titleSection = "highlightTitle"
 	)
 	default boolean showTrapOverlay()
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "highlightStick",
 		name = "Highlight Stick",
 		description = "Highlight the retrievable stick in the Werewolf Agility Course",
-		position = 10,
+		position = 9,
 		titleSection = "highlightTitle"
 	)
 	default boolean highlightStick()
@@ -159,7 +149,7 @@ public interface AgilityConfig extends Config
 		keyName = "lapsTitle",
 		name = "Laps",
 		description = "",
-		position = 11
+		position = 10
 	)
 	default Title lapsTitle()
 	{
@@ -170,7 +160,7 @@ public interface AgilityConfig extends Config
 		keyName = "showLapCount",
 		name = "Show Lap Count",
 		description = "Enable/disable the lap counter",
-		position = 12,
+		position = 11,
 		titleSection = "lapsTitle"
 	)
 	default boolean showLapCount()
@@ -182,7 +172,7 @@ public interface AgilityConfig extends Config
 		keyName = "lapTimeout",
 		name = "Hide Lap Count",
 		description = "Time in minutes until the lap counter hides/resets",
-		position = 11,
+		position = 12,
 		hidden = true,
 		unhide = "showLapCount",
 		titleSection = "lapsTitle"
@@ -321,12 +311,24 @@ public interface AgilityConfig extends Config
 	{
 		return Color.RED;
 	}
-	
+
+	@ConfigItem(
+		keyName = "portalsHighlight",
+		name = "Portals Highlight Color",
+		description = "Color of highlighted Prifddinas portals",
+		position = 23,
+		titleSection = "colorsTitle"
+	)
+	default Color getPortalsColor()
+	{
+		return Color.MAGENTA;
+	}
+
 	@ConfigItem(
 		keyName = "stickHighlightColor",
 		name = "Stick Highlight Color",
 		description = "Color of highlighted stick",
-		position = 23,
+		position = 24,
 		titleSection = "colorsTitle"
 	)
 	default Color stickHighlightColor()

@@ -30,7 +30,6 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
-import net.runelite.client.config.Units;
 
 @ConfigGroup("interfaceStyles")
 public interface InterfaceStylesConfig extends Config
@@ -86,9 +85,8 @@ public interface InterfaceStylesConfig extends Config
 	}
 
 	@Range(
-		max = 100
+		max = 255
 	)
-	@Units(Units.PERCENT)
 	@ConfigItem(
 		keyName = "menuAlpha",
 		name = "Menu alpha",
@@ -96,6 +94,6 @@ public interface InterfaceStylesConfig extends Config
 	)
 	default int menuAlpha()
 	{
-		return 100;
+		return 255;
 	}
 }
