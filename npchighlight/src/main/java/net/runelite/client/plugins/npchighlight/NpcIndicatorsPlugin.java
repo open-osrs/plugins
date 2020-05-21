@@ -176,9 +176,9 @@ public class NpcIndicatorsPlugin extends Plugin
 	private List<String> highlights = new ArrayList<>();
 
 	/**
-	 * NPC ids marked with the Tag option, index -> composition id
+	 * NPC ids marked with the Tag option
 	 */
-	private final Map<Integer, Integer> npcTags = new HashMap<>();
+	private final Set<Integer> npcTags = new HashSet<>();
 
 	/**
 	 * Tagged NPCs that spawned this tick, which need to be verified that
@@ -324,7 +324,7 @@ public class NpcIndicatorsPlugin extends Plugin
 		}
 
 		final int id = click.getIdentifier();
-		final Integer removedId = npcTags.remove(id);
+		final boolean removed = npcTags.remove(id);
 		final NPC[] cachedNPCs = client.getCachedNPCs();
 		final NPC npc = cachedNPCs[id];
 
@@ -333,7 +333,7 @@ public class NpcIndicatorsPlugin extends Plugin
 			return;
 		}
 
-		if (removedId != null)
+		if (removed)
 		{
 			MemorizedNpc mn = memorizedNpcs.get(npc.getIndex());
 			if (mn != null && isNpcMemorizationUnnecessary(mn))
@@ -344,7 +344,7 @@ public class NpcIndicatorsPlugin extends Plugin
 		}
 		else
 		{
-			npcTags.put(id, npc.getId());
+			npcTags.add(id);
 			rebuildAllNpcs();
 		}
 
@@ -469,10 +469,12 @@ public class NpcIndicatorsPlugin extends Plugin
 
 	private void highlightNpcIfMatch(final NPC npc)
 	{
-		Integer taggedId = npcTags.get(npc.getIndex());
-		if (taggedId != null && taggedId == npc.getId())
+		if (npcTags.contains(npc.getIndex()))
 		{
-			memorizeNpc(npc);
+			if (!client.isInInstancedRegion())
+			{
+				memorizeNpc(npc);
+			}
 			highlightedNpcs.add(npc);
 			return;
 		}
@@ -484,7 +486,10 @@ public class NpcIndicatorsPlugin extends Plugin
 			{
 				if (WildcardMatcher.matches(highlight, npcName))
 				{
-					memorizeNpc(npc);
+					if (!client.isInInstancedRegion())
+					{
+						memorizeNpc(npc);
+					}
 					highlightedNpcs.add(npc);
 					return;
 				}
@@ -512,8 +517,7 @@ public class NpcIndicatorsPlugin extends Plugin
 
 	private boolean isNpcMemorizationUnnecessary(final MemorizedNpc mn)
 	{
-		Integer taggedId = npcTags.get(mn.getNpcIndex());
-		if (taggedId != null && taggedId == mn.getNpcId())
+		if (npcTags.contains(mn.getNpcIndex()))
 		{
 			return false;
 		}
@@ -669,7 +673,6 @@ public class NpcIndicatorsPlugin extends Plugin
 
 						mn.setDiedOnTick(-1);
 					}
-
 
 					final WorldPoint npcLocation = npc.getWorldLocation();
 

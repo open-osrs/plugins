@@ -179,7 +179,12 @@ public class InterfaceStylesPlugin extends Plugin
 	{
 		if (config.hdMenu())
 		{
-			client.draw2010Menu();
+			client.draw2010Menu((int) (config.menuAlpha() * 2.55));
+			event.consume();
+		}
+		else if (config.menuAlpha() != 100)
+		{
+			client.drawOriginalMenu((int) (config.menuAlpha() * 2.55));
 			event.consume();
 		}
 	}

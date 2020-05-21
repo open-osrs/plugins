@@ -30,9 +30,10 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.ScriptID;
 import net.runelite.api.Sprite;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.WidgetHiddenChanged;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
@@ -125,9 +126,12 @@ public class MinimapPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onWidgetHiddenChanged(WidgetHiddenChanged event)
+	private void onScriptPostFired(ScriptPostFired scriptPostFired)
 	{
-		updateMinimapWidgetVisibility(config.hideMinimap());
+		if (scriptPostFired.getScriptId() == ScriptID.TOPLEVEL_REDRAW)
+		{
+			updateMinimapWidgetVisibility(config.hideMinimap());
+		}
 	}
 
 	private void updateMinimapWidgetVisibility(boolean enable)
@@ -175,14 +179,14 @@ public class MinimapPlugin extends Plugin
 		if (colors == null)
 		{
 			colors = new Color[]
-			{
-				config.itemColor(),
-				config.npcColor(),
-				config.playerColor(),
-				config.friendColor(),
-				config.teamColor(),
-				config.clanColor()
-			};
+				{
+					config.itemColor(),
+					config.npcColor(),
+					config.playerColor(),
+					config.friendColor(),
+					config.teamColor(),
+					config.clanColor()
+				};
 		}
 		return colors;
 	}
