@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Mirror"
 project.extra["PluginDescription"] = "Creates a second window that contains the game screen minus the AFTER_MIRROR overlay"
