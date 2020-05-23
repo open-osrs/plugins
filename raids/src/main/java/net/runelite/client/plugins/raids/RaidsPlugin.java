@@ -132,7 +132,7 @@ public class RaidsPlugin extends Plugin
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##");
 	private static final Pattern ROTATION_REGEX = Pattern.compile("\\[(.*?)]");
 	private static final String LAYOUT_COMMAND = "!layout";
-	private static final Pattern RAID_COMPLETE_REGEX = Pattern.compile("Congratulations - your raid is complete! Duration: ([0-9:]+)");
+	private static final Pattern RAID_COMPLETE_REGEX = Pattern.compile("Congratulations - your raid is complete!Team size: ([0-9]+ players|Solo) Duration: ([0-9:]+) Personal best: ([0-9:]+)");
 	private static final Set<String> GOOD_CRABS_FIRST = Set.of(
 		"FSCCP.PCSCF - #WNWSWN#ESEENW", //both good crabs
 		"SCSPF.CCSPF - #ESWWNW#ESENES", //both good crabs
