@@ -180,11 +180,11 @@ subprojects {
                 }
             }
         }
-    }
-    
-    tasks.register<Copy>("copyDeps") {
-        into("./build/deps/")
-        from(configurations["runtimeClasspath"])
+
+        register<Copy>("copyDeps") {
+            into("./build/deps/")
+            from(configurations["runtimeClasspath"])
+        }
     }
 }
 
