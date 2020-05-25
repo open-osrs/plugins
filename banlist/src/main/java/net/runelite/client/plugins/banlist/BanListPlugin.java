@@ -163,7 +163,7 @@ public class BanListPlugin extends Plugin
 	private void onClanMemberJoined(ClanMemberJoined event)
 	{
 		ClanMember member = event.getMember();
-		String memberUsername = Text.standardize(member.getUsername().toLowerCase());
+		String memberUsername = Text.standardize(member.getName().toLowerCase());
 
 		ListType scamList = checkScamList(memberUsername);
 		ListType toxicList = checkToxicList(memberUsername);

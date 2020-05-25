@@ -41,6 +41,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Actor;
 import net.runelite.api.ClanMember;
+import net.runelite.api.ClanMemberManager;
 import net.runelite.api.ClanMemberRank;
 import static net.runelite.api.ClanMemberRank.UNRANKED;
 import net.runelite.api.Client;
@@ -388,13 +389,14 @@ public class PlayerIndicatorsPlugin extends Plugin
 
 		callers.clear();
 
-		if (config.useClanchatRanks() && client.getClanMembers() != null)
+		final ClanMemberManager clanMemberManager = client.getClanMemberManager();
+		if (config.useClanchatRanks() && clanMemberManager != null)
 		{
-			for (ClanMember clanMember : client.getClanMembers())
+			for (ClanMember clanMember : clanMemberManager.getMembers())
 			{
 				if (clanMember.getRank().getValue() > config.callerRank().getValue())
 				{
-					callers.add(Text.standardize(clanMember.getUsername()));
+					callers.add(Text.standardize(clanMember.getName()));
 				}
 			}
 		}
