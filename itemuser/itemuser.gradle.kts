@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.13"
+version = "0.0.14"
 
 project.extra["PluginName"] = "Item User"
 project.extra["PluginDescription"] = "Automatically uses items on an object"

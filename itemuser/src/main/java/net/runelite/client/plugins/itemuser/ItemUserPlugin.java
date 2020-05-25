@@ -122,9 +122,11 @@ public class ItemUserPlugin extends Plugin
 			}
 			return;
 		}
-
-		useItems();
-		items.clear();
+		executor.submit(() -> {
+			useItems();
+			System.out.println("Clearing items");
+			items.clear();
+		});
 	}
 
 	private void sleep(long ms)
@@ -158,18 +160,17 @@ public class ItemUserPlugin extends Plugin
 			return;
 		}
 
-		executor.submit(() -> {
-			for (WidgetItem item : items)
-			{
-				entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_USE.getId(), item.getIndex(), 9764864, false);
-				click();
-				sleep(config.clickDelay());
+		System.out.println("Using items");
+		for (WidgetItem item : items)
+		{
+			entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_USE.getId(), item.getIndex(), 9764864, false);
+			click();
+			sleep(config.clickDelay());
 
-				entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName() + "<col=ffffff> -> <col=ffff>" + client.getObjectDefinition(object.getId()).getName(), object.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), object.getSceneMinLocation().getX(), object.getSceneMinLocation().getY(), false);
-				click();
-				sleep(config.clickDelay());
-			}
-		});
+			entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName() + "<col=ffffff> -> <col=ffff>" + client.getObjectDefinition(object.getId()).getName(), object.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), object.getSceneMinLocation().getX(), object.getSceneMinLocation().getY(), false);
+			click();
+			sleep(config.clickDelay());
+		}
 	}
 
 	@Nullable
