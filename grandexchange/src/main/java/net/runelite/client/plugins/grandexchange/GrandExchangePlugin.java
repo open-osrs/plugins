@@ -29,17 +29,17 @@
 package net.runelite.client.plugins.grandexchange;
 
 import com.google.common.primitives.Shorts;
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Provides;
-import java.awt.Color;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -103,6 +103,7 @@ import net.runelite.http.api.ge.GrandExchangeTrade;
 import net.runelite.http.api.item.ItemStats;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.text.similarity.FuzzyScore;
 import org.pf4j.Extension;
 
@@ -125,13 +126,12 @@ public class GrandExchangePlugin extends Plugin
 	private static final OSBGrandExchangeClient CLIENT = new OSBGrandExchangeClient();
 	private static final String OSB_GE_TEXT = "<br>OSBuddy Actively traded price: ";
 	private static final String BUY_LIMIT_GE_TEXT = "<br>Buy limit: ";
-	private static final TypeToken<Map<Integer, Integer>> BUY_LIMIT_TOKEN = new TypeToken<Map<Integer, Integer>>()
-	{
-	};
+	private static final String BUY_LIMIT_KEY = "buylimit_";
+	private static final Duration BUY_LIMIT_RESET = Duration.ofHours(4);
 	private static final int MAX_RESULT_COUNT = 250;
 	private static final FuzzyScore FUZZY = new FuzzyScore(Locale.ENGLISH);
 	private static final Color FUZZY_HIGHLIGHT_COLOR = new Color(0x800000);
-	
+
 	@Getter(AccessLevel.PACKAGE)
 	private NavigationButton button;
 
@@ -185,7 +185,7 @@ public class GrandExchangePlugin extends Plugin
 	private int osbItem;
 	private OSBGrandExchangeResult osbGrandExchangeResult;
 	private GrandExchangeClient grandExchangeClient;
-	
+
 	private boolean wasFuzzySearch;
 
 	/**
@@ -321,7 +321,7 @@ public class GrandExchangePlugin extends Plugin
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
-		if (event.getGroup().equals("grandexchange"))
+		if (event.getGroup().equals(GrandExchangeConfig.CONFIG_GROUP))
 		{
 			if (event.getKey().equals("quickLookup"))
 			{
@@ -403,6 +403,8 @@ public class GrandExchangePlugin extends Plugin
 			savedOffer.setSpent(offer.getSpent());
 			savedOffer.setState(offer.getState());
 			setOffer(slot, savedOffer);
+
+			updateLimitTimer(offer);
 		}
 	}
 
@@ -573,7 +575,7 @@ public class GrandExchangePlugin extends Plugin
 		{
 			return;
 		}
-		
+
 		event.consume();
 
 		client.setGeSearchResultIndex(0);
@@ -582,13 +584,13 @@ public class GrandExchangePlugin extends Plugin
 		if (searchMode == GrandExchangeSearchMode.FUZZY_FALLBACK)
 		{
 			List<Integer> ids = IntStream.range(0, client.getItemCount())
-					.mapToObj(itemManager::getItemDefinition)
-					.filter(item -> item.isTradeable() && item.getNote() == -1
-						&& item.getName().toLowerCase().contains(input))
-					.limit(MAX_RESULT_COUNT + 1)
-					.sorted(Comparator.comparing(ItemDefinition::getName))
-					.map(ItemDefinition::getId)
-					.collect(Collectors.toList());
+				.mapToObj(itemManager::getItemDefinition)
+				.filter(item -> item.isTradeable() && item.getNote() == -1
+					&& item.getName().toLowerCase().contains(input))
+				.limit(MAX_RESULT_COUNT + 1)
+				.sorted(Comparator.comparing(ItemDefinition::getName))
+				.map(ItemDefinition::getId)
+				.collect(Collectors.toList());
 			if (ids.size() > MAX_RESULT_COUNT)
 			{
 				client.setGeSearchResultCount(-1);
@@ -617,14 +619,14 @@ public class GrandExchangePlugin extends Plugin
 			};
 
 			List<Integer> ids = IntStream.range(0, client.getItemCount())
-					.mapToObj(itemManager::getItemDefinition)
-					.filter(item -> item.isTradeable() && item.getNote() == -1)
-					.filter(item -> getScore.applyAsInt(item) > 0)
-					.sorted(Comparator.comparingInt(getScore).reversed()
-						.thenComparing(ItemDefinition::getName))
-					.limit(MAX_RESULT_COUNT)
-					.map(ItemDefinition::getId)
-					.collect(Collectors.toList());
+				.mapToObj(itemManager::getItemDefinition)
+				.filter(item -> item.isTradeable() && item.getNote() == -1)
+				.filter(item -> getScore.applyAsInt(item) > 0)
+				.sorted(Comparator.comparingInt(getScore).reversed()
+					.thenComparing(ItemDefinition::getName))
+				.limit(MAX_RESULT_COUNT)
+				.map(ItemDefinition::getId)
+				.collect(Collectors.toList());
 
 			client.setGeSearchResultCount(ids.size());
 			client.setGeSearchResultIds(Shorts.toArray(ids));
@@ -673,6 +675,46 @@ public class GrandExchangePlugin extends Plugin
 		int stringStackSize = client.getStringStackSize();
 
 		stringStack[stringStackSize - 1] += titleBuilder.toString();
+	}
+
+	private void setLimitResetTime(int itemId)
+	{
+		Instant lastDateTime = configManager.getConfiguration(GrandExchangeConfig.CONFIG_GROUP,
+			BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId, Instant.class);
+		if (lastDateTime == null || lastDateTime.isBefore(Instant.now()))
+		{
+			configManager.setConfiguration(GrandExchangeConfig.CONFIG_GROUP,
+				BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId,
+				Instant.now().plus(BUY_LIMIT_RESET));
+		}
+	}
+
+	private Instant getLimitResetTime(int itemId)
+	{
+		Instant lastDateTime = configManager.getConfiguration(GrandExchangeConfig.CONFIG_GROUP,
+			BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId, Instant.class);
+		if (lastDateTime == null)
+		{
+			return null;
+		}
+
+		if (lastDateTime.isBefore(Instant.now()))
+		{
+			configManager.unsetConfiguration(GrandExchangeConfig.CONFIG_GROUP, BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId);
+			return null;
+		}
+
+		return lastDateTime;
+	}
+
+	private void updateLimitTimer(GrandExchangeOffer offer)
+	{
+		if (offer.getState() == GrandExchangeOfferState.BOUGHT ||
+			(offer.getQuantitySold() > 0 &&
+				offer.getState() == GrandExchangeOfferState.BUYING))
+		{
+			setLimitResetTime(offer.getItemId());
+		}
 	}
 
 	private void rebuildGeText()
@@ -731,6 +773,16 @@ public class GrandExchangePlugin extends Plugin
 			if (itemStats != null && itemStats.getGeLimit() > 0)
 			{
 				text += BUY_LIMIT_GE_TEXT + QuantityFormatter.formatNumber(itemStats.getGeLimit());
+			}
+		}
+
+		if (config.enableGELimitReset())
+		{
+			Instant resetTime = getLimitResetTime(itemId);
+			if (resetTime != null)
+			{
+				Duration remaining = Duration.between(Instant.now(), resetTime);
+				text += " (" + DurationFormatUtils.formatDuration(remaining.toMillis(), "H:mm") + ")";
 			}
 		}
 

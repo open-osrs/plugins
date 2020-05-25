@@ -31,6 +31,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.events.ChatMessage;
@@ -92,6 +93,7 @@ public class ExaminePluginTest
 	public void testItem()
 	{
 		when(client.getWidget(anyInt(), anyInt())).thenReturn(mock(Widget.class));
+		when(itemManager.getItemDefinition(anyInt())).thenReturn(mock(ItemDefinition.class));
 
 		MenuOptionClicked menuOptionClicked = new MenuOptionClicked(
 			"Examine",
@@ -115,6 +117,7 @@ public class ExaminePluginTest
 	public void testLargeStacks()
 	{
 		when(client.getWidget(anyInt(), anyInt())).thenReturn(mock(Widget.class));
+		when(itemManager.getItemDefinition(anyInt())).thenReturn(mock(ItemDefinition.class));
 
 		MenuOptionClicked menuOptionClicked = new MenuOptionClicked(
 			"Examine",

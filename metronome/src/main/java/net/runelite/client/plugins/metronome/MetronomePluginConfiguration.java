@@ -25,6 +25,7 @@
  */
 package net.runelite.client.plugins.metronome;
 
+import net.runelite.api.SoundEffectVolume;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -34,6 +35,8 @@ import net.runelite.client.config.Units;
 @ConfigGroup("metronome")
 public interface MetronomePluginConfiguration extends Config
 {
+	int VOLUME_MAX = SoundEffectVolume.HIGH;
+
 	@ConfigItem(
 		keyName = "tickCount",
 		name = "Tick count",
@@ -45,14 +48,30 @@ public interface MetronomePluginConfiguration extends Config
 		return 1;
 	}
 
-	@ConfigItem(
-		keyName = "enableTock",
-		name = "Enable tock (alternating) sound",
-		description = "Toggles whether to play \"tock\" sounds"
+	@Range(
+		max = VOLUME_MAX
 	)
-	default boolean enableTock()
+	@ConfigItem(
+		keyName = "tickVolume",
+		name = "Tick volume",
+		description = "Configures the volume of the tick sound. A value of 0 will disable tick sounds."
+	)
+	default int tickVolume()
 	{
-		return false;
+		return SoundEffectVolume.MEDIUM_HIGH;
+	}
+
+	@Range(
+		max = VOLUME_MAX
+	)
+	@ConfigItem(
+		keyName = "tockVolume",
+		name = "Tock volume",
+		description = "Configures the volume of the tock sound. A value of 0 will disable tock sounds."
+	)
+	default int tockVolume()
+	{
+		return SoundEffectVolume.MUTED;
 	}
 
 	@ConfigItem(

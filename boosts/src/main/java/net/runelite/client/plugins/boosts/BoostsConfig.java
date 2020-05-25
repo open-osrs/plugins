@@ -126,8 +126,8 @@ public interface BoostsConfig extends Config
 
 	@ConfigItem(
 		keyName = "boostThreshold",
-		name = "Boost Amount Threshold",
-		description = "The amount of levels boosted to send a notification at. A value of 0 will disable notification.",
+		name = "Boost amount threshold",
+		description = "The amount of levels boosted to display then in different color. A value of 0 will disable the feature.",
 		position = 8
 	)
 	@Units(Units.LEVELS)
@@ -137,10 +137,21 @@ public interface BoostsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "notifyOnBoost",
+		name = "Notify on boost threshold",
+		description = "Configures whether or not a notification will be sent for boosted stats.",
+		position = 9
+	)
+	default boolean notifyOnBoost()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "groupNotifications",
 		name = "Group Notifications",
 		description = "Configures whether or not to group notifications for multiple skills into a single notification",
-		position = 9
+		position = 10
 	)
 	default boolean groupNotifications()
 	{
