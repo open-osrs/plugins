@@ -25,6 +25,7 @@
 package net.runelite.client.plugins.npcunaggroarea;
 
 import java.awt.Color;
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -113,22 +114,36 @@ public interface NpcAggroAreaConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "npcUnaggroAreaColor",
-		name = "Area lines colour",
-		description = "Choose colour to use for marking NPC unaggressive area",
+		keyName = "npcAggroAreaColor",
+		name = "Aggressive colour",
+		description = "Choose colour to use for marking NPC unaggressive area when NPCs are aggressive",
 		position = 7,
 		titleSection = "overlayTitle"
 	)
+	@Alpha
 	default Color aggroAreaColor()
 	{
-		return Color.YELLOW;
+		return new Color(0x64FFFF00, true);
+	}
+
+	@ConfigItem(
+		keyName = "npcUnaggroAreaColor",
+		name = "Unaggressive colour",
+		description = "Choose colour to use for marking NPC unaggressive area after NPCs have lost aggression",
+		position = 8,
+		titleSection = "overlayTitle"
+	)
+	@Alpha
+	default Color unaggroAreaColor()
+	{
+		return new Color(0xFFFF00);
 	}
 
 	@ConfigItem(
 		keyName = "hideOverlayHint",
 		name = "Hide overlay hint",
 		description = "Hide overlay hint if plugin is enabled in unsupported area",
-		position = 8,
+		position = 9,
 		titleSection = "overlayTitle"
 	)
 	default boolean hideOverlayHint()
@@ -140,7 +155,7 @@ public interface NpcAggroAreaConfig extends Config
 		keyName = "notificationsTitle",
 		name = "Notifications",
 		description = "",
-		position = 9
+		position = 10
 	)
 	default Title notificationsTitle()
 	{
@@ -151,7 +166,7 @@ public interface NpcAggroAreaConfig extends Config
 		keyName = "sendNotification",
 		name = "Send notification",
 		description = "Send a notification when the timer runs out",
-		position = 10,
+		position = 11,
 		titleSection = "notificationsTitle"
 	)
 	default boolean sendNotification()
