@@ -41,6 +41,7 @@ public enum RoomType
 		{5, 23, 25, 40},
 		{5, 25, 31, 51},
 		{6, 12, 43, 58},
+		{7, 8, 39, 45},
 		{7, 9, 27, 32},
 		{7, 13, 40, 42},
 		{7, 30, 46, 49},
@@ -132,10 +133,10 @@ public enum RoomType
 	});
 
 	@Getter(AccessLevel.PACKAGE)
-	private int chestCount;
+	private final int chestCount;
 
 	@Getter(AccessLevel.PACKAGE)
-	private int[][] solutionSets;
+	private final int[][] solutionSets;
 
 	RoomType(int chestCount, int[][] solutionSets)
 	{

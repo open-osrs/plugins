@@ -43,10 +43,10 @@ import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 public class BatsOverlay extends Overlay
 {
-	private BatsLocatorPlugin plugin;
-	private BatsLocatorConfig config;
-	private Client client;
-	private ProgressPieComponent pie = new ProgressPieComponent();
+	private final BatsLocatorPlugin plugin;
+	private final BatsLocatorConfig config;
+	private final Client client;
+	private final ProgressPieComponent pie = new ProgressPieComponent();
 
 	@Inject
 	public BatsOverlay(BatsLocatorConfig config, BatsLocatorPlugin plugin, Client client)
