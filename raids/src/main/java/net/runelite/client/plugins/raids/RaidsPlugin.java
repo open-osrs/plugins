@@ -132,7 +132,8 @@ public class RaidsPlugin extends Plugin
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##");
 	private static final Pattern ROTATION_REGEX = Pattern.compile("\\[(.*?)]");
 	private static final String LAYOUT_COMMAND = "!layout";
-	private static final Pattern RAID_COMPLETE_REGEX = Pattern.compile("Congratulations - your raid is complete!Team size: ([0-9-]+ players|Solo) Duration: ([0-9:]+) Personal best: ([0-9:]+)");
+	private static final Pattern RAID_COMPLETE_REGEX = Pattern.compile("Team size: ([0-9-]+ players|Solo) Duration: ([0-9:]+) Personal best: ([0-9:]+)");
+	private static final Pattern RAID_COMPLETE_PB_REGEX = Pattern.compile("Team size: ([0-9-]+ players|Solo) Duration: ([0-9:]+) \\(new personal best\\)");
 	private static final Set<String> GOOD_CRABS_FIRST = Set.of(
 		"FSCCP.PCSCF - #WNWSWN#ESEENW", //both good crabs
 		"SCSPF.CCSPF - #ESWWNW#ESENES", //both good crabs
@@ -522,89 +523,23 @@ public class RaidsPlugin extends Plugin
 				}
 				updateTooltip();
 			}
+
+			//Checks for non-personal best regex
 			matcher = RAID_COMPLETE_REGEX.matcher(message);
+
 			if (matcher.find())
 			{
-				raidTime = timeToSeconds(matcher.group(1));
-				int timesec = timeToSeconds(matcher.group(1));
-				updateTooltip();
+				raidTime = timeToSeconds(matcher.group(2));
+				raidPointsChatMessage(raidTime);
+			}
 
-				if (config.pointsMessage())
-				{
-					int totalPoints = client.getVar(Varbits.TOTAL_POINTS);
-					int personalPoints = client.getVar(Varbits.PERSONAL_POINTS);
-					int partySize = client.getVar(Varbits.RAID_PARTY_SIZE);
+			//Checks personal best regex
+			matcher = RAID_COMPLETE_PB_REGEX.matcher(message);
 
-					double percentage = personalPoints / (totalPoints / 100.0);
-
-					String chatMessage = new ChatMessageBuilder()
-						.append(ChatColorType.NORMAL)
-						.append("Total points: ")
-						.append(ChatColorType.HIGHLIGHT)
-						.append(POINTS_FORMAT.format(totalPoints))
-						.append(ChatColorType.NORMAL)
-						.append(", Personal points: ")
-						.append(ChatColorType.HIGHLIGHT)
-						.append(POINTS_FORMAT.format(personalPoints))
-						.append(ChatColorType.NORMAL)
-						.append(" (")
-						.append(ChatColorType.HIGHLIGHT)
-						.append(DECIMAL_FORMAT.format(percentage))
-						.append(ChatColorType.NORMAL)
-						.append("%)")
-						.build();
-
-					chatMessageManager.queue(QueuedMessage.builder()
-						.type(ChatMessageType.FRIENDSCHATNOTIFICATION)
-						.runeLiteFormattedMessage(chatMessage)
-						.build());
-					if (config.ptsHr())
-					{
-						String ptssolo;
-						{
-							ptssolo = POINTS_FORMAT.format(((float) personalPoints / (float) timesec) * 3600);
-						}
-
-						String ptsteam;
-						{
-							ptsteam = POINTS_FORMAT.format(((float) totalPoints / (float) timesec) * 3600);
-						}
-
-						String ptssplit;
-						{
-							ptssplit = POINTS_FORMAT.format(((totalPoints / (float) timesec) * 3600) / (partySize));
-						}
-
-
-						String chatMessage2 = new ChatMessageBuilder()
-							.append(ChatColorType.NORMAL)
-							.append("Solo Pts/Hr: ")
-							.append(ChatColorType.HIGHLIGHT)
-							.append(ptssolo)
-							.append(ChatColorType.NORMAL)
-							.append("Team Pts/Hr: ")
-							.append(ChatColorType.HIGHLIGHT)
-							.append(ptsteam)
-							.build();
-
-						chatMessageManager.queue(QueuedMessage.builder()
-							.type(ChatMessageType.FRIENDSCHATNOTIFICATION)
-							.runeLiteFormattedMessage(chatMessage2)
-							.build());
-
-						String chatMessage3 = new ChatMessageBuilder()
-							.append(ChatColorType.NORMAL)
-							.append("Split Pts/Hr: ")
-							.append(ChatColorType.HIGHLIGHT)
-							.append(ptssplit)
-							.build();
-
-						chatMessageManager.queue(QueuedMessage.builder()
-							.type(ChatMessageType.FRIENDSCHATNOTIFICATION)
-							.runeLiteFormattedMessage(chatMessage3)
-							.build());
-					}
-				}
+			if (matcher.find())
+			{
+				raidTime = timeToSeconds(matcher.group(2));
+				raidPointsChatMessage(raidTime);
 			}
 		}
 	}
@@ -1323,5 +1258,86 @@ public class RaidsPlugin extends Plugin
 	private void setOverlayStatus(boolean bool)
 	{
 		overlay.setScoutOverlayShown(bool);
+	}
+
+	private void raidPointsChatMessage(int timesec)
+	{
+		updateTooltip();
+
+		if (config.pointsMessage())
+		{
+			int totalPoints = client.getVar(Varbits.TOTAL_POINTS);
+			int personalPoints = client.getVar(Varbits.PERSONAL_POINTS);
+			int partySize = client.getVar(Varbits.RAID_PARTY_SIZE);
+
+			double percentage = personalPoints / (totalPoints / 100.0);
+
+			String chatMessage = new ChatMessageBuilder()
+					.append(ChatColorType.NORMAL)
+					.append("Total points: ")
+					.append(ChatColorType.HIGHLIGHT)
+					.append(POINTS_FORMAT.format(totalPoints))
+					.append(ChatColorType.NORMAL)
+					.append(", Personal points: ")
+					.append(ChatColorType.HIGHLIGHT)
+					.append(POINTS_FORMAT.format(personalPoints))
+					.append(ChatColorType.NORMAL)
+					.append(" (")
+					.append(ChatColorType.HIGHLIGHT)
+					.append(DECIMAL_FORMAT.format(percentage))
+					.append(ChatColorType.NORMAL)
+					.append("%)")
+					.build();
+
+			chatMessageManager.queue(QueuedMessage.builder()
+					.type(ChatMessageType.FRIENDSCHATNOTIFICATION)
+					.runeLiteFormattedMessage(chatMessage)
+					.build());
+			if (config.ptsHr())
+			{
+				String ptssolo;
+				{
+					ptssolo = POINTS_FORMAT.format(((float) personalPoints / (float) timesec) * 3600);
+				}
+
+				String ptsteam;
+				{
+					ptsteam = POINTS_FORMAT.format(((float) totalPoints / (float) timesec) * 3600);
+				}
+
+				String ptssplit;
+				{
+					ptssplit = POINTS_FORMAT.format(((totalPoints / (float) timesec) * 3600) / (partySize));
+				}
+
+				String chatMessage2 = new ChatMessageBuilder()
+						.append(ChatColorType.NORMAL)
+						.append("Solo Pts/Hr: ")
+						.append(ChatColorType.HIGHLIGHT)
+						.append(ptssolo)
+						.append(ChatColorType.NORMAL)
+						.append("Team Pts/Hr: ")
+						.append(ChatColorType.HIGHLIGHT)
+						.append(ptsteam)
+						.build();
+
+				chatMessageManager.queue(QueuedMessage.builder()
+						.type(ChatMessageType.FRIENDSCHATNOTIFICATION)
+						.runeLiteFormattedMessage(chatMessage2)
+						.build());
+
+				String chatMessage3 = new ChatMessageBuilder()
+						.append(ChatColorType.NORMAL)
+						.append("Split Pts/Hr: ")
+						.append(ChatColorType.HIGHLIGHT)
+						.append(ptssplit)
+						.build();
+
+				chatMessageManager.queue(QueuedMessage.builder()
+						.type(ChatMessageType.FRIENDSCHATNOTIFICATION)
+						.runeLiteFormattedMessage(chatMessage3)
+						.build());
+			}
+		}
 	}
 }
