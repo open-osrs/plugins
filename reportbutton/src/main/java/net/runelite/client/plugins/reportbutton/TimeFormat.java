@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, melky <https://github.com/melkypie>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.reportbutton;
 
-version = "0.0.6"
+import lombok.RequiredArgsConstructor;
 
-project.extra["PluginName"] = "NPC Aggression Timer"
-project.extra["PluginDescription"] = "Highlights the unaggressive area of NPCs nearby and timer until it becomes active"
+@RequiredArgsConstructor
+public enum TimeFormat
+{
+	TIME_12H("12-hour"),
+	TIME_24H("24-hour");
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private final String name;
+
+	@Override
+	public String toString()
+	{
+		return this.name;
+	}
 }
