@@ -29,7 +29,6 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
@@ -54,17 +53,14 @@ import static net.runelite.client.plugins.raidsthieving.BatsLocator.OPENED_WITH_
 import static net.runelite.client.plugins.raidsthieving.BatsLocator.POISON_SPLAT;
 import static net.runelite.client.plugins.raidsthieving.BatsLocator.TROUGH;
 import net.runelite.client.ui.overlay.OverlayManager;
-import org.pf4j.Extension;
 
-@Extension
 @PluginDescriptor(
-	name = "Raids Bat Locator",
-	description = "Tracks which chests need to be searched for bats and which poison",
+	name = "Bats Locator",
+	description = "Helps locate the chest with bats at the thieving room inside Chambers of Xeric",
 	tags = {"finder", "thieving"},
 	enabledByDefault = false,
 	type = PluginType.PVM
 )
-@Slf4j
 public class BatsLocatorPlugin extends Plugin
 {
 	@Inject

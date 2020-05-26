@@ -30,6 +30,9 @@ import static java.util.Comparator.comparing;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
@@ -51,16 +54,16 @@ public class BatsLocator
 	private RoomType roomType;
 
 	@Getter(AccessLevel.PACKAGE)
-	private HashMap<WorldPoint, Chest> chests = new HashMap<>();
+	private final Map<WorldPoint, Chest> chests = new HashMap<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private HashSet<Chest> poisonBatsChests = new HashSet<>();
+	private final Set<Chest> poisonBatsChests = new HashSet<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private HashSet<Chest> grubsChests = new HashSet<>();
+	private final Set<Chest> grubsChests = new HashSet<>();
 
 	@Getter(AccessLevel.PACKAGE)
-	private ArrayList<ArrayList<Chest>> solutionSets = new ArrayList<>();
+	private final List<List<Chest>> solutionSets = new ArrayList<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	private int highestSolutionSetCount = 0;
@@ -68,7 +71,7 @@ public class BatsLocator
 	@Getter(AccessLevel.PACKAGE)
 	private boolean drawChestStates = false;
 
-	private Client client;
+	private final Client client;
 	private int rotation = -1;
 
 	public BatsLocator(Client client)
@@ -142,10 +145,10 @@ public class BatsLocator
 		}
 	}
 
-	private ArrayList<ArrayList<Chest>> solutionSetsContaining(Chest chest)
+	private List<List<Chest>> solutionSetsContaining(Chest chest)
 	{
-		ArrayList<ArrayList<Chest>> solutionSets = new ArrayList<>();
-		for (ArrayList<Chest> solutionSet : this.solutionSets)
+		List<List<Chest>> solutionSets = new ArrayList<>();
+		for (List<Chest> solutionSet : this.solutionSets)
 		{
 			if (solutionSet.contains(chest))
 			{
@@ -155,7 +158,7 @@ public class BatsLocator
 		return solutionSets;
 	}
 
-	private boolean solutionSetContains(ArrayList<Chest> solutionSet, Chest.State state)
+	private boolean solutionSetContains(List<Chest> solutionSet, Chest.State state)
 	{
 		for (Chest chest : solutionSet)
 		{
@@ -188,8 +191,8 @@ public class BatsLocator
 
 		if (state == Chest.State.POISON || state == Chest.State.BATS)
 		{
-			HashSet<Chest> possiblePoisonBatsChests = new HashSet<>();
-			for (ArrayList<Chest> solutionSet : solutionSetsContaining(openedChest))
+			Set<Chest> possiblePoisonBatsChests = new HashSet<>();
+			for (List<Chest> solutionSet : solutionSetsContaining(openedChest))
 			{
 				for (Chest chest : solutionSet)
 				{
@@ -203,7 +206,7 @@ public class BatsLocator
 			{
 				solutionSets.clear();
 			}
-			for (ArrayList<Chest> solutionSet : solutionSets)
+			for (List<Chest> solutionSet : solutionSets)
 			{
 				for (Chest chest : solutionSet)
 				{
@@ -215,16 +218,16 @@ public class BatsLocator
 			}
 		}
 
-		Iterator<ArrayList<Chest>> solutionSets = this.solutionSets.iterator();
+		Iterator<List<Chest>> solutionSets = this.solutionSets.iterator();
 		while (solutionSets.hasNext())
 		{
-			ArrayList<Chest> solutionSet = solutionSets.next();
+			List<Chest> solutionSet = solutionSets.next();
 			for (Chest chest : solutionSet)
 			{
 				if (chest.getState() == Chest.State.UNVISITED)
 				{
 					boolean setState = true;
-					for (ArrayList<Chest> otherSolutionSet : solutionSetsContaining(chest))
+					for (List<Chest> otherSolutionSet : solutionSetsContaining(chest))
 					{
 						if (!solutionSetContains(otherSolutionSet, Chest.State.GRUBS))
 						{
@@ -292,7 +295,7 @@ public class BatsLocator
 			{
 				continue;
 			}
-			for (ArrayList<Chest> solutionSet : solutionSetsContaining(chest))
+			for (List<Chest> solutionSet : solutionSetsContaining(chest))
 			{
 				if (!solutionSetContains(solutionSet, Chest.State.GRUBS))
 				{
@@ -331,7 +334,7 @@ public class BatsLocator
 					break;
 			}
 
-			ArrayList<Chest> chests = new ArrayList<>(this.chests.values());
+			List<Chest> chests = new ArrayList<>(this.chests.values());
 			chests.sort(comparator);
 
 			for (int i = 0; i < chests.size(); i++)
@@ -341,7 +344,7 @@ public class BatsLocator
 
 			for (int[] indices : roomType.getSolutionSets())
 			{
-				ArrayList<Chest> solutionSet = new ArrayList<>();
+				List<Chest> solutionSet = new ArrayList<>();
 				for (int index : indices)
 				{
 					solutionSet.add(chests.get(index));

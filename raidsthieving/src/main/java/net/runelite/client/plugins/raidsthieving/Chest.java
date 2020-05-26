@@ -36,7 +36,7 @@ public class Chest
 		UNVISITED,
 		GRUBS,
 		POISON,
-		BATS
+		BATS;
 	}
 
 	@Getter(AccessLevel.PACKAGE)
@@ -56,7 +56,7 @@ public class Chest
 	private int solutionSetCount = -1;
 
 	@Getter(AccessLevel.PACKAGE)
-	private WorldPoint location;
+	private final WorldPoint location;
 
 	public Chest(WorldPoint location)
 	{
