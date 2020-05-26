@@ -51,12 +51,14 @@ class WintertodtOverlay extends OverlayPanel
 	private Client client;
 
 	private final WintertodtPlugin plugin;
+	private final WintertodtConfig wintertodtConfig;
 
 	@Inject
-	private WintertodtOverlay(final WintertodtPlugin plugin)
+	private WintertodtOverlay(final WintertodtPlugin plugin, WintertodtConfig wintertodtConfig)
 	{
 		super(plugin);
 		this.plugin = plugin;
+		this.wintertodtConfig = wintertodtConfig;
 		setPosition(OverlayPosition.BOTTOM_LEFT);
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Wintertodt overlay"));
 	}
@@ -64,7 +66,7 @@ class WintertodtOverlay extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isInWintertodt())
+		if (!plugin.isInWintertodt() || !wintertodtConfig.showOverlay())
 		{
 			return null;
 		}

@@ -1404,7 +1404,6 @@ public class LootTrackerPlugin extends Plugin
 	private LootTrackerItem buildLootTrackerItem(int itemId, int quantity)
 	{
 		final ItemDefinition itemDefinition = itemManager.getItemDefinition(itemId);
-		final int realItemId = itemDefinition.getNote() != -1 ? itemDefinition.getLinkedNoteId() : itemId;
 		final long gePrice;
 		final long haPrice;
 		// If it's a death we want to get a coin value for untradeables lost
@@ -1415,8 +1414,8 @@ public class LootTrackerPlugin extends Plugin
 		}
 		else
 		{
-			gePrice = (long) itemManager.getItemPrice(realItemId) * (long) quantity;
-			haPrice = (long) itemManager.getAlchValue(realItemId) * (long) quantity;
+			gePrice = (long) itemManager.getItemPrice(itemId) * (long) quantity;
+			haPrice = (long) itemManager.getAlchValue(itemId) * (long) quantity;
 		}
 		final boolean ignored = ignoredItems.contains(itemDefinition.getName());
 
