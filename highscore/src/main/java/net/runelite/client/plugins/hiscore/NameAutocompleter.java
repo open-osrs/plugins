@@ -39,9 +39,11 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ClanMember;
+import net.runelite.api.ClanMemberManager;
 import net.runelite.api.Client;
 import net.runelite.api.Friend;
+import net.runelite.api.Nameable;
+import net.runelite.api.NameableContainer;
 import net.runelite.api.Player;
 
 @Slf4j
@@ -200,43 +202,39 @@ class NameAutocompleter implements KeyListener
 			return false;
 		}
 
-		autocompleteName = Optional.empty();
-
 		// Search all previous successful queries
 		autocompleteName = searchHistory.stream()
 			.filter(n -> pattern.matcher(n).matches())
 			.findFirst();
 
 		// Search friends if previous searches weren't matched
-		if (!autocompleteName.isPresent())
+		if (autocompleteName.isEmpty())
 		{
-			Friend[] friends = client.getFriends();
-			if (friends != null)
+			NameableContainer<Friend> friendContainer = client.getFriendContainer();
+			if (friendContainer != null)
 			{
-				autocompleteName = Arrays.stream(friends)
-					.filter(Objects::nonNull)
-					.map(Friend::getName)
+				autocompleteName = Arrays.stream(friendContainer.getMembers())
+					.map(Nameable::getName)
 					.filter(n -> pattern.matcher(n).matches())
 					.findFirst();
 			}
 		}
 
 		// Search clan if a friend wasn't found
-		if (!autocompleteName.isPresent())
+		if (autocompleteName.isEmpty())
 		{
-			final ClanMember[] clannies = client.getClanMembers();
-			if (clannies != null)
+			final ClanMemberManager clanMemberManager = client.getClanMemberManager();
+			if (clanMemberManager != null)
 			{
-				autocompleteName = Arrays.stream(clannies)
-					.filter(Objects::nonNull)
-					.map(ClanMember::getUsername)
+				autocompleteName = Arrays.stream(clanMemberManager.getMembers())
+					.map(Nameable::getName)
 					.filter(n -> pattern.matcher(n).matches())
 					.findFirst();
 			}
 		}
 
 		// Search cached players if a clannie wasn't found.
-		if (!autocompleteName.isPresent())
+		if (autocompleteName.isEmpty())
 		{
 			final Player[] cachedPlayers = client.getCachedPlayers();
 			autocompleteName = Arrays.stream(cachedPlayers)

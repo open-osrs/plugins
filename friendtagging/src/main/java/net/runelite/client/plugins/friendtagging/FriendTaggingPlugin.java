@@ -23,6 +23,7 @@ import net.runelite.api.Friend;
 import net.runelite.api.Ignore;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Nameable;
+import net.runelite.api.NameableContainer;
 import net.runelite.api.events.FriendRemoved;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
@@ -281,10 +282,10 @@ public class FriendTaggingPlugin extends Plugin
 	private void friendIgnoreToClipboard()
 	{
 		StringBuilder friendsList = new StringBuilder();
-		Friend[] friends = client.getFriends();
-		Ignore[] ignores = client.getIgnores();
-		String[] friendsIgnores = ArrayUtils.addAll(Arrays.stream(friends).map(Friend::getName).toArray(String[]::new),
-			Arrays.stream(ignores).map(Ignore::getName).toArray(String[]::new));
+		NameableContainer<Friend> friendContainer = client.getFriendContainer();
+		NameableContainer<Ignore> ignoreContainer = client.getIgnoreContainer();
+		String[] friendsIgnores = ArrayUtils.addAll(Arrays.stream(friendContainer.getMembers()).map(Nameable::getName).toArray(String[]::new),
+			Arrays.stream(ignoreContainer.getMembers()).map(Nameable::getName).toArray(String[]::new));
 		HashSet<String> names = new HashSet<>(Arrays.asList(friendsIgnores));
 		names.forEach(n -> friendsList.append(n.toLowerCase()).append(","));
 		StringSelection namesSelection = new StringSelection(friendsList.toString());

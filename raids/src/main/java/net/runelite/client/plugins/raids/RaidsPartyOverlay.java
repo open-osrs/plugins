@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.ClanMember;
+import net.runelite.api.ClanMemberManager;
 import net.runelite.api.Client;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.VarPlayer;
@@ -78,7 +79,8 @@ public class RaidsPartyOverlay extends Overlay
 			return null;
 		}
 
-		if (client.getClanChatCount() == 0)
+		final ClanMemberManager clanMemberManager = client.getClanMemberManager();
+		if (clanMemberManager == null || clanMemberManager.getCount() == 0)
 		{
 			// Player left clan chat
 			return null;
@@ -129,7 +131,7 @@ public class RaidsPartyOverlay extends Overlay
 			int world = client.getWorld();
 			int wrongWorldClanMembers = 0;
 			int clanMemberCount = 0;
-			for (ClanMember clanMember : client.getClanMembers())
+			for (ClanMember clanMember : clanMemberManager.getMembers())
 			{
 				if (clanMember != null)
 				{
