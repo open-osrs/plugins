@@ -315,6 +315,18 @@ public interface MenuEntrySwapperConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "deprioritizeChopDown",
+		name = "Deprioritize Chop Down",
+		description = "Makes chop down appear below walk here on trees",
+		position = 13,
+		section = "miscellaneousSection"
+	)
+	default boolean deprioritizeChopDown()
+	{
+		return false;
+	}
+
 	//------------------------------------------------------------//
 	// Equipment Swapper
 	//------------------------------------------------------------//
