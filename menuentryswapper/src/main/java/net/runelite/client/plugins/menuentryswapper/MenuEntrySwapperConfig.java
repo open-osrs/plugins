@@ -324,7 +324,7 @@ public interface MenuEntrySwapperConfig extends Config
 	)
 	default boolean deprioritizeChopDown()
 	{
-		return true;
+		return false;
 	}
 
 	//------------------------------------------------------------//
