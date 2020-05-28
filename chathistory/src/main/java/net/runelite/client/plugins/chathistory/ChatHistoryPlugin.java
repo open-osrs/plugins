@@ -65,14 +65,18 @@ import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.util.ColorUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Chat History",
 	description = "Retain your chat history when logging in/out or world hopping",
-	tags = {"chat", "history", "retain", "cycle", "pm"}
+	tags = {"chat", "history", "retain", "cycle", "pm"},
+	type = PluginType.MISCELLANEOUS
 )
 public class ChatHistoryPlugin extends Plugin implements KeyListener
 {
@@ -268,10 +272,9 @@ public class ChatHistoryPlugin extends Plugin implements KeyListener
 	@Subscribe
 	public void onMenuEntryAdded(MenuEntryAdded entry)
 	{
-		final String option = Text.removeTags(entry.getOption());
 		final ChatboxTab tab = ChatboxTab.of(entry.getParam1());
 
-		if (!config.clearHistory() || tab == null || !option.equals(tab.getAfter()))
+		if (tab == null || !config.clearHistory() || !Text.removeTags(entry.getOption()).equals(tab.getAfter()))
 		{
 			return;
 		}
@@ -310,7 +313,7 @@ public class ChatHistoryPlugin extends Plugin implements KeyListener
 			friends.clear();
 		}
 
-		messageQueue.removeIf(e -> tab.getMessageTypes().contains(e.getType()));
+		messageQueue.removeIf(e -> ArrayUtils.contains(tab.getMessageTypes(), e.getType()));
 	}
 
 	private void clearChatboxHistory(ChatboxTab tab)
@@ -343,8 +346,9 @@ public class ChatHistoryPlugin extends Plugin implements KeyListener
 		if (removed)
 		{
 			clientThread.invoke(() -> client.runScript(ScriptID.BUILD_CHATBOX));
-			clearMessageQueue(tab);
 		}
+
+		clearMessageQueue(tab);
 	}
 
 	/**
