@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.loginscreen;
 
-version = "0.0.3"
+import lombok.Getter;
 
-project.extra["PluginName"] = "Login Screen"
-project.extra["PluginDescription"] = "Provides various enhancements for login screen"
+public enum LoginScreenOverride
+{
+	OFF,
+	NORMAL("normal.jpg"),
+	OLD("old.jpg"),
+	CHRISTMAS("christmas.jpg"),
+	CHAMBERS_OF_XERIC("cox.jpg"),
+	DRAGON_SLAYER_2("ds2.jpg"),
+	FOSSIL_ISLAND("fossil_island.jpg"),
+	HALLOWEEN("halloween.jpg"),
+	HALLOWEEN_2019("halloween_2019.jpg"),
+	INFERNO("inferno.jpg"),
+	KEBOS("kebos.jpg"),
+	MONKEY_MADNESS_2("mm2.jpg"),
+	PRIFDDINAS("prifddinas.jpg"),
+	THEATRE_OF_BLOOD("tob.jpg"),
+	CUSTOM;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Getter
+	private final String fileName;
+
+	LoginScreenOverride()
+	{
+		this.fileName = null;
+	}
+
+	LoginScreenOverride(String fileName)
+	{
+		this.fileName = fileName;
+	}
 }
