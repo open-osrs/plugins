@@ -464,6 +464,14 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 
+		if (config.deprioritizeChopDown() && event.getOption().contains("Chop down"))
+		{
+			MenuEntry[] menuEntries = client.getMenuEntries();
+			MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
+			menuEntry.setOpcode(MenuOpcode.WALK.getId() + MENU_ACTION_DEPRIORITIZE_OFFSET);
+			client.setMenuEntries(menuEntries);
+		}
+
 		if (hintArrowNpc != null
 			&& hintArrowNpc.getIndex() == eventId
 			&& NPC_MENU_TYPES.contains(MenuOpcode.of(event.getOpcode())))
