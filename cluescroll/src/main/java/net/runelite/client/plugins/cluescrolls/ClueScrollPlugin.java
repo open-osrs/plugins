@@ -43,6 +43,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import joptsimple.internal.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,7 @@ import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.DecorativeObjectChanged;
 import net.runelite.api.events.DecorativeObjectDespawned;
 import net.runelite.api.events.DecorativeObjectSpawned;
@@ -591,6 +593,26 @@ public class ClueScrollPlugin extends Plugin
 		updateClue(BeginnerMapClue.forWidgetID(event.getGroupId()));
 	}
 
+	@Subscribe
+	public void onCommandExecuted(CommandExecuted commandExecuted)
+	{
+		if (commandExecuted.getCommand().equals("clue"))
+		{
+			String text = Strings.join(commandExecuted.getArguments(), " ");
+
+			if (text.isEmpty())
+			{
+				resetClue(true);
+			}
+			else
+			{
+				ClueScroll clueScroll = findClueScroll(text);
+				log.debug("Found clue scroll for '{}': {}", text, clueScroll);
+				updateClue(clueScroll);
+			}
+		}
+	}
+
 	public BufferedImage getClueScrollImage()
 	{
 		return itemManager.getImage(ItemID.CLUE_SCROLL_MASTER);
@@ -1034,7 +1056,7 @@ public class ClueScrollPlugin extends Plugin
 		textComponent.render(graphics);
 	}
 
-	void scrollToWidget(WidgetInfo list, WidgetInfo scrollbar, Widget... toHighlight)
+	void scrollToWidget(WidgetInfo list, WidgetInfo scrollbar, Widget ... toHighlight)
 	{
 		final Widget parent = client.getWidget(list);
 		int averageCentralY = 0;
