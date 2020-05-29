@@ -678,8 +678,8 @@ public class BronzeManPlugin extends Plugin
 		{
 			return;
 		}
-		unlockImage = ImageUtil.getResourceStreamFromClass(getClass(), "/item_unlocked.png");
-		BufferedImage bronzeManHeadIcon = ImageUtil.getResourceStreamFromClass(getClass(), "/bronzeman_icon.png");
+		unlockImage = ImageUtil.getResourceStreamFromClass(getClass(), "item_unlocked.png");
+		BufferedImage bronzeManHeadIcon = ImageUtil.getResourceStreamFromClass(getClass(), "bronzeman_icon.png");
 		IndexedSprite indexedSprite = ImageUtil.getImageIndexedSprite(bronzeManHeadIcon, client);
 
 		iconOffset = modIcons.length;
