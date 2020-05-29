@@ -29,6 +29,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import net.runelite.api.Varbits;
@@ -41,7 +42,7 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import static net.runelite.client.plugins.cluescrolls.clues.Enemy.*;
 
-@Getter
+@Getter(AccessLevel.PUBLIC)
 public class CoordinateClue extends ClueScroll implements TextClueScroll, LocationClueScroll
 {
 	@Getter
