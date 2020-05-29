@@ -30,6 +30,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.InventoryID;
@@ -45,7 +46,7 @@ import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-@Getter
+@Getter(AccessLevel.PUBLIC)
 @RequiredArgsConstructor
 public class ThreeStepCrypticClue extends ClueScroll implements TextClueScroll, ObjectClueScroll, NpcClueScroll, LocationsClueScroll
 {

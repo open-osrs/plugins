@@ -43,8 +43,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import joptsimple.internal.Strings;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -149,26 +149,26 @@ public class ClueScrollPlugin extends Plugin
 		13151, 9012
 	};
 
-	@Getter
+	@Getter(AccessLevel.PUBLIC)
 	private ClueScroll clue;
 
-	@Getter
+	@Getter(AccessLevel.PUBLIC)
 	private final List<NPC> npcsToMark = new ArrayList<>();
 
-	@Getter
+	@Getter(AccessLevel.PUBLIC)
 	private final List<TileObject> objectsToMark = new ArrayList<>();
 
-	@Getter
+	@Getter(AccessLevel.PUBLIC)
 	private final Set<TileObject> namedObjectsToMark = new HashSet<>();
 
-	@Getter
+	@Getter(AccessLevel.PUBLIC)
 	private Item[] equippedItems;
 
-	@Getter
+	@Getter(AccessLevel.PUBLIC)
 	private Item[] inventoryItems;
 
 	@Inject
-	@Getter
+	@Getter(AccessLevel.PUBLIC)
 	private Client client;
 
 	@Inject
@@ -194,10 +194,6 @@ public class ClueScrollPlugin extends Plugin
 
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
-
-	@Inject
-	@Named("developerMode")
-	boolean developerMode;
 
 	private BufferedImage emoteImage;
 	private BufferedImage mapArrow;
@@ -225,7 +221,7 @@ public class ClueScrollPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		overlayManager.add(clueScrollOverlay);
 		overlayManager.add(clueScrollEmoteOverlay);
@@ -234,7 +230,7 @@ public class ClueScrollPlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		overlayManager.remove(clueScrollOverlay);
 		overlayManager.remove(clueScrollEmoteOverlay);
@@ -600,7 +596,7 @@ public class ClueScrollPlugin extends Plugin
 	@Subscribe
 	public void onCommandExecuted(CommandExecuted commandExecuted)
 	{
-		if (developerMode && commandExecuted.getCommand().equals("clue"))
+		if (commandExecuted.getCommand().equals("clue"))
 		{
 			String text = Strings.join(commandExecuted.getArguments(), " ");
 

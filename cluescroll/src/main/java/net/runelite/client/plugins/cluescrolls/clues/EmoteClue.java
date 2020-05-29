@@ -30,6 +30,7 @@ import java.awt.Polygon;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
 import static net.runelite.api.EquipmentInventorySlot.*;
@@ -58,7 +59,7 @@ import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-@Getter
+@Getter(AccessLevel.PUBLIC)
 public class EmoteClue extends ClueScroll implements TextClueScroll, LocationClueScroll
 {
 	private static final Set<EmoteClue> CLUES = Set.of(
