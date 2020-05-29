@@ -189,11 +189,11 @@ public class HotColdClue extends ClueScroll implements LocationClueScroll, Locat
 
 			if (digLocations.size() > 10)
 			{
-				for (Map.Entry<HotColdArea, Integer> locationCount : locationCounts.entrySet())
+				for (HotColdArea area : locationCounts.keySet())
 				{
 					panelComponent.getChildren().add(LineComponent.builder()
-						.left(locationCount.getKey().getName())
-						.right(Integer.toString(locationCount.getValue()))
+						.left(area.getName())
+						.right(Integer.toString(locationCounts.get(area)))
 						.build());
 				}
 			}
@@ -213,6 +213,14 @@ public class HotColdClue extends ClueScroll implements LocationClueScroll, Locat
 								.left("- " + hotColdLocation.getArea())
 								.leftColor(Color.LIGHT_GRAY)
 								.build());
+
+							if (digLocations.size() <= 5 && hotColdLocation.getEnemy() != null)
+							{
+								panelComponent.getChildren().add(LineComponent.builder()
+									.left(hotColdLocation.getEnemy().getText())
+									.leftColor(Color.YELLOW)
+									.build());
+							}
 						}
 					}
 				}

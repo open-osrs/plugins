@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2016-2017, Seth <Sethtroll3@gmail.com>
  * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2019, David <https://github.com/drahenshaw>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +31,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
 import static net.runelite.api.ItemID.*;
@@ -47,7 +47,6 @@ import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.LineComponent;
 
-@Singleton
 public class ClueScrollOverlay extends OverlayPanel
 {
 	private static final ItemRequirement HAS_SPADE = new SingleItemRequirement(SPADE);
@@ -81,7 +80,7 @@ public class ClueScrollOverlay extends OverlayPanel
 	private final Client client;
 
 	@Inject
-	private ClueScrollOverlay(final ClueScrollPlugin plugin, final Client client)
+	private ClueScrollOverlay(ClueScrollPlugin plugin, Client client)
 	{
 		super(plugin);
 		this.plugin = plugin;
@@ -117,8 +116,8 @@ public class ClueScrollOverlay extends OverlayPanel
 
 		if (clue.isRequiresLight()
 			&& ((clue.getHasFirePit() == null || client.getVar(clue.getHasFirePit()) != 1)
-			&& (inventoryItems == null || !HAS_LIGHT.fulfilledBy(inventoryItems))
-			&& (equippedItems == null || !HAS_LIGHT.fulfilledBy(equippedItems))))
+				&& (inventoryItems == null || !HAS_LIGHT.fulfilledBy(inventoryItems))
+					&& (equippedItems == null || !HAS_LIGHT.fulfilledBy(equippedItems))))
 		{
 			panelComponent.getChildren().add(LineComponent.builder().left("").build());
 			panelComponent.getChildren().add(LineComponent.builder().left("Requires Light Source!").leftColor(Color.RED).build());

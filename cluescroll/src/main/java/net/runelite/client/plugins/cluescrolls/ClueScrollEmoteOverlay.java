@@ -27,7 +27,6 @@ package net.runelite.client.plugins.cluescrolls;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -37,7 +36,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-@Singleton
 class ClueScrollEmoteOverlay extends Overlay
 {
 	private final ClueScrollPlugin plugin;
@@ -46,7 +44,7 @@ class ClueScrollEmoteOverlay extends Overlay
 	private boolean hasScrolled;
 
 	@Inject
-	private ClueScrollEmoteOverlay(final ClueScrollPlugin plugin, final Client client)
+	private ClueScrollEmoteOverlay(ClueScrollPlugin plugin, Client client)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);

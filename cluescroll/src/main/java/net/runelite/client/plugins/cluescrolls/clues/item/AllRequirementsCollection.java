@@ -29,22 +29,22 @@ import net.runelite.api.Item;
 
 public class AllRequirementsCollection implements ItemRequirement
 {
-	private final String name;
-	private final ItemRequirement[] requirements;
+	private String name;
+	private ItemRequirement[] requirements;
 
-	public AllRequirementsCollection(final String name, final ItemRequirement... requirements)
+	public AllRequirementsCollection(String name, ItemRequirement... requirements)
 	{
 		this.name = name;
 		this.requirements = requirements;
 	}
 
-	public AllRequirementsCollection(final ItemRequirement... requirements)
+	public AllRequirementsCollection(ItemRequirement... requirements)
 	{
 		this("N/A", requirements);
 	}
 
 	@Override
-	public boolean fulfilledBy(final int itemId)
+	public boolean fulfilledBy(int itemId)
 	{
 		for (ItemRequirement requirement : requirements)
 		{
@@ -58,7 +58,7 @@ public class AllRequirementsCollection implements ItemRequirement
 	}
 
 	@Override
-	public boolean fulfilledBy(final Item[] items)
+	public boolean fulfilledBy(Item[] items)
 	{
 		for (ItemRequirement requirement : requirements)
 		{
@@ -72,7 +72,7 @@ public class AllRequirementsCollection implements ItemRequirement
 	}
 
 	@Override
-	public String getCollectiveName(final Client client)
+	public String getCollectiveName(Client client)
 	{
 		return name;
 	}
