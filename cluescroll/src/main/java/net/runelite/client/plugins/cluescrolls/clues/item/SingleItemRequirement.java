@@ -30,7 +30,7 @@ import net.runelite.api.ItemDefinition;
 
 public class SingleItemRequirement implements ItemRequirement
 {
-	private final int itemId;
+	private int itemId;
 
 	public SingleItemRequirement(int itemId)
 	{

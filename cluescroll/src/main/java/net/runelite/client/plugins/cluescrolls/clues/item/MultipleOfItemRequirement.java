@@ -30,8 +30,8 @@ import net.runelite.api.ItemDefinition;
 
 public class MultipleOfItemRequirement implements ItemRequirement
 {
-	private final int itemId;
-	private final int quantity;
+	private int itemId;
+	private int quantity;
 
 	public MultipleOfItemRequirement(int itemId, int quantity)
 	{
