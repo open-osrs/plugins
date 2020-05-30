@@ -258,7 +258,8 @@ public class ChatHistoryPlugin extends Plugin implements KeyListener
 	{
 		final String menuOption = event.getOption();
 
-		if (CLEAR_HISTORY.equals(menuOption))
+		// The menu option for clear history is "<col=ffff00>Public:</col> Clear history"
+		if (menuOption.endsWith(CLEAR_HISTORY))
 		{
 			clearChatboxHistory(ChatboxTab.of(event.getParam1()));
 		}

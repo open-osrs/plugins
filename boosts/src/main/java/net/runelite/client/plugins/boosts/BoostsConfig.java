@@ -127,7 +127,7 @@ public interface BoostsConfig extends Config
 	@ConfigItem(
 		keyName = "boostThreshold",
 		name = "Boost amount threshold",
-		description = "The amount of levels boosted to display then in different color. A value of 0 will disable the feature.",
+		description = "The threshold at which boosted levels will be displayed in a different color. A value of 0 will disable the feature.",
 		position = 8
 	)
 	@Units(Units.LEVELS)
