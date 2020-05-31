@@ -293,7 +293,8 @@ public class NpcIndicatorsPlugin extends Plugin
 
 		if (config.highlightMenuNames() &&
 			NPC_MENU_ACTIONS.contains(MenuOpcode.of(type)) &&
-			highlightedNpcs.stream().anyMatch(npc -> npc.getIndex() == event.getIdentifier()))
+			highlightedNpcs.stream().anyMatch(npc -> npc.getIndex() == event.getIdentifier() &&
+				(!npc.isDead() || config.highlightDeadNpcs())))
 		{
 			final String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), config.getHighlightColor());
 			event.setTarget(target);

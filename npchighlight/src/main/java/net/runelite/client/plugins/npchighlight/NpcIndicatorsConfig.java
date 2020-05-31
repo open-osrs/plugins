@@ -123,6 +123,17 @@ public interface NpcIndicatorsConfig extends Config
 
 	@ConfigItem(
 		position = 7,
+		keyName = "highlightDeadNPCs",
+		name = "Highlight dead NPCs",
+		description = "Highlight dead NPCs"
+	)
+	default boolean highlightDeadNpcs()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 8,
 		keyName = "showRespawnTimer",
 		name = "Show respawn timer",
 		description = "Show respawn timer of tagged NPCs"
@@ -133,7 +144,7 @@ public interface NpcIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
+		position = 9,
 		keyName = "notifyOnRespawn",
 		name = "Notify on Respawn",
 		description = "Enable notification on respawn"
@@ -144,7 +155,7 @@ public interface NpcIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 8,
+		position = 10,
 		keyName = "notifyOnRespawnDelay",
 		name = "Notification Delay",
 		description = "Notify when NPC is x ms from respawning"
