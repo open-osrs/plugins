@@ -61,6 +61,8 @@ import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.util.Text;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.Keybind;
@@ -82,6 +84,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.menuentryswapper.comparables.GrimyHerbComparableEntry;
+import net.runelite.client.plugins.menuentryswapper.util.DepositMode;
+import net.runelite.client.plugins.menuentryswapper.util.WithdrawMode;
 import net.runelite.client.util.HotkeyListener;
 import static net.runelite.client.util.MenuUtil.swap;
 import org.pf4j.Extension;
@@ -540,7 +544,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			client.setMenuEntries(menuEntries);
 		}
 
-
 		if (config.swapImps() && target.contains("impling"))
 		{
 
@@ -643,6 +646,57 @@ public class MenuEntrySwapperPlugin extends Plugin
 						}
 					}
 					break;
+			}
+		}
+
+		// This swap needs to happen prior to drag start on click, which happens during
+		// widget ticking and prior to our client tick event. This is because drag start
+		// is what builds the context menu row which is what the eventual click will use
+
+		// Swap to shift-click deposit behavior
+		// Deposit- op 1 is the current withdraw amount 1/5/10/x for deposit box interface
+		// Deposit- op 2 is the current withdraw amount 1/5/10/x for bank interface
+		if (hotkeyActive && config.bankDepositShiftClick() != DepositMode.OFF
+			&& event.getOpcode() == MenuOpcode.CC_OP.getId() && (eventId == 2 || eventId == 1)
+			&& event.getOption().startsWith("Deposit-"))
+		{
+			DepositMode depositMode = config.bankDepositShiftClick();
+			final int opId = WidgetInfo.TO_GROUP(event.getParam1()) == WidgetID.DEPOSIT_BOX_GROUP_ID ? depositMode.getIdentifierDepositBox() : depositMode.getIdentifier();
+			final int actionId = opId >= 6 ? MenuOpcode.CC_OP_LOW_PRIORITY.getId() : MenuOpcode.CC_OP.getId();
+			bankModeSwap(actionId, opId);
+		}
+
+		// Swap to shift-click withdraw behavior
+		// Deposit- op 1 is the current withdraw amount 1/5/10/x
+		if (hotkeyActive && config.bankWithdrawShiftClick() != WithdrawMode.OFF
+			&& event.getOpcode() == MenuOpcode.CC_OP.getId() && eventId == 1
+			&& event.getOption().startsWith("Withdraw-"))
+		{
+			WithdrawMode withdrawMode = config.bankWithdrawShiftClick();
+			final int actionId = withdrawMode.getMenuOpcode().getId();
+			final int opId = withdrawMode.getIdentifier();
+			bankModeSwap(actionId, opId);
+		}
+	}
+
+	private void bankModeSwap(int entryTypeId, int entryIdentifier)
+	{
+		MenuEntry[] menuEntries = client.getMenuEntries();
+
+		for (int i = menuEntries.length - 1; i >= 0; --i)
+		{
+			MenuEntry entry = menuEntries[i];
+
+			if (entry.getOpcode() == entryTypeId && entry.getIdentifier() == entryIdentifier)
+			{
+				// Raise the priority of the op so it doesn't get sorted later
+				entry.setOpcode(MenuOpcode.CC_OP.getId());
+
+				menuEntries[i] = menuEntries[menuEntries.length - 1];
+				menuEntries[menuEntries.length - 1] = entry;
+
+				client.setMenuEntries(menuEntries);
+				break;
 			}
 		}
 	}
@@ -1376,30 +1430,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 	{
 		loadCustomSwaps(config.shiftCustomSwaps(), customShiftSwaps);
 
-		if (config.bankWieldItem())
-		{
-			menuManager.addPriorityEntry(new BankComparableEntry("wield", "", false));
-		}
-		if (config.bankWearItem())
-		{
-			menuManager.addPriorityEntry(new BankComparableEntry("wear", "", false));
-		}
-		if (config.bankEatItem())
-		{
-			menuManager.addPriorityEntry(new BankComparableEntry("eat", "", false));
-		}
-		if (config.bankDrinkItem())
-		{
-			menuManager.addPriorityEntry(new BankComparableEntry("drink", "", false));
-		}
-		if (config.bankEquipItem())
-		{
-			menuManager.addPriorityEntry(new BankComparableEntry("equip", "", false));
-		}
-		if (config.bankInvigorateItem())
-		{
-			menuManager.addPriorityEntry(new BankComparableEntry("invigorate", "", false));
-		}
 		if (config.swapClimbUpDown())
 		{
 			menuManager.addPriorityEntry("climb-up").setPriority(100);
@@ -1423,30 +1453,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	private void removeHotkey(ClientTick event)
 	{
-		if (config.bankWieldItem())
-		{
-			menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
-		}
-		if (config.bankWearItem())
-		{
-			menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
-		}
-		if (config.bankEatItem())
-		{
-			menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
-		}
-		if (config.bankDrinkItem())
-		{
-			menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
-		}
-		if (config.bankEquipItem())
-		{
-			menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
-		}
-		if (config.bankInvigorateItem())
-		{
-			menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
-		}
 		if (config.swapClimbUpDown())
 		{
 			menuManager.removePriorityEntry("climb-up");

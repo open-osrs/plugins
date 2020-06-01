@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.menuentryswapper.util;
 
-version = "0.0.22"
+import com.google.common.base.Splitter;
+import java.util.Map;
 
-project.extra["PluginName"] = "Menu Entry Swapper"
-project.extra["PluginDescription"] = "Change the default option that is displayed when hovering over objects"
+public class CustomSwapParse
+{
+	public static boolean parse(String value)
+	{
+		try
+		{
+			final StringBuilder sb = new StringBuilder();
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+			for (String str : value.split("\n"))
+			{
+				if (!str.startsWith("//"))
+				{
+					sb.append(str).append("\n");
+				}
+			}
+
+			final Splitter NEWLINE_SPLITTER = Splitter
+				.on("\n")
+				.omitEmptyStrings()
+				.trimResults();
+
+			final Map<String, String> tmp = NEWLINE_SPLITTER.withKeyValueSeparator(':').split(sb);
+
+			for (String str : tmp.values())
+			{
+				Integer.parseInt(str.trim());
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			return false;
+		}
+	}
 }

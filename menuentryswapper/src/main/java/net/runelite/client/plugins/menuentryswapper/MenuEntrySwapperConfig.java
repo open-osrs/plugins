@@ -34,6 +34,8 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Keybind;
 import net.runelite.client.plugins.menuentryswapper.util.ArdougneCloakMode;
 import net.runelite.client.plugins.menuentryswapper.util.ConstructionCapeMode;
+import net.runelite.client.plugins.menuentryswapper.util.CustomSwapParse;
+import net.runelite.client.plugins.menuentryswapper.util.DepositMode;
 import net.runelite.client.plugins.menuentryswapper.util.FairyRingMode;
 import net.runelite.client.plugins.menuentryswapper.util.FairyTreeMode;
 import net.runelite.client.plugins.menuentryswapper.util.HouseAdvertisementMode;
@@ -43,6 +45,7 @@ import net.runelite.client.plugins.menuentryswapper.util.ObeliskMode;
 import net.runelite.client.plugins.menuentryswapper.util.OccultAltarMode;
 import net.runelite.client.plugins.menuentryswapper.util.QuestCapeMode;
 import net.runelite.client.plugins.menuentryswapper.util.SwapGrimyHerbMode;
+import net.runelite.client.plugins.menuentryswapper.util.WithdrawMode;
 
 @ConfigGroup("menuentryswapper")
 public interface MenuEntrySwapperConfig extends Config
@@ -1629,75 +1632,27 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "bankWieldItem",
-		name = "Bank - Left Click 'Wield'",
-		description = "Enables Hotkey Left Click 'Wield' In The Bank Screen.",
+		keyName = "bankWithdrawShiftClick",
+		name = "Withdraw",
+		description = "Swaps the behavior when withdrawing from bank when hotkey pressed.",
 		position = 3,
 		section = "hotkeySwapping"
 	)
-	default boolean bankWieldItem()
+	default WithdrawMode bankWithdrawShiftClick()
 	{
-		return false;
+		return WithdrawMode.OFF;
 	}
 
 	@ConfigItem(
-		keyName = "bankWearItem",
-		name = "Bank - Left Click 'Wear'",
-		description = "Enables Hotkey Left Click 'Wear' In The Bank Screen.",
+		keyName = "bankDepositShiftClick",
+		name = "Deposit",
+		description = "Swaps the behavior when depositing to bank when hotkey pressed.",
 		position = 4,
 		section = "hotkeySwapping"
 	)
-	default boolean bankWearItem()
+	default DepositMode bankDepositShiftClick()
 	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "bankEatItem",
-		name = "Bank - Left Click 'Eat'",
-		description = "Enables Left Click 'Eat' In The Bank Screen.",
-		position = 5,
-		section = "hotkeySwapping"
-	)
-	default boolean bankEatItem()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "bankDrinkItem",
-		name = "Bank - Left Click 'Drink'",
-		description = "Enables Left Click 'Drink' In The Bank Screen.",
-		position = 6,
-		section = "hotkeySwapping"
-	)
-	default boolean bankDrinkItem()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "bankEquipItem",
-		name = "Bank - Left Click 'Equip'",
-		description = "Enables Left Click 'Equip' In The Bank Screen.",
-		position = 7,
-		section = "hotkeySwapping"
-	)
-	default boolean bankEquipItem()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "bankInvigorateItem",
-		name = "Bank - Left Click 'Invigorate'",
-		description = "Enables Left Click 'Invigorate' In The Bank Screen.",
-		position = 8,
-		section = "hotkeySwapping"
-	)
-	default boolean bankInvigorateItem()
-	{
-		return false;
+		return DepositMode.EXTRA_OP;
 	}
 
 	@ConfigItem(
@@ -1711,5 +1666,4 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
-
 }
