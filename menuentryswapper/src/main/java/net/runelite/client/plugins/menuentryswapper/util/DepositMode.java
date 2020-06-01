@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zach <https://github.com/zacharydwaller>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.menuentryswapper.util;
 
-version = "0.0.22"
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-project.extra["PluginName"] = "Menu Entry Swapper"
-project.extra["PluginDescription"] = "Change the default option that is displayed when hovering over objects"
+@Getter
+@RequiredArgsConstructor
+public enum DepositMode
+{
+	DEPOSIT_1("Deposit-1", 3, 2),
+	DEPOSIT_5("Deposit-5", 4, 3),
+	DEPOSIT_10("Deposit-10", 5, 4),
+	DEPOSIT_X("Deposit-X", 6, 6),
+	DEPOSIT_ALL("Deposit-All", 8, 5),
+	EXTRA_OP("Eat/Wield/Etc.", 9, 0),
+	OFF("Off", 0, 0);
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private final String name;
+	private final int identifier;
+	private final int identifierDepositBox;
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

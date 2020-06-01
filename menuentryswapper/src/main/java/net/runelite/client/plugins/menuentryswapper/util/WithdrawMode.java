@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zach <https://github.com/zacharydwaller>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,43 +22,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.menuentryswapper;
+package net.runelite.client.plugins.menuentryswapper.util;
 
-import com.google.common.base.Splitter;
-import java.util.Map;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.runelite.api.MenuOpcode;
 
-public class CustomSwapParse
+@Getter
+@RequiredArgsConstructor
+public enum WithdrawMode
 {
-	public static boolean parse(String value)
+	WITHDRAW_1("Withdraw-1", MenuOpcode.CC_OP, 2),
+	WITHDRAW_5("Withdraw-5", MenuOpcode.CC_OP, 3),
+	WITHDRAW_10("Withdraw-10", MenuOpcode.CC_OP, 4),
+	WITHDRAW_X("Withdraw-X", MenuOpcode.CC_OP, 5),
+	WITHDRAW_ALL("Withdraw-All", MenuOpcode.CC_OP_LOW_PRIORITY, 7),
+	WITHDRAW_ALL_BUT_1("Withdraw-All-But-1", MenuOpcode.CC_OP_LOW_PRIORITY, 8),
+	OFF("Off", MenuOpcode.UNKNOWN, 0);
+
+	private final String name;
+	private final MenuOpcode menuOpcode;
+	private final int identifier;
+
+	@Override
+	public String toString()
 	{
-		try
-		{
-			final StringBuilder sb = new StringBuilder();
-
-			for (String str : value.split("\n"))
-			{
-				if (!str.startsWith("//"))
-				{
-					sb.append(str).append("\n");
-				}
-			}
-
-			final Splitter NEWLINE_SPLITTER = Splitter
-				.on("\n")
-				.omitEmptyStrings()
-				.trimResults();
-
-			final Map<String, String> tmp = NEWLINE_SPLITTER.withKeyValueSeparator(':').split(sb);
-
-			for (String str : tmp.values())
-			{
-				Integer.parseInt(str.trim());
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			return false;
-		}
+		return name;
 	}
 }
