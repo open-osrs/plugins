@@ -53,7 +53,9 @@ import static net.runelite.client.plugins.raidsthieving.BatsLocator.OPENED_WITH_
 import static net.runelite.client.plugins.raidsthieving.BatsLocator.POISON_SPLAT;
 import static net.runelite.client.plugins.raidsthieving.BatsLocator.TROUGH;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
+@Extension
 @PluginDescriptor(
 	name = "Bats Locator",
 	description = "Helps locate the chest with bats at the thieving room inside Chambers of Xeric",
