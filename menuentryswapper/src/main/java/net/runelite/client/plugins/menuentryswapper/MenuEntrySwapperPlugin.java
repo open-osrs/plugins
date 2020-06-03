@@ -1096,17 +1096,9 @@ public class MenuEntrySwapperPlugin extends Plugin
 				break;
 		}
 
-		switch (config.swapHomePortalMode())
+		if (config.swapHomePortal())
 		{
-			case HOME:
-				menuManager.addPriorityEntry("Home");
-				break;
-			case BUILD_MODE:
-				menuManager.addPriorityEntry("Build mode");
-				break;
-			case FRIENDS_HOUSE:
-				menuManager.addPriorityEntry("Friend's house");
-				break;
+			menuManager.addPriorityEntry(config.swapHomePortalMode().toString(), "Portal").setPriority(100);
 		}
 
 		if (config.swapHardWoodGrove())
@@ -1126,7 +1118,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 		if (config.swapHouseAd())
 		{
-			menuManager.addPriorityEntry(config.swapHouseAdMode().getEntry());
+			menuManager.addPriorityEntry(config.swapHouseAdMode().toString(), "House Advertisement");
 		}
 
 		if (config.getSwapGrimyHerb())
@@ -1300,7 +1292,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(config.constructionCapeMode().toString(), "Construct. cape(t)");
 		menuManager.removePriorityEntry(config.maxMode().toString(), "max cape");
 		menuManager.removePriorityEntry(config.questCapeMode().toString(), "quest point cape");
-		menuManager.removePriorityEntry(config.swapHouseAdMode().getEntry());
 		menuManager.removeSwap("Bury", "bone", "Use");
 		menuManager.removeSwap("Wield", "salamander", "Release");
 		menuManager.removeSwap("Wield", "Swamp lizard", "Release");
@@ -1309,6 +1300,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(EMPTY_MEDIUM);
 		menuManager.removePriorityEntry(EMPTY_LARGE);
 		menuManager.removePriorityEntry(EMPTY_GIANT);
+		menuManager.removePriorityEntry(config.swapHomePortalMode().toString(), "Portal");
+		menuManager.removePriorityEntry(config.swapHouseAdMode().toString(), "House Advertisement");
 		for (String jewellerybox : jewelleryBox)
 		{
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
@@ -1387,19 +1380,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 				break;
 			case TELEPORT_TO_DESTINATION:
 				menuManager.removePriorityEntry("Teleport to destination", "Obelisk");
-				break;
-		}
-
-		switch (config.swapHomePortalMode())
-		{
-			case HOME:
-				menuManager.removePriorityEntry("Home");
-				break;
-			case BUILD_MODE:
-				menuManager.removePriorityEntry("Build mode");
-				break;
-			case FRIENDS_HOUSE:
-				menuManager.removePriorityEntry("Friend's house");
 				break;
 		}
 
@@ -1588,7 +1568,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private void updateBuySellEntries()
 	{
 		List<String> tmp;
-
+	
 		if (config.getSwapBuyOne())
 		{
 			tmp = Text.fromCSV(config.getBuyOneItems());
@@ -1718,7 +1698,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	{
 		List<String> tmp;
 
-		if (config.getWithdrawOne())
+		if (config.getWithdrawOne() && !hotkeyActive)
 		{
 			tmp = Text.fromCSV(config.getWithdrawOneItems());
 			withdrawEntries[0] = new AbstractComparableEntry[tmp.size()];
@@ -1730,7 +1710,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			withdrawEntries[0] = null;
 		}
 
-		if (config.getWithdrawFive())
+		if (config.getWithdrawFive() && !hotkeyActive)
 		{
 			tmp = Text.fromCSV(config.getWithdrawFiveItems());
 			withdrawEntries[1] = new AbstractComparableEntry[tmp.size()];
@@ -1742,7 +1722,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			withdrawEntries[1] = null;
 		}
 
-		if (config.getWithdrawTen())
+		if (config.getWithdrawTen() && !hotkeyActive)
 		{
 			tmp = Text.fromCSV(config.getWithdrawTenItems());
 			withdrawEntries[2] = new AbstractComparableEntry[tmp.size()];
@@ -1754,7 +1734,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			withdrawEntries[2] = null;
 		}
 
-		if (config.getWithdrawX())
+		if (config.getWithdrawX() && !hotkeyActive)
 		{
 			tmp = Text.fromCSV(config.getWithdrawXItems());
 			withdrawEntries[3] = new AbstractComparableEntry[tmp.size()];
@@ -1766,7 +1746,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			withdrawEntries[3] = null;
 		}
 
-		if (config.getWithdrawAll())
+		if (config.getWithdrawAll() && !hotkeyActive)
 		{
 			tmp = Text.fromCSV(config.getWithdrawAllItems());
 			withdrawEntries[4] = new AbstractComparableEntry[tmp.size()];
