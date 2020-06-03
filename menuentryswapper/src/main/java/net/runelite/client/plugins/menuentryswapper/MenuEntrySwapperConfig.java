@@ -300,7 +300,7 @@ public interface MenuEntrySwapperConfig extends Config
 		name = "GE Item Collect",
 		description = "Swap Collect-notes, Collect-items, or Bank options from GE offer",
 		position = 11,
-		section = "bankingSection",
+		section = "bankingSection"
 	)
 	default GEItemCollectMode swapGEItemCollect()
 	{
@@ -1685,7 +1685,7 @@ public interface MenuEntrySwapperConfig extends Config
 		name = "GE Abort",
 		description = "Swap abort offer on Grand Exchange offers when Hotkey active.",
 		position = 6,
-		section = "hotkeySwapping",
+		section = "hotkeySwapping"
 	)
 	default boolean swapGEAbort()
 	{
