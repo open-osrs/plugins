@@ -90,6 +90,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.SessionClose;
 import net.runelite.client.events.SessionOpen;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyManager;
@@ -124,6 +125,7 @@ import org.pf4j.Extension;
 @Slf4j
 public class GrandExchangePlugin extends Plugin
 {
+	private static final int GE_SLOTS = 8;
 	static final String SEARCH_GRAND_EXCHANGE = "Search Grand Exchange";
 	private static final int OFFER_TYPE_BUY = 0;
 	private static final int OFFER_CONTAINER_ITEM = 21;
@@ -194,6 +196,7 @@ public class GrandExchangePlugin extends Plugin
 
 	@Inject
 	private GrandExchangeClient grandExchangeClient;
+	private boolean loginBurstGeUpdates;
 	private static String machineUuid;
 
 	private boolean wasFuzzySearch;
@@ -353,6 +356,12 @@ public class GrandExchangePlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onSessionClose(SessionClose sessionClose)
+	{
+		grandExchangeClient.setUuid(null);
+	}
+
+	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
 		if (event.getGroup().equals(GrandExchangeConfig.CONFIG_GROUP))
@@ -379,6 +388,9 @@ public class GrandExchangePlugin extends Plugin
 		final int slot = offerEvent.getSlot();
 		final GrandExchangeOffer offer = offerEvent.getOffer();
 
+		log.debug("GE offer updated: state: {}, slot: {}, item: {}, qty: {}, login: {}",
+			offer.getState(), slot, offer.getItemId(), offer.getQuantitySold(), loginBurstGeUpdates);
+
 		ItemDefinition offerItem = itemManager.getItemDefinition(offer.getItemId());
 		boolean shouldStack = offerItem.isStackable() || offer.getTotalQuantity() > 1;
 		BufferedImage itemImage = itemManager.getImage(offer.getItemId(), offer.getTotalQuantity(), shouldStack);
@@ -387,6 +399,11 @@ public class GrandExchangePlugin extends Plugin
 		submitTrade(slot, offer);
 
 		updateConfig(slot, offer);
+
+		if (loginBurstGeUpdates && slot == GE_SLOTS - 1) // slots are sent sequentially on login; this is the last one
+		{
+			loginBurstGeUpdates = false;
+		}
 	}
 
 	@VisibleForTesting
@@ -408,9 +425,10 @@ public class GrandExchangePlugin extends Plugin
 			grandExchangeTrade.setItemId(offer.getItemId());
 			grandExchangeTrade.setQuantity(0);
 			grandExchangeTrade.setTotal(offer.getTotalQuantity());
-			grandExchangeTrade.setPrice(0);
+			grandExchangeTrade.setSpent(0);
 			grandExchangeTrade.setOffer(offer.getPrice());
 			grandExchangeTrade.setWorldType(getGeWorldType());
+			grandExchangeTrade.setLogin(loginBurstGeUpdates);
 
 			log.debug("Submitting new trade: {}", grandExchangeTrade);
 			grandExchangeClient.submit(grandExchangeTrade);
@@ -437,9 +455,10 @@ public class GrandExchangePlugin extends Plugin
 			grandExchangeTrade.setItemId(offer.getItemId());
 			grandExchangeTrade.setQuantity(offer.getQuantitySold());
 			grandExchangeTrade.setTotal(offer.getTotalQuantity());
-			grandExchangeTrade.setPrice(offer.getQuantitySold() > 0 ? offer.getSpent() / offer.getQuantitySold() : 0);
+			grandExchangeTrade.setSpent(offer.getSpent());
 			grandExchangeTrade.setOffer(offer.getPrice());
 			grandExchangeTrade.setWorldType(getGeWorldType());
+			grandExchangeTrade.setLogin(loginBurstGeUpdates);
 
 			log.debug("Submitting cancelled: {}", grandExchangeTrade);
 			grandExchangeClient.submit(grandExchangeTrade);
@@ -447,16 +466,9 @@ public class GrandExchangePlugin extends Plugin
 		}
 
 		final int qty = offer.getQuantitySold() - savedOffer.getQuantitySold();
-		if (qty <= 0)
-		{
-			return;
-		}
-
-		// offer.getPrice() is the price of the offer, not necessarily what the item bought at, so we compute it
-		// based on how much was spent & the qty
 		final int dspent = offer.getSpent() - savedOffer.getSpent();
-		final int price = dspent / qty;
-		if (price <= 0)
+
+		if (qty <= 0 || dspent <= 0)
 		{
 			return;
 		}
@@ -466,9 +478,10 @@ public class GrandExchangePlugin extends Plugin
 		grandExchangeTrade.setItemId(offer.getItemId());
 		grandExchangeTrade.setQuantity(qty);
 		grandExchangeTrade.setTotal(offer.getTotalQuantity());
-		grandExchangeTrade.setPrice(price);
+		grandExchangeTrade.setSpent(dspent);
 		grandExchangeTrade.setOffer(offer.getPrice());
 		grandExchangeTrade.setWorldType(getGeWorldType());
+		grandExchangeTrade.setLogin(loginBurstGeUpdates);
 
 		log.debug("Submitting trade: {}", grandExchangeTrade);
 		grandExchangeClient.submit(grandExchangeTrade);
@@ -534,6 +547,7 @@ public class GrandExchangePlugin extends Plugin
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
 		{
 			panel.getOffersPanel().resetOffers();
+			loginBurstGeUpdates = true;
 		}
 	}
 

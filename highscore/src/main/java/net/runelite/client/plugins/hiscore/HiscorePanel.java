@@ -193,7 +193,7 @@ public class HiscorePanel extends PluginPanel
 
 				if (localPlayer != null)
 				{
-					executor.execute(() -> lookup(localPlayer.getName()));
+					lookup(localPlayer.getName());
 				}
 			}
 		});
@@ -362,7 +362,7 @@ public class HiscorePanel extends PluginPanel
 	{
 		searchBar.setText(username);
 		resetEndpoints();
-		lookup();
+		executor.execute(this::lookup);
 	}
 
 	private void lookup()

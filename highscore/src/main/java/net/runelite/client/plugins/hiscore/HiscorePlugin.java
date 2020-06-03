@@ -27,7 +27,6 @@ package net.runelite.client.plugins.hiscore;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
@@ -228,23 +227,12 @@ public class HiscorePlugin extends Plugin
 
 	private void lookupPlayer(String playerName)
 	{
-		executor.execute(() ->
+		SwingUtilities.invokeLater(() ->
 		{
-			try
+			if (!navButton.isSelected())
 			{
-				SwingUtilities.invokeAndWait(() ->
-				{
-					if (!navButton.isSelected())
-					{
-						navButton.getOnSelect().run();
-					}
-				});
+				navButton.getOnSelect().run();
 			}
-			catch (InterruptedException | InvocationTargetException e)
-			{
-				throw new RuntimeException(e);
-			}
-
 			hiscorePanel.lookup(playerName);
 		});
 	}

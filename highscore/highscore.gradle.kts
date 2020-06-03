@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.2.1"
+version = "0.2.2"
 
 project.extra["PluginName"] = "Highscore"
 project.extra["PluginDescription"] = "Enable the highscore panel and an optional Lookup option on players"

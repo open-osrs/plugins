@@ -24,6 +24,7 @@
  */
 package net.runelite.client.plugins.clanchat;
 
+import java.awt.Color;
 import net.runelite.api.ClanMemberRank;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -158,5 +159,38 @@ public interface ClanChatConfig extends Config
 	default boolean confirmKicks()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "kickWithName",
+		name = "Show kicked player",
+		description = "Changes kick message to say who was kicked",
+		position = 10
+	)
+	default boolean kickWithName()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showIgnores",
+		name = "Recolor ignored players",
+		description = "Recolors players that are on your ignore list",
+		position = 10
+	)
+	default boolean showIgnores()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showIgnoresColor",
+		name = "Ignored color",
+		description = "Allows you to change the color of the ignored players in your clan chat",
+		position = 11
+	)
+	default Color showIgnoresColor()
+	{
+		return Color.RED;
 	}
 }
