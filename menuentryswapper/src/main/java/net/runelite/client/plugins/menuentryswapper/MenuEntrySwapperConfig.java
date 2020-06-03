@@ -1671,7 +1671,7 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapClimbUpDown",
 		name = "Climb",
-		description = "Swap 'Climb-Up'/'Climb-Down' depending on Shift or Control key.",
+		description = "Swap 'Climb-Up'/'Climb-Down' depending on Hotkey or Control key.",
 		position = 5,
 		section = "hotkeySwapping"
 	)
@@ -1683,7 +1683,7 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapGEAbort",
 		name = "GE Abort",
-		description = "Swap abort offer on Grand Exchange offers when shift-clicking",
+		description = "Swap abort offer on Grand Exchange offers when Hotkey active.",
 		position = 6,
 		section = "hotkeySwapping",
 	)
