@@ -820,16 +820,16 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 		if (config.swapTravel())
 		{
-			menuManager.addPriorityEntry("Travel");
-			menuManager.addPriorityEntry("Pay-fare");
-			menuManager.addPriorityEntry("Charter");
-			menuManager.addPriorityEntry("Take-boat");
-			menuManager.addPriorityEntry("Fly");
-			menuManager.addPriorityEntry("Jatizso");
-			menuManager.addPriorityEntry("Neitiznot");
-			menuManager.addPriorityEntry("Rellekka");
+			menuManager.addPriorityEntry("Travel").setPriority(10);
+			menuManager.addPriorityEntry("Pay-fare").setPriority(10);
+			menuManager.addPriorityEntry("Charter").setPriority(10);
+			menuManager.addPriorityEntry("Take-boat").setPriority(10);
+			menuManager.addPriorityEntry("Fly").setPriority(10);
+			menuManager.addPriorityEntry("Jatizso").setPriority(10);
+			menuManager.addPriorityEntry("Neitiznot").setPriority(10);
+			menuManager.addPriorityEntry("Rellekka").setPriority(10);
 			menuManager.addPriorityEntry("Follow", "Elkoy").setPriority(10);
-			menuManager.addPriorityEntry("Transport");
+			menuManager.addPriorityEntry("Transport").setPriority(10);
 		}
 
 		if (config.swapAbyssTeleport())
