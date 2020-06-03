@@ -37,6 +37,11 @@ public enum GEItemCollectMode
 	BANK("Bank");
 
 	private final String name;
+	
+	GEItemCollectMode(String name)
+	{
+		this.name = name;
+	}
 
 	@Override
 	public String toString()
