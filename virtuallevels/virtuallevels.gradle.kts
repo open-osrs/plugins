@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Virtual Levels"
 project.extra["PluginDescription"] = "Shows virtual levels (beyond 99) and virtual skill total on the skills tab"

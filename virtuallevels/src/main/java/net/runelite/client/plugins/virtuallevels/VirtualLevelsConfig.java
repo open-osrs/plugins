@@ -54,12 +54,11 @@ public interface VirtualLevelsConfig extends Config
 
 	@ConfigItem(
 		keyName = "showFireworks",
-		name = "Show level-up fireworks",
-		description = "Show fireworks when reaching a new virtual level<br>" +
-			"\"Normal\" will display fireworks like those seen at levels 2-98, \"Max\" will show fireworks like seen at level 99"
+		name = "Level-up fireworks style",
+		description = "Type of fireworks which will be triggered when reaching a new virtual level"
 	)
 	default LevelUpFireworks showFireworks()
 	{
-		return LevelUpFireworks.MAX;
+		return LevelUpFireworks.NINETY_NINE;
 	}
 }
