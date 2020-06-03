@@ -24,11 +24,6 @@
  */
 package net.runelite.client.plugins.menuentryswapper.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
 public enum HouseAdvertisementMode
 {
 	VIEW("View"),
