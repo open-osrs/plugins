@@ -87,7 +87,8 @@ public enum Emoji
 	HEART_EYES("(*.*)"),
 	FACEPALM("M-)"),
 	PENSIVE("V_V"),
-	ACORN("<lt>D~") // <D~
+	ACORN("<lt>D~"), // <D~
+	GORILLA(":G"),
 	;
 
 	public static final Map<String, Emoji> emojiMap;

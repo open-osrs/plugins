@@ -107,7 +107,9 @@ public class NpcIndicatorsPlugin extends Plugin
 		MenuOpcode.NPC_SECOND_OPTION,
 		MenuOpcode.NPC_THIRD_OPTION,
 		MenuOpcode.NPC_FOURTH_OPTION,
-		MenuOpcode.NPC_FIFTH_OPTION
+		MenuOpcode.NPC_FIFTH_OPTION,
+		MenuOpcode.SPELL_CAST_ON_NPC,
+		MenuOpcode.ITEM_USE_ON_NPC
 	);
 
 	@Inject
