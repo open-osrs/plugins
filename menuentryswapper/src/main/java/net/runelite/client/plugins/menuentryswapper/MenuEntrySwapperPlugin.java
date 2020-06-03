@@ -82,8 +82,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.menuentryswapper.comparables.GrimyHerbComparableEntry;
-import net.runelite.client.plugins.menuentryswapper.util.DepositMode;
-import net.runelite.client.plugins.menuentryswapper.util.WithdrawMode;
 import net.runelite.client.util.HotkeyListener;
 import static net.runelite.client.util.MenuUtil.swap;
 import org.pf4j.Extension;
@@ -138,7 +136,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	);
 	private static final List<String> dropOre = Arrays.asList(
 		"Copper ore", "Tin ore", "Limestone", "Blurite ore", "Iron ore", "Elemental ore", "Daeyalt ore",
-		"Silver ore", "Coal", "Sandstone", "Gold ore", "Granite (500g)", "Granite (2kg)", "Granite (5kg)", 
+		"Silver ore", "Coal", "Sandstone", "Gold ore", "Granite (500g)", "Granite (2kg)", "Granite (5kg)",
 		"Mithril ore", "Lovakite ore", "Adamantite ore", "Runite ore", "Amethyst ore"
 	);
 	private static final List<String> dropLogs = Arrays.asList(
@@ -1431,13 +1429,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 				break;
 			case DEPOSIT_10:
 				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-10", "", false));
-				break;	
+				break;
 			case DEPOSIT_X:
-				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
-				break;		
+				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-X", "", false));
+				break;
 			case DEPOSIT_ALL:
 				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-All", "", false));
-				break;	
+				break;
 			case EXTRA_OP:
 				menuManager.addPriorityEntry(new BankComparableEntry("wield", "", false));
 				menuManager.addPriorityEntry(new BankComparableEntry("wear", "", false));
@@ -1457,7 +1455,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-1", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-5", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-10", "", false));
-				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));
 				break;
 		}
 		switch (config.bankWithdrawShiftClick())
@@ -1470,13 +1468,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 				break;
 			case WITHDRAW_10:
 				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
-				break;	
+				break;
 			case WITHDRAW_X:
-				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
-				break;		
+				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-X", "", false));
+				break;
 			case WITHDRAW_ALL:
 				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
-				break;	
+				break;
 			case WITHDRAW_ALL_BUT_1:
 				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
 				break;
@@ -1484,7 +1482,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-1", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-5", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
-				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
 				break;
@@ -1528,13 +1526,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 				break;
 			case DEPOSIT_10:
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-10", "", false));
-				break;	
+				break;
 			case DEPOSIT_X:
-				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
-				break;		
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));
+				break;
 			case DEPOSIT_ALL:
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-All", "", false));
-				break;	
+				break;
 			case EXTRA_OP:
 				menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
@@ -1554,7 +1552,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-1", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-5", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-10", "", false));
-				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));
 				break;
 		}
 		switch (config.bankWithdrawShiftClick())
@@ -1567,13 +1565,13 @@ public class MenuEntrySwapperPlugin extends Plugin
 				break;
 			case WITHDRAW_10:
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
-				break;	
+				break;
 			case WITHDRAW_X:
-				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
-				break;		
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));
+				break;
 			case WITHDRAW_ALL:
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
-				break;	
+				break;
 			case WITHDRAW_ALL_BUT_1:
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
 				break;
@@ -1581,7 +1579,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-1", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-5", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
-				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
 				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
 				break;
