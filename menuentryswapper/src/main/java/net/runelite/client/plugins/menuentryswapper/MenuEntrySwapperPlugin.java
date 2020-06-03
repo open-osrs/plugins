@@ -1124,11 +1124,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 		
-		if (config.swapGEAbort())
-		{
-			menuManager.addPriorityEntry("Abort offer");
-		}
-		
 		switch (config.swapGEItemCollect())
 		{
 			case ITEMS:
@@ -1277,7 +1272,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(EMPTY_GIANT);
 		menuManager.removePriorityEntry(config.swapHomePortalMode().toString(), "Portal");
 		menuManager.removePriorityEntry(config.swapHouseAdMode().toString(), "House Advertisement");
-		menuManager.removePriorityEntry("Abort offer");
 		for (String jewellerybox : jewelleryBox)
 		{
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
@@ -1422,6 +1416,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 		
+		if (config.swapGEAbort())
+		{
+			menuManager.addPriorityEntry("Abort offer");
+		}
+		
 		switch (config.bankDepositShiftClick())
 		{
 			case DEPOSIT_1:
@@ -1512,6 +1511,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				menuManager.removePriorityEntry(npccontact, "npc contact");
 			}
+		}
+		
+				if (config.swapGEAbort())
+		{
+			menuManager.removePriorityEntry("Abort offer");
 		}
 		
 		switch (config.bankDepositShiftClick())
