@@ -120,6 +120,7 @@ public class DevToolsPlugin extends Plugin
 	private ChatMessageManager chatMessageManager;
 
 	private DevToolsButton players;
+	private DevToolsButton extPlayers;
 	private DevToolsButton npcs;
 	private DevToolsButton groundItems;
 	private DevToolsButton groundObjects;
@@ -159,6 +160,7 @@ public class DevToolsPlugin extends Plugin
 	{
 
 		players = new DevToolsButton("Players");
+		extPlayers = new DevToolsButton("Players Ext.");
 		npcs = new DevToolsButton("NPCs");
 
 		groundItems = new DevToolsButton("Ground Items");

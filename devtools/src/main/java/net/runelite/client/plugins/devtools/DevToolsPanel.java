@@ -85,6 +85,7 @@ class DevToolsPanel extends PluginPanel
 		container.setLayout(new GridLayout(0, 2, 3, 3));
 
 		container.add(plugin.getPlayers());
+		container.add(plugin.getExtPlayers());
 		container.add(plugin.getNpcs());
 
 		container.add(plugin.getGroundItems());
