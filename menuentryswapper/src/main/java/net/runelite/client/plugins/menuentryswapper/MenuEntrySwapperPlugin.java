@@ -138,8 +138,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 	);
 	private static final List<String> dropOre = Arrays.asList(
 		"Copper ore", "Tin ore", "Limestone", "Blurite ore", "Iron ore", "Elemental ore", "Daeyalt ore",
-		"Silver ore", "Coal", "Sandstone", "Gold ore", "Granite", "Mithril ore", "Lovakite ore",
-		"Adamantite ore", "Runite ore", "Amethyst ore"
+		"Silver ore", "Coal", "Sandstone", "Gold ore", "Granite (500g)", "Granite (2kg)", "Granite (5kg)", 
+		"Mithril ore", "Lovakite ore", "Adamantite ore", "Runite ore", "Amethyst ore"
 	);
 	private static final List<String> dropLogs = Arrays.asList(
 		"Logs", "Achey tree logs", "Oak logs", "Willow logs", "Teak logs", "Juniper logs", "Maple logs",
