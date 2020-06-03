@@ -558,7 +558,7 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "home",
+		keyName = "swapHomePortalMode",
 		name = "Mode",
 		description = "",
 		position = 6,
