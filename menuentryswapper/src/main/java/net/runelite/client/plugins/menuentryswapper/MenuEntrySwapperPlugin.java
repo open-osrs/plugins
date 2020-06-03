@@ -61,8 +61,6 @@ import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.util.Text;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.Keybind;
@@ -646,57 +644,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 						}
 					}
 					break;
-			}
-		}
-
-		// This swap needs to happen prior to drag start on click, which happens during
-		// widget ticking and prior to our client tick event. This is because drag start
-		// is what builds the context menu row which is what the eventual click will use
-
-		// Swap to shift-click deposit behavior
-		// Deposit- op 1 is the current withdraw amount 1/5/10/x for deposit box interface
-		// Deposit- op 2 is the current withdraw amount 1/5/10/x for bank interface
-		if (hotkeyActive && config.bankDepositShiftClick() != DepositMode.OFF
-			&& event.getOpcode() == MenuOpcode.CC_OP.getId() && (eventId == 2 || eventId == 1)
-			&& event.getOption().startsWith("Deposit-"))
-		{
-			DepositMode depositMode = config.bankDepositShiftClick();
-			final int opId = WidgetInfo.TO_GROUP(event.getParam1()) == WidgetID.DEPOSIT_BOX_GROUP_ID ? depositMode.getIdentifierDepositBox() : depositMode.getIdentifier();
-			final int actionId = opId >= 6 ? MenuOpcode.CC_OP_LOW_PRIORITY.getId() : MenuOpcode.CC_OP.getId();
-			bankModeSwap(actionId, opId);
-		}
-
-		// Swap to shift-click withdraw behavior
-		// Deposit- op 1 is the current withdraw amount 1/5/10/x
-		if (hotkeyActive && config.bankWithdrawShiftClick() != WithdrawMode.OFF
-			&& event.getOpcode() == MenuOpcode.CC_OP.getId() && eventId == 1
-			&& event.getOption().startsWith("Withdraw-"))
-		{
-			WithdrawMode withdrawMode = config.bankWithdrawShiftClick();
-			final int actionId = withdrawMode.getMenuOpcode().getId();
-			final int opId = withdrawMode.getIdentifier();
-			bankModeSwap(actionId, opId);
-		}
-	}
-
-	private void bankModeSwap(int entryTypeId, int entryIdentifier)
-	{
-		MenuEntry[] menuEntries = client.getMenuEntries();
-
-		for (int i = menuEntries.length - 1; i >= 0; --i)
-		{
-			MenuEntry entry = menuEntries[i];
-
-			if (entry.getOpcode() == entryTypeId && entry.getIdentifier() == entryIdentifier)
-			{
-				// Raise the priority of the op so it doesn't get sorted later
-				entry.setOpcode(MenuOpcode.CC_OP.getId());
-
-				menuEntries[i] = menuEntries[menuEntries.length - 1];
-				menuEntries[menuEntries.length - 1] = entry;
-
-				client.setMenuEntries(menuEntries);
-				break;
 			}
 		}
 	}
@@ -1422,6 +1369,75 @@ public class MenuEntrySwapperPlugin extends Plugin
 				menuManager.addPriorityEntry(npccontact, "npc contact");
 			}
 		}
+		
+		switch (config.bankDepositShiftClick())
+		{
+			case DEPOSIT_1:
+				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-1", "", false));
+				break;
+			case DEPOSIT_5:
+				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-5", "", false));
+				break;
+			case DEPOSIT_10:
+				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-10", "", false));
+				break;	
+			case DEPOSIT_X:
+				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
+				break;		
+			case DEPOSIT_ALL:
+				menuManager.addPriorityEntry(new BankComparableEntry("Deposit-All", "", false));
+				break;	
+			case EXTRA_OP:
+				menuManager.addPriorityEntry(new BankComparableEntry("wield", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("wear", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("eat", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("drink", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("equip", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("invigorate", "", false));
+				break;
+			case OFF:
+				menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-All", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-1", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-5", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-10", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
+				break;
+		}
+		switch (config.bankWithdrawShiftClick())
+		{
+			case WITHDRAW_1:
+				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-1", "", false));
+				break;
+			case WITHDRAW_5:
+				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-5", "", false));
+				break;
+			case WITHDRAW_10:
+				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
+				break;	
+			case WITHDRAW_X:
+				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
+				break;		
+			case WITHDRAW_ALL:
+				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
+				break;	
+			case WITHDRAW_ALL_BUT_1:
+				menuManager.addPriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
+				break;
+			case OFF:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-1", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-5", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
+				break;
+		}
 
 		eventBus.unregister(HOTKEY);
 	}
@@ -1444,6 +1460,75 @@ public class MenuEntrySwapperPlugin extends Plugin
 			{
 				menuManager.removePriorityEntry(npccontact, "npc contact");
 			}
+		}
+		
+		switch (config.bankDepositShiftClick())
+		{
+			case DEPOSIT_1:
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-1", "", false));
+				break;
+			case DEPOSIT_5:
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-5", "", false));
+				break;
+			case DEPOSIT_10:
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-10", "", false));
+				break;	
+			case DEPOSIT_X:
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
+				break;		
+			case DEPOSIT_ALL:
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-All", "", false));
+				break;	
+			case EXTRA_OP:
+				menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
+				break;
+			case OFF:
+				menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-All", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-1", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-5", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-10", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Deposit-X", "", false));	
+				break;
+		}
+		switch (config.bankWithdrawShiftClick())
+		{
+			case WITHDRAW_1:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-1", "", false));
+				break;
+			case WITHDRAW_5:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-5", "", false));
+				break;
+			case WITHDRAW_10:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
+				break;	
+			case WITHDRAW_X:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
+				break;		
+			case WITHDRAW_ALL:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
+				break;	
+			case WITHDRAW_ALL_BUT_1:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
+				break;
+			case OFF:
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-1", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-5", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-10", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-X", "", false));	
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("Withdraw-All-But-1", "", false));
+				break;
 		}
 
 		loadCustomSwaps("", customShiftSwaps);
