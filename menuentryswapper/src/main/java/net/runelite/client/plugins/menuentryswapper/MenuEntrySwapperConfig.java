@@ -307,18 +307,6 @@ public interface MenuEntrySwapperConfig extends Config
 		return GEItemCollectMode.DEFAULT;
 	}
 
-	@ConfigItem(
-		keyName = "swapGEAbort",
-		name = "GE Abort",
-		description = "Swap abort offer on Grand Exchange offers when shift-clicking",
-		position = 12,
-		section = "bankingSection",
-	)
-	default boolean swapGEAbort()
-	{
-		return false;
-	}
-
 	//------------------------------------------------------------//
 	// Equipment Swapper
 	//------------------------------------------------------------//
@@ -1684,10 +1672,22 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapClimbUpDown",
 		name = "Climb",
 		description = "Swap 'Climb-Up'/'Climb-Down' depending on Shift or Control key.",
-		position = 9,
+		position = 5,
 		section = "hotkeySwapping"
 	)
 	default boolean swapClimbUpDown()
+	{
+		return false;
+	}
+	
+	@ConfigItem(
+		keyName = "swapGEAbort",
+		name = "GE Abort",
+		description = "Swap abort offer on Grand Exchange offers when shift-clicking",
+		position = 6,
+		section = "hotkeySwapping",
+	)
+	default boolean swapGEAbort()
 	{
 		return false;
 	}
