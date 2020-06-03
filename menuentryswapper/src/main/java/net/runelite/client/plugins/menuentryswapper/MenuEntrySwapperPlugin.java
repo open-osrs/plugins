@@ -1123,6 +1123,34 @@ public class MenuEntrySwapperPlugin extends Plugin
 				menuManager.addSwap("Use", dropLogs, "Drop");
 			}
 		}
+		
+		if (config.swapGEAbort())
+		{
+			menuManager.addPriorityEntry("Abort offer");
+		}
+		
+		switch (config.swapGEItemCollect())
+		{
+			case ITEMS:
+				menuManager.addPriorityEntry(new BankComparableEntry("collect-items", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("collect-item", "", false));
+				break;
+			case NOTES:
+				menuManager.addPriorityEntry(new BankComparableEntry("collect-notes", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("collect-note", "", false));
+				break;
+			case BANK:
+				menuManager.addPriorityEntry(new BankComparableEntry("collect to bank", "", false));
+				menuManager.addPriorityEntry(new BankComparableEntry("bank", "", false));
+				break;
+			case DEFAULT:
+				menuManager.removePriorityEntry(new BankComparableEntry("collect to bank", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("bank", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-notes", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-note", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-items", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-item", "", false));
+		}
 	}
 
 	private void removeSwaps()
@@ -1249,6 +1277,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(EMPTY_GIANT);
 		menuManager.removePriorityEntry(config.swapHomePortalMode().toString(), "Portal");
 		menuManager.removePriorityEntry(config.swapHouseAdMode().toString(), "House Advertisement");
+		menuManager.removePriorityEntry("Abort offer");
 		for (String jewellerybox : jewelleryBox)
 		{
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
@@ -1328,6 +1357,29 @@ public class MenuEntrySwapperPlugin extends Plugin
 			case TELEPORT_TO_DESTINATION:
 				menuManager.removePriorityEntry("Teleport to destination", "Obelisk");
 				break;
+		}
+		
+		switch (config.swapGEItemCollect())
+		{
+			case ITEMS:
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-items", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-item", "", false));
+				break;
+			case NOTES:
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-notes", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-note", "", false));
+				break;
+			case BANK:
+				menuManager.removePriorityEntry(new BankComparableEntry("collect to bank", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("bank", "", false));
+				break;
+			case DEFAULT:
+				menuManager.removePriorityEntry(new BankComparableEntry("collect to bank", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("bank", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-notes", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-note", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-items", "", false));
+				menuManager.removePriorityEntry(new BankComparableEntry("collect-item", "", false));
 		}
 
 	}
