@@ -38,6 +38,7 @@ import net.runelite.client.plugins.menuentryswapper.util.CustomSwapParse;
 import net.runelite.client.plugins.menuentryswapper.util.DepositMode;
 import net.runelite.client.plugins.menuentryswapper.util.FairyRingMode;
 import net.runelite.client.plugins.menuentryswapper.util.FairyTreeMode;
+import net.runelite.client.plugins.menuentryswapper.util.GEItemCollectMode;
 import net.runelite.client.plugins.menuentryswapper.util.HouseAdvertisementMode;
 import net.runelite.client.plugins.menuentryswapper.util.HouseMode;
 import net.runelite.client.plugins.menuentryswapper.util.MaxCapeMode;
@@ -293,41 +294,17 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return "";
 	}
-
+	
 	@ConfigItem(
-		keyName = "getSwapOffer",
-		name = "Offer-All",
-		description = "Swap 'Offer', on trades with 'Offer-All'",
+		keyName = "swapGEItemCollect",
+		name = "GE Item Collect",
+		description = "Swap Collect-notes, Collect-items, or Bank options from GE offer",
 		position = 11,
-		section = "miscellaneousSection"
+		section = "bankingSection"
 	)
-	default boolean getSwapOffer()
+	default GEItemCollectMode swapGEItemCollect()
 	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "swapCoalBag",
-		name = "Coal Bag",
-		description = "Makes Empty the left click option when in a bank",
-		position = 12,
-		section = "miscellaneousSection"
-	)
-	default boolean swapCoalBag()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "deprioritizeChopDown",
-		name = "Deprioritize Chop Down",
-		description = "Makes chop down appear below walk here on trees",
-		position = 13,
-		section = "miscellaneousSection"
-	)
-	default boolean deprioritizeChopDown()
-	{
-		return false;
+		return GEItemCollectMode.DEFAULT;
 	}
 
 	//------------------------------------------------------------//
@@ -558,7 +535,7 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "home",
+		keyName = "swapHomePortalMode",
 		name = "Mode",
 		description = "",
 		position = 6,
@@ -727,6 +704,42 @@ public interface MenuEntrySwapperConfig extends Config
 		section = "miscellaneousSection"
 	)
 	default boolean swapTeleportNames()
+	{
+		return false;
+	}
+	
+	@ConfigItem(
+		keyName = "getSwapOffer",
+		name = "Offer-All",
+		description = "Swap 'Offer', on trades with 'Offer-All'",
+		position = 20,
+		section = "miscellaneousSection"
+	)
+	default boolean getSwapOffer()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "swapCoalBag",
+		name = "Coal Bag",
+		description = "Makes Empty the left click option when in a bank",
+		position = 21,
+		section = "miscellaneousSection"
+	)
+	default boolean swapCoalBag()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "deprioritizeChopDown",
+		name = "Deprioritize Chop Down",
+		description = "Makes chop down appear below walk here on trees",
+		position = 22,
+		section = "miscellaneousSection"
+	)
+	default boolean deprioritizeChopDown()
 	{
 		return false;
 	}
@@ -1658,11 +1671,23 @@ public interface MenuEntrySwapperConfig extends Config
 	@ConfigItem(
 		keyName = "swapClimbUpDown",
 		name = "Climb",
-		description = "Swap 'Climb-Up'/'Climb-Down' depending on Shift or Control key.",
-		position = 9,
+		description = "Swap 'Climb-Up'/'Climb-Down' depending on Hotkey or Control key.",
+		position = 5,
 		section = "hotkeySwapping"
 	)
 	default boolean swapClimbUpDown()
+	{
+		return false;
+	}
+	
+	@ConfigItem(
+		keyName = "swapGEAbort",
+		name = "GE Abort",
+		description = "Swap abort offer on Grand Exchange offers when Hotkey active.",
+		position = 6,
+		section = "hotkeySwapping"
+	)
+	default boolean swapGEAbort()
 	{
 		return false;
 	}

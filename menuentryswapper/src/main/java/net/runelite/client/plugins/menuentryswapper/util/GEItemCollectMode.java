@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Zach <https://github.com/zacharydwaller>
+ * Copyright (c) 2019, Rami <https://github.com/Rami-J>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,22 +24,19 @@
  */
 package net.runelite.client.plugins.menuentryswapper.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
-public enum DepositMode
+public enum GEItemCollectMode
 {
-	DEPOSIT_1("Deposit-1"),
-	DEPOSIT_5("Deposit-5"),
-	DEPOSIT_10("Deposit-10"),
-	DEPOSIT_X("Deposit-X"),
-	DEPOSIT_ALL("Deposit-All"),
-	EXTRA_OP("Eat/Wield/Etc."),
-	OFF("Off");
+	DEFAULT("Default"),
+	ITEMS("Collect-items"),
+	NOTES("Collect-notes"),
+	BANK("Bank");
 
 	private final String name;
+	
+	GEItemCollectMode(String name)
+	{
+		this.name = name;
+	}
 
 	@Override
 	public String toString()

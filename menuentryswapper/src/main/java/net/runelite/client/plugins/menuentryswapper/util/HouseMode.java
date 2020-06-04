@@ -25,11 +25,6 @@
 
 package net.runelite.client.plugins.menuentryswapper.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
 public enum HouseMode
 {
 	ENTER("Enter"),
@@ -38,6 +33,11 @@ public enum HouseMode
 	FRIENDS_HOUSE("Friend's House");
 
 	private final String name;
+	
+	HouseMode(String name)
+	{
+		this.name = name;
+	}
 
 	@Override
 	public String toString()

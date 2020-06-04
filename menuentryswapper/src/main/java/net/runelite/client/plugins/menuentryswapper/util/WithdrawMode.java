@@ -26,23 +26,20 @@ package net.runelite.client.plugins.menuentryswapper.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.runelite.api.MenuOpcode;
 
 @Getter
 @RequiredArgsConstructor
 public enum WithdrawMode
 {
-	WITHDRAW_1("Withdraw-1", MenuOpcode.CC_OP, 2),
-	WITHDRAW_5("Withdraw-5", MenuOpcode.CC_OP, 3),
-	WITHDRAW_10("Withdraw-10", MenuOpcode.CC_OP, 4),
-	WITHDRAW_X("Withdraw-X", MenuOpcode.CC_OP, 5),
-	WITHDRAW_ALL("Withdraw-All", MenuOpcode.CC_OP_LOW_PRIORITY, 7),
-	WITHDRAW_ALL_BUT_1("Withdraw-All-But-1", MenuOpcode.CC_OP_LOW_PRIORITY, 8),
-	OFF("Off", MenuOpcode.UNKNOWN, 0);
+	WITHDRAW_1("Withdraw-1"),
+	WITHDRAW_5("Withdraw-5"),
+	WITHDRAW_10("Withdraw-10"),
+	WITHDRAW_X("Withdraw-X"),
+	WITHDRAW_ALL("Withdraw-All"),
+	WITHDRAW_ALL_BUT_1("Withdraw-All-But-1"),
+	OFF("Off");
 
 	private final String name;
-	private final MenuOpcode menuOpcode;
-	private final int identifier;
 
 	@Override
 	public String toString()
