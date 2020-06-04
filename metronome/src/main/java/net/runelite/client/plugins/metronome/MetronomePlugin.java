@@ -110,6 +110,9 @@ public class MetronomePlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		tickCounter = 0;
+		tockCounter = 0;
+
 		if (tickClip != null)
 		{
 			tickClip.close();
