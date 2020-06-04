@@ -113,6 +113,11 @@ class DevToolsOverlay extends Overlay
 			renderPlayers(graphics);
 		}
 
+		if (plugin.getExtPlayers().isActive())
+		{
+			renderExtPlayers(graphics);
+		}
+
 		if (plugin.getNpcs().isActive())
 		{
 			renderNpcs(graphics);
@@ -153,16 +158,40 @@ class DevToolsOverlay extends Overlay
 
 		for (Player p : players)
 		{
-			if (!p.equals(local))
-			{
-				String text = p.getName() + " (A: " + p.getAnimation() + ") (G: " + p.getSpotAnimation() + ") (IDX: " + p.getPlayerId() + ")";
-				OverlayUtil.renderActorOverlay(graphics, p, text, BLUE);
-			}
+			String text = p.getName() + " (A: " + p.getAnimation() + ") (G: " + p.getSpotAnimation() + ") (IDX: " + p.getPlayerId() + ")";
+			OverlayUtil.renderActorOverlay(graphics, p, text, p == local ? CYAN : BLUE);
 		}
 
-		String text = local.getName() + " (A: " + local.getAnimation() + ") (G: " + local.getSpotAnimation() + ") (IDX: " + local.getPlayerId() + ")";
-		OverlayUtil.renderActorOverlay(graphics, local, text, CYAN);
 		renderPlayerWireframe(graphics, local, CYAN);
+	}
+
+	private void renderExtPlayers(Graphics2D graphics)
+	{
+		List<Player> players = client.getPlayers();
+		Player local = client.getLocalPlayer();
+
+		for (Player p : players)
+		{
+			String text =
+				"I:" + p.getIdleAnimation() +
+				" TL:" + p.getTurnLeftAnimation() +
+				" TR:" + p.getTurnRightAnimation() +
+				" W:" + p.getWalkAnimation() +
+				" WB:" + p.getWalkBackAnimation() +
+				" WL:" + p.getWalkLeftAnimation() +
+				" WR:" + p.getWalkRightAnimation() +
+				" R:" + p.getRunAnimation() +
+				" M:" + p.getMovementAnimation();
+
+			// cant use OverlayUtil.renderActorOverlay because that draws a poly
+			Point textLocation = p.getCanvasTextLocation(graphics, text, p.getLogicalHeight() + 40);
+			if (textLocation != null)
+			{
+				// move the location down so it doesn't overlap the normal player overlay
+				textLocation = textLocation.offset(0, graphics.getFontMetrics().getHeight() + 1);
+				OverlayUtil.renderTextLocation(graphics, textLocation, text, p == local ? CYAN : BLUE);
+			}
+		}
 	}
 
 	private void renderNpcs(Graphics2D graphics)
