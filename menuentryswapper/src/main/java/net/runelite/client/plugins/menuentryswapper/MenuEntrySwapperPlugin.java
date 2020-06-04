@@ -1043,7 +1043,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 		if (config.swapHomePortal())
 		{
-			menuManager.addPriorityEntry(config.swapHomePortalMode().toString(), "Portal").setPriority(100);
+			menuManager.addPriorityEntry(config.swapHomePortalMode().toString(), "Portal").setPriority(10);
 		}
 
 		if (config.swapHardWoodGrove())
