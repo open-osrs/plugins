@@ -152,6 +152,7 @@ public class PyramidPlunderPlugin extends Plugin
 	private boolean isInGame;
 
 	private boolean chestOpen;
+	private boolean sarcoOpen;
 	private int pyramidTimer;
 
 	@Provides
@@ -303,11 +304,16 @@ public class PyramidPlunderPlugin extends Plugin
 		int lastValue = pyramidTimer;
 		pyramidTimer = client.getVar(Varbits.PYRAMID_PLUNDER_TIMER);
 
-		boolean chestOpened = client.getVar(Varbits.PYRAMID_PLUNDER_CHEST_OPEN) == 1;
-		if (chestOpen != chestOpened)
+		boolean chestOpened = client.getVar(Varbits.PYRAMID_PLUNDER_CHEST_OPEN) == 1,
+			chestChanged = chestOpen != chestOpened;
+		boolean sarcoOpened = client.getVar(Varbits.PYRAMID_PLUNDER_SARCO_OPEN) == 1,
+			sarcoChanged = sarcoOpen != sarcoOpened;
+		if (chestChanged || sarcoChanged)
 		{
 			chestOpen = chestOpened;
-			if (config.chestCounter())
+			sarcoOpen = sarcoOpened;
+			if (config.chestCounter()
+				&& (chestChanged && chestOpen || sarcoChanged && sarcoOpen))
 			{
 				config.setChestCount(config.getChestCount() + 1);
 				counter.increment();
