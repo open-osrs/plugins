@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.pyramidplunder;
 
 import com.google.inject.Provides;
+import java.awt.image.BufferedImage;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +36,8 @@ import lombok.Getter;
 import net.runelite.api.Client;
 import static net.runelite.api.Constants.GAME_TICK_LENGTH;
 import static net.runelite.api.ItemID.PHARAOHS_SCEPTRE;
-import static net.runelite.api.ObjectID.SPEARTRAP_21280;
-import static net.runelite.api.ObjectID.TOMB_DOOR_20948;
-import static net.runelite.api.ObjectID.TOMB_DOOR_20949;
+import static net.runelite.api.ObjectID.*;
+import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
@@ -51,6 +51,7 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -59,7 +60,9 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.infobox.Counter;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+import net.runelite.client.ui.overlay.infobox.Timer;
 import org.pf4j.Extension;
 
 @Extension
@@ -77,6 +80,28 @@ public class PyramidPlunderPlugin extends Plugin
 	static final int TRAP = SPEARTRAP_21280;
 	static final int CLOSED_DOOR = TOMB_DOOR_20948;
 	static final int OPENED_DOOR = TOMB_DOOR_20949;
+
+	private static class PyramidPlunderTimer extends Timer
+	{
+		private PyramidPlunderTimer(final Plugin plugin, final BufferedImage image, final int period, final ChronoUnit chronoUnit)
+		{
+			super(period, chronoUnit, image, plugin);
+			setTooltip("Time left until minigame ends");
+		}
+	}
+
+	private static class PyramidChestCounter extends Counter
+	{
+		private PyramidChestCounter(final Plugin plugin, final BufferedImage image, final int count)
+		{
+			super(image, plugin, count);
+		}
+
+		private void increment()
+		{
+			setCount(getCount() + 1);
+		}
+	}
 
 	//	// Next 2 are in here for anyone who wants to spend more time on this
 //	private static final Set<Integer> LOOTABLE = ImmutableSet.of(
@@ -104,6 +129,9 @@ public class PyramidPlunderPlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private ClientThread clientThread;
+
+	@Inject
 	private PyramidPlunderConfig config;
 
 	@Inject
@@ -118,15 +146,38 @@ public class PyramidPlunderPlugin extends Plugin
 	@Inject
 	private PyramidPlunderOverlay pyramidPlunderOverlay;
 
+	private PyramidChestCounter counter;
+
 	@Getter
 	private boolean isInGame;
 
+	private boolean chestOpen;
+	private boolean sarcoOpen;
 	private int pyramidTimer;
 
 	@Provides
 	PyramidPlunderConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(PyramidPlunderConfig.class);
+	}
+
+	@Override
+	protected void startUp()
+	{
+		clientThread.invoke(() -> {
+			if (client.getGameState() != GameState.LOGGED_IN)
+			{
+				return;
+			}
+
+			int pyramidTimer = client.getVar(Varbits.PYRAMID_PLUNDER_TIMER);
+			if (pyramidTimer != 0)
+			{
+				isInGame = true;
+			}
+
+			updateCounter();
+		});
 	}
 
 	@Override
@@ -143,6 +194,11 @@ public class PyramidPlunderPlugin extends Plugin
 		if (!"pyramidplunder".equals(event.getGroup()))
 		{
 			return;
+		}
+
+		if ("chestCounter".equals(event.getKey()))
+		{
+			updateCounter();
 		}
 
 		if (!config.showTimer())
@@ -185,6 +241,29 @@ public class PyramidPlunderPlugin extends Plugin
 		);
 	}
 
+	private void updateCounter()
+	{
+		if (config.chestCounter() && isInGame)
+		{
+			counter = new PyramidChestCounter(
+				this,
+				itemManager.getImage(PHARAOHS_SCEPTRE),
+				config.getChestCount()
+			);
+
+			infoBoxManager.addInfoBox(counter);
+		}
+		else
+		{
+			removeCounter();
+		}
+	}
+
+	private void removeCounter()
+	{
+		infoBoxManager.removeIf(i -> i instanceof PyramidChestCounter);
+	}
+
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
@@ -225,6 +304,22 @@ public class PyramidPlunderPlugin extends Plugin
 		int lastValue = pyramidTimer;
 		pyramidTimer = client.getVar(Varbits.PYRAMID_PLUNDER_TIMER);
 
+		boolean chestOpened = client.getVar(Varbits.PYRAMID_PLUNDER_CHEST_OPEN) == 1,
+			chestChanged = chestOpen != chestOpened;
+		boolean sarcoOpened = client.getVar(Varbits.PYRAMID_PLUNDER_SARCO_OPEN) == 1,
+			sarcoChanged = sarcoOpen != sarcoOpened;
+		if (chestChanged || sarcoChanged)
+		{
+			chestOpen = chestOpened;
+			sarcoOpen = sarcoOpened;
+			if (config.chestCounter()
+				&& (chestChanged && chestOpen || sarcoChanged && sarcoOpen))
+			{
+				config.setChestCount(config.getChestCount() + 1);
+				counter.increment();
+			}
+		}
+
 		if (lastValue == pyramidTimer)
 		{
 			return;
@@ -238,8 +333,9 @@ public class PyramidPlunderPlugin extends Plugin
 
 		if (pyramidTimer == 1)
 		{
-			overlayManager.add(pyramidPlunderOverlay);
 			isInGame = true;
+			overlayManager.add(pyramidPlunderOverlay);
+			updateCounter();
 			if (config.showTimer())
 			{
 				showTimer();
@@ -251,6 +347,7 @@ public class PyramidPlunderPlugin extends Plugin
 	{
 		isInGame = false;
 		overlayManager.remove(pyramidPlunderOverlay);
+		updateCounter();
 		removeTimer();
 	}
 

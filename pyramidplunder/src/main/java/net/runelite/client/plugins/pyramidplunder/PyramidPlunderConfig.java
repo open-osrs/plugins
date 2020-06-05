@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018, Steffen Hauge <steffen.oerum.hauge@hotmail.com>
+ * Copyright (c) 2020, Lucas <https://github.com/Lucwousin>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,6 +81,37 @@ public interface PyramidPlunderConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		position = 11,
+		keyName = "chestCounter",
+		name = "Chest counter",
+		description = "Show a (persistent) chest opened counter",
+		titleSection = "overlaysTitle"
+	)
+	default boolean chestCounter()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "chestCount",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default int getChestCount()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "chestCount",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	void setChestCount(int value);
 
 	@ConfigTitleSection(
 		keyName = "highlightsTitle",
