@@ -26,7 +26,6 @@
  */
 package net.runelite.client.plugins.motherlode;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
@@ -51,12 +50,9 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuOpcode;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
 import static net.runelite.api.ObjectID.*;
 import net.runelite.api.Perspective;
 import net.runelite.api.Player;
-import net.runelite.api.ScriptID;
 import net.runelite.api.Varbits;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
@@ -70,13 +66,11 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.OverheadTextChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -704,38 +698,5 @@ public class MotherlodePlugin extends Plugin
 	boolean isUpstairs(LocalPoint localPoint)
 	{
 		return Perspective.getTileHeight(client, localPoint, 0) < UPPER_FLOOR_HEIGHT;
-	}
-
-
-	@Subscribe
-	private void onOverheadTextChanged(OverheadTextChanged event)
-	{
-		if (!config.payDirtMsg() || Strings.isNullOrEmpty(event.getOverheadText()) || !(event.getActor() instanceof NPC))
-		{
-			return;
-		}
-
-		switch (((NPC) event.getActor()).getId())
-		{
-			case NpcID.MINER_5606:
-			case NpcID.MINER_5813:
-			case NpcID.MINER_5814:
-			case NpcID.MINER_6565:
-			case NpcID.MINER_6567:
-			case NpcID.MINER_6568:
-			case NpcID.MINER_6569:
-			case NpcID.MINER_6570:
-			case NpcID.MINER_6571:
-			case NpcID.MINER_6572:
-			case NpcID.MINER_6645:
-				break;
-			default:
-				return;
-		}
-
-		if ("pay-dirt!".equals(Text.standardize(event.getOverheadText())))
-		{
-			client.runScript(ScriptID.PUBLICMSG, "Pay-dirt!");
-		}
 	}
 }
