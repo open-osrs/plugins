@@ -26,9 +26,6 @@
 package net.runelite.client.plugins.xptracker;
 
 import com.google.common.annotations.VisibleForTesting;
-
-import static com.google.common.base.MoreObjects.firstNonNull;
-
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -60,9 +57,6 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetID;
-
-import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
-
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.OverlayMenuClicked;
@@ -71,9 +65,6 @@ import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-
-import static net.runelite.client.plugins.xptracker.XpWorldType.NORMAL;
-
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -81,6 +72,9 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.xp.XpClient;
 import org.pf4j.Extension;
+import static com.google.common.base.MoreObjects.firstNonNull;
+import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
+import static net.runelite.client.plugins.xptracker.XpWorldType.NORMAL;
 
 @Extension
 @PluginDescriptor(
