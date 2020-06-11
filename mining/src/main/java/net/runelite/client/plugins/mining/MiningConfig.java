@@ -155,4 +155,43 @@ public interface MiningConfig extends Config
 		hidden = true
 	)
 	void amountOfCoalInCoalBag(int amount);
+
+	@ConfigTitleSection(
+		keyName = "other",
+		name = "Other",
+		description = "Other features",
+		position = 9
+	)
+	default Title other()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "highlightActiveDaeyaltEssence",
+		name = "Highlight active daeyalt essence",
+		description = "Overlay the active Daeyalt Essence with a colored outline.",
+		position = 10,
+		titleSection = "other"
+	)
+	default boolean highlightActiveDaeyaltEssence()
+	{
+		return false;
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "activeDaeyaltEssenceColor",
+		name = "Daeyalt outline color",
+		description = "Color of the outline.",
+		titleSection = "other",
+		hidden = true,
+		unhide = "highlightActiveDaeyaltEssence",
+		position = 11
+
+	)
+	default Color activeDaeyaltEssenceColor()
+	{
+		return Color.BLUE;
+	}
 }

@@ -38,6 +38,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 @Singleton
@@ -72,6 +73,11 @@ class MiningOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		if (config.highlightActiveDaeyaltEssence() && plugin.getActiveDaeyaltEssence() != null)
+		{
+			OverlayUtil.renderOutlinePolygon(graphics, plugin.getActiveDaeyaltEssence().getConvexHull(), config.activeDaeyaltEssenceColor());
+		}
+
 		List<RockRespawn> respawns = plugin.getRespawns();
 		if (respawns.isEmpty())
 		{
@@ -127,7 +133,9 @@ class MiningOverlay extends Overlay
 			ppc.setPosition(point);
 			ppc.setProgress(percent);
 			ppc.render(graphics);
+
 		}
+
 		return null;
 	}
 

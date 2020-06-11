@@ -63,9 +63,11 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.WallObjectSpawned;
+import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -95,6 +97,9 @@ public class MiningPlugin extends Plugin
 	private static final String FILL_OPTION = "fill";
 	private static final String EMPTY_OPTION = "empty";
 
+	private static final int ACTIVE_DAEYALT_ESSENCE = 39095;
+	private static final int DAEYALT_ESSENCE_REGION = 14744;
+
 	@Inject
 	private Client client;
 
@@ -110,15 +115,26 @@ public class MiningPlugin extends Plugin
 	@Inject
 	private MiningConfig config;
 
+	@Inject
+	private GameObjectQuery gameObjectQuery;
+
 	@Getter(AccessLevel.PACKAGE)
 	private final List<RockRespawn> respawns = new ArrayList<>();
 	private boolean recentlyLoggedIn;
+
+	@Getter
+	private GameObject activeDaeyaltEssence = null;
 
 	@Override
 	protected void startUp()
 	{
 		overlayManager.add(miningOverlay);
 		overlayManager.add(coalBagOverlay);
+
+		if (config.highlightActiveDaeyaltEssence() && isAtDaeyaltEssence())
+		{
+			locateActiveDaeyaltEssence();
+		}
 	}
 
 	@Override
@@ -127,12 +143,37 @@ public class MiningPlugin extends Plugin
 		overlayManager.remove(miningOverlay);
 		overlayManager.remove(coalBagOverlay);
 		respawns.clear();
+		activeDaeyaltEssence = null;
 	}
 
 	@Provides
 	MiningConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(MiningConfig.class);
+	}
+
+	@Subscribe
+	private void onConfigChanged(ConfigChanged event)
+	{
+		if (!event.getGroup().equals("mining"))
+		{
+			return;
+		}
+
+		if (event.getKey().equals("highlightActiveDaeyaltEssence"))
+		{
+			if (config.highlightActiveDaeyaltEssence())
+			{
+				if (isAtDaeyaltEssence())
+				{
+					locateActiveDaeyaltEssence();
+				}
+			}
+			else
+			{
+				activeDaeyaltEssence = null;
+			}
+		}
 	}
 
 	@Subscribe
@@ -148,6 +189,11 @@ public class MiningPlugin extends Plugin
 				// so wait for the next game tick before watching for
 				// rocks to deplete
 				recentlyLoggedIn = true;
+
+				if (activeDaeyaltEssence != null && !isAtDaeyaltEssence())
+				{
+					activeDaeyaltEssence = null;
+				}
 				break;
 		}
 	}
@@ -168,6 +214,13 @@ public class MiningPlugin extends Plugin
 		}
 
 		final GameObject object = event.getGameObject();
+
+		if (object == activeDaeyaltEssence)
+		{
+			activeDaeyaltEssence = null;
+			return;
+		}
+
 		final int region = client.getLocalPlayer().getWorldLocation().getRegionID();
 
 		Rock rock = Rock.getRock(object.getId());
@@ -187,6 +240,12 @@ public class MiningPlugin extends Plugin
 		}
 
 		GameObject object = event.getGameObject();
+
+		if (object.getId() == ACTIVE_DAEYALT_ESSENCE)
+		{
+			activeDaeyaltEssence = object;
+			return;
+		}
 
 		// If the Lovakite ore respawns before the timer is up, remove it
 		if (Rock.getRock(object.getId()) == Rock.LOVAKITE)
@@ -314,5 +373,22 @@ public class MiningPlugin extends Plugin
 	private boolean inMiningGuild()
 	{
 		return client.getLocalPlayer().getWorldLocation().getRegionID() == MINING_GUILD_REGION;
+	}
+
+	private boolean isAtDaeyaltEssence()
+	{
+		return client.getLocalPlayer().getWorldLocation().getRegionID() == DAEYALT_ESSENCE_REGION;
+	}
+
+	private void locateActiveDaeyaltEssence()
+	{
+		for (GameObject gameObject : gameObjectQuery.result(client))
+		{
+			if (gameObject.getId() == ACTIVE_DAEYALT_ESSENCE)
+			{
+				activeDaeyaltEssence = gameObject;
+				break;
+			}
+		}
 	}
 }
