@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.11"
+version = "0.0.12"
 
 project.extra["PluginName"] = "Discord"
 project.extra["PluginDescription"] = "Show your status and activity in the Discord user panel"

@@ -25,10 +25,10 @@
  */
 package net.runelite.client.plugins.banktags.tabs;
 
-import com.google.common.base.MoreObjects;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -78,7 +78,7 @@ class TabManager
 
 	List<String> getAllTabs()
 	{
-		return Text.fromCSV(MoreObjects.firstNonNull(configManager.getConfiguration(CONFIG_GROUP, TAG_TABS_CONFIG), ""));
+		return Text.fromCSV(Objects.requireNonNullElse(configManager.getConfiguration(CONFIG_GROUP, TAG_TABS_CONFIG), ""));
 	}
 
 	TagTab load(String tag)

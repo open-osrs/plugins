@@ -24,12 +24,12 @@
  */
 package net.runelite.client.plugins.discord;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -172,8 +172,8 @@ class DiscordState
 		final String versionShortHand = RuneLiteProperties.getVersion().replace("-SNAPSHOT", "+");
 
 		final DiscordPresence.DiscordPresenceBuilder presenceBuilder = DiscordPresence.builder()
-			.state(MoreObjects.firstNonNull(state, ""))
-			.details(MoreObjects.firstNonNull(details, ""))
+			.state(Objects.requireNonNullElse(state, ""))
+			.details(Objects.requireNonNullElse(details, ""))
 			.largeImageText(RuneLiteProperties.getTitle() + " v" + versionShortHand)
 			.startTimestamp(config.hideElapsedTime() ? null : event.getStart())
 			.smallImageKey(imageKey)

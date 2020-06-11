@@ -37,9 +37,9 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -1569,7 +1569,7 @@ public class LootTrackerPlugin extends Plugin
 	{
 		try
 		{
-			Collection<LootRecord> lootRecords = new ArrayList<>(RuneLiteAPI.GSON.fromJson(new FileReader(LOOT_RECORDS_FILE),
+			Collection<LootRecord> lootRecords = new ArrayList<>(RuneLiteAPI.GSON.fromJson(new FileReader(LOOT_RECORDS_FILE, StandardCharsets.UTF_8),
 				new TypeToken<ArrayList<LootRecord>>()
 				{
 				}.getType()));
@@ -1582,7 +1582,7 @@ public class LootTrackerPlugin extends Plugin
 				addLootRecord(dslContext, lootRecord);
 			}
 		}
-		catch (FileNotFoundException e)
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}

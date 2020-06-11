@@ -26,7 +26,6 @@
  */
 package net.runelite.client.plugins.cluescrolls;
 
-import com.google.common.base.MoreObjects;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import java.awt.Color;
@@ -1011,7 +1010,7 @@ public class ClueScrollPlugin extends Plugin
 
 	void highlightWidget(Graphics2D graphics, Widget toHighlight, Widget container, Rectangle padding, String text)
 	{
-		padding = MoreObjects.firstNonNull(padding, new Rectangle());
+		padding = Objects.requireNonNullElse(padding, new Rectangle());
 
 		Point canvasLocation = toHighlight.getCanvasLocation();
 

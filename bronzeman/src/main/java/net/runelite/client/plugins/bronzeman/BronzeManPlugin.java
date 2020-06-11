@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -653,7 +654,7 @@ public class BronzeManPlugin extends Plugin
 			}
 			else
 			{
-				BufferedReader r = new BufferedReader(new FileReader(playerFile));
+				BufferedReader r = new BufferedReader(new FileReader(playerFile, StandardCharsets.UTF_8));
 				String l;
 				while ((l = r.readLine()) != null)
 				{
