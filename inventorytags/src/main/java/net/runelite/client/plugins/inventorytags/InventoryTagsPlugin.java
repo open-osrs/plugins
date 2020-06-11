@@ -24,10 +24,10 @@
  */
 package net.runelite.client.plugins.inventorytags;
 
-import com.google.common.base.MoreObjects;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.List;
+import java.util.Objects;
 import javax.inject.Inject;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
@@ -222,7 +222,7 @@ public class InventoryTagsPlugin extends Plugin
 				final MenuEntry newMenu = new MenuEntry();
 				final Color color = getGroupNameColor(groupName);
 				newMenu.setOption(groupName.equals(group) ? MENU_REMOVE : MENU_SET);
-				newMenu.setTarget(ColorUtil.prependColorTag(groupName, MoreObjects.firstNonNull(color, Color.WHITE)));
+				newMenu.setTarget(ColorUtil.prependColorTag(groupName, Objects.requireNonNullElse(color, Color.WHITE)));
 				newMenu.setIdentifier(itemId);
 				newMenu.setParam1(widgetId);
 				newMenu.setOpcode(MenuOpcode.RUNELITE.getId());

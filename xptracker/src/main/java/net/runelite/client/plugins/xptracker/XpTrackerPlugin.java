@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.xptracker;
 
 import com.google.common.annotations.VisibleForTesting;
-import static com.google.common.base.MoreObjects.firstNonNull;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
@@ -196,8 +195,8 @@ public class XpTrackerPlugin extends Plugin
 				// Reset
 				log.debug("World change: {} -> {}, {} -> {}",
 					lastUsername, client.getUsername(),
-					firstNonNull(lastWorldType, "<unknown>"),
-					firstNonNull(type, "<unknown>"));
+					Objects.requireNonNullElse(lastWorldType, "<unknown>"),
+					Objects.requireNonNullElse(type, "<unknown>"));
 
 				lastUsername = client.getUsername();
 				// xp is not available until after login is finished, so fetch it on the next gametick
