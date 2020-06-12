@@ -424,7 +424,6 @@ public class GrandExchangePlugin extends Plugin
 			grandExchangeTrade.setBuy(state == GrandExchangeOfferState.BUYING);
 			grandExchangeTrade.setItemId(offer.getItemId());
 			grandExchangeTrade.setTotal(offer.getTotalQuantity());
-			grandExchangeTrade.setSpent(0);
 			grandExchangeTrade.setOffer(offer.getPrice());
 			grandExchangeTrade.setSlot(slot);
 			grandExchangeTrade.setWorldType(getGeWorldType());
@@ -480,7 +479,8 @@ public class GrandExchangePlugin extends Plugin
 		grandExchangeTrade.setQty(offer.getQuantitySold());
 		grandExchangeTrade.setDqty(qty);
 		grandExchangeTrade.setTotal(offer.getTotalQuantity());
-		grandExchangeTrade.setSpent(dspent);
+		grandExchangeTrade.setDspent(dspent);
+		grandExchangeTrade.setSpent(offer.getSpent());
 		grandExchangeTrade.setOffer(offer.getPrice());
 		grandExchangeTrade.setSlot(slot);
 		grandExchangeTrade.setWorldType(getGeWorldType());

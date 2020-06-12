@@ -30,6 +30,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import static net.runelite.api.ItemID.BLADE_OF_SAELDOR;
 import static net.runelite.api.ItemID.COINS_995;
+import static net.runelite.api.ItemID.HEALER_ICON_20802;
+import static net.runelite.api.ItemID.HEALER_ICON_22308;
 import static net.runelite.api.ItemID.SANGUINESTI_STAFF;
 import static net.runelite.api.ItemID.SCYTHE_OF_VITUR;
 import static net.runelite.api.ItemID.TRIDENT_OF_THE_SEAS;
@@ -51,6 +53,7 @@ public enum ItemType
 	JEWELLERY("Jewellery"),
 	CHARGES("Charges"),
 	FARMING("Farming"),
+	DEATH("Deaths"),
 	PRAYER("Prayer");
 
 	@Getter(AccessLevel.PUBLIC)
@@ -71,15 +74,16 @@ public enum ItemType
 			return ItemType.POTION;
 		}
 		else if ((item.getName().toLowerCase().contains("bones") && !item.getName().toLowerCase().contains(" to ")) ||
-				item.getName().toLowerCase().contains("ensouled"))
+			item.getName().toLowerCase().contains("ensouled"))
 		{
 			return ItemType.PRAYER;
 		}
 		else if (item.getName().toLowerCase().contains("bolt") || item.getName().toLowerCase().contains("dart")
-				|| item.getName().toLowerCase().contains(" arrow") || item.getName().toLowerCase().contains("javelin")
-				|| item.getName().toLowerCase().contains("knive") || item.getName().toLowerCase().contains("throwing")
-				|| item.getName().toLowerCase().contains("zulrah's scale") || item.getName().toLowerCase().contains("cannonball")
-				|| item.getName().toLowerCase().contains("knife") || item.getName().toLowerCase().contains("chinchompa"))
+			|| item.getName().toLowerCase().contains(" arrow") || item.getName().toLowerCase().contains("javelin")
+			|| item.getName().toLowerCase().contains("knive") || item.getName().toLowerCase().contains("throwing")
+			|| item.getName().toLowerCase().contains("zulrah's scale") || item.getName().toLowerCase().contains("cannonball")
+			|| item.getName().toLowerCase().contains("knife") || item.getName().toLowerCase().contains("chinchompa")
+			|| item.getName().toLowerCase().contains("thrownaxe"))
 		{
 			return ItemType.AMMO;
 		}
@@ -96,20 +100,24 @@ public enum ItemType
 			return ItemType.COINS;
 		}
 		else if (item.getName().toLowerCase().contains("ring of") || item.getName().toLowerCase().contains("amulet") ||
-				item.getName().toLowerCase().contains("bracelet") || item.getName().toLowerCase().contains("necklace"))
+			item.getName().toLowerCase().contains("bracelet") || item.getName().toLowerCase().contains("necklace"))
 		{
 			return ItemType.JEWELLERY;
 		}
 		else if (item.getName().toLowerCase().contains(" sapling") || item.getName().toLowerCase().contains(" seed") ||
-				item.getName().toLowerCase().contains("compost") || item.getName().toLowerCase().contains("plant cure"))
+			item.getName().toLowerCase().contains("compost") || item.getName().toLowerCase().contains("plant cure"))
 		{
 			return ItemType.FARMING;
 		}
 		else if (item.getId() == SCYTHE_OF_VITUR || item.getId() == SANGUINESTI_STAFF ||
-				item.getId() == TRIDENT_OF_THE_SEAS || item.getId() == TRIDENT_OF_THE_SWAMP ||
-				item.getId() == BLADE_OF_SAELDOR)
+			item.getId() == TRIDENT_OF_THE_SEAS || item.getId() == TRIDENT_OF_THE_SWAMP ||
+			item.getId() == BLADE_OF_SAELDOR)
 		{
 			return ItemType.CHARGES;
+		}
+		else if (item.getId() == HEALER_ICON_20802 || item.getId() == HEALER_ICON_22308)
+		{
+			return ItemType.DEATH;
 		}
 		return ItemType.FOOD;
 	}

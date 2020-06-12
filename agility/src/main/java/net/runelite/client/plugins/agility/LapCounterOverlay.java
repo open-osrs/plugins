@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
@@ -42,6 +43,8 @@ import net.runelite.client.ui.overlay.components.table.TableComponent;
 @Singleton
 class LapCounterOverlay extends OverlayPanel
 {
+	static final String AGILITY_RESET = "Reset";
+
 	private final AgilityConfig config;
 	private final AgilityPlugin plugin;
 
@@ -54,6 +57,8 @@ class LapCounterOverlay extends OverlayPanel
 		this.config = config;
 		this.plugin = plugin;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Agility overlay"));
+		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY, AGILITY_RESET, "Agility overlay"));
+
 	}
 
 	@Override

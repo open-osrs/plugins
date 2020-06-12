@@ -54,6 +54,9 @@ class FarmingWorld
 		.thenComparing((FarmingPatch p) -> p.getRegion().getName())
 		.thenComparing(FarmingPatch::getName);
 
+	@Getter
+	private final FarmingRegion farmingGuildRegion;
+
 	FarmingWorld()
 	{
 		ImmutableMap.Builder<Integer, FarmingRegion> regionBuilder = ImmutableMap.builderWithExpectedSize(40);
@@ -233,7 +236,7 @@ class FarmingWorld
 			new FarmingPatch("Hespori", Varbits.FARMING_7908, PatchImplementation.HESPORI)
 		));
 
-		add(regionBuilder, new FarmingRegion("Farming Guild", 4922,
+		add(regionBuilder, farmingGuildRegion = new FarmingRegion("Farming Guild", 4922,
 			new FarmingPatch("", Varbits.FARMING_7905, PatchImplementation.TREE),
 			new FarmingPatch("", Varbits.FARMING_4775, PatchImplementation.HERB),
 			new FarmingPatch("", Varbits.FARMING_4772, PatchImplementation.BUSH),
