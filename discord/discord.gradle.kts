@@ -23,13 +23,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.12"
+version = "0.0.13"
 
 project.extra["PluginName"] = "Discord"
 project.extra["PluginDescription"] = "Show your status and activity in the Discord user panel"
 
 dependencies {
-    compileOnly(group = "net.runelite", name = "discord", version = "1.1")
+    compileOnly(group = "net.runelite", name = "discord", version = "1.2")
 }
 
 tasks {
