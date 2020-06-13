@@ -33,9 +33,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.widgets.Widget;
@@ -51,11 +53,13 @@ import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.CONFIG
 import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.STOPWATCHES;
 import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.TIMERS;
 import net.runelite.client.plugins.timetracking.clocks.ClockManager;
+import net.runelite.client.plugins.timetracking.farming.FarmingContractManager;
 import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
 import net.runelite.client.plugins.timetracking.hunter.BirdHouseTracker;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
 
@@ -68,6 +72,8 @@ import org.pf4j.Extension;
 )
 public class TimeTrackingPlugin extends Plugin
 {
+	private static final String CONTRACT_COMPLETED = "You've completed a Farming Guild Contract. You should return to Guildmaster Jane.";
+
 	@Inject
 	private ClientToolbar clientToolbar;
 
@@ -81,6 +87,9 @@ public class TimeTrackingPlugin extends Plugin
 	private BirdHouseTracker birdHouseTracker;
 
 	@Inject
+	private FarmingContractManager farmingContractManager;
+
+	@Inject
 	private ClockManager clockManager;
 
 	@Inject
@@ -88,6 +97,9 @@ public class TimeTrackingPlugin extends Plugin
 
 	@Inject
 	private TimeTrackingConfig config;
+
+	@Inject
+	private InfoBoxManager infoBoxManager;
 
 	@Inject
 	private ScheduledExecutorService executorService;
@@ -118,7 +130,7 @@ public class TimeTrackingPlugin extends Plugin
 
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "/net/runelite/client/plugins/timetracking/watch.png");
 
-		panel = new TimeTrackingPanel(itemManager, config, farmingTracker, birdHouseTracker, clockManager);
+		panel = new TimeTrackingPanel(itemManager, config, farmingTracker, birdHouseTracker, clockManager, farmingContractManager);
 
 		navButton = NavigationButton.builder()
 			.tooltip("Time Tracking")
@@ -145,6 +157,8 @@ public class TimeTrackingPlugin extends Plugin
 		}
 
 		clientToolbar.removeNavigation(navButton);
+		infoBoxManager.removeInfoBox(farmingContractManager.getInfoBox());
+		farmingContractManager.setInfoBox(null);
 	}
 
 	@Subscribe
@@ -198,8 +212,9 @@ public class TimeTrackingPlugin extends Plugin
 
 		boolean birdHouseDataChanged = birdHouseTracker.updateData(loc);
 		boolean farmingDataChanged = farmingTracker.updateData(loc);
+		boolean farmingContractDataChanged = farmingContractManager.updateData(loc);
 
-		if (birdHouseDataChanged || farmingDataChanged)
+		if (birdHouseDataChanged || farmingDataChanged || farmingContractDataChanged)
 		{
 			panel.update();
 		}
@@ -210,10 +225,22 @@ public class TimeTrackingPlugin extends Plugin
 	{
 		farmingTracker.loadCompletionTimes();
 		birdHouseTracker.loadFromConfig();
+		farmingContractManager.loadContractFromConfig();
 		if (panel != null)
 		{
 			panel.update();
 		}
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage event)
+	{
+		if (event.getType() != ChatMessageType.GAMEMESSAGE || !event.getMessage().equals(CONTRACT_COMPLETED))
+		{
+			return;
+		}
+
+		farmingContractManager.setContract(null);
 	}
 
 	@Schedule(period = 10, unit = ChronoUnit.SECONDS)

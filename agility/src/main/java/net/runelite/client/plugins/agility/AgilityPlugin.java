@@ -29,8 +29,10 @@ import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,6 +41,8 @@ import net.runelite.api.ItemID;
 import static net.runelite.api.ItemID.AGILITY_ARENA_TICKET;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.NPC;
+import net.runelite.api.NullNpcID;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import static net.runelite.api.Skill.AGILITY;
@@ -61,6 +65,8 @@ import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.MenuOpened;
+import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
@@ -70,12 +76,14 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.game.AgilityShortcut;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ColorUtil;
 import org.pf4j.Extension;
@@ -84,12 +92,16 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Agility",
 	description = "Show helpful information about agility courses and obstacles",
-	tags = {"grace", "marks", "overlay", "shortcuts", "skilling", "traps"},
+	tags = {"grace", "marks", "overlay", "shortcuts", "skilling", "traps", "sepulchre"},
 	type = PluginType.SKILLING
 )
 public class AgilityPlugin extends Plugin
 {
 	private static final int AGILITY_ARENA_REGION_ID = 11157;
+	private static final Set<Integer> SEPULCHRE_NPCS = Set.of(
+		NullNpcID.NULL_9672, NullNpcID.NULL_9673, NullNpcID.NULL_9674,  // arrows
+		NullNpcID.NULL_9669, NullNpcID.NULL_9670, NullNpcID.NULL_9671   // swords
+	);
 	private static final Object MENU_SUBS = new Object();
 
 	@Getter(AccessLevel.PACKAGE)
@@ -97,7 +109,10 @@ public class AgilityPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private final List<Tile> marksOfGrace = new ArrayList<>();
-	
+
+	@Getter(AccessLevel.PACKAGE)
+	private final Set<NPC> npcs = new HashSet<>();
+
 	@Getter(AccessLevel.PACKAGE)
 	private Tile stickTile;
 
@@ -168,12 +183,25 @@ public class AgilityPlugin extends Plugin
 		session = null;
 		agilityLevel = 0;
 		stickTile = null;
+		npcs.clear();
 	}
 
 	private void addMenuSubscriptions()
 	{
 		eventBus.subscribe(BeforeRender.class, MENU_SUBS, this::onBeforeRender);
 		eventBus.subscribe(MenuOpened.class, MENU_SUBS, this::onMenuOpened);
+	}
+
+	@Subscribe
+	public void onOverlayMenuClicked(OverlayMenuClicked overlayMenuClicked)
+	{
+		OverlayMenuEntry overlayMenuEntry = overlayMenuClicked.getEntry();
+		if (overlayMenuEntry.getMenuOpcode() == MenuOpcode.RUNELITE_OVERLAY
+			&& overlayMenuClicked.getOverlay() == lapCounterOverlay
+			&& overlayMenuClicked.getEntry().getOption().equals(LapCounterOverlay.AGILITY_RESET))
+		{
+			session = null;
+		}
 	}
 
 	@Subscribe
@@ -186,6 +214,7 @@ public class AgilityPlugin extends Plugin
 				session = null;
 				lastArenaTicketPosition = null;
 				removeAgilityArenaTimer();
+				npcs.clear();
 				break;
 			case LOADING:
 				marksOfGrace.clear();
@@ -287,7 +316,7 @@ public class AgilityPlugin extends Plugin
 		{
 			marksOfGrace.add(tile);
 		}
-		
+
 		if (item.getId() == ItemID.STICK)
 		{
 			stickTile = tile;
@@ -299,9 +328,9 @@ public class AgilityPlugin extends Plugin
 	{
 		final TileItem item = itemDespawned.getItem();
 		final Tile tile = itemDespawned.getTile();
-		
+
 		marksOfGrace.remove(tile);
-		
+
 		if (item.getId() == ItemID.STICK && stickTile == tile)
 		{
 			stickTile = null;
@@ -528,5 +557,23 @@ public class AgilityPlugin extends Plugin
 		}
 
 		return false;
+	}
+
+	@Subscribe
+	public void onNpcSpawned(NpcSpawned npcSpawned)
+	{
+		NPC npc = npcSpawned.getNpc();
+
+		if (SEPULCHRE_NPCS.contains(npc.getId()))
+		{
+			npcs.add(npc);
+		}
+	}
+
+	@Subscribe
+	public void onNpcDespawned(NpcDespawned npcDespawned)
+	{
+		NPC npc = npcDespawned.getNpc();
+		npcs.remove(npc);
 	}
 }

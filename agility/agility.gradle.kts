@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.13"
+version = "0.0.15"
 
 project.extra["PluginName"] = "Agility"
 project.extra["PluginDescription"] = "Show helpful information about agility courses and obstacles"

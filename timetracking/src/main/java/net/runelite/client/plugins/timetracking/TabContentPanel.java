@@ -42,7 +42,7 @@ public abstract class TabContentPanel extends JPanel
 
 	public abstract void update();
 
-	protected static String getFormattedEstimate(long remainingSeconds, boolean useRelativeTime)
+	public static String getFormattedEstimate(long remainingSeconds, boolean useRelativeTime)
 	{
 		if (useRelativeTime)
 		{

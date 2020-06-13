@@ -123,17 +123,25 @@ public interface NpcIndicatorsConfig extends Config
 
 	@ConfigItem(
 		position = 7,
-		keyName = "highlightDeadNPCs",
-		name = "Highlight dead NPCs",
-		description = "Highlight dead NPCs"
+		keyName = "ignoreDeadNpcs",
+		name = "Ignore dead NPCs",
+		description = "Prevents highlighting NPCs after they are dead"
 	)
-	default boolean highlightDeadNpcs()
+	default boolean ignoreDeadNpcs()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
 		position = 8,
+		keyName = "deadNpcMenuColor",
+		name = "Dead NPC menu color",
+		description = "Color of the NPC menus for dead NPCs"
+	)
+	Color deadNpcMenuColor();
+
+	@ConfigItem(
+		position = 9,
 		keyName = "showRespawnTimer",
 		name = "Show respawn timer",
 		description = "Show respawn timer of tagged NPCs"
@@ -144,7 +152,7 @@ public interface NpcIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 9,
+		position = 10,
 		keyName = "notifyOnRespawn",
 		name = "Notify on Respawn",
 		description = "Enable notification on respawn"
@@ -155,7 +163,7 @@ public interface NpcIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 10,
+		position = 11,
 		keyName = "notifyOnRespawnDelay",
 		name = "Notification Delay",
 		description = "Notify when NPC is x ms from respawning"

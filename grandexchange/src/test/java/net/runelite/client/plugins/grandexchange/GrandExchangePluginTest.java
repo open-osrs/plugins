@@ -137,6 +137,7 @@ public class GrandExchangePluginTest
 	@Test
 	public void testSubmitTrade()
 	{
+		// 1 @ 25
 		SavedOffer savedOffer = new SavedOffer();
 		savedOffer.setItemId(ItemID.ABYSSAL_WHIP);
 		savedOffer.setQuantitySold(1);
@@ -164,7 +165,8 @@ public class GrandExchangePluginTest
 		assertEquals(ItemID.ABYSSAL_WHIP, trade.getItemId());
 		assertEquals(2, trade.getDqty());
 		assertEquals(10, trade.getTotal());
-		assertEquals(20, trade.getSpent());
+		assertEquals(45, trade.getSpent());
+		assertEquals(20, trade.getDspent());
 	}
 
 	@Test

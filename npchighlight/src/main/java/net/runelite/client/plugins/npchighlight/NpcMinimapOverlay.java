@@ -67,7 +67,7 @@ public class NpcMinimapOverlay extends Overlay
 	{
 		NPCDefinition npcDefinition = actor.getTransformedDefinition();
 		if (npcDefinition == null || !npcDefinition.isInteractible()
-			|| (actor.isDead() && !config.highlightDeadNpcs()))
+			|| (actor.isDead() && config.ignoreDeadNpcs()))
 		{
 			return;
 		}

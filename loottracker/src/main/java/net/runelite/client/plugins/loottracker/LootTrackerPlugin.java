@@ -534,7 +534,7 @@ public class LootTrackerPlugin extends Plugin
 			return;
 		}
 
-		if (event.getGameState() == GameState.LOADING)
+		if (event.getGameState() == GameState.LOADING && !client.isInInstancedRegion())
 		{
 			chestLooted = false;
 		}

@@ -27,6 +27,7 @@ package net.runelite.client.plugins.npchighlight;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
+import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -263,7 +264,7 @@ public class NpcIndicatorsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged configChanged)
+	void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (!configChanged.getGroup().equals("npcindicators"))
 		{
@@ -284,7 +285,7 @@ public class NpcIndicatorsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onMenuEntryAdded(MenuEntryAdded event)
+	void onMenuEntryAdded(MenuEntryAdded event)
 	{
 		int type = event.getOpcode();
 
@@ -293,14 +294,29 @@ public class NpcIndicatorsPlugin extends Plugin
 			type -= MENU_ACTION_DEPRIORITIZE_OFFSET;
 		}
 
-		if (config.highlightMenuNames() &&
-			NPC_MENU_ACTIONS.contains(MenuOpcode.of(type)) &&
-			highlightedNpcs.stream().anyMatch(npc -> npc.getIndex() == event.getIdentifier() &&
-				(!npc.isDead() || config.highlightDeadNpcs())))
+		final MenuOpcode menuOpcode = MenuOpcode.of(type);
+
+		if (NPC_MENU_ACTIONS.contains(menuOpcode))
 		{
-			final String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), config.getHighlightColor());
-			event.setTarget(target);
-			event.setModified();
+			NPC npc = client.getCachedNPCs()[event.getIdentifier()];
+
+			Color color = null;
+			if (npc.isDead())
+			{
+				color = config.deadNpcMenuColor();
+			}
+
+			if (color == null && highlightedNpcs.contains(npc) && config.highlightMenuNames() && (!npc.isDead() || !config.ignoreDeadNpcs()))
+			{
+				color = config.getHighlightColor();
+			}
+
+			if (color != null)
+			{
+				final String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), color);
+				event.setTarget(target);
+				event.setModified();
+			}
 		}
 		else if (hotKeyPressed && type == MenuOpcode.EXAMINE_NPC.getId())
 		{
@@ -355,7 +371,7 @@ public class NpcIndicatorsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onNpcSpawned(NpcSpawned npcSpawned)
+	void onNpcSpawned(NpcSpawned npcSpawned)
 	{
 		NPC npc = npcSpawned.getNpc();
 		highlightNpcIfMatch(npc);

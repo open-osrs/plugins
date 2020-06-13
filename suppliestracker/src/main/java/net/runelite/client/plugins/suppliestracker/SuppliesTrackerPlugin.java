@@ -1036,6 +1036,15 @@ public class SuppliesTrackerPlugin extends Plugin
 			{
 				buildChargesEntries(BURNING_AMULET5);
 			}
+			else if (event.getMessage().contains("A magical chest")
+				&& event.getMessage().contains("outside the Theatre of Blood"))
+			{
+				buildEntries(HEALER_ICON_20802);
+			}
+			else if (event.getMessage().contains("Torfinn has retrieved some of your items."))
+			{
+				buildEntries(HEALER_ICON_22308);
+			}
 		}
 	}
 
