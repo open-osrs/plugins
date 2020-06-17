@@ -239,7 +239,7 @@ public class NpcSceneOverlay extends Overlay
 				LocalPoint localPoint = LocalPoint.fromWorld(this.client, actor.getWorldLocation());
 				localPoint = new LocalPoint(localPoint.getX() + size * 128 / 2 - 64, localPoint.getY() + size * 128 / 2 - 64);
 				final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, localPoint, size);
-				renderPoly(graphics, color, tilePoly,1);
+				renderPoly(graphics, color, tilePoly, 1);
 				break;
 			}
 		}
