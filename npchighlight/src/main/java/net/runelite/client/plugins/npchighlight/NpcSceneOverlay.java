@@ -228,7 +228,7 @@ public class NpcSceneOverlay extends Overlay
 				renderPoly(graphics, color, tilePoly);
 				break;
 			}
-			case TRUE_LOCATIONS_THIN:
+			case THIN_TRUE_LOCATIONS:
 			{
 				int size = 1;
 				NPCDefinition composition = actor.getTransformedDefinition();
