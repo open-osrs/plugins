@@ -22,13 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.clanchat;
+package net.runelite.client.plugins.friendschat;
 
 import lombok.Value;
 import net.runelite.api.MessageNode;
 
 @Value
-class ClanJoinMessage
+class MemberJoinMessage
 {
 	private final MessageNode messageNode;
 	private final int getMessageId;

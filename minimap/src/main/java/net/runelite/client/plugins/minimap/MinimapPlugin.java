@@ -185,7 +185,7 @@ public class MinimapPlugin extends Plugin
 					config.playerColor(),
 					config.friendColor(),
 					config.teamColor(),
-					config.clanColor()
+					config.friendsChatColor()
 				};
 		}
 		return colors;

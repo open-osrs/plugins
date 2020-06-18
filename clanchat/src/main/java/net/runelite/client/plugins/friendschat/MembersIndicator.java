@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, trimbe <github.com/trimbe>
+ * Copyright (c) 2018 Sebastiaan <https://github.com/SebastiaanVanspauwen>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,10 +22,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.clanchat;
+package net.runelite.client.plugins.friendschat;
 
-enum ClanActivityType
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import javax.inject.Singleton;
+import net.runelite.client.ui.overlay.infobox.Counter;
+
+@Singleton
+class MembersIndicator extends Counter
 {
-	JOINED,
-	LEFT
+	private final FriendsChatPlugin plugin;
+
+	MembersIndicator(final BufferedImage image, final FriendsChatPlugin plugin)
+	{
+		super(image, plugin, plugin.getMembersSize());
+		this.plugin = plugin;
+	}
+
+	@Override
+	public int getCount()
+	{
+		return plugin.getMembersSize();
+	}
+
+	@Override
+	public String getTooltip()
+	{
+		return plugin.getMembersSize() + " friends chat member(s) near you";
+	}
+
+	@Override
+	public Color getTextColor()
+	{
+		return Color.WHITE;
+	}
 }

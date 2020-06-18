@@ -40,7 +40,7 @@ import net.runelite.api.Point;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import net.runelite.api.kit.KitType;
-import net.runelite.client.game.ClanManager;
+import net.runelite.client.game.FriendChatManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
@@ -68,7 +68,7 @@ public class PlayerIndicatorsOverlay extends Overlay
 	private Client client;
 
 	@Inject
-	private ClanManager clanManager;
+	private FriendChatManager friendChatManager;
 
 	@Inject
 	public PlayerIndicatorsOverlay(PlayerIndicatorsPlugin plugin, PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService)
@@ -122,11 +122,11 @@ public class PlayerIndicatorsOverlay extends Overlay
 			final int x = graphics.getFontMetrics().stringWidth(builtString);
 			final int y = graphics.getFontMetrics().getHeight();
 
-			if (config.highlightClan() && actor.isClanMember() && config.showClanRanks() && relation == PlayerIndicatorsPlugin.PlayerRelation.CLAN)
+			if (config.highlightClan() && actor.isFriendsChatMember() && config.showFriendsChatRanks() && relation == PlayerIndicatorsPlugin.PlayerRelation.CLAN)
 			{
-				if (clanManager.getRank(actor.getName()) != null)
+				if (friendChatManager.getRank(actor.getName()) != null)
 				{
-					final BufferedImage clanRankImage = clanManager.getClanImage(clanManager.getRank(actor.getName()));
+					final BufferedImage clanRankImage = friendChatManager.getRankImage(friendChatManager.getRank(actor.getName()));
 					if (clanRankImage != null)
 					{
 						OverlayUtil.renderActorTextAndImage(graphics, actor, builtString, color,

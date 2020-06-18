@@ -168,7 +168,7 @@ public interface ScreenshotConfig extends Config
 	@ConfigItem(
 		keyName = "friendDeath",
 		name = "Friend Deaths",
-		description = "Configures whether or not screenshots are automatically taken when a clanmate or a friend near you dies.",
+		description = "Configures whether or not screenshots are automatically taken when friends or friends chat members die.",
 		position = 11
 	)
 	default boolean screenshotFriendDeath()
@@ -222,11 +222,11 @@ public interface ScreenshotConfig extends Config
 
 	@ConfigItem(
 		keyName = "ccKick",
-		name = "Screenshot Kicks from CC",
-		description = "Take a screenshot when you kick a user from a clan chat.",
+		name = "Screenshot Kicks from FC",
+		description = "Take a screenshot when you kick a user from a friends chat.",
 		position = 15
 	)
-	default boolean screenshotCcKick()
+	default boolean screenshotKick()
 	{
 		return false;
 	}
