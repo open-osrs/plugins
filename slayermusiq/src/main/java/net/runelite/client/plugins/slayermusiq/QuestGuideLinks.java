@@ -156,6 +156,7 @@ class QuestGuideLinks
 		new Link("Another Slice of H.A.M.", "https://www.youtube.com/watch?v=Yq3db7827Lk"),
 		new Link("Song of the Elves", "https://www.youtube.com/watch?v=oMGvdBCuxoY"),
 		new Link("The Fremennik Exiles", "https://www.youtube.com/watch?v=1Vz2rXYhi4E"),
+		new Link("Sins of the Father", "https://www.youtube.com/watch?v=cn_anr_Hc4Q"),
 		//Miniquests
 		new Link("Alfred Grimhand's Barcrawl", "https://www.youtube.com/watch?v=hE2dmiDaoK4"),
 		new Link("Bear your Soul", "https://www.youtube.com/watch?v=Pb6N-_6HJNc"),
