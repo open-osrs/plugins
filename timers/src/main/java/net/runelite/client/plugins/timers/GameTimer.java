@@ -40,7 +40,7 @@ import static net.runelite.client.util.RSTimeUnit.GAME_TICKS;
 @Getter(AccessLevel.PACKAGE)
 enum GameTimer
 {
-	STAMINA(ItemID.STAMINA_POTION4, GameTimerImageType.ITEM, "Stamina", 2, ChronoUnit.MINUTES, true),
+	STAMINA(ItemID.STAMINA_POTION4, GameTimerImageType.ITEM, "Stamina", true),
 	ANTIFIRE(ItemID.ANTIFIRE_POTION4, GameTimerImageType.ITEM, "Antifire", 6, ChronoUnit.MINUTES),
 	EXANTIFIRE(ItemID.EXTENDED_ANTIFIRE4, GameTimerImageType.ITEM, "Extended antifire", 12, ChronoUnit.MINUTES),
 	OVERLOAD(ItemID.OVERLOAD_4, GameTimerImageType.ITEM, "Overload", 5, ChronoUnit.MINUTES, true),
@@ -70,8 +70,8 @@ enum GameTimer
 	HOME_TELEPORT(SpriteID.SPELL_LUMBRIDGE_HOME_TELEPORT, GameTimerImageType.SPRITE, "Home Teleport", 30, ChronoUnit.MINUTES),
 	MINIGAME_TELEPORT(SpriteID.TAB_QUESTS_RED_MINIGAMES, GameTimerImageType.SPRITE, "Minigame Teleport", 20, ChronoUnit.MINUTES),
 	SKULL(SpriteID.PLAYER_KILLER_SKULL_523, GameTimerImageType.SPRITE, "Skull", 20, ChronoUnit.MINUTES),
-	ANTIPOISON(ItemID.ANTIPOISON4, GameTimerImageType.ITEM, "Antipoison"),
-	ANTIVENOM(ItemID.ANTIVENOM4, GameTimerImageType.ITEM, "Anti-venom"),
+	ANTIPOISON(ItemID.ANTIPOISON4, GameTimerImageType.ITEM, "Antipoison", false),
+	ANTIVENOM(ItemID.ANTIVENOM4, GameTimerImageType.ITEM, "Anti-venom", false),
 	DRAGON_FIRE_SHIELD(ItemID.DRAGONFIRE_SHIELD_11284, GameTimerImageType.ITEM, "Dragonfire Shield Special", 115, ChronoUnit.SECONDS),
 	DIVINE_SUPER_ATTACK(ItemID.DIVINE_SUPER_ATTACK_POTION4, GameTimerImageType.ITEM, "Divine Super Attack", 5, ChronoUnit.MINUTES),
 	DIVINE_SUPER_STRENGTH(ItemID.DIVINE_SUPER_STRENGTH_POTION4, GameTimerImageType.ITEM, "Divine Super Strength", 5, ChronoUnit.MINUTES),
@@ -115,8 +115,8 @@ enum GameTimer
 		this(imageId, idType, description, null, time, unit, false);
 	}
 
-	GameTimer(final int imageId, final GameTimerImageType idType, final String description)
+	GameTimer(final int imageId, final GameTimerImageType idType, final String description, final boolean removedOnDeath)
 	{
-		this(imageId, idType, description, null, 1, ChronoUnit.MILLIS, false);
+		this(imageId, idType, description, null, 1, ChronoUnit.MILLIS, removedOnDeath);
 	}
 }

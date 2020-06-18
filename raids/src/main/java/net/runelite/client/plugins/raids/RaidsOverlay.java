@@ -290,10 +290,10 @@ public class RaidsOverlay extends OverlayPanel
 		color = Color.ORANGE;
 		if (sharable || config.alwaysShowWorldAndCC())
 		{
-			String clanOwner = Text.removeTags(client.getWidget(WidgetInfo.CLAN_CHAT_OWNER).getText());
-			if (clanOwner.equals("None"))
+			String friendsChatOwner = Text.removeTags(client.getWidget(WidgetInfo.FRIENDS_CHAT_OWNER).getText());
+			if (friendsChatOwner.equals("None"))
 			{
-				clanOwner = "Open CC Tab";
+				friendsChatOwner = "Open CC Tab";
 				color = Color.RED;
 			}
 
@@ -310,7 +310,7 @@ public class RaidsOverlay extends OverlayPanel
 				}
 			}
 
-			tableComponent.addRow(ColorUtil.prependColorTag(worldString, Color.ORANGE), ColorUtil.prependColorTag("" + clanOwner, color));
+			tableComponent.addRow(ColorUtil.prependColorTag(worldString, Color.ORANGE), ColorUtil.prependColorTag("" + friendsChatOwner, color));
 		}
 
 		int bossMatches = 0;

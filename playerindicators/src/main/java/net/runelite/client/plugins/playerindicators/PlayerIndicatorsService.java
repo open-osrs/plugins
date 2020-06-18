@@ -60,10 +60,10 @@ public class PlayerIndicatorsService
 			&& client.isFriended(player.getName(), false)
 			&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.FRIEND));
 
-		clan = (player) -> (player.isClanMember() && !client.getLocalPlayer().equals(player) && !client.isFriended(player.getName(), false)
+		clan = (player) -> (player.isFriendsChatMember() && !client.getLocalPlayer().equals(player) && !client.isFriended(player.getName(), false)
 			&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.CLAN));
 
-		team = (player) -> (Objects.requireNonNull(client.getLocalPlayer()).getTeam() != 0 && !player.isClanMember()
+		team = (player) -> (Objects.requireNonNull(client.getLocalPlayer()).getTeam() != 0 && !player.isFriendsChatMember()
 			&& !client.isFriended(player.getName(), false)
 			&& client.getLocalPlayer().getTeam() == player.getTeam()
 			&& plugin.getLocationHashMap().containsKey(PlayerIndicatorsPlugin.PlayerRelation.TEAM));

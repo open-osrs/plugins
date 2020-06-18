@@ -29,8 +29,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Setter;
 import net.runelite.api.Client;
@@ -44,8 +44,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-@Singleton
-public class CannonSpotOverlay extends Overlay
+class CannonSpotOverlay extends Overlay
 {
 	private static final int MAX_DISTANCE = 2350;
 
@@ -71,12 +70,14 @@ public class CannonSpotOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (hidden || !config.showCannonSpots() || plugin.isCannonPlaced())
+		List<WorldPoint> spotPoints = plugin.getSpotPoints();
+
+		if (hidden || spotPoints.isEmpty() || !config.showCannonSpots() || plugin.isCannonPlaced())
 		{
 			return null;
 		}
 
-		for (WorldPoint spot : plugin.getSpotPoints())
+		for (WorldPoint spot : spotPoints)
 		{
 			if (spot.getPlane() != client.getPlane())
 			{
