@@ -173,7 +173,7 @@ class DevToolsOverlay extends Overlay
 		for (Player p : players)
 		{
 			String text =
-				"I:" + p.getIdleAnimation() +
+				"I:" + p.getPoseAnimation() +
 				" TL:" + p.getTurnLeftAnimation() +
 				" TR:" + p.getTurnRightAnimation() +
 				" W:" + p.getWalkAnimation() +
