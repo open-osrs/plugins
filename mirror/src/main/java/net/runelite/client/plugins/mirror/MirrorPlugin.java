@@ -50,10 +50,10 @@ import java.awt.image.BufferedImage;
  */
 @Extension
 @PluginDescriptor(
-		name = "Mirror",
-		description = "Create a new window with the game image minus the top overlay layer",
-		type = PluginType.UTILITY,
-		enabledByDefault = false
+	name = "Mirror",
+	description = "Create a new window with the game image minus the top overlay layer",
+	type = PluginType.UTILITY,
+	enabledByDefault = false
 )
 public class MirrorPlugin extends Plugin
 {
