@@ -158,7 +158,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "boss",
 		name = "Screenshot Boss Kills",
 		description = "Configures whether or not screenshots are automatically taken of boss kills",
-		position = 10
+		position = 11
 	)
 	default boolean screenshotBossKills()
 	{
@@ -169,7 +169,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "friendDeath",
 		name = "Friend Deaths",
 		description = "Configures whether or not screenshots are automatically taken when friends or friends chat members die.",
-		position = 11
+		position = 12
 	)
 	default boolean screenshotFriendDeath()
 	{
@@ -180,7 +180,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "playerDeath",
 		name = "Screenshot Deaths",
 		description = "Configures whether or not screenshots are automatically taken when you die.",
-		position = 12
+		position = 13
 	)
 	default boolean screenshotPlayerDeath()
 	{
@@ -191,7 +191,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "duels",
 		name = "Screenshot Duels",
 		description = "Configures whether or not screenshots are automatically taken of the duel end screen.",
-		position = 13
+		position = 14
 	)
 	default boolean screenshotDuels()
 	{
@@ -202,7 +202,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "valuableDrop",
 		name = "Screenshot Valuable drops",
 		description = "Configures whether or not screenshots are automatically taken when you receive a valuable drop.",
-		position = 14
+		position = 15
 	)
 	default boolean screenshotValuableDrop()
 	{
@@ -213,7 +213,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "untradeableDrop",
 		name = "Screenshot Untradeable drops",
 		description = "Configures whether or not screenshots are automatically taken when you receive an untradeable drop.",
-		position = 15
+		position = 16
 	)
 	default boolean screenshotUntradeableDrop()
 	{
@@ -224,7 +224,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "ccKick",
 		name = "Screenshot Kicks from FC",
 		description = "Take a screenshot when you kick a user from a friends chat.",
-		position = 15
+		position = 17
 	)
 	default boolean screenshotKick()
 	{
@@ -232,10 +232,21 @@ public interface ScreenshotConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "secondTradeScreen",
+		name = "Screenshot 2nd Trade Screen",
+		description = "Configures whether screenshots are taken on the second trade screen.",
+		position = 18
+	)
+	default boolean screenshotSecondTradeScreen()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "hotkey",
 		name = "Screenshot hotkey",
 		description = "When you press this key a screenshot will be taken",
-		position = 16
+		position = 19
 	)
 	default Keybind hotkey()
 	{

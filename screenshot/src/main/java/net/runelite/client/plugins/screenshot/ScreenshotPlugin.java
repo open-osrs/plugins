@@ -69,6 +69,7 @@ import static net.runelite.api.widgets.WidgetID.CLUE_SCROLL_REWARD_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.DIALOG_SPRITE_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.KINGDOM_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.LEVEL_UP_GROUP_ID;
+import static net.runelite.api.widgets.WidgetID.PLAYER_TRADE_CONFIRM_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.THEATRE_OF_BLOOD_REWARD_GROUP_ID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -325,7 +326,7 @@ public class ScreenshotPlugin extends Plugin
 	private void onPlayerLootReceived(final PlayerLootReceived playerLootReceived)
 	{
 		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_LOOT ||
-		config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
+			config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
 		{
 			final Player player = playerLootReceived.getPlayer();
 			final String name = player.getName();
@@ -518,6 +519,12 @@ public class ScreenshotPlugin extends Plugin
 					return;
 				}
 				break;
+			case PLAYER_TRADE_CONFIRM_GROUP_ID:
+				if (!config.screenshotSecondTradeScreen())
+				{
+					return;
+				}
+				break;
 		}
 
 		switch (groupId)
@@ -593,6 +600,14 @@ public class ScreenshotPlugin extends Plugin
 				screenshotSubDir = "Clue Scroll Rewards";
 				clueType = null;
 				clueNumber = null;
+				break;
+			}
+			case PLAYER_TRADE_CONFIRM_GROUP_ID:
+			{
+				String secondTradeName = Text.standardize(client.getWidget(WidgetInfo.SECOND_TRADING_WITH).getText()).replace("trading with:", "");
+
+				fileName = secondTradeName + " Second Trade Screen " + LocalDate.now();
+				screenshotSubDir = "Trade Window";
 				break;
 			}
 			default:
