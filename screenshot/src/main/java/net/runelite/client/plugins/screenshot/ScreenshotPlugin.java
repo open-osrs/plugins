@@ -604,7 +604,7 @@ public class ScreenshotPlugin extends Plugin
 			}
 			case PLAYER_TRADE_CONFIRM_GROUP_ID:
 			{
-				String secondTradeName = Text.standardize(client.getWidget(WidgetInfo.SECOND_TRADING_WITH).getText().toLowerCase()).replace("trading with:", "");
+				String secondTradeName = Text.standardize(client.getWidget(WidgetInfo.SECOND_TRADING_WITH).getText()).replace("trading with:", "");
 
 				fileName = secondTradeName + " Second Trade Screen " + LocalDate.now();
 				screenshotSubDir = "Trade Window";
