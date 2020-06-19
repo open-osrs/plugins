@@ -158,7 +158,7 @@ class DevToolsOverlay extends Overlay
 
 		for (Player p : players)
 		{
-			String text = p.getName() + " (A: " + p.getAnimation() + ") (G: " + p.getSpotAnimation() + ") (IDX: " + p.getPlayerId() + ")";
+			String text = p.getName() + " (A: " + p.getAnimation() + ") (P: " + p.getPoseAnimation() + ") (G: " + p.getSpotAnimation() + ") (IDX: " + p.getPlayerId() + ")";
 			OverlayUtil.renderActorOverlay(graphics, p, text, p == local ? CYAN : BLUE);
 		}
 
@@ -173,7 +173,7 @@ class DevToolsOverlay extends Overlay
 		for (Player p : players)
 		{
 			String text =
-				"I:" + p.getIdleAnimation() +
+				"I:" + p.getPoseAnimation() +
 				" TL:" + p.getTurnLeftAnimation() +
 				" TR:" + p.getTurnRightAnimation() +
 				" W:" + p.getWalkAnimation() +
@@ -181,7 +181,7 @@ class DevToolsOverlay extends Overlay
 				" WL:" + p.getWalkLeftAnimation() +
 				" WR:" + p.getWalkRightAnimation() +
 				" R:" + p.getRunAnimation() +
-				" M:" + p.getMovementAnimation();
+				" M:" + p.getPoseAnimation();
 
 			// cant use OverlayUtil.renderActorOverlay because that draws a poly
 			Point textLocation = p.getCanvasTextLocation(graphics, text, p.getLogicalHeight() + 40);
@@ -214,12 +214,8 @@ class DevToolsOverlay extends Overlay
 				}
 			}
 
-			String text = String.format("%s (ID: %d) (A: %d) (G: %d) (IDX: %d)",
-				composition.getName(),
-				composition.getId(),
-				npc.getAnimation(),
-				npc.getSpotAnimation(),
-				npc.getIndex());
+			String text = composition.getName() + " (ID:" + composition.getId() + ")" +
+				" (A: " + npc.getAnimation() + ") (P: " + npc.getPoseAnimation() + ") (G: " + npc.getSpotAnimation() + ")  (IDX: " + npc.getIndex() + ")";
 
 			OverlayUtil.renderActorOverlay(graphics, npc, text, color);
 		}

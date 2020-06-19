@@ -31,6 +31,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,12 +53,12 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.util.Text;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetID.ADVENTURE_LOG_ID;
 import static net.runelite.api.widgets.WidgetID.COUNTERS_LOG_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.KILL_LOGS_GROUP_ID;
-import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatCommandManager;
@@ -110,6 +111,10 @@ public class ChatCommandsPlugin extends Plugin
 	private static final Pattern ADVENTURE_LOG_COX_PB_PATTERN = Pattern.compile("Fastest (?:kill|run)(?: - \\(Team size: (?:[0-9]+ players|Solo)\\))?: ([0-9:]+)");
 	private static final Pattern ADVENTURE_LOG_BOSS_PB_PATTERN = Pattern.compile("[a-zA-Z]+(?: [a-zA-Z]+)*");
 	private static final Pattern ADVENTURE_LOG_PB_PATTERN = Pattern.compile("(" + ADVENTURE_LOG_BOSS_PB_PATTERN + "(?: - " + ADVENTURE_LOG_BOSS_PB_PATTERN + ")*) (?:" + ADVENTURE_LOG_COX_PB_PATTERN + "( )*)+");
+	private static final Pattern HS_PB_PATTERN = Pattern.compile("Floor (?<floor>\\d) time: <col=ff0000>(?<floortime>[0-9:]+)</col>(?: \\(new personal best\\)|. Personal best: (?<floorpb>[0-9:]+))" +
+		"(?:<br>Overall time: <col=ff0000>(?<otime>[0-9:]+)</col>(?: \\(new personal best\\)|. Personal best: (?<opb>[0-9:]+)))?");
+	private static final Pattern HS_KC_FLOOR_PATTERN = Pattern.compile("You have completed Floor (\\d) of the Hallowed Sepulchre! Total completions: <col=ff0000>(\\d+)</col>\\.");
+	private static final Pattern HS_KC_GHC_PATTERN = Pattern.compile("You have opened the Grand Hallowed Coffin <col=ff0000>(\\d+)</col> times?!");
 
 	private static final String TOTAL_LEVEL_COMMAND_STRING = "!total";
 	private static final String PRICE_COMMAND_STRING = "!price";
@@ -124,7 +129,7 @@ public class ChatCommandsPlugin extends Plugin
 	private static final String GC_COMMAND_STRING = "!gc";
 	private static final String PB_COMMAND = "!pb";
 	private static final String DUEL_ARENA_COMMAND = "!duels";
-	
+
 	@VisibleForTesting
 	static final int ADV_LOG_EXPLOITS_TEXT_INDEX = 1;
 
@@ -147,7 +152,7 @@ public class ChatCommandsPlugin extends Plugin
 
 	@Inject
 	private ConfigManager configManager;
-	
+
 	@Inject
 	private HiscoreClient hiscoreClient;
 
@@ -356,6 +361,27 @@ public class ChatCommandsPlugin extends Plugin
 
 			case "the nightmare":
 				return "Nightmare";
+
+			// Hallowed Sepulchre
+			case "hs":
+			case "sepulchre":
+			case "ghc":
+				return "Hallowed Sepulchre";
+			case "hs1":
+			case "hs 1":
+				return "Hallowed Sepulchre Floor 1";
+			case "hs2":
+			case "hs 2":
+				return "Hallowed Sepulchre Floor 2";
+			case "hs3":
+			case "hs 3":
+				return "Hallowed Sepulchre Floor 3";
+			case "hs4":
+			case "hs 4":
+				return "Hallowed Sepulchre Floor 4";
+			case "hs5":
+			case "hs 5":
+				return "Hallowed Sepulchre Floor 5";
 
 			default:
 				return WordUtils.capitalize(boss);
@@ -572,6 +598,40 @@ public class ChatCommandsPlugin extends Plugin
 			matchPb(matcher);
 		}
 
+		matcher = HS_PB_PATTERN.matcher(message);
+		if (matcher.find())
+		{
+			int floor = Integer.parseInt(matcher.group("floor"));
+			String floortime = matcher.group("floortime");
+			String floorpb = matcher.group("floorpb");
+			String otime = matcher.group("otime");
+			String opb = matcher.group("opb");
+
+			String pb = Objects.requireNonNullElse(floorpb, floortime);
+			setPb("Hallowed Sepulchre Floor " + floor, timeStringToSeconds(pb));
+
+			if (otime != null)
+			{
+				pb = Objects.requireNonNullElse(opb, otime);
+				setPb("Hallowed Sepulchre", timeStringToSeconds(pb));
+			}
+		}
+
+		matcher = HS_KC_FLOOR_PATTERN.matcher(message);
+		if (matcher.find())
+		{
+			int floor = Integer.parseInt(matcher.group(1));
+			int kc = Integer.parseInt(matcher.group(2));
+			setKc("Hallowed Sepulchre Floor " + floor, kc);
+		}
+
+		matcher = HS_KC_GHC_PATTERN.matcher(message);
+		if (matcher.find())
+		{
+			int kc = Integer.parseInt(matcher.group(1));
+			setKc("Hallowed Sepulchre", kc);
+		}
+
 		lastBossKill = null;
 	}
 
@@ -656,7 +716,7 @@ public class ChatCommandsPlugin extends Plugin
 				}
 			}
 		}
-		
+
 		if (countersLogLoaded && pohOwner.equals(client.getLocalPlayer().getName()))
 		{
 			countersLogLoaded = false;
@@ -707,7 +767,7 @@ public class ChatCommandsPlugin extends Plugin
 				break;
 		}
 	}
-	
+
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
@@ -1272,7 +1332,7 @@ public class ChatCommandsPlugin extends Plugin
 					.append(ChatColorType.HIGHLIGHT)
 					.append(String.format("%,d", hiscoreSkill.getRank()));
 			}
-			
+
 			final String response = chatMessageBuilder.build();
 			log.debug("Setting response {}", response);
 			final MessageNode messageNode = chatMessage.getMessageNode();

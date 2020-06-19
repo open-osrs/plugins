@@ -30,9 +30,9 @@ import java.awt.Graphics2D;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import net.runelite.api.ClanMember;
-import net.runelite.api.ClanMemberManager;
 import net.runelite.api.Client;
+import net.runelite.api.FriendsChatManager;
+import net.runelite.api.FriendsChatMember;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
@@ -79,8 +79,8 @@ public class RaidsPartyOverlay extends Overlay
 			return null;
 		}
 
-		final ClanMemberManager clanMemberManager = client.getClanMemberManager();
-		if (clanMemberManager == null || clanMemberManager.getCount() == 0)
+		final FriendsChatManager friendsChatManager = client.getFriendsChatManager();
+		if (friendsChatManager == null || friendsChatManager.getCount() == 0)
 		{
 			// Player left clan chat
 			return null;
@@ -130,25 +130,25 @@ public class RaidsPartyOverlay extends Overlay
 		{
 			int world = client.getWorld();
 			int wrongWorldClanMembers = 0;
-			int clanMemberCount = 0;
-			for (ClanMember clanMember : clanMemberManager.getMembers())
+			int friendsChatMemberCount = 0;
+			for (FriendsChatMember friendsChatMember : friendsChatManager.getMembers())
 			{
-				if (clanMember != null)
+				if (friendsChatMember != null)
 				{
-					if (clanMember.getWorld() != world)
+					if (friendsChatMember.getWorld() != world)
 					{
 						wrongWorldClanMembers++;
 					}
 					else
 					{
-						clanMemberCount++;
+						friendsChatMemberCount++;
 					}
 				}
 			}
 
 			// Show amount of people on the right world but not at the raids area
 			Color notInPartyColor = Color.GREEN;
-			int notInParty = clanMemberCount - partySize;
+			int notInParty = friendsChatMemberCount - partySize;
 
 			if (notInParty > 0)
 			{
