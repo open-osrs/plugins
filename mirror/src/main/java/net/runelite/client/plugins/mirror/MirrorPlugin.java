@@ -40,22 +40,20 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import java.awt.Canvas;
 import java.awt.image.BufferedImage;
-
 
 /**
  * Mirror Plugin - Creates a new window that draws only the game canvas, and ignores the AFTER_MIRROR Overlay layer
  */
 @Extension
 @PluginDescriptor(
-	name = "Mirror",
-	description = "Create a new window with the game image minus the top overlay layer",
-	type = PluginType.UTILITY,
-	enabledByDefault = false
+		name = "Mirror",
+		description = "Create a new window with the game image minus the top overlay layer",
+		type = PluginType.UTILITY,
+		enabledByDefault = false
 )
 public class MirrorPlugin extends Plugin
 {
@@ -68,9 +66,6 @@ public class MirrorPlugin extends Plugin
 
 	@Inject
 	private ClientThread clientThread;
-
-	public MirrorPlugin() {
-	}
 
 	@Provides
 	MirrorConfig getConfig(ConfigManager configManager)
@@ -87,30 +82,38 @@ public class MirrorPlugin extends Plugin
 	{
 		clientThread.invokeLater(() ->
 		{
-			if (client.getGameState() == GameState.LOGGED_IN) {
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
 				final Player player = client.getLocalPlayer();
 
-				if (player == null) {
+				if (player == null)
+				{
 					return false;
 				}
 
 				final String name = player.getName();
 
-				if (Strings.isNullOrEmpty(name)) {
+				if (Strings.isNullOrEmpty(name))
+				{
 					return false;
 				}
 
-				if (jframe != null) {
-					if (config.mirrorName()) {
+				if (jframe != null)
+				{
+					if (config.mirrorName())
+					{
 						jframe.setTitle("OpenOSRS Mirror" + " - " + name);
-					} else {
+					}
+					else
+					{
 						jframe.setTitle("OpenOSRS Mirror");
 					}
 
 				}
-			} else
+			}
+			else
 			{
-				if(jframe != null)
+				if (jframe != null)
 				{
 					jframe.setTitle("OpenOSRS Mirror");
 					return true;
@@ -167,6 +170,11 @@ public class MirrorPlugin extends Plugin
 	@Subscribe
 	private void onGameStateChanged(final GameStateChanged event)
 	{
+		if (event.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
 		updateTitle();
 	}
 
@@ -180,7 +188,7 @@ public class MirrorPlugin extends Plugin
 
 		SwingUtilities.invokeLater(() ->
 		{
-			if(jframe != null)
+			if (jframe != null)
 			{
 				updateTitle();
 			}
