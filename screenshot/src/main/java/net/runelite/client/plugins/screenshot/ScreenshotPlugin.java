@@ -314,7 +314,7 @@ public class ScreenshotPlugin extends Plugin
 
 		int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
 		if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
-			&& (player.isFriend() || player.isClanMember()
+			&& (player.isFriend() || player.isFriendsChatMember()
 			|| (client.getVar(Varbits.IN_RAID) == 1 || tob == 2 || tob == 3)))
 		{
 			takeScreenshot("Death " + player.getName(), "Deaths");
@@ -337,7 +337,7 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	public void onScriptCallbackEvent(ScriptCallbackEvent e)
 	{
-		if (!"confirmClanKick".equals(e.getEventName()))
+		if (!"confirmFriendsChatKick".equals(e.getEventName()))
 		{
 			return;
 		}
@@ -411,7 +411,7 @@ public class ScreenshotPlugin extends Plugin
 			}
 		}
 
-		if (config.screenshotCcKick() && chatMessage.equals("Your request to kick/ban this user was successful."))
+		if (config.screenshotKick() && chatMessage.equals("Your request to kick/ban this user was successful."))
 		{
 			if (kickPlayerName == null)
 			{

@@ -27,6 +27,7 @@ package net.runelite.client.plugins.loottracker;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
@@ -77,6 +78,7 @@ import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.api.MessageNode;
 import net.runelite.api.NPC;
+import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.SpriteID;
 import net.runelite.api.Varbits;
@@ -116,6 +118,7 @@ import net.runelite.client.events.SessionClose;
 import net.runelite.client.events.SessionOpen;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.game.LootManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -130,7 +133,6 @@ import net.runelite.http.api.loottracker.GameItem;
 import net.runelite.http.api.loottracker.LootRecord;
 import net.runelite.http.api.loottracker.LootRecordType;
 import net.runelite.http.api.loottracker.LootTrackerClient;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -214,6 +216,36 @@ public class LootTrackerPlugin extends Plugin
 	private Collection<LootRecord> lootRecords = new ArrayList<>();
 	private boolean pvpDeath = false;
 
+	// Shade chest loot handling
+	private static final Pattern SHADE_CHEST_NO_KEY_PATTERN = Pattern.compile("You need a [a-z]+ key with a [a-z]+ trim to open this chest .*");
+	private static final Map<Integer, String> SHADE_CHEST_OBJECTS = new ImmutableMap.Builder<Integer, String>().
+		put(ObjectID.BRONZE_CHEST, "Bronze key red").
+		put(ObjectID.BRONZE_CHEST_4112, "Bronze key brown").
+		put(ObjectID.BRONZE_CHEST_4113, "Bronze key crimson").
+		put(ObjectID.BRONZE_CHEST_4114, "Bronze key black").
+		put(ObjectID.BRONZE_CHEST_4115, "Bronze key purple").
+		put(ObjectID.STEEL_CHEST, "Steel key red").
+		put(ObjectID.STEEL_CHEST_4117, "Steel key brown").
+		put(ObjectID.STEEL_CHEST_4118, "Steel key crimson").
+		put(ObjectID.STEEL_CHEST_4119, "Steel key black").
+		put(ObjectID.STEEL_CHEST_4120, "Steel key purple").
+		put(ObjectID.BLACK_CHEST, "Black key red").
+		put(ObjectID.BLACK_CHEST_4122, "Black key brown").
+		put(ObjectID.BLACK_CHEST_4123, "Black key crimson").
+		put(ObjectID.BLACK_CHEST_4124, "Black key black").
+		put(ObjectID.BLACK_CHEST_4125, "Black key purple").
+		put(ObjectID.SILVER_CHEST, "Silver key red").
+		put(ObjectID.SILVER_CHEST_4127, "Silver key brown").
+		put(ObjectID.SILVER_CHEST_4128, "Silver key crimson").
+		put(ObjectID.SILVER_CHEST_4129, "Silver key black").
+		put(ObjectID.SILVER_CHEST_4130, "Silver key purple").
+		build();
+
+	// Hallow Sepulchre Coffin handling
+	private static final String COFFIN_LOOTED_MESSAGE = "You push the coffin lid aside.";
+	private static final String HALLOWED_SEPULCHRE_COFFIN_EVENT = "Coffin (Hallowed Sepulchre)";
+	private static final Set<Integer> HALLOWED_SEPULCHRE_MAP_REGIONS = Set.of(8797, 10077, 9308, 10074, 9050); // one map region per floor
+
 	// Last man standing map regions
 	private static final Set<Integer> LAST_MAN_STANDING_REGIONS = Set.of(13658, 13659, 13914, 13915, 13916);
 
@@ -237,6 +269,9 @@ public class LootTrackerPlugin extends Plugin
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
+
+	@Inject
+	private LootManager lootManager;
 
 	@Inject
 	private SpriteManager spriteManager;
@@ -656,7 +691,7 @@ public class LootTrackerPlugin extends Plugin
 		}
 
 		// Ignore Last Man Standing player loots
-		if (isAtLMS())
+		if (isPlayerWithinMapRegion(LAST_MAN_STANDING_REGIONS))
 		{
 			return;
 		}
@@ -871,6 +906,15 @@ public class LootTrackerPlugin extends Plugin
 			return;
 		}
 
+		if (message.equals(COFFIN_LOOTED_MESSAGE) &&
+			isPlayerWithinMapRegion(HALLOWED_SEPULCHRE_MAP_REGIONS))
+		{
+			eventType = HALLOWED_SEPULCHRE_COFFIN_EVENT;
+			lootRecordType = LootRecordType.EVENT;
+			takeInventorySnapshot();
+			return;
+		}
+
 		if (message.equals(HERBIBOAR_LOOTED_MESSAGE))
 		{
 			if (processHerbiboarHerbSackLoot(event.getTimestamp()))
@@ -1007,6 +1051,13 @@ public class LootTrackerPlugin extends Plugin
 			int killCount = Integer.parseInt(boss.group(2));
 			killCountMap.put(bossName.toUpperCase(), killCount);
 		}
+
+		if (SHADE_CHEST_NO_KEY_PATTERN.matcher(message).matches())
+		{
+			// Player didn't have the key they needed.
+			eventType = null;
+			lootRecordType = null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1072,6 +1123,8 @@ public class LootTrackerPlugin extends Plugin
 		}
 
 		if (CHEST_EVENT_TYPES.containsValue(eventType)
+			|| HALLOWED_SEPULCHRE_COFFIN_EVENT.equals(eventType)
+			|| SHADE_CHEST_OBJECTS.containsValue(eventType)
 			|| HERBIBOAR_EVENT.equals(eventType)
 			|| HESPORI_EVENT.equals(eventType)
 			|| SEEDPACK_EVENT.equals(eventType)
@@ -1079,7 +1132,10 @@ public class LootTrackerPlugin extends Plugin
 			|| WINTERTODT_EVENT.equals(eventType)
 			|| lootRecordType == LootRecordType.PICKPOCKET)
 		{
-			processInventoryLoot(eventType, lootRecordType, event.getItemContainer());
+			WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+			Collection<ItemStack> groundItems = lootManager.getItemSpawns(playerLocation);
+
+			processInventoryLoot(eventType, lootRecordType, event.getItemContainer(), groundItems);
 			eventType = null;
 			lootRecordType = null;
 		}
@@ -1120,6 +1176,13 @@ public class LootTrackerPlugin extends Plugin
 		if (option.equals("Open") && itemComposition.getName().equals("Supply crate"))
 		{
 			eventType = WINTERTODT_EVENT;
+			takeInventorySnapshot();
+		}
+
+		if (option.equals("Open") && SHADE_CHEST_OBJECTS.containsKey(event.getIdentifier()))
+		{
+			eventType = SHADE_CHEST_OBJECTS.get(event.getIdentifier());
+			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
 		}
 	}
@@ -1207,7 +1270,7 @@ public class LootTrackerPlugin extends Plugin
 		}
 	}
 
-	private void processInventoryLoot(String event, LootRecordType lootRecordType, ItemContainer inventoryContainer)
+	private void processInventoryLoot(String event, LootRecordType lootRecordType, ItemContainer inventoryContainer, Collection<ItemStack> groundItems)
 	{
 		if (client.getLocalPlayer() == null)
 		{
@@ -1218,6 +1281,9 @@ public class LootTrackerPlugin extends Plugin
 		{
 			Multiset<Integer> currentInventory = HashMultiset.create();
 			Arrays.stream(inventoryContainer.getItems())
+				.forEach(item -> currentInventory.add(item.getId(), item.getQuantity()));
+
+			groundItems
 				.forEach(item -> currentInventory.add(item.getId(), item.getQuantity()));
 
 			final Multiset<Integer> diff = Multisets.difference(currentInventory, inventorySnapshot);
@@ -1451,15 +1517,15 @@ public class LootTrackerPlugin extends Plugin
 	}
 
 	/**
-	 * Is player at the Last Man Standing minigame
+	 * Is player currently within the provided map regions
 	 */
-	private boolean isAtLMS()
+	private boolean isPlayerWithinMapRegion(Set<Integer> definedMapRegions)
 	{
 		final int[] mapRegions = client.getMapRegions();
 
-		for (int region : LAST_MAN_STANDING_REGIONS)
+		for (int region : mapRegions)
 		{
-			if (ArrayUtils.contains(mapRegions, region))
+			if (definedMapRegions.contains(region))
 			{
 				return true;
 			}

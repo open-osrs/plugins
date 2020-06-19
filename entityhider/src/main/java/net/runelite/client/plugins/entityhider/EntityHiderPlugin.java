@@ -115,7 +115,7 @@ public class EntityHiderPlugin extends Plugin
 		client.setPlayersHidden2D(config.hidePlayers2D());
 		client.setHideSpecificPlayers(Text.fromCSV(config.hideSpecificPlayers()));
 		client.setFriendsHidden(config.hideFriends());
-		client.setClanMatesHidden(config.hideClanMates());
+		client.setFriendsChatMembersHidden(config.hideFriendsChatMembers());
 		client.setLocalPlayerHidden(config.hideLocalPlayer());
 		client.setLocalPlayerHidden2D(config.hideLocalPlayer2D());
 		client.setNPCsHidden(config.hideNPCs());
@@ -132,7 +132,7 @@ public class EntityHiderPlugin extends Plugin
 		client.setPlayersHidden(false);
 		client.setPlayersHidden2D(false);
 		client.setFriendsHidden(false);
-		client.setClanMatesHidden(false);
+		client.setFriendsChatMembersHidden(false);
 		client.setLocalPlayerHidden(false);
 		client.setLocalPlayerHidden2D(false);
 		client.setNPCsHidden(false);

@@ -69,7 +69,7 @@ import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ClanManager;
+import net.runelite.client.game.FriendChatManager;
 import net.runelite.client.game.Sound;
 import net.runelite.client.game.SoundManager;
 import net.runelite.client.plugins.Plugin;
@@ -260,7 +260,7 @@ public class IdleNotifierPlugin extends Plugin
 	private IdleNotifierConfig config;
 
 	@Inject
-	private ClanManager clanManager;
+	private FriendChatManager friendChatManager;
 
 	private Instant lastAnimating;
 	private int lastAnimation = AnimationID.IDLE;
@@ -339,7 +339,7 @@ public class IdleNotifierPlugin extends Plugin
 		final Player p = event.getPlayer();
 		if (config.notifyPkers() && p != null && p != client.getLocalPlayer()
 			&& PvPUtil.isAttackable(client, p) && !client.isFriended(p.getName(), false)
-			&& !clanManager.isClanMember(p.getName()))
+			&& !friendChatManager.isMember(p.getName()))
 		{
 			String playerName = p.getName();
 			int combat = p.getCombatLevel();
