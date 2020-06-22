@@ -103,6 +103,9 @@ public class KourendLibraryPlugin extends Plugin
 	private KourendLibraryOverlay overlay;
 
 	@Inject
+	private KourendLibraryCustomerOverlay kourendLibraryCustomerOverlay;
+
+	@Inject
 	private KourendLibraryConfig config;
 
 	@Inject
@@ -120,6 +123,9 @@ public class KourendLibraryPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private final Set<NPC> npcsToMark = new HashSet<>();
+
+	@Getter
+	private Item [] inventoryItems;
 
 	private boolean hideButton;
 	@Getter(AccessLevel.PACKAGE)
@@ -160,6 +166,7 @@ public class KourendLibraryPlugin extends Plugin
 
 		overlayManager.add(overlay);
 		overlayManager.add(tutorialOverlay);
+		overlayManager.add(kourendLibraryCustomerOverlay);
 
 		updatePlayerBooks();
 
@@ -243,6 +250,7 @@ public class KourendLibraryPlugin extends Plugin
 		if (anim.getActor() == client.getLocalPlayer() && anim.getActor().getAnimation() == AnimationID.LOOKING_INTO)
 		{
 			lastBookcaseAnimatedOn = lastBookcaseClick;
+			inventoryItems = client.getItemContainer(InventoryID.INVENTORY).getItems();
 		}
 	}
 
@@ -344,6 +352,11 @@ public class KourendLibraryPlugin extends Plugin
 	private void onItemContainerChanged(ItemContainerChanged itemContainerChangedEvent)
 	{
 		updatePlayerBooks();
+
+		if (itemContainerChangedEvent.getItemContainer() == client.getItemContainer(InventoryID.INVENTORY))
+		{
+			inventoryItems = client.getItemContainer(InventoryID.INVENTORY).getItems();
+		}
 	}
 
 	@Subscribe

@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.runelite.api.Client;
+import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.Perspective;
 import static net.runelite.api.Perspective.getCanvasTilePoly;
@@ -87,6 +88,13 @@ class KourendLibraryOverlay extends Overlay
 
 		List<Bookcase> allBookcases = library.getBookcasesOnLevel(client.getPlane());
 
+		if (allBookcases == null)
+		{
+			return null;
+		}
+
+		Item[] items = plugin.getInventoryItems();
+
 		for (Bookcase bookcase : allBookcases)
 		{
 			// AABB
@@ -132,6 +140,15 @@ class KourendLibraryOverlay extends Overlay
 					continue;
 				}
 				Color color = bookIsKnown ? (book == library.getCustomerBook() ? Color.GREEN : Color.ORANGE) : Color.WHITE;
+
+				for (Item it : items)
+				{
+					if (it != null && book != null && !book.isDarkManuscript() && book == Book.byId(it.getId()))
+					{
+						color = Color.RED;
+						break;
+					}
+				}
 
 				// Render the poly on the floor
 				if (!(bookIsKnown && book == null) && (library.getState() == SolvedState.NO_DATA || book != null || !possible.isEmpty()) && shouldShowOverlayIfDuplicateBook(book))

@@ -82,4 +82,14 @@ public interface KourendLibraryConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "showRequestedBookOverlay",
+		name = "Show overlay for requested book",
+		description = "Configures whether to display the overlay of the requested book"
+	)
+	default boolean showRequestedBookOverlay()
+	{
+		return true;
+	}
 }
