@@ -222,11 +222,13 @@ public class NpcSceneOverlay extends Overlay
 				{
 					size = composition.getSize();
 				}
-				LocalPoint localPoint = LocalPoint.fromWorld(this.client, actor.getWorldLocation());
-				localPoint = new LocalPoint(localPoint.getX() + size * 128 / 2 - 64, localPoint.getY() + size * 128 / 2 - 64);
-				final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, localPoint, size);
-				renderPoly(graphics, color, tilePoly);
-				break;
+				LocalPoint lp = LocalPoint.fromWorld(client, actor.getWorldLocation());
+				if (lp != null) {
+					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
+					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
+					renderPoly(graphics, color, tilePoly);
+					break;
+				}
 			}
 			case THIN_TRUE_LOCATIONS:
 			{
@@ -236,11 +238,13 @@ public class NpcSceneOverlay extends Overlay
 				{
 					size = composition.getSize();
 				}
-				LocalPoint localPoint = LocalPoint.fromWorld(this.client, actor.getWorldLocation());
-				localPoint = new LocalPoint(localPoint.getX() + size * 128 / 2 - 64, localPoint.getY() + size * 128 / 2 - 64);
-				final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, localPoint, size);
-				renderPoly(graphics, color, tilePoly, 1);
-				break;
+				LocalPoint lp = LocalPoint.fromWorld(client, actor.getWorldLocation());
+				if (lp != null) {
+					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
+					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
+					renderPoly(graphics, color, tilePoly, 1);
+					break;
+				}
 			}
 		}
 
