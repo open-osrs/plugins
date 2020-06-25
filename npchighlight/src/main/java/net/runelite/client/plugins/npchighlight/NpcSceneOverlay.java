@@ -223,7 +223,8 @@ public class NpcSceneOverlay extends Overlay
 					size = composition.getSize();
 				}
 				LocalPoint lp = LocalPoint.fromWorld(client, actor.getWorldLocation());
-				if (lp != null) {
+				if (lp != null)
+				{
 					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
 					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
 					renderPoly(graphics, color, tilePoly);
@@ -239,7 +240,8 @@ public class NpcSceneOverlay extends Overlay
 					size = composition.getSize();
 				}
 				LocalPoint lp = LocalPoint.fromWorld(client, actor.getWorldLocation());
-				if (lp != null) {
+				if (lp != null)
+				{
 					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
 					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
 					renderPoly(graphics, color, tilePoly, 1);
