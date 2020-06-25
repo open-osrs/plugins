@@ -61,6 +61,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.RSTimeUnit;
@@ -71,7 +72,8 @@ import org.pf4j.Extension;
 	name = "Pyramid Plunder",
 	description = "Show custom overlay for Pyramid Plunder",
 	tags = {"minigame", "thieving", "pp"},
-	enabledByDefault = false
+	enabledByDefault = false,
+	type = PluginType.MINIGAME
 )
 public class PyramidPlunderPlugin extends Plugin
 {
