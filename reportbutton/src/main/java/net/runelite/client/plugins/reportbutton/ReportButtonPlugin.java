@@ -42,6 +42,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.VarPlayer;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -190,6 +191,9 @@ public class ReportButtonPlugin extends Plugin
 			case GAME_TICKS:
 				reportButton.setText(getGameTicks());
 				break;
+			case MEMBERSHIP_DAYS:
+				reportButton.setText(getMembershipDays());
+				break;
 			case OFF:
 				reportButton.setText("Report");
 				break;
@@ -233,6 +237,13 @@ public class ReportButtonPlugin extends Plugin
 	private static String getDate()
 	{
 		return DATE_FORMAT.format(new Date());
+	}
+
+	private String getMembershipDays()
+	{
+		var membershipDays = client.getVar(VarPlayer.MEMBERSHIP_DAYS);
+		return membershipDays == 1 ? String.format("%d day left", membershipDays) :
+				membershipDays > 1 ? String.format("%d days left", membershipDays) : "Inactive";
 	}
 
 	private void updateTimeFormat()
