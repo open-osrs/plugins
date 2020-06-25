@@ -116,6 +116,11 @@ public class TabInterface
 	private static final String TAB_MENU_KEY = "tagtabs";
 	private static final String TAB_MENU = TAG_SEARCH + TAB_MENU_KEY;
 	private static final String OPEN_TAB_MENU = "View tag tabs";
+	private static final String SHOW_WORN = "Show worn items";
+	private static final String SHOW_SETTINGS = "Show menu";
+	private static final String HIDE_WORN = "Hide worn items";
+	private static final String HIDE_SETTINGS = "Hide menu";
+	private static final String SHOW_TUTORIAL = "Show tutorial";
 	private static final int TAB_HEIGHT = 40;
 	private static final int TAB_WIDTH = 39;
 	private static final int BUTTON_HEIGHT = 20;
@@ -498,29 +503,13 @@ public class TabInterface
 			waitSearchTick = false;
 			rememberedSearch = "";
 
-			// If bank window was just hidden, update last active tab position
-			if (currentTabIndex != config.position())
-			{
-				config.position(currentTabIndex);
-			}
+			saveTab();
+			return;
+		}
 
-			// Do the same for last active tab
-			if (config.rememberTab())
-			{
-				if (activeTab == null && !Strings.isNullOrEmpty(config.tab()))
-				{
-					config.tab("");
-				}
-				else if (activeTab != null && !activeTab.getTag().equals(config.tab()))
-				{
-					config.tab(activeTab.getTag());
-				}
-			}
-			else if (!Strings.isNullOrEmpty(config.tab()))
-			{
-				config.tab("");
-			}
-
+		// Don't continue ticking if equipment menu or bank menu is open
+		if (parent.isSelfHidden())
+		{
 			return;
 		}
 
@@ -577,6 +566,32 @@ public class TabInterface
 
 		updateBounds();
 		scrollTab(0);
+	}
+
+	private void saveTab()
+	{
+		// If bank window was just hidden, update last active tab position
+		if (currentTabIndex != config.position())
+		{
+			config.position(currentTabIndex);
+		}
+
+		// Do the same for last active tab
+		if (config.rememberTab())
+		{
+			if (activeTab == null && !Strings.isNullOrEmpty(config.tab()))
+			{
+				config.tab("");
+			}
+			else if (activeTab != null && !activeTab.getTag().equals(config.tab()))
+			{
+				config.tab(activeTab.getTag());
+			}
+		}
+		else if (!Strings.isNullOrEmpty(config.tab()))
+		{
+			config.tab("");
+		}
 	}
 	
 	private void setTabMenuVisible(boolean visible)
@@ -771,6 +786,20 @@ public class TabInterface
 			|| (event.getParam1() == WidgetInfo.BANK_DEPOSIT_EQUIPMENT.getId() && event.getOption().equals(TAG_GEAR))))
 		{
 			handleDeposit(event, event.getParam1() == WidgetInfo.BANK_DEPOSIT_INVENTORY.getId());
+		}
+		else if (activeTab != null && ((event.getParam1() == WidgetInfo.BANK_EQUIPMENT_BUTTON.getId() && event.getOption().equals(SHOW_WORN))
+			|| (event.getParam1() == WidgetInfo.BANK_SETTINGS_BUTTON.getId() && event.getOption().equals(SHOW_SETTINGS))
+			|| (event.getParam1() == WidgetInfo.BANK_TUTORIAL_BUTTON.getId() && event.getOption().equals(SHOW_TUTORIAL))))
+		{
+			saveTab();
+			rememberedSearch = TAG_SEARCH + activeTab.getTag();
+		}
+		else if (!Strings.isNullOrEmpty(rememberedSearch) && ((event.getParam1() == WidgetInfo.BANK_EQUIPMENT_BUTTON.getId() && event.getOption().equals(HIDE_WORN))
+			|| (event.getParam1() == WidgetInfo.BANK_SETTINGS_BUTTON.getId() && event.getOption().equals(HIDE_SETTINGS))))
+		{
+			bankSearch.reset(true);
+			bankSearch.search(InputType.NONE, rememberedSearch, true);
+			rememberedSearch = "";
 		}
 	}
 
