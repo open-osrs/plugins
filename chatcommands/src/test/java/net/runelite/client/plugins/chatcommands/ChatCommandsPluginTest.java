@@ -43,7 +43,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetID.ADVENTURE_LOG_ID;
-import static net.runelite.api.widgets.WidgetID.COUNTERS_LOG_GROUP_ID;
+import static net.runelite.api.widgets.WidgetID.GENERIC_SCROLL_GROUP_ID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatCommandManager;
 import net.runelite.client.chat.ChatMessageManager;
@@ -415,6 +415,21 @@ public class ChatCommandsPluginTest
 	}
 
 	@Test
+	public void testCoXKillUnknownPb()
+	{
+		when(configManager.getConfiguration("personalbest.adam", "chambers of xeric", int.class)).thenReturn(25 * 60 + 14);
+
+		ChatMessage chatMessage = new ChatMessage(null, FRIENDSCHATNOTIFICATION, "", "<col=ef20ff>Congratulations - your raid is complete!</col><br>Team size: <col=ff0000>3 players</col> Duration:</col> <col=ff0000>23:25</col> Personal best: </col><col=ff0000>20:19</col>", null, 0);
+		chatCommandsPlugin.onChatMessage(chatMessage);
+
+		chatMessage = new ChatMessage(null, GAMEMESSAGE, "", "Your completed Chambers of Xeric count is: <col=ff0000>52</col>.", null, 0);
+		chatCommandsPlugin.onChatMessage(chatMessage);
+
+		verify(configManager).setConfiguration("killcount.adam", "chambers of xeric", 52);
+		verify(configManager).setConfiguration("personalbest.adam", "chambers of xeric", 20 * 60 + 19);
+	}
+
+	@Test
 	public void testCoXKillNoPb()
 	{
 		when(configManager.getConfiguration(anyString(), anyString(), any())).thenReturn(2224);
@@ -463,16 +478,16 @@ public class ChatCommandsPluginTest
 			"<br><br>Hespori<br>Fastest kill: <col=d0c0b0>0:57</col><br><br>Nightmare<br>" +
 			"Fastest kill: <col=d0c0b0>3:30</col><br><br>The Gauntlet<br>Fastest run: <col=d0c0b0>-</col>" +
 			"<br><br>The Corrupted Gauntlet<br>Fastest run: <col=d0c0b0>-</col><br><br>Fragment of Seren<br>Fastest kill: <col=d0c0b0>-</col>" +
-			"<br><br>Chambers of Xeric<br>Fastest run - (Team size: 4 players): <col=d0c0b0>24:17</col>" +
+			"<br><br>Chambers of Xeric<br>Fastest run - (Team size: 24+ players): <col=d0c0b0>24:17</col>" +
 			"<br><br>Chambers of Xeric - Challenge mode<br>Fastest run - (Team size: Solo): <col=d0c0b0>22:15</col>" +
 			"<br><br>Barbarian Assault<br>High-level gambles: <col=d0c0b0>0</col><br><br>Fremennik spirits rested: <col=d0c0b0>0</col>";
 
 		Widget countersPage = mock(Widget.class);
 		when(countersPage.getText()).thenReturn(COUNTER_TEXT);
-		when(client.getWidget(WidgetInfo.COUNTERS_LOG_TEXT)).thenReturn(countersPage);
+		when(client.getWidget(WidgetInfo.GENERIC_SCROLL_TEXT)).thenReturn(countersPage);
 
 		WidgetLoaded countersLogEvent = new WidgetLoaded();
-		countersLogEvent.setGroupId(COUNTERS_LOG_GROUP_ID);
+		countersLogEvent.setGroupId(GENERIC_SCROLL_GROUP_ID);
 		chatCommandsPlugin.onWidgetLoaded(countersLogEvent);
 		chatCommandsPlugin.onGameTick(GameTick.INSTANCE);
 
@@ -525,10 +540,10 @@ public class ChatCommandsPluginTest
 
 		Widget countersPage = mock(Widget.class);
 		when(countersPage.getText()).thenReturn(COUNTER_TEXT);
-		when(client.getWidget(WidgetInfo.COUNTERS_LOG_TEXT)).thenReturn(countersPage);
+		when(client.getWidget(WidgetInfo.GENERIC_SCROLL_TEXT)).thenReturn(countersPage);
 
 		WidgetLoaded countersLogEvent = new WidgetLoaded();
-		countersLogEvent.setGroupId(COUNTERS_LOG_GROUP_ID);
+		countersLogEvent.setGroupId(GENERIC_SCROLL_GROUP_ID);
 		chatCommandsPlugin.onWidgetLoaded(countersLogEvent);
 		chatCommandsPlugin.onGameTick(GameTick.INSTANCE);
 
@@ -559,7 +574,7 @@ public class ChatCommandsPluginTest
 		chatCommandsPlugin.onGameTick(GameTick.INSTANCE);
 
 		WidgetLoaded countersLogEvent = new WidgetLoaded();
-		countersLogEvent.setGroupId(COUNTERS_LOG_GROUP_ID);
+		countersLogEvent.setGroupId(GENERIC_SCROLL_GROUP_ID);
 		chatCommandsPlugin.onWidgetLoaded(countersLogEvent);
 		chatCommandsPlugin.onGameTick(GameTick.INSTANCE);
 

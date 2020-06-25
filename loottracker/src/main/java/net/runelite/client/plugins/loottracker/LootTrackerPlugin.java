@@ -170,6 +170,8 @@ public class LootTrackerPlugin extends Plugin
 	// Seed Pack loot handling
 	private static final String SEEDPACK_EVENT = "Seed pack";
 
+	private static final String CASKET_EVENT = "Casket";
+
 	// Wintertodt loot handling
 	private static final Pattern WINTERTODT_NUMBER_PATTERN = Pattern.compile("Your subdued Wintertodt count is: ([0-9]*).");
 	private static final String WINTERTODT_EVENT = "Wintertodt";
@@ -1128,6 +1130,7 @@ public class LootTrackerPlugin extends Plugin
 			|| HERBIBOAR_EVENT.equals(eventType)
 			|| HESPORI_EVENT.equals(eventType)
 			|| SEEDPACK_EVENT.equals(eventType)
+			|| CASKET_EVENT.equals(eventType)
 			|| GAUNTLET_EVENT.equals(eventType)
 			|| WINTERTODT_EVENT.equals(eventType)
 			|| lootRecordType == LootRecordType.PICKPOCKET)
@@ -1182,6 +1185,13 @@ public class LootTrackerPlugin extends Plugin
 		if (option.equals("Open") && SHADE_CHEST_OBJECTS.containsKey(event.getIdentifier()))
 		{
 			eventType = SHADE_CHEST_OBJECTS.get(event.getIdentifier());
+			lootRecordType = LootRecordType.EVENT;
+			takeInventorySnapshot();
+		}
+
+		if (option.equals("Open") && itemId == ItemID.CASKET)
+		{
+			eventType = CASKET_EVENT;
 			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
 		}

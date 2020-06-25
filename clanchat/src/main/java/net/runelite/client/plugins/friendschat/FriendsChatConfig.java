@@ -36,7 +36,7 @@ public interface FriendsChatConfig extends Config
 	@ConfigItem(
 		keyName = "clanChatIcons",
 		name = "Chat Icons",
-		description = "Show friends chat chat icons next to members.",
+		description = "Show rank icons next to friends chat members.",
 		position = 1
 	)
 	default boolean chatIcons()
@@ -107,10 +107,21 @@ public interface FriendsChatConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "joinLeaveTimeout",
+		name = "Join/Leave timeout",
+		description = "Set the timeout duration of join/leave messages. A value of 0 will make the messages permanent.",
+		position = 6
+	)
+	default int joinLeaveTimeout()
+	{
+		return 20;
+	}
+
+	@ConfigItem(
 		keyName = "privateMessageIcons",
 		name = "Private Message Icons",
 		description = "Add rank icons to private messages received from members.",
-		position = 6
+		position = 7
 	)
 	default boolean privateMessageIcons()
 	{
@@ -121,7 +132,7 @@ public interface FriendsChatConfig extends Config
 		keyName = "publicChatIcons",
 		name = "Public Chat Icons",
 		description = "Add rank icons to public chat messages from members.",
-		position = 7
+		position = 8
 	)
 	default boolean publicChatIcons()
 	{
@@ -131,8 +142,8 @@ public interface FriendsChatConfig extends Config
 	@ConfigItem(
 		keyName = "clanTabChat",
 		name = "Tab Chat",
-		description = "Allows friends chat chat without prepending '/' to messages when on the friends chat tab",
-		position = 8
+		description = "Message friends chat without appending '/' when the friends chat tab is selected.",
+		position = 9
 	)
 	default boolean friendsChatTabChat()
 	{
@@ -140,7 +151,7 @@ public interface FriendsChatConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 9,
+		position = 10,
 		keyName = "clanname",
 		name = "Default Friends Chat name",
 		description = "Friends Chat name to always remember"
@@ -154,7 +165,7 @@ public interface FriendsChatConfig extends Config
 		keyName = "confirmKicks",
 		name = "Confirm Kicks",
 		description = "Shows a chat prompt to confirm kicks",
-		position = 10
+		position = 11
 	)
 	default boolean confirmKicks()
 	{
@@ -165,7 +176,7 @@ public interface FriendsChatConfig extends Config
 		keyName = "kickWithName",
 		name = "Show kicked player",
 		description = "Changes kick message to say who was kicked",
-		position = 10
+		position = 12
 	)
 	default boolean kickWithName()
 	{
@@ -175,8 +186,8 @@ public interface FriendsChatConfig extends Config
 	@ConfigItem(
 		keyName = "showIgnores",
 		name = "Recolor ignored players",
-		description = "Recolors players that are on your ignore list",
-		position = 10
+		description = "Recolor members who are on your ignore list",
+		position = 13
 	)
 	default boolean showIgnores()
 	{
@@ -187,7 +198,7 @@ public interface FriendsChatConfig extends Config
 		keyName = "showIgnoresColor",
 		name = "Ignored color",
 		description = "Allows you to change the color of the ignored players in your friends chat",
-		position = 11
+		position = 14
 	)
 	default Color showIgnoresColor()
 	{

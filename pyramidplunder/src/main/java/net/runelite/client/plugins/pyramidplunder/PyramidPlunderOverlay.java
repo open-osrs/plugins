@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Steffen Hauge <steffen.oerum.hauge@hotmail.com>
+ * Copyright (c) 2020 Mitchell <https://github.com/Mitchell-Kovacs>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,176 +28,141 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.Map;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.GameObject;
 import net.runelite.api.ObjectDefinition;
 import net.runelite.api.Point;
-import net.runelite.api.Tile;
-import net.runelite.api.TileObject;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.CLOSED_DOOR;
-import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.OPENED_DOOR;
-import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.TRAP;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.GRAND_GOLD_CHEST_CLOSED_ID;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.GRAND_GOLD_CHEST_ID;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.SARCOPHAGUS_CLOSED_ID;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.SARCOPHAGUS_ID;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.SPEARTRAP_ID;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.TOMB_DOOR_CLOSED_ID;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.TOMB_DOOR_WALL_IDS;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.URN_CLOSED_IDS;
+import static net.runelite.client.plugins.pyramidplunder.PyramidPlunderPlugin.URN_IDS;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.components.PanelComponent;
-import net.runelite.client.ui.overlay.components.TitleComponent;
-import net.runelite.client.ui.overlay.components.table.TableAlignment;
-import net.runelite.client.ui.overlay.components.table.TableComponent;
-import net.runelite.client.util.ColorUtil;
 
-public class PyramidPlunderOverlay extends Overlay
+class PyramidPlunderOverlay extends Overlay
 {
-	private static final int MAX_DISTANCE = 2400;
-	private static final Color COLOR_DOOR = Color.GREEN;
-	private static final Color COLOR_SPEAR_TRAP = Color.ORANGE;
+	private static final int MAX_DISTANCE = 2350;
 
 	private final Client client;
 	private final PyramidPlunderPlugin plugin;
 	private final PyramidPlunderConfig config;
-	private final PanelComponent panelComponent = new PanelComponent();
-
-	private static final int MAX_TICK_COUNT = 500;
-	private static final double TICK_LENGTH = 0.6;
-
-	private static final NumberFormat TIME_LEFT_FORMATTER = DecimalFormat.getInstance(Locale.US);
-
-	static
-	{
-		((DecimalFormat) TIME_LEFT_FORMATTER).applyPattern("#0.0");
-	}
 
 	@Inject
-	private PyramidPlunderOverlay(final Client client, final PyramidPlunderPlugin plugin, final PyramidPlunderConfig config)
+	private PyramidPlunderOverlay(Client client, PyramidPlunderPlugin plugin, PyramidPlunderConfig config)
 	{
+		super(plugin);
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.isInGame())
+		Widget ppWidget = client.getWidget(WidgetInfo.PYRAMID_PLUNDER_DATA);
+		if (ppWidget == null)
 		{
 			return null;
 		}
 
+		ppWidget.setHidden(config.hideTimer());
+
 		LocalPoint playerLocation = client.getLocalPlayer().getLocalLocation();
+
+		// Highlight convex hulls of urns, chests, and sarcophagus
+		int currentFloor = client.getVar(Varbits.PYRAMID_PLUNDER_ROOM);
+		for (GameObject object : plugin.getObjectsToHighlight())
+		{
+			if (config.highlightUrnsFloor() > currentFloor && URN_IDS.contains(object.getId())
+				|| config.highlightChestFloor() > currentFloor && GRAND_GOLD_CHEST_ID == object.getId()
+				|| config.highlightSarcophagusFloor() > currentFloor && SARCOPHAGUS_ID == object.getId()
+				|| object.getLocalLocation().distanceTo(playerLocation) >= MAX_DISTANCE)
+			{
+				continue;
+			}
+
+			ObjectDefinition imposter = client.getObjectDefinition(object.getId()).getImpostor();
+			if (URN_CLOSED_IDS.contains(imposter.getId())
+				|| GRAND_GOLD_CHEST_CLOSED_ID == imposter.getId()
+				|| SARCOPHAGUS_CLOSED_ID == imposter.getId())
+			{
+				Shape shape = object.getConvexHull();
+
+				if (shape != null)
+				{
+					OverlayUtil.renderPolygon(graphics, shape, config.highlightContainersColor());
+				}
+			}
+		}
+
 		Point mousePosition = client.getMouseCanvasPosition();
 
-		for (Map.Entry<TileObject, Tile> entry : plugin.getHighlighted().entrySet())
+		// Highlight clickboxes of speartraps and tomb doors
+		plugin.getTilesToHighlight().forEach((object, tile) ->
 		{
-			TileObject object = entry.getKey();
-			Tile tile = entry.getValue();
-
-			if (tile.getPlane() == client.getPlane() &&
-				object.getLocalLocation().distanceTo(playerLocation) < MAX_DISTANCE)
+			if (!config.highlightDoors() && TOMB_DOOR_WALL_IDS.contains(object.getId())
+				|| !config.highlightSpeartraps() && SPEARTRAP_ID == object.getId()
+				|| tile.getPlane() != client.getPlane()
+				|| object.getLocalLocation().distanceTo(playerLocation) >= MAX_DISTANCE)
 			{
-				int objectID = object.getId();
-				if (object.getId() == CLOSED_DOOR || object.getId() == OPENED_DOOR)
-				{
-					//Impostor
-					ObjectDefinition comp = client.getObjectDefinition(objectID);
-					ObjectDefinition impostor = comp.getImpostor();
-
-					if (impostor == null)
-					{
-						continue;
-					}
-					objectID = impostor.getId();
-				}
-
-				Shape objectClickbox = object.getClickbox();
-				if (objectClickbox != null)
-				{
-					Color configColor = Color.GREEN;
-					switch (objectID)
-					{
-						case TRAP:
-							configColor = COLOR_SPEAR_TRAP;
-							break;
-						case OPENED_DOOR: // Does this need a overlay?
-						case CLOSED_DOOR:
-							configColor = COLOR_DOOR;
-							break;
-					}
-
-					OverlayUtil.renderClickBox(graphics, mousePosition, objectClickbox, configColor);
-				}
-			}
-		}
-
-		TableComponent tableComponent = new TableComponent();
-		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
-
-		if (config.showPlunderStatus())
-		{
-			final Widget widget = client.getWidget(WidgetInfo.PYRAMID_PLUNDER_DATA);
-			if (widget == null)
-			{
-				return null;
+				return;
 			}
 
-			toggleDefaultWidget(config.hideWidget());
+			Color highlightColor;
+			if (SPEARTRAP_ID == object.getId())
+			{
+				// this varbit is set to 1 when you enter a room and 0 once you get passed the spike traps
+				if (client.getVar(Varbits.PYRAMID_PLUNDER_ROOM_LOCATION) != 1)
+				{
+					return;
+				}
 
-			panelComponent.getChildren().clear();
+				highlightColor = config.highlightSpeartrapsColor();
+			}
+			else
+			{
+				ObjectDefinition imposter = client.getObjectDefinition(object.getId()).getImpostor();
+				if (imposter.getId() != TOMB_DOOR_CLOSED_ID)
+				{
+					return;
+				}
 
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Pyramid Plunder")
-				.build());
+				highlightColor = config.highlightDoorsColor();
+			}
 
-			//Calculate time based on current pp timer tick
-			final int currentTick = client.getVar(Varbits.PYRAMID_PLUNDER_TIMER);
-			final double baseTick = (MAX_TICK_COUNT - currentTick) * TICK_LENGTH;
-			final double timeLeft = Math.max(0.0, baseTick);
-			final String timeLeftStr = TIME_LEFT_FORMATTER.format(timeLeft);
+			Shape objectClickbox = object.getClickbox();
+			if (objectClickbox != null)
+			{
+				if (objectClickbox.contains(mousePosition.getX(), mousePosition.getY()))
+				{
+					graphics.setColor(highlightColor.darker());
+				}
+				else
+				{
+					graphics.setColor(highlightColor);
+				}
 
-			tableComponent.addRow("Time left:", ColorUtil.prependColorTag(timeLeftStr, getColor(currentTick)));
-			tableComponent.addRow("Room:", client.getVar(Varbits.PYRAMID_PLUNDER_ROOM) + "/8");
+				graphics.draw(objectClickbox);
+				graphics.setColor(new Color(highlightColor.getRed(), highlightColor.getGreen(),
+					highlightColor.getBlue(), 50));
+				graphics.fill(objectClickbox);
+			}
+		});
 
-			panelComponent.getChildren().add(tableComponent);
-
-			return panelComponent.render(graphics);
-		}
 		return null;
 	}
-
-	private void toggleDefaultWidget(boolean hide)
-	{
-		final Widget widget = client.getWidget(WidgetInfo.PYRAMID_PLUNDER_DATA);
-
-		if (widget == null)
-		{
-			return;
-		}
-
-		widget.setHidden(hide);
-	}
-
-	private Color getColor(int timeLeft)
-	{
-		if (timeLeft < config.secondWarningTime())
-		{
-			return Color.RED;
-		}
-		else if (timeLeft < config.firstWarningTime())
-		{
-			return Color.YELLOW;
-		}
-
-		return Color.WHITE;
-	}
-
 }

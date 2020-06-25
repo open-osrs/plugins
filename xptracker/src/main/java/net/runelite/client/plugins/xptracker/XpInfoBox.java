@@ -285,6 +285,11 @@ class XpInfoBox extends JPanel implements PopupMenuOwner
 				setStyle(style);
 			}
 
+			if (config.prioritizeRecentXpSkills())
+			{
+				panel.setComponentZOrder(this, 0);
+			}
+
 			paused = skillPaused;
 
 			// Update progress bar
