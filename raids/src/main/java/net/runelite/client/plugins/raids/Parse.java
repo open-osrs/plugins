@@ -24,32 +24,28 @@
  */
 package net.runelite.client.plugins.raids;
 
-import com.google.common.base.Splitter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.util.Text;
 
 @Slf4j
 public class Parse
 {
 	public static boolean parse(String value)
 	{
-		final ArrayList<String> rooms = new ArrayList<>();
-		Collections.addAll(rooms, "tekton", "muttadiles", "guardians", "vespula", "shamans", "vasa", "vanguards", "mystics", "crabs", "ice demon", "tightrope", "thieving", "unknown");
+		final RaidRoom[] rvals = RaidRoom.values();
 
-		List<String> enteredRooms = Splitter
-			.on(",")
-			.trimResults()
-			.omitEmptyStrings()
-			.splitToList(value);
-
-		for (String room : enteredRooms)
+		outer:
+		for (String rv : Text.fromCSV(value))
 		{
-			if (!rooms.contains(room.toLowerCase()))
+			for (final RaidRoom rr : rvals)
 			{
-				return false;
+				if (rv.equalsIgnoreCase(rr.getName()))
+				{
+					continue outer;
+				}
 			}
+
+			return false;
 		}
 
 		return true;
