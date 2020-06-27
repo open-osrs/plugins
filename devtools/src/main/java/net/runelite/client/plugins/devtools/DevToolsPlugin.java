@@ -28,7 +28,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
-import static java.lang.Math.min;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
@@ -67,6 +66,7 @@ import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.MiscUtils;
 import org.pf4j.Extension;
 import org.slf4j.LoggerFactory;
+import static java.lang.Math.min;
 
 @Extension
 @PluginDescriptor(
@@ -425,6 +425,47 @@ public class DevToolsPlugin extends Plugin
 				chatMessageManager.queue(QueuedMessage.builder()
 					.type(ChatMessageType.GAMEMESSAGE)
 					.runeLiteFormattedMessage(new ChatMessageBuilder().append(message).build())
+					.build());
+				break;
+			}
+			case "hintplayer":
+			{
+				// reset target player index so we can actually test it
+				if (args.length == 0)
+				{
+					client.clearHintArrow();
+					chatMessageManager.queue(QueuedMessage.builder()
+						.type(ChatMessageType.GAMEMESSAGE)
+						.runeLiteFormattedMessage("Cleared hint arrow")
+						.build());
+					return;
+				}
+
+				final StringBuilder nameb = new StringBuilder(args[0]);
+				for (int i = 1; i < args.length; i++)
+				{
+					nameb.append(' ')
+						.append(args[i]);
+				}
+
+				final String name = nameb.toString();
+
+				for (Player p : client.getPlayers())
+				{
+					if (name.equalsIgnoreCase(p.getName()))
+					{
+						client.setHintArrow(p);
+						chatMessageManager.queue(QueuedMessage.builder()
+							.type(ChatMessageType.GAMEMESSAGE)
+							.runeLiteFormattedMessage("Added hint arrow for player " + name)
+							.build());
+						return;
+					}
+				}
+				client.clearHintArrow();
+				chatMessageManager.queue(QueuedMessage.builder()
+					.type(ChatMessageType.GAMEMESSAGE)
+					.runeLiteFormattedMessage("Couldn't find " + name)
 					.build());
 				break;
 			}
