@@ -33,7 +33,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import com.google.common.primitives.Shorts;
 import com.google.inject.Provides;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -53,11 +52,11 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
+import net.runelite.api.KeyCode;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.events.DraggingWidgetChanged;
-import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GrandExchangeSearched;
 import net.runelite.api.events.ItemContainerChanged;
@@ -78,8 +77,6 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
-import net.runelite.client.input.KeyListener;
-import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.input.MouseWheelListener;
 import net.runelite.client.plugins.Plugin;
@@ -102,7 +99,7 @@ import org.pf4j.Extension;
 	type = PluginType.UTILITY
 )
 @PluginDependency(ClueScrollPlugin.class)
-public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyListener
+public class BankTagsPlugin extends Plugin implements MouseWheelListener
 {
 	public static final String CONFIG_GROUP = "banktags";
 	public static final String TAG_SEARCH = "tag:";
@@ -155,15 +152,11 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	private BankSearch bankSearch;
 
 	@Inject
-	private KeyManager keyManager;
-
-	@Inject
 	private SpriteManager spriteManager;
 
 	@Inject
 	private ConfigManager configManager;
 
-	private boolean shiftPressed = false;
 	private int nextRowIndex = 0;
 
 	@Provides
@@ -206,7 +199,6 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	public void startUp()
 	{
 		cleanConfig();
-		keyManager.registerKeyListener(this);
 		mouseManager.registerMouseWheelListener(this);
 		clientThread.invokeLater(tabInterface::init);
 		spriteManager.addSpriteOverrides(TabSprites.values());
@@ -215,12 +207,10 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	@Override
 	public void shutDown()
 	{
-		keyManager.unregisterKeyListener(this);
 		mouseManager.unregisterMouseWheelListener(this);
 		clientThread.invokeLater(tabInterface::destroy);
 		spriteManager.removeSpriteOverrides(TabSprites.values());
 
-		shiftPressed = false;
 		itemQuantities.clear();
 	}
 
@@ -320,7 +310,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 		String[] stringStack = client.getStringStack();
 		int intStackSize = client.getIntStackSize();
 		int stringStackSize = client.getStringStackSize();
-		
+
 		tabInterface.handleScriptEvent(event);
 
 		switch (eventName)
@@ -571,6 +561,7 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 	@Subscribe
 	private void onDraggingWidgetChanged(DraggingWidgetChanged event)
 	{
+		final boolean shiftPressed = client.isKeyPressed(KeyCode.KC_SHIFT);
 		tabInterface.handleDrag(event.isDraggingWidget(), shiftPressed);
 	}
 
@@ -583,43 +574,11 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener, KeyLis
 		}
 	}
 
-	@Subscribe
-	private void onFocusChanged(FocusChanged event)
-	{
-		if (!event.isFocused())
-		{
-			shiftPressed = false;
-		}
-	}
-
 	@Override
 	public MouseWheelEvent mouseWheelMoved(MouseWheelEvent event)
 	{
 		tabInterface.handleWheel(event);
 		return event;
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e)
-	{
-		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
-		{
-			shiftPressed = true;
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
-		{
-			shiftPressed = false;
-		}
 	}
 
 	@VisibleForTesting

@@ -27,7 +27,6 @@ package net.runelite.client.plugins.party;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.KeyCode;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Skill;
@@ -50,7 +50,6 @@ import net.runelite.api.SoundEffectID;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.CommandExecuted;
-import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.callback.ClientThread;
@@ -62,8 +61,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.events.PartyChanged;
-import net.runelite.client.input.KeyListener;
-import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -92,7 +89,7 @@ import org.pf4j.Extension;
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
-public class PartyPlugin extends Plugin implements KeyListener
+public class PartyPlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)
 	private final Map<UUID, PartyData> partyDataMap = Collections.synchronizedMap(new HashMap<>());
@@ -118,9 +115,6 @@ public class PartyPlugin extends Plugin implements KeyListener
 	private PartyPingOverlay partyPingOverlay;
 
 	@Inject
-	private KeyManager keyManager;
-
-	@Inject
 	private WSClient wsClient;
 
 	@Inject
@@ -136,7 +130,7 @@ public class PartyPlugin extends Plugin implements KeyListener
 	private ClientThread clientThread;
 
 	private int lastHp, lastPray;
-	private boolean hotkeyDown, doSync;
+	private boolean doSync;
 	private boolean sendAlert;
 
 	@Override
@@ -153,7 +147,6 @@ public class PartyPlugin extends Plugin implements KeyListener
 		wsClient.registerMessage(SkillUpdate.class);
 		wsClient.registerMessage(TilePing.class);
 		wsClient.registerMessage(LocationUpdate.class);
-		keyManager.registerKeyListener(this);
 		doSync = true; // Delay sync so eventbus can process correctly.
 	}
 
@@ -168,8 +161,6 @@ public class PartyPlugin extends Plugin implements KeyListener
 		wsClient.unregisterMessage(SkillUpdate.class);
 		wsClient.unregisterMessage(TilePing.class);
 		wsClient.unregisterMessage(LocationUpdate.class);
-		keyManager.unregisterKeyListener(this);
-		hotkeyDown = false;
 		doSync = false;
 		sendAlert = false;
 	}
@@ -209,7 +200,7 @@ public class PartyPlugin extends Plugin implements KeyListener
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (!hotkeyDown || client.isMenuOpen() || party.getMembers().isEmpty() || !config.pings())
+		if (!client.isKeyPressed(KeyCode.KC_SHIFT) || client.isMenuOpen() || party.getMembers().isEmpty() || !config.pings())
 		{
 			return;
 		}
@@ -503,39 +494,6 @@ public class PartyPlugin extends Plugin implements KeyListener
 
 			return new PartyData(u, name, worldMapPoint, ColorUtil.fromObject(name));
 		});
-	}
-
-	@Subscribe
-	private void onFocusChanged(FocusChanged event)
-	{
-		if (!event.isFocused())
-		{
-			hotkeyDown = false;
-		}
-	}
-
-	@Override
-	public void keyTyped(KeyEvent keyEvent)
-	{
-
-	}
-
-	@Override
-	public void keyPressed(KeyEvent keyEvent)
-	{
-		if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT)
-		{
-			hotkeyDown = true;
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent keyEvent)
-	{
-		if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT)
-		{
-			hotkeyDown = false;
-		}
 	}
 
 	private void sendInstructionMessage()

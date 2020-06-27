@@ -43,17 +43,16 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicID;
 import net.runelite.api.GraphicsObject;
+import net.runelite.api.KeyCode;
 import net.runelite.api.MenuOpcode;
 import static net.runelite.api.MenuOpcode.MENU_ACTION_DEPRIORITIZE_OFFSET;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.FocusChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GraphicsObjectCreated;
@@ -68,7 +67,6 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -129,16 +127,7 @@ public class NpcIndicatorsPlugin extends Plugin
 	private NpcMinimapOverlay npcMinimapOverlay;
 
 	@Inject
-	private NpcIndicatorsInput inputListener;
-
-	@Inject
-	private KeyManager keyManager;
-
-	@Inject
 	private ClientThread clientThread;
-
-	@Setter(AccessLevel.PACKAGE)
-	private boolean hotKeyPressed = false;
 
 	@Inject
 	private Notifier notifier;
@@ -223,7 +212,6 @@ public class NpcIndicatorsPlugin extends Plugin
 	{
 		overlayManager.add(npcSceneOverlay);
 		overlayManager.add(npcMinimapOverlay);
-		keyManager.registerKeyListener(inputListener);
 		highlights = getHighlights();
 		clientThread.invoke(() ->
 		{
@@ -245,7 +233,6 @@ public class NpcIndicatorsPlugin extends Plugin
 		teleportGraphicsObjectSpawnedThisTick.clear();
 		npcTags.clear();
 		highlightedNpcs.clear();
-		keyManager.unregisterKeyListener(inputListener);
 	}
 
 	@Subscribe
@@ -273,15 +260,6 @@ public class NpcIndicatorsPlugin extends Plugin
 
 		highlights = getHighlights();
 		rebuildAllNpcs();
-	}
-
-	@Subscribe
-	private void onFocusChanged(FocusChanged focusChanged)
-	{
-		if (!focusChanged.isFocused())
-		{
-			hotKeyPressed = false;
-		}
 	}
 
 	@Subscribe
@@ -318,7 +296,7 @@ public class NpcIndicatorsPlugin extends Plugin
 				event.setModified();
 			}
 		}
-		else if (hotKeyPressed && type == MenuOpcode.EXAMINE_NPC.getId())
+		else if (type == MenuOpcode.EXAMINE_NPC.getId() && client.isKeyPressed(KeyCode.KC_SHIFT))
 		{
 			// Add tag option
 			client.insertMenuItem(
