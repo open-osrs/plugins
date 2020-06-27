@@ -319,5 +319,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.Owain }}
-          directory: /home/runner/work/plugins/plugin-hosting
+          directory: /home/runner/work/plugins/plugins/OpenOSRS-plugins-hosting
           repository: open-osrs/plugin-hosting
