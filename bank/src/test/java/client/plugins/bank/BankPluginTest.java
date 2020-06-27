@@ -28,6 +28,7 @@ package client.plugins.bank;
 import com.google.inject.Guice;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
+import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
@@ -39,7 +40,9 @@ import net.runelite.client.config.OpenOSRSConfig;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.bank.BankConfig;
 import net.runelite.client.plugins.bank.BankPlugin;
+import net.runelite.client.plugins.bank.ContainerPrices;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -111,5 +114,32 @@ public class BankPluginTest
 		assertFalse(bankPlugin.valueSearch(itemId, "ge > 0.02b"));
 
 		assertFalse(bankPlugin.valueSearch(itemId, "1000k"));
+	}
+
+	@Test
+	public void testCalculate()
+	{
+		Item coins = new Item(ItemID.COINS_995, Integer.MAX_VALUE);
+
+		Item whip = new Item(ItemID.ABYSSAL_WHIP, 1_000_000_000);
+
+		Item[] items = List.of(
+			coins,
+			whip
+		).toArray(new Item[0]);
+
+		ItemDefinition whipComp = mock(ItemDefinition.class);
+		when(whipComp.getPrice())
+			.thenReturn(7); // 7 * .6 = 4, 4 * 1m overflows
+		when(itemManager.getItemDefinition(ItemID.ABYSSAL_WHIP))
+			.thenReturn(whipComp);
+		when(itemManager.getItemPrice(ItemID.ABYSSAL_WHIP))
+			.thenReturn(3); // 1b * 3 overflows
+
+		final ContainerPrices prices = bankPlugin.calculate(items);
+		assertNotNull(prices);
+
+		assertTrue(prices.getHighAlchPrice() > Integer.MAX_VALUE);
+		assertTrue(prices.getGePrice() > Integer.MAX_VALUE);
 	}
 }
