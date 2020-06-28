@@ -1,5 +1,3 @@
-import ProjectVersions.openosrsVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -25,22 +23,10 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "Special Attack User"
 project.extra["PluginDescription"] = "Automatically enables special attack"
-
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$openosrsVersion")
-    compileOnly("com.openosrs:runelite-client:$openosrsVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
 
 tasks {
     jar {
