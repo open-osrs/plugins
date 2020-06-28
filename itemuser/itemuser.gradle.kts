@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.15"
+version = "0.1.0"
 
 project.extra["PluginName"] = "Item User"
 project.extra["PluginDescription"] = "Automatically uses items on an object"

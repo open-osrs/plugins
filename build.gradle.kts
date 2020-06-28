@@ -75,14 +75,15 @@ subprojects {
             options.encoding = "UTF-8"
         }
 
-        withType<Jar> {
-            doLast {
-                copy {
-                    from("./build/libs/")
-                    into("../release/")
-                }
-            }
-        }
+        /*withType<Jar> {
+             doLast {
+                 copy {
+                     from("./build/libs/")
+                     into("../release/")
+                     into("C:/Users/ben93/.runelite/externalmanager")
+                 }
+             }
+         }*/
 
         withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false

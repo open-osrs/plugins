@@ -2,5 +2,4 @@
 .idea
 .github.idea/
 build/
-release/
 .gradle/

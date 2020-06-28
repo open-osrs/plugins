@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.13"
+version = "0.1.0"
 
 project.extra["PluginName"] = "Item Combiner"
 project.extra["PluginDescription"] = "Automatically uses items on another item"

@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.14"
+version = "0.1.0"
 
 project.extra["PluginName"] = "Prayer Pot Drinker"
 project.extra["PluginDescription"] = "Automatically drink pray potions as needed"

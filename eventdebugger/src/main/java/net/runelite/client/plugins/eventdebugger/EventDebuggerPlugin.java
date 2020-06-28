@@ -66,6 +66,36 @@ public class EventDebuggerPlugin extends Plugin
 			return;
 		}
 
+		if (!config.optionFilter().isEmpty() && !event.getOption().contains(config.optionFilter()))
+		{
+			return;
+		}
+
+		if (!config.targetFilter().isEmpty() && !event.getTarget().contains(config.targetFilter()))
+		{
+			return;
+		}
+
+		if (config.identifierFilter() != -1 && event.getIdentifier() != config.identifierFilter())
+		{
+			return;
+		}
+
+		if (config.opcodeFilter() != -1 && event.getOpcode() != config.opcodeFilter())
+		{
+			return;
+		}
+
+		if (config.param0Filter() != -1 && event.getParam0() != config.param0Filter())
+		{
+			return;
+		}
+
+		if (config.param1Filter() != -1 && event.getParam1() != config.param1Filter())
+		{
+			return;
+		}
+
 		log.info("MenuEntryAdded:");
 		log.info("\tOption:\t" + event.getOption());
 		log.info("\tTarget:\t" + event.getTarget());
