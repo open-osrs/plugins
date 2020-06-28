@@ -1,11 +1,21 @@
-name: ben93riggs/plugins - CI (pr)
+name: ben93riggs/plugins - CI (PR)
 
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize']
 
 jobs:
+  pr-lint:
+    name: PR title
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: PR title lint
+        if: github.event_name == 'pull_request'
+        uses: seferov/pr-lint-action@v1.0.3
+        with:
+          title-regex: '^([\w-/]+): \w+'
+
   build:
     runs-on: ubuntu-latest
     name: Build
