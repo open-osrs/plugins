@@ -1,4 +1,4 @@
-name: ben93riggs/plugins - CI (push)
+name: ben93riggs/plugins - CI (pr)
 
 on:
   push:

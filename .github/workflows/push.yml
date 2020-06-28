@@ -1,4 +1,4 @@
-name: ExternalPlugins - CI (push)
+name: ben93riggs/plugins - CI (push)
 
 on:
   push:
