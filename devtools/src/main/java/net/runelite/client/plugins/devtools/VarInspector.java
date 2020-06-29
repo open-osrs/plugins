@@ -93,8 +93,6 @@ class VarInspector extends JFrame
 	private int lastTick = 0;
 
 	private int[] oldVarps = null;
-	private int[] oldVarps2 = null;
-	private int numVarbits = 10000;
 
 	private Map<Integer, Object> varcs = null;
 
@@ -203,7 +201,7 @@ class VarInspector extends JFrame
 			tracker.add(new JLabel(String.format("%s %s changed: %s -> %s", type.getName(), name, old, neew)));
 
 			// Cull very old stuff
-			for (; tracker.getComponentCount() > MAX_LOG_ENTRIES; )
+			while (tracker.getComponentCount() > MAX_LOG_ENTRIES)
 			{
 				tracker.remove(0);
 			}
@@ -214,47 +212,36 @@ class VarInspector extends JFrame
 
 	private void onVarbitChanged(VarbitChanged ev)
 	{
-		int[] varps = client.getVarps();
+		final int[] varps = client.getVarps().clone();
+		final int numVarbits = client.getVarbitCount();
+		boolean varbitChanged = false;
 
 		// Check varbits
 		for (int i = 0; i < numVarbits; i++)
 		{
-			try
+			int old = client.getVarbitValue(oldVarps, i);
+			int neew = client.getVarbitValue(varps, i);
+			if (old != neew)
 			{
-				int old = client.getVarbitValue(oldVarps, i);
-				int neew = client.getVarbitValue(varps, i);
-				if (old != neew)
-				{
-					// Set the varbit so it doesn't show in the varp changes
-					// However, some varbits share common bits, so we only do it in oldVarps2
-					// Example: 4101 collides with 4104-4129
-					client.setVarbitValue(oldVarps2, i, neew);
+				varbitChanged = true;
 
-					String name = String.format("%d", i);
-					for (Varbits varbit : Varbits.values())
+				String name = String.format("%d", i);
+				for (Varbits varbit : Varbits.values())
+				{
+					if (varbit.getId() == i)
 					{
-						if (varbit.getId() == i)
-						{
-							name = String.format("%s(%d)", varbit.name(), i);
-							break;
-						}
+						name = String.format("%s(%d)", varbit.name(), i);
+						break;
 					}
-					addVarLog(VarType.VARBIT, name, old, neew);
 				}
-			}
-			catch (IndexOutOfBoundsException e)
-			{
-				// We don't know what the last varbit is, so we just hit the end, then set it for future iterations
-				log.debug("Hit OOB at varbit {}", i);
-				numVarbits = i;
-				break;
+				addVarLog(VarType.VARBIT, name, old, neew);
 			}
 		}
 
-		// Check varps
-		for (int i = 0; i < varps.length; i++)
+		if (!varbitChanged)
 		{
-			int old = oldVarps2[i];
+			final int i = ev.getIndex();
+			int old = oldVarps[i];
 			int neew = varps[i];
 			if (old != neew)
 			{
@@ -271,8 +258,7 @@ class VarInspector extends JFrame
 			}
 		}
 
-		System.arraycopy(client.getVarps(), 0, oldVarps, 0, oldVarps.length);
-		System.arraycopy(client.getVarps(), 0, oldVarps2, 0, oldVarps2.length);
+		oldVarps = varps;
 	}
 
 	private void onVarClientIntChanged(VarClientIntChanged e)
@@ -340,11 +326,9 @@ class VarInspector extends JFrame
 		if (oldVarps == null)
 		{
 			oldVarps = new int[client.getVarps().length];
-			oldVarps2 = new int[client.getVarps().length];
 		}
 
 		System.arraycopy(client.getVarps(), 0, oldVarps, 0, oldVarps.length);
-		System.arraycopy(client.getVarps(), 0, oldVarps2, 0, oldVarps2.length);
 		varcs = new HashMap<>(client.getVarcMap());
 
 		// eventBus.register(this);
