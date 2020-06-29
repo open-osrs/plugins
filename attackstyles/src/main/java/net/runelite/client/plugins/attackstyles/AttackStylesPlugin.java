@@ -28,7 +28,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.inject.Provides;
-import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -185,9 +184,9 @@ public class AttackStylesPlugin extends Plugin
 		int currentEquippedWeaponTypeVarbit = client.getVar(Varbits.EQUIPPED_WEAPON_TYPE);
 		int currentCastingModeVarbit = client.getVar(Varbits.DEFENSIVE_CASTING_MODE);
 
-		if (attackStyleVarbit != currentAttackStyleVarbit || equippedWeaponTypeVarbit != currentEquippedWeaponTypeVarbit || castingModeVarbit != currentCastingModeVarbit)
+		if (attackStyleVarbit != currentAttackStyleVarbit || castingModeVarbit != currentCastingModeVarbit)
 		{
-			boolean weaponSwitch = currentEquippedWeaponTypeVarbit == equippedWeaponTypeVarbit;
+			boolean weaponSwitch = currentEquippedWeaponTypeVarbit != equippedWeaponTypeVarbit;
 
 			attackStyleVarbit = currentAttackStyleVarbit;
 			equippedWeaponTypeVarbit = currentEquippedWeaponTypeVarbit;
@@ -286,15 +285,14 @@ public class AttackStylesPlugin extends Plugin
 			{
 				if (warnedSkills.contains(skill))
 				{
-					if (weaponSwitch)
+					if (weaponSwitch && config.warnForWeaponSwitch())
 					{
-						var message = String.format("Warning, flagged attack style detected: %s!", skill.getName());
-						final String rw_message = new ChatMessageBuilder()
-								.append(Color.RED, message)
+						final String message = new ChatMessageBuilder()
+								.append("Warning, flagged attack style detected: " + skill.getName())
 								.build();
 						chatMessageManager.queue(QueuedMessage.builder()
 								.type(ChatMessageType.GAMEMESSAGE)
-								.runeLiteFormattedMessage(rw_message)
+								.runeLiteFormattedMessage(message)
 								.build());
 					}
 					warnedSkillSelected = true;
