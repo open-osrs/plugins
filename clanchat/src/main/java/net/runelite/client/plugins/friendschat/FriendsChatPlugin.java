@@ -101,14 +101,13 @@ public class FriendsChatPlugin extends Plugin
 	private static final int MAX_CHATS = 20;
 	private static final String TITLE = "FC";
 	private static final String RECENT_TITLE = "Recent FCs";
-	private static final int JOIN_LEAVE_DURATION = 20;
 	private static final int MESSAGE_DELAY = 10;
 	private static final CopyOnWriteArrayList<Player> clanMembers = new CopyOnWriteArrayList<>();
 	/**
 	 * queue of temporary messages added to the client
 	 */
 	private final Deque<MemberJoinMessage> joinMessages = new ArrayDeque<>();
-	private Map<String, MemberActivity> activityBuffer = new HashMap<>();
+	private final Map<String, MemberActivity> activityBuffer = new HashMap<>();
 
 	@Inject
 	private Client client;
@@ -329,6 +328,12 @@ public class FriendsChatPlugin extends Plugin
 			return;
 		}
 
+		final int joinLeaveTimeout = config.joinLeaveTimeout();
+		if (joinLeaveTimeout == 0)
+		{
+			return;
+		}
+
 		boolean removed = false;
 
 		for (Iterator<MemberJoinMessage> it = joinMessages.iterator(); it.hasNext(); )
@@ -337,7 +342,7 @@ public class FriendsChatPlugin extends Plugin
 			MessageNode messageNode = joinMessage.getMessageNode();
 			final int createdTick = joinMessage.getTick();
 
-			if (client.getTickCount() > createdTick + JOIN_LEAVE_DURATION)
+			if (client.getTickCount() > createdTick + joinLeaveTimeout)
 			{
 				it.remove();
 

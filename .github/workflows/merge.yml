@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: automerge
-        uses: pascalgn/automerge-action@f84dd310ea4a19890c70a4ff11ab282a872fb94b
+        if: github.event_name == 'pull_request' && github.actor == 'OpenOSRS'
+        uses: pascalgn/automerge-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_FORKS: false
-          LABELS: automated-pull-request
-          AUTOMERGE: automated-pull-request
+          MERGE_LABELS: automated-pull-request
 
   cleanup:
     name: Cleanup
@@ -29,9 +29,10 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo $(jq --raw-output .pull_request.head.ref "$GITHUB_EVENT_PATH"))"
         id: extract_branch
+
       - name: Delete PR head branch
+        if: github.event_name == 'pull_request' && github.actor == 'OpenOSRS'
         uses: dawidd6/action-delete-branch@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.extract_branch.outputs.branch }}
-          be_kind: true
+          branches: ${{ steps.extract_branch.outputs.branch }}
