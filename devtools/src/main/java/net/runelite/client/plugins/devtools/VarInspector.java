@@ -32,7 +32,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -96,14 +95,13 @@ class VarInspector extends JFrame
 
 	private final JPanel tracker = new JPanel();
 
+	private int lastTick = 0;
+
 	/**
 	 * Varp ids mapped to their corresponding varbit ids
 	 */
-	private final int[][] varbits;
-
-	private int lastTick = 0;
-
-	private int[] oldVarps = null;
+	private int[][] varbits;
+	private int[] oldVarps;
 
 	private Map<Integer, Object> varcs = null;
 
@@ -113,8 +111,6 @@ class VarInspector extends JFrame
 		this.client = client;
 		this.clientThread = clientThread;
 		this.eventBus = eventBus;
-		this.varbits = new int[client.getVarps().length][];
-		Arrays.fill(varbits, new int[0]);
 
 		setTitle("RuneLite Var Inspector");
 		setIconImage(ClientUI.ICON);
@@ -230,25 +226,28 @@ class VarInspector extends JFrame
 		final int[] varps = client.getVarps().clone();
 		boolean varbitChanged = false;
 
-		// Check varbits
-		for (int i : varbits[index])
+		if (varbits[index] != null)
 		{
-			int old = client.getVarbitValue(oldVarps, i);
-			int neew = client.getVarbitValue(varps, i);
-			if (old != neew)
+			// Check varbits
+			for (int i : varbits[index])
 			{
-				varbitChanged = true;
-
-				String name = String.valueOf(i);
-				for (Varbits varbit : Varbits.values())
+				int old = client.getVarbitValue(oldVarps, i);
+				int neew = client.getVarbitValue(varps, i);
+				if (old != neew)
 				{
-					if (varbit.getId() == i)
+					varbitChanged = true;
+
+					String name = String.valueOf(i);
+					for (Varbits varbit : Varbits.values())
 					{
-						name = String.format("%s(%d)", varbit.name(), i);
-						break;
+						if (varbit.getId() == i)
+						{
+							name = String.format("%s(%d)", varbit.name(), i);
+							break;
+						}
 					}
+					addVarLog(VarType.VARBIT, name, old, neew);
 				}
-				addVarLog(VarType.VARBIT, name, old, neew);
 			}
 		}
 
@@ -336,12 +335,8 @@ class VarInspector extends JFrame
 
 	public void open()
 	{
-		if (oldVarps == null)
-		{
-			oldVarps = new int[client.getVarps().length];
-		}
-
-		System.arraycopy(client.getVarps(), 0, oldVarps, 0, oldVarps.length);
+		oldVarps = client.getVarps().clone();
+		varbits = new int[oldVarps.length][];
 		varcs = new HashMap<>(client.getVarcMap());
 
 		clientThread.invoke(() ->
@@ -376,8 +371,9 @@ class VarInspector extends JFrame
 		tracker.removeAll();
 		eventBus.unregister(this);
 		setVisible(false);
-		Arrays.fill(varbits, new int[0]);
-		varcs = null;
 
+		oldVarps = null;
+		varbits = null;
+		varcs = null;
 	}
 }
