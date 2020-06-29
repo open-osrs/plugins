@@ -228,8 +228,8 @@ public class NpcSceneOverlay extends Overlay
 					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
 					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
 					renderPoly(graphics, color, tilePoly);
-					break;
 				}
+				break;
 			}
 			case THIN_TRUE_LOCATIONS:
 			{
@@ -245,8 +245,8 @@ public class NpcSceneOverlay extends Overlay
 					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
 					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
 					renderPoly(graphics, color, tilePoly, 1);
-					break;
 				}
+				break;
 			}
 		}
 
