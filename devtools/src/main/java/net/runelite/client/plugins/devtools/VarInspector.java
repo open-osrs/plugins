@@ -32,6 +32,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -52,15 +53,18 @@ import net.runelite.api.Client;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.VarPlayer;
+import net.runelite.api.VarbitDefinition;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.VarClientIntChanged;
 import net.runelite.api.events.VarClientStrChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.FontManager;
+import org.apache.commons.lang3.ArrayUtils;
 
 @Slf4j
 class VarInspector extends JFrame
@@ -83,12 +87,19 @@ class VarInspector extends JFrame
 		}
 	}
 
-	private final static int MAX_LOG_ENTRIES = 10_000;
+	private static final int MAX_LOG_ENTRIES = 10_000;
+	private static final int VARBITS_GROUP = 14;
 
 	private final Client client;
+	private final ClientThread clientThread;
 	private final EventBus eventBus;
 
 	private final JPanel tracker = new JPanel();
+
+	/**
+	 * Varp ids mapped to their corresponding varbit ids
+	 */
+	private final int[][] varbits;
 
 	private int lastTick = 0;
 
@@ -97,10 +108,13 @@ class VarInspector extends JFrame
 	private Map<Integer, Object> varcs = null;
 
 	@Inject
-	VarInspector(Client client, EventBus eventBus, DevToolsPlugin plugin)
+	VarInspector(Client client, ClientThread clientThread, EventBus eventBus, DevToolsPlugin plugin)
 	{
-		this.eventBus = eventBus;
 		this.client = client;
+		this.clientThread = clientThread;
+		this.eventBus = eventBus;
+		this.varbits = new int[client.getVarps().length][];
+		Arrays.fill(varbits, new int[0]);
 
 		setTitle("RuneLite Var Inspector");
 		setIconImage(ClientUI.ICON);
@@ -212,12 +226,12 @@ class VarInspector extends JFrame
 
 	private void onVarbitChanged(VarbitChanged ev)
 	{
+		final int index = ev.getIndex();
 		final int[] varps = client.getVarps().clone();
-		final int numVarbits = client.getVarbitCount();
 		boolean varbitChanged = false;
 
 		// Check varbits
-		for (int i = 0; i < numVarbits; i++)
+		for (int i : varbits[index])
 		{
 			int old = client.getVarbitValue(oldVarps, i);
 			int neew = client.getVarbitValue(varps, i);
@@ -225,7 +239,7 @@ class VarInspector extends JFrame
 			{
 				varbitChanged = true;
 
-				String name = String.format("%d", i);
+				String name = String.valueOf(i);
 				for (Varbits varbit : Varbits.values())
 				{
 					if (varbit.getId() == i)
@@ -240,17 +254,16 @@ class VarInspector extends JFrame
 
 		if (!varbitChanged)
 		{
-			final int i = ev.getIndex();
-			int old = oldVarps[i];
-			int neew = varps[i];
-			if (old != neew)
+			int old = oldVarps[index];
+			int neew = varps[index];
+			if (old != neew) // Is this ever not true?
 			{
-				String name = String.format("%d", i);
+				String name = String.valueOf(index);
 				for (VarPlayer varp : VarPlayer.values())
 				{
-					if (varp.getId() == i)
+					if (varp.getId() == index)
 					{
-						name = String.format("%s(%d)", varp.name(), i);
+						name = String.format("%s(%d)", varp.name(), index);
 						break;
 					}
 				}
@@ -331,7 +344,24 @@ class VarInspector extends JFrame
 		System.arraycopy(client.getVarps(), 0, oldVarps, 0, oldVarps.length);
 		varcs = new HashMap<>(client.getVarcMap());
 
-		// eventBus.register(this);
+		clientThread.invoke(() ->
+		{
+			int n = 0;
+
+			for (final int id : client.getConfigArchive().getFileIds(VARBITS_GROUP))
+			{
+				final VarbitDefinition def = client.getVarbitDefinition(id);
+				if (def != null)
+				{
+					final int index = def.getIndex();
+					varbits[index] = ArrayUtils.add(varbits[index], id);
+					++n;
+				}
+			}
+
+			log.debug("{} varbit definitions mapped to their corresponding varp", n);
+		});
+
 		eventBus.subscribe(VarbitChanged.class, this, this::onVarbitChanged);
 		eventBus.subscribe(VarClientIntChanged.class, this, this::onVarClientIntChanged);
 		eventBus.subscribe(VarClientStrChanged.class, this, this::onVarClientStrChanged);
@@ -346,5 +376,8 @@ class VarInspector extends JFrame
 		tracker.removeAll();
 		eventBus.unregister(this);
 		setVisible(false);
+		Arrays.fill(varbits, new int[0]);
+		varcs = null;
+
 	}
 }
