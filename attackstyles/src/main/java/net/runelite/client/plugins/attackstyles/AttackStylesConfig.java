@@ -45,7 +45,7 @@ public interface AttackStylesConfig extends Config
 	@ConfigItem(
 		keyName = "warnForWeaponSwitch",
 		name = "Warn for weapon switch",
-		description = "Show flagged attack style warning when weapon switching",
+		description = "Show flagged attack style warning in chat when weapon switching causes your selected attack style to change to a warned one",
 		position = 2
 	)
 	default boolean warnForWeaponSwitch()
