@@ -1,8 +1,6 @@
 package net.runelite.client.plugins.chattranslation;
 
 import com.google.inject.Provides;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,27 +9,20 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
-import net.runelite.api.MessageNode;
-import static net.runelite.api.ScriptID.CHATBOX_INPUT;
-import net.runelite.api.VarClientStr;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.util.Text;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ChatboxInput;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.input.KeyListener;
-import net.runelite.client.input.KeyManager;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @Extension
@@ -41,7 +32,7 @@ import org.pf4j.Extension;
 	tags = {"translate", "language", "english", "spanish", "dutch", "french", "welsh", "german"},
 	type = PluginType.MISCELLANEOUS
 )
-public class ChatTranslationPlugin extends Plugin implements KeyListener
+public class ChatTranslationPlugin extends Plugin
 {
 	private static final Object PUBLIC = new Object();
 	private static final Object OPTION = new Object();
@@ -50,29 +41,22 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 	// TODO: Find out if "Remove friend" is correct here, aka if clan tab should have the Translate option
 	private static final List<String> AFTER_OPTIONS = List.of("Message", "Add ignore", "Remove friend", "Kick");
 
-	private final Translator translator = new Translator();
 	private final Set<String> playerNames = new HashSet<>();
 
 	@Inject
 	private Client client;
 
 	@Inject
-	private ClientThread clientThread;
-
-	@Inject
 	private MenuManager menuManager;
-
-	@Inject
-	private ChatMessageManager chatMessageManager;
-
-	@Inject
-	private KeyManager keyManager;
 
 	@Inject
 	private ChatTranslationConfig config;
 
 	@Inject
 	private EventBus eventBus;
+
+	@Inject
+	private Translator translator;
 
 	@Provides
 	ChatTranslationConfig provideConfig(ConfigManager configManager)
@@ -88,7 +72,7 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 
 		if (config.playerChat())
 		{
-			keyManager.registerKeyListener(this);
+			eventBus.subscribe(ChatboxInput.class, this, this::onChatSent);
 		}
 
 		if (config.publicChat())
@@ -114,8 +98,8 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 	{
 		eventBus.unregister(OPTION);
 		eventBus.unregister(PUBLIC);
+		eventBus.unregister(this);
 		menuManager.removePlayerMenuItem(TRANSLATE);
-		keyManager.unregisterKeyListener(this);
 		playerNames.clear();
 	}
 
@@ -165,11 +149,11 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 			case "playerChat":
 				if (config.playerChat())
 				{
-					keyManager.registerKeyListener(this);
+					eventBus.subscribe(ChatboxInput.class, this, this::onChatSent);
 				}
 				else
 				{
-					keyManager.unregisterKeyListener(this);
+					eventBus.unregister(this);
 				}
 				break;
 			case "playerTargetLanguage":
@@ -189,18 +173,12 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 				continue;
 			}
 
-			MenuEntry[] newEntries = new MenuEntry[entries.length + 1];
+			final MenuEntry entry = entries[i].clone();
+			entry.setOption(TRANSLATE);
+			entry.setOpcode(MenuOpcode.RUNELITE.getId());
 
-			System.arraycopy(entries, 0, newEntries, 0, i + 1);
-			System.arraycopy(entries, i, newEntries, i + 1, entries.length - i);
-
-			newEntries[i] = newEntries[i].clone();
-			newEntries[i].setOption(TRANSLATE);
-			newEntries[i].setOpcode(MenuOpcode.RUNELITE.getId());
-
-			event.setMenuEntries(newEntries);
+			event.setMenuEntries(ArrayUtils.insert(i, entries, entry));
 			event.setModified();
-
 			return;
 		}
 	}
@@ -246,73 +224,17 @@ public class ChatTranslationPlugin extends Plugin implements KeyListener
 			return;
 		}
 
-		final String message = chatMessage.getMessage();
-
-		try
-		{
-			final String translation = translator.translateIncoming(message);
-			final MessageNode messageNode = chatMessage.getMessageNode();
-			messageNode.setRuneLiteFormatMessage(translation);
-			chatMessageManager.update(messageNode);
-		}
-		catch (IOException ignored)
-		{
-		}
-
-		client.refreshChat();
+		translator.translateIncoming(chatMessage);
 	}
 
-	@Override
-	public void keyTyped(KeyEvent e)
+	private void onChatSent(ChatboxInput input)
 	{
-		// Nothing.
-	}
-
-	@Override
-	public void keyPressed(KeyEvent event)
-	{
-		if (client.getGameState() != GameState.LOADING && client.getGameState() != GameState.LOGGED_IN)
+		if (translator.isSending())
 		{
 			return;
 		}
 
-		final Widget chatboxParent = client.getWidget(WidgetInfo.CHATBOX_PARENT);
-
-		if (chatboxParent == null || chatboxParent.getOnKeyListener() == null || event.getKeyCode() != 0xA)
-		{
-			return;
-		}
-
-		final String message = client.getVar(VarClientStr.CHATBOX_TYPED_TEXT);
-		final String translated;
-
-		try
-		{
-			translated = translator.translateOutgoing(message);
-		}
-		catch (IOException e)
-		{
-			return;
-		}
-
-		if (message.startsWith("/"))
-		{
-			client.setVar(VarClientStr.CHATBOX_TYPED_TEXT, translated.startsWith("/") ? translated : "/" + translated);
-			return;
-		}
-
-		event.consume();
-
-		client.setVar(VarClientStr.CHATBOX_TYPED_TEXT, translated);
-
-		clientThread.invoke(() -> client.runScript(CHATBOX_INPUT, 0, translated));
-
-		client.setVar(VarClientStr.CHATBOX_TYPED_TEXT, "");
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-		// Nothing.
+		input.setStop();
+		translator.translateOutgoing(input);
 	}
 }
