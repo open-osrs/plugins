@@ -25,14 +25,12 @@
 package net.runelite.client.plugins.antidrag;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import net.runelite.api.Constants;
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Keybind;
-import net.runelite.client.config.ModifierlessKeybind;
 
 @ConfigGroup("antiDrag")
 public interface AntiDragConfig extends Config
@@ -86,7 +84,7 @@ public interface AntiDragConfig extends Config
 	)
 	default Keybind key()
 	{
-		return new ModifierlessKeybind(KeyEvent.VK_SHIFT, 0);
+		return Keybind.SHIFT;
 	}
 
 	@ConfigItem(

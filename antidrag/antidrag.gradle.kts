@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.8"
+version = "0.0.9"
 
 project.extra["PluginName"] = "Anti Drag"
 project.extra["PluginDescription"] = "Prevent dragging an item for a specified delay"
