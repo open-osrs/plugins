@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
@@ -62,8 +63,6 @@ class BarrowsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		Widget puzzleAnswer = plugin.getPuzzleAnswer();
-
 		if (config.showBrotherLoc())
 		{
 			renderBarrowsBrothers(graphics);
@@ -71,10 +70,10 @@ class BarrowsOverlay extends Overlay
 
 		if (config.showDigLocation())
 		{
-
 			renderDigLocations(graphics);
 		}
 
+		Widget puzzleAnswer = plugin.getPuzzleAnswer();
 		if (puzzleAnswer != null && config.showPuzzleAnswer() && !puzzleAnswer.isHidden())
 		{
 			Rectangle answerRect = puzzleAnswer.getBounds();
@@ -97,7 +96,7 @@ class BarrowsOverlay extends Overlay
 			}
 
 			String brotherLetter = Character.toString(brother.getName().charAt(0));
-			net.runelite.api.Point minimapText = Perspective.getCanvasTextMiniMapLocation(client, graphics,
+			Point minimapText = Perspective.getCanvasTextMiniMapLocation(client, graphics,
 				localLocation, brotherLetter);
 
 			if (minimapText != null)
@@ -134,7 +133,6 @@ class BarrowsOverlay extends Overlay
 			{
 				graphics.setColor(config.deadBrotherLocColor());
 			}
-
 			else
 			{
 				graphics.setColor(config.brotherLocColor());
@@ -143,11 +141,8 @@ class BarrowsOverlay extends Overlay
 			List<Polygon> pList = Perspective.getLinePolyList(client, brother.getDigLocationStart(), brother.getDigLocationEnd());
 			for (Polygon p : pList)
 			{
-				if (p != null)
-				{
-					graphics.setStroke(new BasicStroke(0.1F));
-					graphics.draw(p);
-				}
+				graphics.setStroke(new BasicStroke(0.1F));
+				graphics.draw(p);
 			}
 		}
 	}
