@@ -35,11 +35,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import javax.inject.Named;
 import net.runelite.api.Client;
-import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.client.Notifier;
 import net.runelite.client.RuneLite;
 import net.runelite.client.config.ChatColorConfig;
 import net.runelite.client.config.OpenOSRSConfig;
@@ -51,7 +51,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -65,6 +64,10 @@ public class NpcIndicatorsPluginTest
 	@Mock
 	@Bind
 	private ScheduledExecutorService executorService;
+
+	@Mock
+	@Bind
+	private Notifier notifier;
 
 	@Mock
 	@Bind
@@ -125,13 +128,11 @@ public class NpcIndicatorsPluginTest
 
 		when(client.getCachedNPCs()).thenReturn(new NPC[]{npc}); // id 0
 
-		when(client.getMenuEntries()).thenReturn(new MenuEntry[]{new MenuEntry()});
-		MenuEntryAdded menuEntryAdded = new MenuEntryAdded("", "Goblin", MenuOpcode.NPC_FIRST_OPTION.getId(), 0, -1, -1, false);
+		MenuEntryAdded menuEntryAdded = new MenuEntryAdded("", "Goblin", 0, MenuOpcode.NPC_FIRST_OPTION.getId(), -1, -1, false);
 		npcIndicatorsPlugin.onMenuEntryAdded(menuEntryAdded);
 
-		MenuEntry target = new MenuEntry();
-		target.setTarget("<col=ff0000>Goblin"); // red
-		verify(client).setMenuEntries(new MenuEntry[]{target});
+		assert menuEntryAdded.isModified();
+		assertEquals("<col=ff0000>Goblin", menuEntryAdded.getTarget()); // blue
 	}
 
 	@Test
@@ -151,12 +152,10 @@ public class NpcIndicatorsPluginTest
 
 		when(client.getCachedNPCs()).thenReturn(new NPC[]{npc}); // id 0
 
-		when(client.getMenuEntries()).thenReturn(new MenuEntry[]{new MenuEntry()});
-		MenuEntryAdded menuEntryAdded = new MenuEntryAdded("", "Goblin", MenuOpcode.NPC_FIRST_OPTION.getId(), 0, -1, -1, false);
+		MenuEntryAdded menuEntryAdded = new MenuEntryAdded("", "Goblin", 0, MenuOpcode.NPC_FIRST_OPTION.getId(), -1, -1, false);
 		npcIndicatorsPlugin.onMenuEntryAdded(menuEntryAdded);
 
-		MenuEntry target = new MenuEntry();
-		target.setTarget("<col=0000ff>Goblin"); // blue
-		verify(client).setMenuEntries(new MenuEntry[]{target});
+		assert menuEntryAdded.isModified();
+		assertEquals("<col=0000ff>Goblin", menuEntryAdded.getTarget()); // blue
 	}
 }
