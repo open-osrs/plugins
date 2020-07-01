@@ -27,27 +27,18 @@ package net.runelite.client.plugins.barrows;
 import com.google.common.collect.Sets;
 import com.google.inject.Provides;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Client;
-import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.SpriteID;
-import net.runelite.api.WallObject;
-import net.runelite.api.events.GameObjectChanged;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.WallObjectChanged;
-import net.runelite.api.events.WallObjectDespawned;
-import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -84,7 +75,6 @@ public class BarrowsPlugin extends Plugin
 			NullObjectID.NULL_20714, NullObjectID.NULL_20715, NullObjectID.NULL_20728, NullObjectID.NULL_20730
 		);
 
-	private static final Set<Integer> BARROWS_LADDERS = Sets.newHashSet(NullObjectID.NULL_20675, NullObjectID.NULL_20676, NullObjectID.NULL_20677);
 	private static final List<WidgetInfo> POSSIBLE_SOLUTIONS = List.of(
 		WidgetInfo.BARROWS_PUZZLE_ANSWER1,
 		WidgetInfo.BARROWS_PUZZLE_ANSWER2,
@@ -93,12 +83,6 @@ public class BarrowsPlugin extends Plugin
 
 	private static final long PRAYER_DRAIN_INTERVAL_MS = 18200;
 	private static final int CRYPT_REGION_ID = 14231;
-
-	@Getter(AccessLevel.PACKAGE)
-	private final Set<WallObject> walls = new HashSet<>();
-
-	@Getter(AccessLevel.PACKAGE)
-	private final Set<GameObject> ladders = new HashSet<>();
 
 	private LoopTimer barrowsPrayerDrainTimer;
 	private boolean wasInCrypt = false;
@@ -145,8 +129,6 @@ public class BarrowsPlugin extends Plugin
 	{
 		overlayManager.remove(barrowsOverlay);
 		overlayManager.remove(brotherOverlay);
-		walls.clear();
-		ladders.clear();
 		puzzleAnswer = null;
 		wasInCrypt = false;
 		stopPrayerDrainTimer();
@@ -178,74 +160,11 @@ public class BarrowsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onWallObjectSpawned(WallObjectSpawned event)
-	{
-		WallObject wallObject = event.getWallObject();
-		if (BARROWS_WALLS.contains(wallObject.getId()))
-		{
-			walls.add(wallObject);
-		}
-	}
-
-	@Subscribe
-	private void onWallObjectChanged(WallObjectChanged event)
-	{
-		WallObject previous = event.getPrevious();
-		WallObject wallObject = event.getWallObject();
-
-		walls.remove(previous);
-		if (BARROWS_WALLS.contains(wallObject.getId()))
-		{
-			walls.add(wallObject);
-		}
-	}
-
-	@Subscribe
-	private void onWallObjectDespawned(WallObjectDespawned event)
-	{
-		WallObject wallObject = event.getWallObject();
-		walls.remove(wallObject);
-	}
-
-	@Subscribe
-	private void onGameObjectSpawned(GameObjectSpawned event)
-	{
-		GameObject gameObject = event.getGameObject();
-		if (BARROWS_LADDERS.contains(gameObject.getId()))
-		{
-			ladders.add(gameObject);
-		}
-	}
-
-	@Subscribe
-	private void onGameObjectChanged(GameObjectChanged event)
-	{
-		GameObject previous = event.getPrevious();
-		GameObject gameObject = event.getGameObject();
-
-		ladders.remove(previous);
-		if (BARROWS_LADDERS.contains(gameObject.getId()))
-		{
-			ladders.add(gameObject);
-		}
-	}
-
-	@Subscribe
-	private void onGameObjectDespawned(GameObjectDespawned event)
-	{
-		GameObject gameObject = event.getGameObject();
-		ladders.remove(gameObject);
-	}
-
-	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
 		if (event.getGameState() == GameState.LOADING)
 		{
 			wasInCrypt = isInCrypt();
-			// on region changes the tiles get set to null
-			walls.clear();
-			ladders.clear();
 			puzzleAnswer = null;
 		}
 		else if (event.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null)

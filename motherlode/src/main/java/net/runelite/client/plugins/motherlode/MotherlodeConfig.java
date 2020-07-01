@@ -200,27 +200,4 @@ public interface MotherlodeConfig extends Config
 	{
 		return false;
 	}
-
-	@ConfigTitleSection(
-		keyName = "weirdTitle",
-		name = "Weird",
-		description = "",
-		position = 15
-	)
-	default Title weirdTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-		keyName = "payDirtMsg",
-		name = "Pay-dirt!",
-		description = "Send a public message saying \"Pay-dirt!\" every time a dwarf says \"Pay-dirt!\"",
-		position = 16,
-		titleSection = "weirdTitle"
-	)
-	default boolean payDirtMsg()
-	{
-		return false;
-	}
 }
