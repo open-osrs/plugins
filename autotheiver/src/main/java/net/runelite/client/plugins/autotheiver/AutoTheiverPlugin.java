@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.ardyknighttheiver;
+package net.runelite.client.plugins.autotheiver;
 
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
@@ -12,21 +12,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
-import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.widgets.WidgetItem;
@@ -36,25 +31,23 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import static net.runelite.client.plugins.ardyknighttheiver.HealthCheckStyle.EXACT_HEALTH;
-import static net.runelite.client.plugins.ardyknighttheiver.HealthCheckStyle.PERCENTAGE;
 import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Ardy Knight Theiver",
-	description = "Automatically theives ardy knights",
-	tags = {"knight", "theiver", "theiving", "ardy", "ardougne", "skill", "skilling"},
+	name = "Auto Theiver",
+	description = "Automatically theives npcs",
+	tags = {"auto", "theiver", "theiving", "skill", "skilling"},
 	enabledByDefault = false,
 	type = PluginType.SKILLING
 )
-public class ArdyKnightTheiverPlugin extends Plugin
+public class AutoTheiverPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private ArdyKnightTheiverConfig config;
+	private AutoTheiverConfig config;
 
 	@Inject
 	private ItemManager itemManager;
@@ -75,9 +68,9 @@ public class ArdyKnightTheiverPlugin extends Plugin
 		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Provides
-	ArdyKnightTheiverConfig provideConfig(final ConfigManager configManager)
+	AutoTheiverConfig provideConfig(final ConfigManager configManager)
 	{
-		return configManager.getConfig(ArdyKnightTheiverConfig.class);
+		return configManager.getConfig(AutoTheiverConfig.class);
 	}
 
 	@Override
@@ -94,7 +87,7 @@ public class ArdyKnightTheiverPlugin extends Plugin
 	@Subscribe
 	public void onConfigButtonClicked(ConfigButtonClicked event)
 	{
-		if (!event.getGroup().equals("ardyknighttheiver"))
+		if (!event.getGroup().equals("autotheiver"))
 		{
 			return;
 		}
@@ -161,18 +154,18 @@ public class ArdyKnightTheiverPlugin extends Plugin
 			return;
 		}
 
-		NPC knight = new NPCQuery()
-			.idEquals(NpcID.KNIGHT_OF_ARDOUGNE)
+		NPC npc = new NPCQuery()
+			.idEquals(config.npcId())
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 
-		if (knight == null)
+		if (npc == null)
 		{
 			return;
 		}
 
 		//String option, String target, int identifier, int opcode, int param0, int param1, boolean forceLeftClick
-		entry = new MenuEntry("Pickpocket", "<col=ffff00>" + knight.getName() + "<col=ff00>  (level-" + knight.getCombatLevel() + ")", knight.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
+		entry = new MenuEntry("Pickpocket", "<col=ffff00>" + npc.getName() + "<col=ff00>  (level-" + npc.getCombatLevel() + ")", npc.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
 		click();
 		tickDelay = 1;
 	}

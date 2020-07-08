@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.ardyknighttheiver;
+package net.runelite.client.plugins.autotheiver;
 
 public enum HealthCheckStyle
 {

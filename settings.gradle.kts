@@ -1,6 +1,6 @@
 rootProject.name = "ben93riggs Plugins"
 
-include(":ardyknighttheiver")
+include(":autotheiver")
 include(":ardyironpowerminer")
 include(":cannonreloader")
 include(":eventdebugger")

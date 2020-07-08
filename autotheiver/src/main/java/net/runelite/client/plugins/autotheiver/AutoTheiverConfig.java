@@ -1,13 +1,12 @@
-package net.runelite.client.plugins.ardyknighttheiver;
+package net.runelite.client.plugins.autotheiver;
 
 import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitleSection;
 
-@ConfigGroup("ardyknighttheiver")
-public interface ArdyKnightTheiverConfig extends Config
+@ConfigGroup("autotheiver")
+public interface AutoTheiverConfig extends Config
 {
 	@ConfigItem(
 		keyName = "hpCheckStyle",
@@ -44,10 +43,18 @@ public interface ArdyKnightTheiverConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "npcId",
+		name = "NPC ID",
+		description = "",
+		position = 3
+	)
+	default int npcId() { return 3297; }
+
+	@ConfigItem(
 		keyName = "clickDelayMin",
 		name = "Delay Min (Ticks)",
 		description = "The minimum delay (in ticks)",
-		position = 3
+		position = 4
 	)
 	default int clickDelayMin()
 	{
@@ -58,7 +65,7 @@ public interface ArdyKnightTheiverConfig extends Config
 		keyName = "clickDelayMax",
 		name = "Delay Max (Ticks)",
 		description = "The maximum delay (in ticks)",
-		position = 4
+		position = 5
 	)
 	default int clickDelayMax()
 	{
