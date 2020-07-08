@@ -66,32 +66,32 @@ public class EventDebuggerPlugin extends Plugin
 			return;
 		}
 
-		if (!config.optionFilter().isEmpty() && !event.getOption().contains(config.optionFilter()))
+		if (config.optionCheckbox() && !event.getOption().contains(config.optionFilter()))
 		{
 			return;
 		}
 
-		if (!config.targetFilter().isEmpty() && !event.getTarget().contains(config.targetFilter()))
+		if (config.targetCheckbox() && !event.getTarget().contains(config.targetFilter()))
 		{
 			return;
 		}
 
-		if (config.identifierFilter() != -1 && event.getIdentifier() != config.identifierFilter())
+		if (config.identifierCheckbox() && event.getIdentifier() != config.identifierFilter())
 		{
 			return;
 		}
 
-		if (config.opcodeFilter() != -1 && event.getOpcode() != config.opcodeFilter())
+		if (config.opcodeCheckbox() && event.getOpcode() != config.opcodeFilter())
 		{
 			return;
 		}
 
-		if (config.param0Filter() != -1 && event.getParam0() != config.param0Filter())
+		if (config.param0Checkbox() && event.getParam0() != config.param0Filter())
 		{
 			return;
 		}
 
-		if (config.param1Filter() != -1 && event.getParam1() != config.param1Filter())
+		if (config.param1Checkbox() && event.getParam1() != config.param1Filter())
 		{
 			return;
 		}
