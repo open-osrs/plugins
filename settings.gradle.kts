@@ -1,5 +1,6 @@
 rootProject.name = "ben93riggs Plugins"
 
+include(":ardyironpowerminer")
 include(":cannonreloader")
 include(":eventdebugger")
 include(":foodeater")
