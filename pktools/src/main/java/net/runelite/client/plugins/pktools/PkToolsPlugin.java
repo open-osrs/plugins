@@ -78,9 +78,6 @@ public class PkToolsPlugin extends Plugin
 	@Inject
 	private KeyManager keyManager;
 
-	@Inject
-	public ItemManager itemManager;
-
 	@Getter(AccessLevel.PACKAGE)
 	public Player lastEnemy;
 
