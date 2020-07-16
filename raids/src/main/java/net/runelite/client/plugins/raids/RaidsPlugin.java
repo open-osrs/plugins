@@ -90,6 +90,8 @@ import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.plugins.raids.events.RaidReset;
+import net.runelite.client.plugins.raids.events.RaidScouted;
 import net.runelite.client.plugins.raids.solver.Layout;
 import net.runelite.client.plugins.raids.solver.LayoutSolver;
 import net.runelite.client.plugins.raids.solver.RotationSolver;
@@ -671,6 +673,7 @@ public class RaidsPlugin extends Plugin
 
 			if (inRaidChambers)
 			{
+				boolean firstSolve = (raid == null);
 				raid = buildRaid();
 
 				if (raid == null)
@@ -718,6 +721,8 @@ public class RaidsPlugin extends Plugin
 							break;
 					}
 				}
+
+				eventBus.post(RaidScouted.class, new RaidScouted(raid, firstSolve));
 			}
 			else if (!config.scoutOverlayAtBank())
 			{
@@ -1110,6 +1115,8 @@ public class RaidsPlugin extends Plugin
 		widgetOverlay = null;
 		raidStarted = false;
 		timer = null;
+
+		eventBus.post(RaidReset.class, RaidReset.INSTANCE);
 	}
 
 	private int timeToSeconds(String s)

@@ -28,20 +28,26 @@ import com.google.inject.Guice;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import static net.runelite.api.ChatMessageType.GAMEMESSAGE;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Hitsplat;
 import net.runelite.api.MessageNode;
+import net.runelite.api.NPC;
+import net.runelite.api.NPCDefinition;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.Widget;
@@ -735,5 +741,79 @@ public class SlayerPluginTest
 		assertEquals("bandits", slayerPlugin.getCurrentTask().getTaskName());
 		assertEquals(99, slayerPlugin.getCurrentTask().getAmount());
 		assertEquals("Wilderness", slayerPlugin.getCurrentTask().getTaskLocation());
+	}
+
+	@Test
+	public void updateInitialAmount()
+	{
+		Widget npcDialog = mock(Widget.class);
+		when(npcDialog.getText()).thenReturn(TASK_EXISTING);
+		when(client.getWidget(WidgetInfo.DIALOG_NPC_TEXT)).thenReturn(npcDialog);
+		slayerPlugin.onGameTick(GameTick.INSTANCE);
+
+		assertEquals(222, slayerPlugin.getCurrentTask().getInitialAmount());
+	}
+
+	@Test
+	public void testMultikill()
+	{
+		final Player player = mock(Player.class);
+		when(player.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
+		when(client.getLocalPlayer()).thenReturn(player);
+
+		// Setup xp cache
+		StatChanged statChanged = new StatChanged(
+			Skill.SLAYER,
+			0,
+			1,
+			1
+		);
+		slayerPlugin.onStatChanged(statChanged);
+
+		NPCDefinition npcDefinition = mock(NPCDefinition.class);
+		when(npcDefinition.getActions()).thenReturn(new String[]{"Attack"});
+
+		NPC npc1 = mock(NPC.class);
+		when(npc1.getName()).thenReturn("Suqah");
+		when(npc1.getTransformedDefinition()).thenReturn(npcDefinition);
+
+		NPC npc2 = mock(NPC.class);
+		when(npc2.getName()).thenReturn("Suqah");
+		when(npc2.getTransformedDefinition()).thenReturn(npcDefinition);
+
+		when(client.getNpcs()).thenReturn(Arrays.asList(npc1, npc2));
+
+		// Set task
+		Widget npcDialog = mock(Widget.class);
+		when(npcDialog.getText()).thenReturn(TASK_NEW);
+		when(client.getWidget(WidgetInfo.DIALOG_NPC_TEXT)).thenReturn(npcDialog);
+		slayerPlugin.onGameTick(GameTick.INSTANCE);
+
+		// Damage both npcs
+		Hitsplat hitsplat = new Hitsplat(Hitsplat.HitsplatType.DAMAGE_ME, 1, 1);
+		HitsplatApplied hitsplatApplied = new HitsplatApplied();
+		hitsplatApplied.setHitsplat(hitsplat);
+		hitsplatApplied.setActor(npc1);
+		slayerPlugin.onHitsplatApplied(hitsplatApplied);
+
+		hitsplatApplied.setActor(npc2);
+		slayerPlugin.onHitsplatApplied(hitsplatApplied);
+
+		// Kill both npcs
+		slayerPlugin.onActorDeath(new ActorDeath(npc1));
+		slayerPlugin.onActorDeath(new ActorDeath(npc2));
+
+		slayerPlugin.onGameTick(GameTick.INSTANCE);
+
+		statChanged = new StatChanged(
+			Skill.SLAYER,
+			105,
+			2,
+			2
+		);
+		slayerPlugin.onStatChanged(statChanged);
+
+		assertEquals("Suqahs", slayerPlugin.getCurrentTask().getTaskName());
+		assertEquals(229, slayerPlugin.getCurrentTask().getAmount()); // 2 kills
 	}
 }

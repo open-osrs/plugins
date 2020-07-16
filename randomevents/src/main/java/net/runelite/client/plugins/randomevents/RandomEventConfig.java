@@ -36,7 +36,7 @@ public interface RandomEventConfig extends Config
 		keyName = "removeMenuOptions",
 		name = "Remove others' menu options",
 		description = "Remove menu options from random events for other players.",
-		position = 0
+		position = -3
 	)
 	default boolean removeMenuOptions()
 	{
@@ -44,10 +44,20 @@ public interface RandomEventConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "notifyAll",
+		name = "Notify for all events",
+		description = "",
+		position = -2
+	)
+	default boolean notifyAllEvents()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "notifyDunce",
 		name = "Notify on Surprise Exam",
-		description = "",
-		position = 1
+		description = ""
 	)
 	default boolean notifyDunce()
 	{
@@ -57,8 +67,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyGenie",
 		name = "Notify on Genie",
-		description = "",
-		position = 2
+		description = ""
 	)
 	default boolean notifyGenie()
 	{
@@ -68,8 +77,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyDemon",
 		name = "Notify on Drill Demon",
-		description = "",
-		position = 3
+		description = ""
 	)
 	default boolean notifyDemon()
 	{
@@ -79,8 +87,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyForester",
 		name = "Notify on Freaky Forester",
-		description = "",
-		position = 4
+		description = ""
 	)
 	default boolean notifyForester()
 	{
@@ -90,8 +97,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyFrog",
 		name = "Notify on Kiss the Frog",
-		description = "",
-		position = 5
+		description = ""
 	)
 	default boolean notifyFrog()
 	{
@@ -101,8 +107,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyGravedigger",
 		name = "Notify on Gravedigger",
-		description = "",
-		position = 6
+		description = ""
 	)
 	default boolean notifyGravedigger()
 	{
@@ -112,8 +117,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyMoM",
 		name = "Notify on Mysterious Old Man",
-		description = "",
-		position = 7
+		description = ""
 	)
 	default boolean notifyMoM()
 	{
@@ -123,8 +127,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyBob",
 		name = "Notify on Evil Bob",
-		description = "",
-		position = 8
+		description = ""
 	)
 	default boolean notifyBob()
 	{
@@ -134,8 +137,7 @@ public interface RandomEventConfig extends Config
 	@ConfigItem(
 		keyName = "notifyQuiz",
 		name = "Notify on Quiz Master",
-		description = "",
-		position = 9
+		description = ""
 	)
 	default boolean notifyQuiz()
 	{
@@ -143,23 +145,31 @@ public interface RandomEventConfig extends Config
 	}
 	
 	@ConfigItem(
-		keyName = "notifyDrJekyll",
-		name = "Notify on Dr Jekyll",
-		description = "",
-		position = 10
+		keyName = "notifyJekyll",
+		name = "Notify on Jekyll & Hyde",
+		description = ""
 	)
-	default boolean notifyDrJekyll()
+	default boolean notifyJekyll()
 	{
 		return false;
 	}
 
 	@ConfigItem(
-		keyName = "notifyAll",
-		name = "Notify for all events",
-		description = "",
-		position = 11
+		keyName = "notifyBeekeeper",
+		name = "Notify on Beekeeper",
+		description = ""
 	)
-	default boolean notifyAllEvents()
+	default boolean notifyBeekeeper()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "notifySandwich",
+		name = "Notify on Sandwich Lady",
+		description = ""
+	)
+	default boolean notifySandwich()
 	{
 		return false;
 	}

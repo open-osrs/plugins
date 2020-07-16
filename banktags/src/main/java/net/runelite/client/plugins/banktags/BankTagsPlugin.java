@@ -46,7 +46,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import static net.runelite.api.Constants.HIGH_ALCHEMY_MULTIPLIER;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -591,8 +590,9 @@ public class BankTagsPlugin extends Plugin implements MouseWheelListener
 		}
 
 		final ItemDefinition itemComposition = itemManager.getItemDefinition(itemId);
-		long gePrice = (long) itemManager.getItemPrice(itemId) * (long) itemQuantities.count(itemId);
-		long haPrice = (long) (itemComposition.getPrice() * HIGH_ALCHEMY_MULTIPLIER) * (long) itemQuantities.count(itemId);
+		final int qty = itemQuantities.count(itemId);
+		final long gePrice = (long) itemManager.getItemPrice(itemId) * qty;
+		final long haPrice = (long) itemComposition.getHaPrice() * qty;
 
 		long value = Math.max(gePrice, haPrice);
 

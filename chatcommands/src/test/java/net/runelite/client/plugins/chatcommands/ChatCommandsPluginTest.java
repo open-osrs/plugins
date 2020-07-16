@@ -50,10 +50,12 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ChatColorConfig;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.OpenOSRSConfig;
+import net.runelite.http.api.chat.ChatClient;
 import net.runelite.http.api.hiscore.HiscoreClient;
 import net.runelite.http.api.hiscore.HiscoreSkill;
 import net.runelite.http.api.hiscore.SingleHiscoreSkillResult;
 import net.runelite.http.api.hiscore.Skill;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +105,14 @@ public class ChatCommandsPluginTest
 	@Mock
 	@Bind
 	ChatMessageManager chatMessageManager;
+
+	@Mock
+	@Bind
+	ChatClient chatClient;
+
+	@Mock
+	@Bind
+	OSBGrandExchangeClient osbGrandExchangeClient;
 
 	@Mock
 	@Bind

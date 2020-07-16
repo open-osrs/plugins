@@ -201,7 +201,7 @@ class ItemPricesOverlay extends Overlay
 		int gePrice = 0;
 		int haPrice = 0;
 		int haProfit = 0;
-		final int itemHaPrice = Math.round(itemDef.getPrice() * Constants.HIGH_ALCHEMY_MULTIPLIER);
+		final int itemHaPrice = itemDef.getHaPrice();
 
 		if (config.showGEPrice())
 		{

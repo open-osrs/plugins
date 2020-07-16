@@ -47,10 +47,10 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.game.chatbox.ChatboxTextInput;
 import net.runelite.client.util.LinkBrowser;
-import net.runelite.http.api.RuneLiteAPI;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
@@ -65,6 +65,7 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 	private static final int PREDICTION_DEBOUNCE_DELAY_MS = 200;
 
 	private final ChatboxPanelManager chatboxPanelManager;
+	private final OkHttpClient okHttpClient;
 	private final Gson gson = new Gson();
 
 	private Future<?> runningRequest = null;
@@ -74,10 +75,15 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 	private String offPrediction = null;
 
 	@Inject
-	public WikiSearchChatboxTextInput(final ChatboxPanelManager chatboxPanelManager, final ClientThread clientThread, final ScheduledExecutorService scheduledExecutorService)
+	public WikiSearchChatboxTextInput(
+		final ChatboxPanelManager chatboxPanelManager,
+		final ClientThread clientThread,
+		final ScheduledExecutorService scheduledExecutorService,
+		final OkHttpClient okHttpClient)
 	{
 		super(chatboxPanelManager, clientThread);
 		this.chatboxPanelManager = chatboxPanelManager;
+		this.okHttpClient = okHttpClient;
 
 		lines(1);
 		prompt("OSRS Wiki Search");
@@ -119,7 +125,7 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 					.url(url)
 					.build();
 
-				RuneLiteAPI.CLIENT.newCall(req).enqueue(new Callback()
+				okHttpClient.newCall(req).enqueue(new Callback()
 				{
 					@Override
 					public void onFailure(@NotNull Call call, @NotNull IOException e)
@@ -250,6 +256,11 @@ public class WikiSearchChatboxTextInput extends ChatboxTextInput
 	@Override
 	public void keyPressed(KeyEvent ev)
 	{
+		if (!chatboxPanelManager.shouldTakeInput())
+		{
+			return;
+		}
+
 		switch (ev.getKeyCode())
 		{
 			case KeyEvent.VK_UP:

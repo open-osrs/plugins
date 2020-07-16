@@ -34,7 +34,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
 import net.runelite.api.VarClientStr;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.input.KeyListener;
@@ -70,7 +69,7 @@ class KeyRemappingListener implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		if (client.getGameState() == GameState.LOGIN_SCREEN || !plugin.chatboxFocused())
+		if (!plugin.chatboxFocused())
 		{
 			return;
 		}

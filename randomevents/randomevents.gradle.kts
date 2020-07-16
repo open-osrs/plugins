@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Random Events"
 project.extra["PluginDescription"] = "Notify when random events appear and remove talk/dismiss options on events that aren't yours"
