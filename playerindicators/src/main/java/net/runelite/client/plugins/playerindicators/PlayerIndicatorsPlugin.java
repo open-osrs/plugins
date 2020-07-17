@@ -67,6 +67,7 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.PvPUtil;
+import net.runelite.http.api.RuneLiteAPI;
 import net.runelite.http.api.hiscore.HiscoreClient;
 import net.runelite.http.api.hiscore.HiscoreResult;
 import org.pf4j.Extension;
@@ -81,7 +82,7 @@ import org.pf4j.Extension;
 @Getter(AccessLevel.PACKAGE)
 public class PlayerIndicatorsPlugin extends Plugin
 {
-	private static final HiscoreClient HISCORE_CLIENT = new HiscoreClient();
+	private static final HiscoreClient HISCORE_CLIENT = new HiscoreClient(RuneLiteAPI.CLIENT);
 	private final List<String> callers = new ArrayList<>();
 	private final Map<Player, PlayerRelation> colorizedMenus = new ConcurrentHashMap<>();
 	private final Map<PlayerRelation, Color> relationColorHashMap = new ConcurrentHashMap<>();

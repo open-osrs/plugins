@@ -28,26 +28,29 @@ package net.runelite.client.plugins.chatfilter;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 
 @ConfigGroup("chatfilter")
 public interface ChatFilterConfig extends Config
 {
-	@ConfigItem(
-		keyName = "filterType",
-		name = "Filter type",
-		description = "Configures how the messages are filtered",
-		position = 1
+	@ConfigTitleSection(
+		keyName = "filterLists",
+		name = "Filter Lists",
+		description = "Custom Word, Regex and Username filter lists",
+		position = 0
 	)
-	default ChatFilterType filterType()
+	default Title filterLists()
 	{
-		return ChatFilterType.CENSOR_WORDS;
+		return new Title();
 	}
 
 	@ConfigItem(
 		keyName = "filteredWords",
 		name = "Filtered Words",
 		description = "List of filtered words, separated by commas",
-		position = 2
+		position = 1,
+		titleSection = "filterLists"
 	)
 	default String filteredWords()
 	{
@@ -58,7 +61,8 @@ public interface ChatFilterConfig extends Config
 		keyName = "filteredRegex",
 		name = "Filtered Regex",
 		description = "List of regular expressions to filter, one per line",
-		position = 3
+		position = 2,
+		titleSection = "filterLists"
 	)
 	default String filteredRegex()
 	{
@@ -69,11 +73,23 @@ public interface ChatFilterConfig extends Config
 		keyName = "filteredNames",
 		name = "Filtered Names",
 		description = "List of filtered names, one per line. Accepts regular expressions",
-		position = 4
+		position = 3,
+		titleSection = "filterLists"
 	)
 	default String filteredNames()
 	{
 		return "";
+	}
+
+	@ConfigItem(
+		keyName = "filterType",
+		name = "Filter type",
+		description = "Configures how the messages are filtered",
+		position = 4
+	)
+	default ChatFilterType filterType()
+	{
+		return ChatFilterType.CENSOR_WORDS;
 	}
 
 	@ConfigItem(

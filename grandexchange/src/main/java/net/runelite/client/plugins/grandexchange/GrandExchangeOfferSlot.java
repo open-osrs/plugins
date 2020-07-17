@@ -32,7 +32,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -44,6 +43,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
@@ -51,7 +51,6 @@ import static net.runelite.api.GrandExchangeOfferState.CANCELLED_BUY;
 import static net.runelite.api.GrandExchangeOfferState.CANCELLED_SELL;
 import static net.runelite.api.GrandExchangeOfferState.EMPTY;
 import net.runelite.api.ItemDefinition;
-import static net.runelite.client.plugins.grandexchange.GrandExchangeItemPanel.geLink;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.ThinProgressBar;
@@ -80,8 +79,6 @@ class GrandExchangeOfferSlot extends JPanel
 
 	private final ThinProgressBar progressBar = new ThinProgressBar();
 
-	private final JMenuItem geLink = new JMenuItem("Open in Grand Exchange");
-
 	private boolean showingFace = true;
 
 	static
@@ -106,20 +103,22 @@ class GrandExchangeOfferSlot extends JPanel
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
-				super.mousePressed(mouseEvent);
-				switchPanel();
+				if (SwingUtilities.isLeftMouseButton(mouseEvent))
+				{
+					switchPanel();
+				}
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent mouseEvent)
 			{
-				super.mouseEntered(mouseEvent);
+				container.setBackground(ColorScheme.DARKER_GRAY_HOVER_COLOR);
 			}
 
 			@Override
 			public void mouseExited(MouseEvent mouseEvent)
 			{
-				super.mouseExited(mouseEvent);
+				container.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 			}
 		};
 
@@ -150,7 +149,6 @@ class GrandExchangeOfferSlot extends JPanel
 		switchFaceViewIcon.addMouseListener(ml);
 
 		JPopupMenu menu = new JPopupMenu();
-		menu.add(geLink);
 
 		JPanel offerFaceDetails = new JPanel();
 		offerFaceDetails.setBackground(ColorScheme.DARKER_GRAY_COLOR);
@@ -217,12 +215,6 @@ class GrandExchangeOfferSlot extends JPanel
 			itemName.setText(offerItem.getName());
 			itemIcon.setIcon(new ImageIcon(itemImage));
 
-			for (ActionListener al : geLink.getActionListeners())
-			{
-				geLink.removeActionListener(al);
-			}
-			geLink.addActionListener(actionEvent -> geLink(offerItem.getName(), offerItem.getId()));
-
 			boolean buying = newOffer.getState() == GrandExchangeOfferState.BOUGHT
 				|| newOffer.getState() == GrandExchangeOfferState.BUYING
 				|| newOffer.getState() == GrandExchangeOfferState.CANCELLED_BUY;
@@ -244,6 +236,13 @@ class GrandExchangeOfferSlot extends JPanel
 			progressBar.setMaximumValue(newOffer.getTotalQuantity());
 			progressBar.setValue(newOffer.getQuantitySold());
 
+			final JPopupMenu popupMenu = new JPopupMenu();
+			popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+			final JMenuItem openGeLink = new JMenuItem("Open Grand Exchange website");
+			openGeLink.addActionListener(e -> GrandExchangePlugin.openGeLink(offerItem.getName(), offerItem.getId()));
+			popupMenu.add(openGeLink);
+
 			/* Couldn't set the tooltip for the container panel as the children override it, so I'm setting
 			 * the tooltips on the children instead. */
 			for (Component c : container.getComponents())
@@ -252,6 +251,7 @@ class GrandExchangeOfferSlot extends JPanel
 				{
 					JPanel panel = (JPanel) c;
 					panel.setToolTipText(htmlTooltip(((int) progressBar.getPercentage()) + "%"));
+					panel.setComponentPopupMenu(popupMenu);
 				}
 			}
 		}
