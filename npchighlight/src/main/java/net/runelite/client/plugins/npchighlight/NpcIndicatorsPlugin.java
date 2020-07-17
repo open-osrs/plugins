@@ -348,7 +348,7 @@ public class NpcIndicatorsPlugin extends Plugin
 	{
 		if (click.getMenuOpcode() != MenuOpcode.RUNELITE ||
 			!(click.getOption().equals(TAG) || click.getOption().equals(UNTAG) ||
-				  click.getOption().equals(TAG_ALL) || click.getOption().equals(UNTAG_ALL)))
+				click.getOption().equals(TAG_ALL) || click.getOption().equals(UNTAG_ALL)))
 		{
 			return;
 		}

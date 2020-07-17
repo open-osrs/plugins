@@ -311,7 +311,7 @@ public class ScreenshotPlugin extends Plugin
 				takeScreenshot("Death", "Deaths");
 			}
 			if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_KILL ||
-												 config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
+				config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
 			{
 				if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting() == player)
 				{
