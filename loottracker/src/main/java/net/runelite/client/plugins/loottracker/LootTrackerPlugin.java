@@ -69,7 +69,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.Constants;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
@@ -84,11 +83,11 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.PlayerDeath;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
@@ -133,6 +132,7 @@ import net.runelite.http.api.loottracker.GameItem;
 import net.runelite.http.api.loottracker.LootRecord;
 import net.runelite.http.api.loottracker.LootRecordType;
 import net.runelite.http.api.loottracker.LootTrackerClient;
+import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -296,6 +296,9 @@ public class LootTrackerPlugin extends Plugin
 	@Inject
 	private EventBus eventBus;
 
+	@Inject
+	private OkHttpClient okHttpClient;
+
 	private LootTrackerPanel panel;
 	private NavigationButton navButton;
 	private String eventType;
@@ -365,7 +368,7 @@ public class LootTrackerPlugin extends Plugin
 		AccountSession accountSession = sessionManager.getAccountSession();
 		if (accountSession.getUuid() != null)
 		{
-			lootTrackerClient = new LootTrackerClient(accountSession.getUuid());
+			lootTrackerClient = new LootTrackerClient(okHttpClient, accountSession.getUuid());
 		}
 		else
 		{
@@ -381,9 +384,9 @@ public class LootTrackerPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onPlayerDeath(PlayerDeath event)
+	private void onActorDeath(ActorDeath event)
 	{
-		if ((client.getVar(Varbits.IN_WILDERNESS) == 1 || WorldType.isPvpWorld(client.getWorldType())) && event.getPlayer() == client.getLocalPlayer())
+		if ((client.getVar(Varbits.IN_WILDERNESS) == 1 || WorldType.isPvpWorld(client.getWorldType())) && event.getActor() == client.getLocalPlayer())
 		{
 			deathInventorySnapshot();
 			pvpDeath = true;
@@ -458,7 +461,7 @@ public class LootTrackerPlugin extends Plugin
 							{
 								if (accountSession != null)
 								{
-									lootTrackerClient = new LootTrackerClient(accountSession.getUuid());
+									lootTrackerClient = new LootTrackerClient(okHttpClient, accountSession.getUuid());
 								}
 								try
 								{
@@ -1486,7 +1489,7 @@ public class LootTrackerPlugin extends Plugin
 		if (!itemDefinition.isTradeable() && quantity < 0)
 		{
 			gePrice = (long) itemDefinition.getPrice() * (long) quantity;
-			haPrice = (long) Math.round(itemDefinition.getPrice() * Constants.HIGH_ALCHEMY_MULTIPLIER) * (long) quantity;
+			haPrice = (long) itemDefinition.getHaPrice() * (long) quantity;
 		}
 		else
 		{

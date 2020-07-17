@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.4"
 
 project.extra["PluginName"] = "News Feed"
 project.extra["PluginDescription"] = "Show the latest RuneLite blog posts, OSRS news, and JMod Twitter posts"

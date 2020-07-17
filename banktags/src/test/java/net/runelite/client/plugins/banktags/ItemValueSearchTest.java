@@ -138,8 +138,8 @@ public class ItemValueSearchTest
 		ItemDefinition comp = mock(ItemDefinition.class);
 
 		// 60k HA price * 30 = 1.8m
-		when(comp.getPrice())
-			.thenReturn(100_000);
+		when(comp.getHaPrice())
+			.thenReturn(60_000);
 
 		// 400k GE Price * 30 = 12m
 		when(itemManager.getItemPrice(itemId))

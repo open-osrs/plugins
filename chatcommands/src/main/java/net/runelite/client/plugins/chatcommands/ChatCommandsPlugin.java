@@ -70,8 +70,10 @@ import net.runelite.client.events.ChatInput;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.plugins.grandexchange.GrandExchangePlugin;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.chat.ChatClient;
 import net.runelite.http.api.chat.Duels;
@@ -83,10 +85,12 @@ import net.runelite.http.api.hiscore.SingleHiscoreSkillResult;
 import net.runelite.http.api.hiscore.Skill;
 import net.runelite.http.api.item.ItemPrice;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
+import okhttp3.OkHttpClient;
 import org.apache.commons.text.WordUtils;
 import org.pf4j.Extension;
 
 @Extension
+@PluginDependency(GrandExchangePlugin.class)
 @PluginDescriptor(
 	name = "Chat Commands",
 	description = "Enable chat commands",
@@ -134,9 +138,6 @@ public class ChatCommandsPlugin extends Plugin
 	@VisibleForTesting
 	static final int ADV_LOG_EXPLOITS_TEXT_INDEX = 1;
 
-	private final ChatClient chatClient = new ChatClient();
-	private final OSBGrandExchangeClient CLIENT = new OSBGrandExchangeClient();
-
 	private boolean bossLogLoaded;
 	private boolean advLogLoaded;
 	private boolean scrollInterfaceLoaded;
@@ -144,6 +145,12 @@ public class ChatCommandsPlugin extends Plugin
 	private HiscoreEndpoint hiscoreEndpoint; // hiscore endpoint for current player
 	private String lastBossKill;
 	private int lastPb = -1;
+
+	@Inject
+	private ChatClient chatClient;
+
+	@Inject
+	private OSBGrandExchangeClient osbGrandExchangeClient;
 
 	@Inject
 	private Client client;
@@ -384,6 +391,11 @@ public class ChatCommandsPlugin extends Plugin
 			case "hs 5":
 				return "Hallowed Sepulchre Floor 5";
 
+			// Ape Atoll Agility
+			case "aa":
+			case "ape atoll":
+				return "Ape Atoll Agility";
+
 			default:
 				return WordUtils.capitalize(boss);
 		}
@@ -433,6 +445,12 @@ public class ChatCommandsPlugin extends Plugin
 	ChatCommandsConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(ChatCommandsConfig.class);
+	}
+
+	@Provides
+	HiscoreClient provideHiscoreClient(OkHttpClient okHttpClient)
+	{
+		return new HiscoreClient(okHttpClient);
 	}
 
 	private void setKc(String boss, int killcount)
@@ -1225,7 +1243,7 @@ public class ChatCommandsPlugin extends Plugin
 		if (!results.isEmpty())
 		{
 			ItemPrice item = retrieveFromList(results, search);
-			CLIENT.lookupItem(item.getId())
+			osbGrandExchangeClient.lookupItem(item.getId())
 				.subscribeOn(Schedulers.io())
 				.observeOn(Schedulers.single())
 				.subscribe(

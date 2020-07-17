@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.7"
 
 project.extra["PluginName"] = "Item Prices"
 project.extra["PluginDescription"] = "Show prices on hover for items in your inventory and bank"

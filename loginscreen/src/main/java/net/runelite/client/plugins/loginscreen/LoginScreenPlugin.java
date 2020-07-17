@@ -202,6 +202,12 @@ public class LoginScreenPlugin extends Plugin implements KeyListener
 	}
 
 	@Override
+	public boolean isEnabledOnLoginScreen()
+	{
+		return true;
+	}
+
+	@Override
 	public void keyTyped(KeyEvent e)
 	{
 	}

@@ -54,6 +54,7 @@ import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Hitsplat;
 import net.runelite.api.ItemID;
 import net.runelite.api.MessageNode;
 import net.runelite.api.NPC;
@@ -63,9 +64,11 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.events.NpcDespawned;
@@ -252,6 +255,10 @@ public class SlayerPlugin extends Plugin
 	private final List<Integer> targetIds = new ArrayList<>();
 	private boolean checkAsTokens = true;
 
+	private final Set<NPC> taggedNpcs = new HashSet<>();
+	private int taggedNpcsDiedPrevTick;
+	private int taggedNpcsDiedThisTick;
+
 	private final List<NPCPresence> lingeringPresences = new ArrayList<>();
 	private SlayerXpDropLookup slayerXpDropLookup = null;
 
@@ -321,11 +328,12 @@ public class SlayerPlugin extends Plugin
 		chatCommandManager.unregisterCommand(POINTS_COMMAND_STRING);
 		clientToolbar.removeNavigation(navButton);
 
+		taggedNpcs.clear();
 		cachedXp = -1;
 	}
 
 	@Provides
-	SlayerConfig getConfig(ConfigManager configManager)
+	SlayerConfig provideSlayerConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(SlayerConfig.class);
 	}
@@ -339,6 +347,7 @@ public class SlayerPlugin extends Plugin
 			case LOGGING_IN:
 				cachedXp = -1;
 				cachedPoints = 0;
+				taggedNpcs.clear();
 				clearTrackedNPCs();
 				break;
 			case LOGIN_SCREEN:
@@ -387,6 +396,7 @@ public class SlayerPlugin extends Plugin
 	private void onNpcDespawned(NpcDespawned npcDespawned)
 	{
 		NPC npc = npcDespawned.getNpc();
+		taggedNpcs.remove(npc);
 		boolean contained = highlightedTargets.remove(npc);
 		if (contained)
 		{
@@ -596,6 +606,9 @@ public class SlayerPlugin extends Plugin
 				removeCounter();
 			}
 		}
+
+		taggedNpcsDiedPrevTick = taggedNpcsDiedThisTick;
+		taggedNpcsDiedThisTick = 0;
 	}
 
 	@Subscribe
@@ -717,40 +730,49 @@ public class SlayerPlugin extends Plugin
 			return;
 		}
 
-		final Task task = Task.getTask(config.taskName());
-		int delta = slayerExp - cachedXp;
+		final int delta = slayerExp - cachedXp;
+		cachedXp = slayerExp;
 
-		// null tasks are technically valid, it only means they arent explicitly defined in the Task enum
-		// allow them through so that if there is a task capture failure the counter will still work
-		final int taskKillExp = task != null ? task.getExpectedKillExp() : 0;
+		log.debug("Slayer xp change delta: {}, killed npcs: {}", delta, taggedNpcsDiedPrevTick);
 
-		// Only count exp gain as a kill if the task either has no expected exp for a kill, or if the exp gain is equal
-		// to the expected exp gain for the task.
-		if (taskKillExp == 0 || taskKillExp == slayerExp - cachedXp)
+		final Task task = Task.getTask(currentTask.getTaskName());
+		if (task != null && task.getExpectedKillExp() > 0)
 		{
-			killedOne(delta);
+			// Only decrement a kill if the xp drop matches the expected drop. This is just for Tzhaar tasks.
+			if (task.getExpectedKillExp() == delta)
+			{
+				killed(1, delta);
+			}
 		}
 		else
 		{
-			// this is not the initial xp sent on login so these are new xp gains
-			int gains = slayerExp - cachedXp;
-
-			// potential npcs to give xp drop are current highlighted npcs and the lingering presences
-			List<NPCPresence> potentialNPCs = new ArrayList<>(lingeringPresences);
-			for (NPC npc : highlightedTargets)
-			{
-				NPCPresence currentPresence = NPCPresence.buildPresence(npc);
-				potentialNPCs.add(currentPresence);
-			}
-
-			int killCount = estimateKillCount(potentialNPCs, gains);
-			for (int i = 0; i < killCount; i++)
-			{
-				killedOne(delta);
-			}
+			// This is at least one kill, but if we observe multiple tagged NPCs dieing on the previous tick, count them
+			// instead.
+			killed(Math.max(taggedNpcsDiedPrevTick, 1), delta);
 		}
+	}
 
-		cachedXp = slayerExp;
+	@Subscribe
+	public void onHitsplatApplied(HitsplatApplied hitsplatApplied)
+	{
+		Actor actor = hitsplatApplied.getActor();
+		Hitsplat hitsplat = hitsplatApplied.getHitsplat();
+		if (hitsplat.getHitsplatType() == Hitsplat.HitsplatType.DAMAGE_ME && highlightedTargets.contains(actor))
+		{
+			// If the actor is in highlightedTargets it must be an NPC and also a task assignment
+			taggedNpcs.add((NPC) actor);
+		}
+	}
+
+	@Subscribe
+	public void onActorDeath(ActorDeath actorDeath)
+	{
+		Actor actor = actorDeath.getActor();
+		if (taggedNpcs.contains(actor))
+		{
+			log.debug("Tagged NPC {} has died", actor.getName());
+			++taggedNpcsDiedThisTick;
+		}
 	}
 
 	@Subscribe
@@ -807,18 +829,19 @@ public class SlayerPlugin extends Plugin
 	}
 
 	@VisibleForTesting
-	private void killedOne(int delta)
+	private void killed(int amt, int xp)
 	{
 		if (currentTask == null || currentTask.getAmount() == 0)
 		{
 			return;
 		}
 
-		currentTask.setAmount(currentTask.getAmount() - 1);
-		currentTask.setElapsedKills(currentTask.getElapsedKills() + 1);
-		currentTask.setElapsedXp(currentTask.getElapsedXp() + delta);
+		currentTask.setAmount(currentTask.getAmount() - amt);
+		currentTask.setElapsedKills(currentTask.getElapsedKills() + amt);
+		currentTask.setElapsedXp(currentTask.getElapsedXp() + xp);
 		if (doubleTroubleExtraKill())
 		{
+			assert amt == 1;
 			currentTask.setAmount(currentTask.getAmount() - 1);
 			currentTask.setElapsedKills(currentTask.getElapsedKills() + 1);
 		}
@@ -1008,11 +1031,14 @@ public class SlayerPlugin extends Plugin
 
 	private void setTask(String name, int amt, int initAmt, boolean isNewAssignment, String location, int lastCertainAmt, boolean addCounter)
 	{
+		initAmt = Math.max(amt, initAmt);
+
 		currentTask = new TaskData(isNewAssignment ? 0 : currentTask.getElapsedTime(),
 			isNewAssignment ? 0 : currentTask.getElapsedKills(),
 			isNewAssignment ? 0 : currentTask.getElapsedXp(),
 			amt, initAmt, lastCertainAmt, location, name,
 			isNewAssignment || currentTask.isPaused());
+
 		if (panel != null)
 		{
 			panel.updateCurrentTask(true, currentTask.isPaused(), currentTask, isNewAssignment);

@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.12"
+version = "0.0.13"
 
 project.extra["PluginName"] = "Skill Calculator"
 project.extra["PluginDescription"] = "Enable the Skill Calculator panel"

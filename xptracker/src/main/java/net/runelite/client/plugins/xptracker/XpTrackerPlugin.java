@@ -73,6 +73,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.xp.XpClient;
+import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
 @Extension
@@ -124,6 +125,9 @@ public class XpTrackerPlugin extends Plugin
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Inject
+	private XpClient xpClient;
+
 	private NavigationButton navButton;
 	@Setter(AccessLevel.PACKAGE)
 	@VisibleForTesting
@@ -135,7 +139,6 @@ public class XpTrackerPlugin extends Plugin
 	private long lastXp = 0;
 	private boolean initializeTracker;
 
-	private final XpClient xpClient = new XpClient();
 	private final XpState xpState = new XpState();
 	private final XpPauseState xpPauseState = new XpPauseState();
 
@@ -143,6 +146,12 @@ public class XpTrackerPlugin extends Plugin
 	XpTrackerConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(XpTrackerConfig.class);
+	}
+
+	@Provides
+	XpClient provideXpClient(OkHttpClient okHttpClient)
+	{
+		return new XpClient(okHttpClient);
 	}
 
 	@Override

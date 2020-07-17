@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -54,10 +55,10 @@ import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.SpriteID;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.PlayerDeath;
 import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
@@ -297,28 +298,34 @@ public class ScreenshotPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onPlayerDeath(PlayerDeath event)
+	private void onActorDeath(ActorDeath event)
 	{
-		Player player = event.getPlayer();
-		if (player == client.getLocalPlayer() && config.screenshotPlayerDeath())
-		{
-			takeScreenshot("Death", "Deaths");
-		}
-		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_KILL ||
-			config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
-		{
-			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting() == player)
-			{
-				takeScreenshot("KO " + player.getName(), "PvP Kills");
-			}
-		}
+		Actor actor = event.getActor();
 
-		int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
-		if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
-			&& (player.isFriend() || player.isFriendsChatMember()
-			|| (client.getVar(Varbits.IN_RAID) == 1 || tob == 2 || tob == 3)))
+		if (actor instanceof Player)
 		{
-			takeScreenshot("Death " + player.getName(), "Deaths");
+			Player player = (Player) actor;
+
+			if (player == client.getLocalPlayer() && config.screenshotPlayerDeath())
+			{
+				takeScreenshot("Death", "Deaths");
+			}
+			if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_KILL ||
+				config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
+			{
+				if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting() == player)
+				{
+					takeScreenshot("KO " + player.getName(), "PvP Kills");
+				}
+			}
+
+			int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
+			if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
+				&& (player.isFriend() || player.isFriendsChatMember()
+						|| (client.getVar(Varbits.IN_RAID) == 1 || tob == 2 || tob == 3)))
+			{
+				takeScreenshot("Death " + player.getName(), "Deaths");
+			}
 		}
 	}
 
@@ -710,7 +717,6 @@ public class ScreenshotPlugin extends Plugin
 			log.info("Login screenshot prevented");
 			return;
 		}
-
 
 		Consumer<Image> imageCallback = (img) ->
 		{

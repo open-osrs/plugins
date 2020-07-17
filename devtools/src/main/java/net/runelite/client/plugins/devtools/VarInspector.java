@@ -343,7 +343,7 @@ class VarInspector extends JFrame
 		{
 			int n = 0;
 
-			for (final int id : client.getConfigArchive().getFileIds(VARBITS_GROUP))
+			for (final int id : client.getIndexConfig().getFileIds(VARBITS_GROUP))
 			{
 				final VarbitDefinition def = client.getVarbitDefinition(id);
 				if (def != null)
