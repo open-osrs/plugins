@@ -7,7 +7,7 @@ buildscript {
 plugins {
     checkstyle
     java
-    id("com.github.ben-manes.versions") version "0.28.0"
+    id("com.github.ben-manes.versions") version "0.29.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.14"
     id("com.simonharrer.modernizer") version "2.1.0-1" apply false
 }
@@ -96,8 +96,8 @@ subprojects {
         testImplementation(group = "com.google.code.gson", name = "gson", version = "2.8.6")
         testImplementation(group = "net.sf.jopt-simple", name = "jopt-simple", version = "5.0.4")
         testImplementation(group = "junit", name = "junit", version = "4.13")
-        testImplementation(group = "org.mockito", name = "mockito-core", version = "3.4.2")
-        testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.4.2")
+        testImplementation(group = "org.mockito", name = "mockito-core", version = "3.4.3")
+        testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.4.3")
         testImplementation(group = "org.projectlombok", name = "lombok", version = "1.18.12")
         testImplementation(group = "org.hamcrest", name = "hamcrest-library", version = "2.2")
         testImplementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.30")
