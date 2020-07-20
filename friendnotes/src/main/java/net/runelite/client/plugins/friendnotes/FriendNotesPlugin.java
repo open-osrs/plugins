@@ -121,7 +121,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		overlayManager.add(overlay);
 		clientThread.invoke(this::loadIcon);
@@ -133,7 +133,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
 		if (client.getGameState() == GameState.LOGGED_IN)
@@ -144,7 +144,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged event)
+	private void onGameStateChanged(GameStateChanged event)
 	{
 		if (event.getGameState() == GameState.LOGGED_IN)
 		{
@@ -153,7 +153,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
+	private void onConfigChanged(ConfigChanged event)
 	{
 		if (!event.getGroup().equals(CONFIG_GROUP))
 		{
@@ -236,7 +236,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event)
+	private void onMenuEntryAdded(MenuEntryAdded event)
 	{
 		final int groupId = WidgetInfo.TO_GROUP(event.getParam1());
 
@@ -266,7 +266,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
+	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		final int groupId = WidgetInfo.TO_GROUP(event.getParam1());
 
@@ -306,7 +306,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onNameableNameChanged(NameableNameChanged event)
+	private void onNameableNameChanged(NameableNameChanged event)
 	{
 		final Nameable nameable = event.getNameable();
 
@@ -327,7 +327,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onRemovedFriend(FriendRemoved event)
+	private void onFriendRemoved(FriendRemoved event)
 	{
 		// Delete a friend's note if they are removed
 		final String displayName = Text.toJagexName(event.getName());
@@ -336,7 +336,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onScriptCallbackEvent(ScriptCallbackEvent event)
+	private void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
 		if (!config.showIcons() || iconIdx == -1)
 		{
