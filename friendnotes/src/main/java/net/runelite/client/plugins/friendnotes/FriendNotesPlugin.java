@@ -28,19 +28,21 @@
 package net.runelite.client.plugins.friendnotes;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Friend;
 import net.runelite.api.GameState;
+import net.runelite.api.Ignore;
 import net.runelite.api.IndexedSprite;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Nameable;
 import net.runelite.api.ScriptID;
@@ -71,11 +73,11 @@ import org.pf4j.Extension;
 	description = "Store notes about your friends",
 	type = PluginType.MISCELLANEOUS
 )
+
 @Slf4j
 public class FriendNotesPlugin extends Plugin
 {
 	static final String CONFIG_GROUP = "friendNotes";
-
 	private static final int CHARACTER_LIMIT = 128;
 	private static final String KEY_PREFIX = "note_";
 	private static final String ADD_NOTE = "Add Note";
@@ -106,7 +108,7 @@ public class FriendNotesPlugin extends Plugin
 	@Inject
 	private FriendNotesConfig config;
 
-	@Getter(AccessLevel.PACKAGE)
+	@Getter
 	private HoveredFriend hoveredFriend = null;
 
 	private int iconIdx = -1;
@@ -142,7 +144,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged event)
+	private void onGameStateChanged(GameStateChanged event)
 	{
 		if (event.getGameState() == GameState.LOGGED_IN)
 		{
@@ -151,22 +153,20 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
+	private void onConfigChanged(ConfigChanged event)
 	{
 		if (!event.getGroup().equals(CONFIG_GROUP))
 		{
 			return;
 		}
 
-		switch (event.getKey())
+		if (event.getKey().equals("showIcons"))
 		{
-			case "showIcons":
-				if (client.getGameState() == GameState.LOGGED_IN)
-				{
-					rebuildFriendsList();
-					rebuildIgnoreList();
-				}
-				break;
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				rebuildFriendsList();
+				rebuildIgnoreList();
+			}
 		}
 	}
 
@@ -183,7 +183,6 @@ public class FriendNotesPlugin extends Plugin
 		{
 			configManager.setConfiguration(CONFIG_GROUP, KEY_PREFIX + displayName, note);
 		}
-
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
 			rebuildFriendsList();
@@ -242,22 +241,23 @@ public class FriendNotesPlugin extends Plugin
 		final int groupId = WidgetInfo.TO_GROUP(event.getParam1());
 
 		// Look for "Message" on friends list
-		if (groupId == WidgetInfo.FRIENDS_LIST.getGroupId() && event.getOption().equals("Message"))
+		if ((groupId == WidgetInfo.FRIENDS_LIST.getGroupId() && event.getOption().equals("Message")) ||
+			(groupId == WidgetInfo.IGNORE_LIST.getGroupId() && event.getOption().equals("Delete")))
 		{
 			// Friends have color tags
 			setHoveredFriend(Text.toJagexName(Text.removeTags(event.getTarget())));
 
 			// Build "Add Note" or "Edit Note" menu entry
+			final MenuEntry addNote = new MenuEntry();
+			addNote.setOption(hoveredFriend == null || hoveredFriend.getNote() == null ? ADD_NOTE : EDIT_NOTE);
+			addNote.setOpcode(MenuOpcode.RUNELITE.getId());
+			addNote.setTarget(event.getTarget()); //Preserve color codes here
+			addNote.setParam0(event.getParam0());
+			addNote.setParam1(event.getParam1());
+
 			// Add menu entry
-			client.insertMenuItem(
-				hoveredFriend == null || hoveredFriend.getNote() == null ? ADD_NOTE : EDIT_NOTE,
-				event.getTarget(),
-				MenuOpcode.RUNELITE.getId(),
-				0,
-				event.getParam0(),
-				event.getParam1(),
-				false
-			);
+			final MenuEntry[] menuEntries = ObjectArrays.concat(client.getMenuEntries(), addNote);
+			client.setMenuEntries(menuEntries);
 		}
 		else if (hoveredFriend != null)
 		{
@@ -268,7 +268,9 @@ public class FriendNotesPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (WidgetInfo.TO_GROUP(event.getParam1()) == WidgetInfo.FRIENDS_LIST.getGroupId())
+		final int groupId = WidgetInfo.TO_GROUP(event.getParam1());
+
+		if (groupId == WidgetInfo.FRIENDS_LIST.getGroupId() || groupId == WidgetInfo.IGNORE_LIST.getGroupId())
 		{
 			if (Strings.isNullOrEmpty(event.getTarget()))
 			{
@@ -308,12 +310,11 @@ public class FriendNotesPlugin extends Plugin
 	{
 		final Nameable nameable = event.getNameable();
 
-		if (nameable instanceof Friend)
+		if (nameable instanceof Friend || nameable instanceof Ignore)
 		{
 			// Migrate a friend's note to their new display name
-			final Friend friend = (Friend) nameable;
-			String name = friend.getName();
-			String prevName = friend.getPrevName();
+			String name = nameable.getName();
+			String prevName = nameable.getPrevName();
 
 			if (prevName != null)
 			{
@@ -335,7 +336,7 @@ public class FriendNotesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onScriptCallbackEvent(ScriptCallbackEvent event)
+	private void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
 		if (!config.showIcons() || iconIdx == -1)
 		{
@@ -432,4 +433,5 @@ public class FriendNotesPlugin extends Plugin
 		iconIdx = newIcons.length - 1;
 		client.setModIcons(newIcons);
 	}
+
 }
