@@ -32,12 +32,12 @@ import com.google.common.collect.Multiset;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.FontID;
 import net.runelite.api.GameState;
@@ -49,7 +49,6 @@ import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
@@ -73,6 +72,7 @@ import net.runelite.client.plugins.banktags.tabs.BankSearch;
 import net.runelite.client.util.QuantityFormatter;
 import org.pf4j.Extension;
 
+@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "Bank",
@@ -82,18 +82,6 @@ import org.pf4j.Extension;
 )
 public class BankPlugin extends Plugin implements KeyListener
 {
-	private static final List<Varbits> TAB_VARBITS = List.of(
-		Varbits.BANK_TAB_ONE_COUNT,
-		Varbits.BANK_TAB_TWO_COUNT,
-		Varbits.BANK_TAB_THREE_COUNT,
-		Varbits.BANK_TAB_FOUR_COUNT,
-		Varbits.BANK_TAB_FIVE_COUNT,
-		Varbits.BANK_TAB_SIX_COUNT,
-		Varbits.BANK_TAB_SEVEN_COUNT,
-		Varbits.BANK_TAB_EIGHT_COUNT,
-		Varbits.BANK_TAB_NINE_COUNT
-	);
-
 	private static final List<WidgetInfo> BANK_PINS = List.of(
 		WidgetInfo.BANK_PIN_1,
 		WidgetInfo.BANK_PIN_2,
@@ -234,11 +222,6 @@ public class BankPlugin extends Plugin implements KeyListener
 			updateBankPinSizes();
 		}
 
-		if (!event.getEventName().equals("setBankTitle"))
-		{
-			return;
-		}
-
 		int[] intStack = client.getIntStack();
 		String[] stringStack = client.getStringStack();
 		int intStackSize = client.getIntStackSize();
@@ -246,17 +229,6 @@ public class BankPlugin extends Plugin implements KeyListener
 
 		switch (event.getEventName())
 		{
-			case "setBankTitle":
-				final ContainerPrices prices = calculate(getBankTabItems());
-				if (prices == null)
-				{
-					return;
-				}
-
-				final String strCurrentTab = createValueText(prices);
-
-				stringStack[stringStackSize - 1] += strCurrentTab;
-				break;
 			case "bankSearchFilter":
 				int itemId = intStack[intStackSize - 1];
 				String search = stringStack[stringStackSize - 1];
@@ -285,18 +257,42 @@ public class BankPlugin extends Plugin implements KeyListener
 	@Subscribe
 	public void onScriptPostFired(ScriptPostFired event)
 	{
-		if (event.getScriptId() != ScriptID.BANKMAIN_SEARCH_REFRESH)
+		if (event.getScriptId() == ScriptID.BANKMAIN_BUILD)
 		{
-			return;
-		}
+			// Compute bank prices using only the shown items so that we can show bank value during searches
+			final Widget bankItemContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+			final ItemContainer bankContainer = client.getItemContainer(InventoryID.BANK);
+			final Widget[] children = bankItemContainer.getChildren();
+			long geTotal = 0, haTotal = 0;
 
-		// vanilla only lays out the bank every 40 client ticks, so if the search input has changed,
-		// and the bank wasn't laid out this tick, lay it out early
-		final String inputText = client.getVar(VarClientStr.INPUT_TEXT);
-		if (searchString != inputText && client.getGameCycle() % 40 != 0)
+			log.debug("Computing bank price of {} items", bankContainer.size());
+
+			// The first components are the bank items, followed by tabs etc. There are always 816 components regardless
+			// of bank size, but we only need to check up to the bank size.
+			for (int i = 0; i < bankContainer.size(); ++i)
+			{
+				Widget child = children[i];
+				if (child != null && !child.isSelfHidden() && child.getItemId() > -1)
+				{
+					final int alchPrice = getHaPrice(child.getItemId());
+					geTotal += (long) itemManager.getItemPrice(child.getItemId()) * child.getItemQuantity();
+					haTotal += (long) alchPrice * child.getItemQuantity();
+				}
+			}
+
+			Widget bankTitle = client.getWidget(WidgetInfo.BANK_TITLE_BAR);
+			bankTitle.setText(bankTitle.getText() + createValueText(geTotal, haTotal));
+		}
+		else if (event.getScriptId() == ScriptID.BANKMAIN_SEARCH_REFRESH)
 		{
-			clientThread.invokeLater(bankSearch::layoutBank);
-			searchString = inputText;
+			// vanilla only lays out the bank every 40 client ticks, so if the search input has changed,
+			// and the bank wasn't laid out this tick, lay it out early
+			final String inputText = client.getVar(VarClientStr.INPUT_TEXT);
+			if (searchString != inputText && client.getGameCycle() % 40 != 0)
+			{
+				clientThread.invokeLater(bankSearch::layoutBank);
+				searchString = inputText;
+			}
 		}
 	}
 
@@ -315,78 +311,51 @@ public class BankPlugin extends Plugin implements KeyListener
 		}
 	}
 
-	private String createValueText(final ContainerPrices prices)
+	private String createValueText(long gePrice, long haPrice)
 	{
-		final long gePrice = prices.getGePrice();
-		final long haPrice = prices.getHighAlchPrice();
-
-		String strCurrentTab = "";
+		StringBuilder stringBuilder = new StringBuilder();
 		if (config.showGE() && gePrice != 0)
 		{
-			strCurrentTab += " (";
+			stringBuilder.append(" (");
 
 			if (config.showHA())
 			{
-				strCurrentTab += "EX: ";
+				stringBuilder.append("GE: ");
 			}
 
 			if (config.showExact())
 			{
-				strCurrentTab += QuantityFormatter.formatNumber(gePrice) + ")";
+				stringBuilder.append(QuantityFormatter.formatNumber(gePrice));
 			}
 			else
 			{
-				strCurrentTab += QuantityFormatter.quantityToStackSize(gePrice) + ")";
+				stringBuilder.append(QuantityFormatter.quantityToStackSize(gePrice));
 			}
+			stringBuilder.append(')');
 		}
 
 		if (config.showHA() && haPrice != 0)
 		{
-			strCurrentTab += " (";
+			stringBuilder.append(" (");
 
 			if (config.showGE())
 			{
-				strCurrentTab += "HA: ";
+				stringBuilder.append("HA: ");
 			}
 
 			if (config.showExact())
 			{
-				strCurrentTab += QuantityFormatter.formatNumber(haPrice) + ")";
+				stringBuilder.append(QuantityFormatter.formatNumber(haPrice));
 			}
 			else
 			{
-				strCurrentTab += QuantityFormatter.quantityToStackSize(haPrice) + ")";
-			}
-		}
-
-		return strCurrentTab;
-	}
-
-	private Item[] getBankTabItems()
-	{
-		final ItemContainer container = client.getItemContainer(InventoryID.BANK);
-		if (container == null)
-		{
-			return null;
-		}
-
-		final Item[] items = container.getItems();
-		int currentTab = client.getVar(Varbits.CURRENT_BANK_TAB);
-
-		if (currentTab > 0)
-		{
-			int startIndex = 0;
-
-			for (int i = currentTab - 1; i > 0; i--)
-			{
-				startIndex += client.getVar(TAB_VARBITS.get(i - 1));
+				stringBuilder.append(QuantityFormatter.quantityToStackSize(haPrice));
 			}
 
-			int itemCount = client.getVar(TAB_VARBITS.get(currentTab - 1));
-			return Arrays.copyOfRange(items, startIndex, startIndex + itemCount);
+			stringBuilder.append(')');
 		}
 
-		return items;
+		return stringBuilder.toString();
 	}
 
 	private void updateSeedVaultTotal()
@@ -409,8 +378,7 @@ public class BankPlugin extends Plugin implements KeyListener
 			return;
 		}
 
-		final String titleText = createValueText(prices);
-
+		final String titleText = createValueText(prices.getGePrice(), prices.getHighAlchPrice());
 		title.setText(SEED_VAULT_TITLE + titleText);
 	}
 
@@ -576,23 +544,8 @@ public class BankPlugin extends Plugin implements KeyListener
 				continue;
 			}
 
-			switch (id)
-			{
-				case ItemID.COINS_995:
-					ge += qty;
-					alch += qty;
-					break;
-				case ItemID.PLATINUM_TOKEN:
-					ge += qty * 1000L;
-					alch += qty * 1000L;
-					break;
-				default:
-					final int alchPrice = itemManager.getItemDefinition(id).getHaPrice();
-					alch += (long) alchPrice * qty;
-
-					ge += (long) itemManager.getItemPrice(id) * qty;
-					break;
-			}
+			alch += (long) getHaPrice(id) * qty;
+			ge += (long) itemManager.getItemPrice(id) * qty;
 		}
 
 		return new ContainerPrices(ge, alch);
@@ -622,5 +575,18 @@ public class BankPlugin extends Plugin implements KeyListener
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
+	}
+
+	private int getHaPrice(int itemId)
+	{
+		switch (itemId)
+		{
+			case ItemID.COINS_995:
+				return 1;
+			case ItemID.PLATINUM_TOKEN:
+				return 1000;
+			default:
+				return itemManager.getItemDefinition(itemId).getHaPrice();
+		}
 	}
 }

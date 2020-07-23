@@ -54,23 +54,23 @@ public interface BankTagsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "removeSeparators",
-		name = "Remove tab separators in Tag Tabs",
-		description = "Removes tab separators and corrects item layouts in Tag Tabs to mimic a regular tab",
+		keyName = "removeTabSeparators",
+		name = "Remove tab separators",
+		description = "Remove the tab separators normally present in tag tabs",
 		position = 3
 	)
 	default boolean removeSeparators()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
-		keyName = "hidePlaceholders",
-		name = "Hide placeholders",
-		description = "Hide placeholders in tag tabs or tag search.",
+		keyName = "preventTagTabDrags",
+		name = "Prevent tag tab item dragging",
+		description = "Ignore dragged items to prevent unwanted bank item reordering",
 		position = 4
 	)
-	default boolean hidePlaceholders()
+	default boolean preventTagTabDrags()
 	{
 		return false;
 	}
