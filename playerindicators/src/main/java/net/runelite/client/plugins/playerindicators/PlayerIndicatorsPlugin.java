@@ -40,18 +40,18 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Actor;
-import net.runelite.api.ClanMember;
-import net.runelite.api.ClanMemberManager;
-import net.runelite.api.ClanMemberRank;
-import static net.runelite.api.ClanMemberRank.UNRANKED;
 import net.runelite.api.Client;
+import net.runelite.api.FriendsChatManager;
+import net.runelite.api.FriendsChatMember;
+import net.runelite.api.FriendsChatRank;
+import static net.runelite.api.FriendsChatRank.UNRANKED;
 import net.runelite.api.MenuEntry;
 import static net.runelite.api.MenuOpcode.*;
 import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
-import net.runelite.api.events.ClanMemberJoined;
-import net.runelite.api.events.ClanMemberLeft;
+import net.runelite.api.events.FriendsChatMemberJoined;
+import net.runelite.api.events.FriendsChatMemberLeft;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.PlayerSpawned;
@@ -60,13 +60,14 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ClanManager;
+import net.runelite.client.game.FriendChatManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.PvPUtil;
+import net.runelite.http.api.RuneLiteAPI;
 import net.runelite.http.api.hiscore.HiscoreClient;
 import net.runelite.http.api.hiscore.HiscoreResult;
 import org.pf4j.Extension;
@@ -81,7 +82,7 @@ import org.pf4j.Extension;
 @Getter(AccessLevel.PACKAGE)
 public class PlayerIndicatorsPlugin extends Plugin
 {
-	private static final HiscoreClient HISCORE_CLIENT = new HiscoreClient();
+	private static final HiscoreClient HISCORE_CLIENT = new HiscoreClient(RuneLiteAPI.CLIENT);
 	private final List<String> callers = new ArrayList<>();
 	private final Map<Player, PlayerRelation> colorizedMenus = new ConcurrentHashMap<>();
 	private final Map<PlayerRelation, Color> relationColorHashMap = new ConcurrentHashMap<>();
@@ -113,7 +114,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 
 	@Inject
 	@Getter(AccessLevel.NONE)
-	private ClanManager clanManager;
+	private FriendChatManager friendChatManager;
 
 	@Inject
 	@Getter(AccessLevel.NONE)
@@ -186,13 +187,13 @@ public class PlayerIndicatorsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onClanMemberJoined(ClanMemberJoined event)
+	private void onFriendsChatMemberJoined(FriendsChatMemberJoined event)
 	{
 		getCallerList();
 	}
 
 	@Subscribe
-	private void onClanMemberLeft(ClanMemberLeft event)
+	private void onFriendsChatMemberLeft(FriendsChatMemberLeft event)
 	{
 		getCallerList();
 	}
@@ -304,17 +305,17 @@ public class PlayerIndicatorsPlugin extends Plugin
 					color = relationColorHashMap.get(PlayerRelation.FRIEND);
 				}
 			}
-			else if (config.highlightClan() && player.isClanMember())
+			else if (config.highlightClan() && player.isFriendsChatMember())
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.CLAN)).contains(PlayerIndicationLocation.MENU))
 				{
 					color = relationColorHashMap.get(PlayerRelation.CLAN);
 				}
 
-				ClanMemberRank rank = clanManager.getRank(player.getName());
+				FriendsChatRank rank = friendChatManager.getRank(player.getName());
 				if (rank != UNRANKED)
 				{
-					image = clanManager.getIconNumber(rank);
+					image = friendChatManager.getIconNumber(rank);
 				}
 			}
 			else if (config.highlightTeamMembers() && player.getTeam() > 0 && (localPlayer != null ? localPlayer.getTeam() : -1) == player.getTeam())
@@ -324,14 +325,14 @@ public class PlayerIndicatorsPlugin extends Plugin
 					color = relationColorHashMap.get(PlayerRelation.TEAM);
 				}
 			}
-			else if (config.highlightOtherPlayers() && !player.isClanMember() && !player.isFriend() && !PvPUtil.isAttackable(client, player))
+			else if (config.highlightOtherPlayers() && !player.isFriendsChatMember() && !player.isFriend() && !PvPUtil.isAttackable(client, player))
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.OTHER)).contains(PlayerIndicationLocation.MENU))
 				{
 					color = relationColorHashMap.get(PlayerRelation.OTHER);
 				}
 			}
-			else if (config.highlightTargets() && !player.isClanMember() && !client.isFriended(player.getName(),
+			else if (config.highlightTargets() && !player.isFriendsChatMember() && !client.isFriended(player.getName(),
 				false) && PvPUtil.isAttackable(client, player))
 			{
 				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.TARGET)).contains(PlayerIndicationLocation.MENU))
@@ -341,7 +342,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 			}
 
 
-			if (config.playerSkull() && !player.isClanMember() && player.getSkullIcon() != null)
+			if (config.playerSkull() && !player.isFriendsChatMember() && player.getSkullIcon() != null)
 			{
 				image2 = 35;
 			}
@@ -389,10 +390,10 @@ public class PlayerIndicatorsPlugin extends Plugin
 
 		callers.clear();
 
-		final ClanMemberManager clanMemberManager = client.getClanMemberManager();
+		final FriendsChatManager clanMemberManager = client.getFriendsChatManager();
 		if (config.useClanchatRanks() && clanMemberManager != null)
 		{
-			for (ClanMember clanMember : clanMemberManager.getMembers())
+			for (FriendsChatMember clanMember : clanMemberManager.getMembers())
 			{
 				if (clanMember.getRank().getValue() > config.callerRank().getValue())
 				{
@@ -489,10 +490,10 @@ public class PlayerIndicatorsPlugin extends Plugin
 
 		if (config.highlightClan())
 		{
-			relationColorHashMap.put(PlayerRelation.CLAN, config.getClanColor());
-			if (config.clanIndicatorModes() != null)
+			relationColorHashMap.put(PlayerRelation.CLAN, config.getFriendsChatColor());
+			if (config.friendsChatIndicatorModes() != null)
 			{
-				locationHashMap.put(PlayerRelation.CLAN, config.clanIndicatorModes().toArray());
+				locationHashMap.put(PlayerRelation.CLAN, config.friendsChatIndicatorModes().toArray());
 			}
 		}
 

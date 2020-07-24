@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Death Indicator"
 project.extra["PluginDescription"] = "Show where you last died, and on what world"

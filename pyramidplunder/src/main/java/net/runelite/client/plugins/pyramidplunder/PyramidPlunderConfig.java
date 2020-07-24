@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Steffen Hauge <steffen.oerum.hauge@hotmail.com>
- * Copyright (c) 2020, Lucas <https://github.com/Lucwousin>
+ * Copyright (c) 2020 Mitchell <https://github.com/Mitchell-Kovacs>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,112 +23,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package net.runelite.client.plugins.pyramidplunder;
-
+import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitleSection;
-import net.runelite.client.config.Title;
-import net.runelite.client.config.Units;
 
 @ConfigGroup("pyramidplunder")
 public interface PyramidPlunderConfig extends Config
 {
-	@ConfigTitleSection(
-		keyName = "overlaysTitle",
-		name = "Overlays",
-		description = "",
-		position = 1
+	@ConfigItem(
+		position = 0,
+		keyName = "hideTimer",
+		name = "Hide default timer",
+		description = "Hides the default pyramid plunder timer"
 	)
-	default Title overlaysTitle()
+	default boolean hideTimer()
 	{
-		return new Title();
+		return true;
+	}
+
+	@ConfigItem(
+		position = 1,
+		keyName = "showExactTimer",
+		name = "Show exact timer",
+		description = "Displays the amount of time remaining as an infobox"
+	)
+	default boolean showExactTimer()
+	{
+		return true;
 	}
 
 	@ConfigItem(
 		position = 2,
-		keyName = "showPlunderStatus",
-		name = "Show session stats",
-		description = "Configures whether to display pyramid plunder session stats",
-		titleSection = "overlaysTitle"
+		keyName = "timerLowWarning",
+		name = "Timer low warning",
+		description = "Determines the time when the timers color will change"
 	)
-	default boolean showPlunderStatus()
+	default int timerLowWarning()
 	{
-		return true;
+		return 30;
 	}
 
 	@ConfigItem(
 		position = 3,
-		keyName = "hideWidget",
-		name = "Hide default widget",
-		description = "Hide the default widget",
-		titleSection = "overlaysTitle"
+		keyName = "highlightDoorsColor",
+		name = "Highlight doors color",
+		description = "Selects the color for highlighting tomb doors"
 	)
-	default boolean hideWidget()
+	default Color highlightDoorsColor()
 	{
-		return true;
+		return Color.green;
 	}
 
 	@ConfigItem(
 		position = 4,
-		keyName = "showTimer",
-		name = "Display numerical timer",
-		description = "Displays a numerical timer instead of the default timer",
-		titleSection = "overlaysTitle"
-	)
-	default boolean showTimer()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 11,
-		keyName = "chestCounter",
-		name = "Chest counter",
-		description = "Show a (persistent) chest opened counter",
-		titleSection = "overlaysTitle"
-	)
-	default boolean chestCounter()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "chestCount",
-		name = "",
-		description = "",
-		hidden = true
-	)
-	default int getChestCount()
-	{
-		return 0;
-	}
-
-	@ConfigItem(
-		keyName = "chestCount",
-		name = "",
-		description = "",
-		hidden = true
-	)
-	void setChestCount(int value);
-
-	@ConfigTitleSection(
-		keyName = "highlightsTitle",
-		name = "Highlights",
-		description = "",
-		position = 5
-	)
-	default Title highlightsTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-		position = 6,
 		keyName = "highlightDoors",
-		name = "Highlights doors",
-		description = "Highlights the four doors in each room",
-		titleSection = "highlightsTitle"
+		name = "Highlight doors",
+		description = "Highlights the four tomb doors in each room"
 	)
 	default boolean highlightDoors()
 	{
@@ -137,51 +87,68 @@ public interface PyramidPlunderConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
-		keyName = "highlightSpearTrap",
-		name = "Highlights spear traps",
-		description = "Highlights the spear traps in each room",
-		titleSection = "highlightsTitle"
+		position = 5,
+		keyName = "highlightSpeartrapColor",
+		name = "Highlight speartrap color",
+		description = "Selects the color for highlighting speartraps"
 	)
-	default boolean highlightSpearTrap()
+	default Color highlightSpeartrapsColor()
 	{
-		return false;
+		return Color.orange;
 	}
 
-	@ConfigTitleSection(
-		keyName = "warningsTitle",
-		name = "Warnings",
-		description = "",
-		position = 8
+	@ConfigItem(
+		position = 6,
+		keyName = "highlightSpeartraps",
+		name = "Highlight speartraps",
+		description = "Highlight the spear traps at the entrance of each room"
 	)
-	default Title warningsTitle()
+	default boolean highlightSpeartraps()
 	{
-		return new Title();
+		return true;
+	}
+
+	@ConfigItem(
+		position = 7,
+		keyName = "highlightContainersColor",
+		name = "Highlight containers color",
+		description = "Selects the color for highlighting urns, chests and sarcophagus"
+	)
+	default Color highlightContainersColor()
+	{
+		return Color.yellow;
+	}
+
+	@ConfigItem(
+		position = 8,
+		keyName = "highlightUrnsFloor",
+		name = "Highlight urns floor",
+		description = "Highlight the urns starting at selected floor and up"
+	)
+	default int highlightUrnsFloor()
+	{
+		return 9;
 	}
 
 	@ConfigItem(
 		position = 9,
-		keyName = "firstWarningTime",
-		name = "First warning time",
-		description = "Recolor time left(s)",
-		titleSection = "warningsTitle"
+		keyName = "highlightedChestFloor",
+		name = "Highlight chest floor",
+		description = "Highlight the Grand Gold Chest starting at selected floor and up"
 	)
-	@Units(Units.SECONDS)
-	default int firstWarningTime()
+	default int highlightChestFloor()
 	{
-		return 90;
+		return 9;
 	}
 
 	@ConfigItem(
 		position = 10,
-		keyName = "secondWarningTime",
-		name = "Second warning time",
-		description = "Recolor time left(s)",
-		titleSection = "warningsTitle"
+		keyName = "highlightedSarcophagusFloor",
+		name = "Highlight sarcophagus floor",
+		description = "Highlight the sarcophagus starting at selected floor and up"
 	)
-	@Units(Units.SECONDS)
-	default int secondWarningTime()
+	default int highlightSarcophagusFloor()
 	{
-		return 30;
+		return 9;
 	}
 }

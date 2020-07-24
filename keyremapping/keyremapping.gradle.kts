@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.9"
+version = "0.0.10"
 
 project.extra["PluginName"] = "Key Remapping"
 project.extra["PluginDescription"] = "Allows use of WASD keys for camera movement with 'Press Enter to Chat', and remapping number keys to F-keys"

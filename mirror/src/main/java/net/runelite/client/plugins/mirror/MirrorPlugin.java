@@ -24,17 +24,26 @@
  */
 package net.runelite.client.plugins.mirror;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import java.awt.Canvas;
-import java.awt.image.BufferedImage;
-import javax.swing.JFrame;
+import com.google.inject.Provides;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.Player;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.DrawFinished;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import java.awt.Canvas;
+import java.awt.image.BufferedImage;
 
 /**
  * Mirror Plugin - Creates a new window that draws only the game canvas, and ignores the AFTER_MIRROR Overlay layer
@@ -52,16 +61,73 @@ public class MirrorPlugin extends Plugin
 	@Inject
 	private Client client;
 
+	@Inject
+	private MirrorConfig config;
+
+	@Inject
+	private ClientThread clientThread;
+
+	@Provides
+	MirrorConfig getConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(MirrorConfig.class);
+	}
+
 	public static JFrame jframe;
 	public static final Canvas canvas = new Canvas();
 	public static BufferedImage bufferedImage;
 
+
+	public void updateTitle()
+	{
+		clientThread.invokeLater(() ->
+		{
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				final Player player = client.getLocalPlayer();
+
+				if (player == null)
+				{
+					return false;
+				}
+
+				final String name = player.getName();
+
+				if (Strings.isNullOrEmpty(name))
+				{
+					return false;
+				}
+
+				if (jframe != null)
+				{
+					if (config.mirrorName())
+					{
+						jframe.setTitle("OpenOSRS Mirror" + " - " + name);
+					}
+					else
+					{
+						jframe.setTitle("OpenOSRS Mirror");
+					}
+
+				}
+			}
+			else
+			{
+				if (jframe != null)
+				{
+					jframe.setTitle("OpenOSRS Mirror");
+					return true;
+				}
+			}
+			return false;
+		});
+	}
 	@Override
 	public void startUp()
 	{
 		if (jframe == null)
 		{
-			jframe = new JFrame("OpenOSRS");
+			jframe = new JFrame("OpenOSRS Mirror");
 			jframe.setSize(1280, 720);
 			canvas.setSize(1280, 720);
 			jframe.add(canvas);
@@ -99,5 +165,33 @@ public class MirrorPlugin extends Plugin
 			jframe.setSize(canvas.getSize());
 		}
 		canvas.getGraphics().drawImage(event.image, 0, 0, jframe);
+	}
+
+	@Subscribe
+	private void onGameStateChanged(final GameStateChanged event)
+	{
+		if (event.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
+		updateTitle();
+	}
+
+	@Subscribe
+	private void onConfigChanged(ConfigChanged event)
+	{
+		if (!event.getGroup().equals("mirror"))
+		{
+			return;
+		}
+
+		SwingUtilities.invokeLater(() ->
+		{
+			if (jframe != null)
+			{
+				updateTitle();
+			}
+		});
 	}
 }

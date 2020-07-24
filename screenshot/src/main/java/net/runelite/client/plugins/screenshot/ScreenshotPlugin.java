@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -54,10 +55,10 @@ import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.SpriteID;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.PlayerDeath;
 import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
@@ -69,6 +70,7 @@ import static net.runelite.api.widgets.WidgetID.CLUE_SCROLL_REWARD_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.DIALOG_SPRITE_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.KINGDOM_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.LEVEL_UP_GROUP_ID;
+import static net.runelite.api.widgets.WidgetID.PLAYER_TRADE_CONFIRM_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 import static net.runelite.api.widgets.WidgetID.THEATRE_OF_BLOOD_REWARD_GROUP_ID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -296,28 +298,34 @@ public class ScreenshotPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onPlayerDeath(PlayerDeath event)
+	private void onActorDeath(ActorDeath event)
 	{
-		Player player = event.getPlayer();
-		if (player == client.getLocalPlayer() && config.screenshotPlayerDeath())
-		{
-			takeScreenshot("Death", "Deaths");
-		}
-		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_KILL ||
-			config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
-		{
-			if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting() == player)
-			{
-				takeScreenshot("KO " + player.getName(), "PvP Kills");
-			}
-		}
+		Actor actor = event.getActor();
 
-		int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
-		if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
-			&& (player.isFriend() || player.isClanMember()
-			|| (client.getVar(Varbits.IN_RAID) == 1 || tob == 2 || tob == 3)))
+		if (actor instanceof Player)
 		{
-			takeScreenshot("Death " + player.getName(), "Deaths");
+			Player player = (Player) actor;
+
+			if (player == client.getLocalPlayer() && config.screenshotPlayerDeath())
+			{
+				takeScreenshot("Death", "Deaths");
+			}
+			if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_KILL ||
+				config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
+			{
+				if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting() == player)
+				{
+					takeScreenshot("KO " + player.getName(), "PvP Kills");
+				}
+			}
+
+			int tob = client.getVar(Varbits.THEATRE_OF_BLOOD);
+			if (config.screenshotFriendDeath() && player != client.getLocalPlayer() && player.getName() != null
+				&& (player.isFriend() || player.isFriendsChatMember()
+						|| (client.getVar(Varbits.IN_RAID) == 1 || tob == 2 || tob == 3)))
+			{
+				takeScreenshot("Death " + player.getName(), "Deaths");
+			}
 		}
 	}
 
@@ -325,7 +333,7 @@ public class ScreenshotPlugin extends Plugin
 	private void onPlayerLootReceived(final PlayerLootReceived playerLootReceived)
 	{
 		if (config.screenshotKills() && (config.pvpKillScreenshotMode() == PvPKillScreenshotMode.ON_LOOT ||
-		config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
+			config.pvpKillScreenshotMode() == PvPKillScreenshotMode.BOTH))
 		{
 			final Player player = playerLootReceived.getPlayer();
 			final String name = player.getName();
@@ -337,7 +345,7 @@ public class ScreenshotPlugin extends Plugin
 	@Subscribe
 	public void onScriptCallbackEvent(ScriptCallbackEvent e)
 	{
-		if (!"confirmClanKick".equals(e.getEventName()))
+		if (!"confirmFriendsChatKick".equals(e.getEventName()))
 		{
 			return;
 		}
@@ -411,7 +419,7 @@ public class ScreenshotPlugin extends Plugin
 			}
 		}
 
-		if (config.screenshotCcKick() && chatMessage.equals("Your request to kick/ban this user was successful."))
+		if (config.screenshotKick() && chatMessage.equals("Your request to kick/ban this user was successful."))
 		{
 			if (kickPlayerName == null)
 			{
@@ -518,6 +526,12 @@ public class ScreenshotPlugin extends Plugin
 					return;
 				}
 				break;
+			case PLAYER_TRADE_CONFIRM_GROUP_ID:
+				if (!config.screenshotSecondTradeScreen())
+				{
+					return;
+				}
+				break;
 		}
 
 		switch (groupId)
@@ -593,6 +607,14 @@ public class ScreenshotPlugin extends Plugin
 				screenshotSubDir = "Clue Scroll Rewards";
 				clueType = null;
 				clueNumber = null;
+				break;
+			}
+			case PLAYER_TRADE_CONFIRM_GROUP_ID:
+			{
+				String secondTradeName = Text.standardize(client.getWidget(WidgetInfo.SECOND_TRADING_WITH).getText()).replace("trading with:", "");
+
+				fileName = secondTradeName + " Second Trade Screen " + LocalDate.now();
+				screenshotSubDir = "Trade Window";
 				break;
 			}
 			default:
@@ -695,7 +717,6 @@ public class ScreenshotPlugin extends Plugin
 			log.info("Login screenshot prevented");
 			return;
 		}
-
 
 		Consumer<Image> imageCallback = (img) ->
 		{

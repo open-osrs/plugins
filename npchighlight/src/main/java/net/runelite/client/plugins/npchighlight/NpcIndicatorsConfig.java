@@ -56,6 +56,13 @@ public interface NpcIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "npcToHighlight",
+		name = "",
+		description = ""
+	)
+	void setNpcToHighlight(String npcsToHighlight);
+
+	@ConfigItem(
 		position = 2,
 		keyName = "npcColor",
 		name = "Highlight Color",

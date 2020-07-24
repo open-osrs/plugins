@@ -23,17 +23,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.10"
 
 project.extra["PluginName"] = "Clan Chat"
-project.extra["PluginDescription"] = "Add rank icons to users talking in clan chat"
+project.extra["PluginDescription"] = "Add rank icons to users talking in friends chat"
 
 tasks {
     jar {
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Id" to nameToId("Clan Chat"),
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]

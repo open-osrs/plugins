@@ -28,10 +28,10 @@ import net.runelite.api.Player;
 import net.runelite.api.ScriptID;
 import net.runelite.api.SoundEffectID;
 import net.runelite.api.SpriteID;
+import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.PlayerDeath;
 import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.WidgetLoaded;
@@ -531,10 +531,10 @@ public class BronzeManPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onPlayerDeath(PlayerDeath playerDeath)
+	public void onActorDeath(ActorDeath playerDeath)
 	{
 		if (!config.hardcoreBronzeMan() || client.isInInstancedRegion() ||
-			playerDeath.getPlayer() != client.getLocalPlayer())
+			playerDeath.getActor() != client.getLocalPlayer())
 		{
 			return;
 		}

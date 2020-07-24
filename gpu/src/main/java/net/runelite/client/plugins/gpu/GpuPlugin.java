@@ -103,7 +103,8 @@ import org.pf4j.Extension;
 	description = "Utilizes the GPU",
 	enabledByDefault = false,
 	tags = {"fog", "draw distance"},
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.MISCELLANEOUS,
+	loadInSafeMode = false
 )
 @Slf4j
 @Extension

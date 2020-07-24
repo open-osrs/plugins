@@ -26,7 +26,7 @@ package net.runelite.client.plugins.playerindicators;
 
 import java.awt.Color;
 import java.util.EnumSet;
-import net.runelite.api.ClanMemberRank;
+import net.runelite.api.FriendsChatRank;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -65,9 +65,9 @@ public interface PlayerIndicatorsConfig extends Config
 		name = "Clan",
 		description = "",
 		position = 2,
-		keyName = "clanSection"
+		keyName = "friendsChatSection"
 	)
-	default boolean clanSection()
+	default boolean friendsChatSection()
 	{
 		return false;
 	}
@@ -205,9 +205,9 @@ public interface PlayerIndicatorsConfig extends Config
 	@ConfigItem(
 		position = 0,
 		keyName = "highlightClan",
-		name = "Highlight clan members",
-		description = "Configures whether or clan members should be highlighted",
-		section = "clanSection"
+		name = "Highlight friends chat members",
+		description = "Configures whether or friends chat members should be highlighted",
+		section = "friendsChatSection"
 	)
 	default boolean highlightClan()
 	{
@@ -217,11 +217,11 @@ public interface PlayerIndicatorsConfig extends Config
 	@ConfigItem(
 		position = 1,
 		keyName = "clanMemberColor",
-		name = "Clan member color",
-		description = "Color of clan members",
-		section = "clanSection"
+		name = "Friends chat member color",
+		description = "Color of friends chat members",
+		section = "friendsChatSection"
 	)
-	default Color getClanColor()
+	default Color getFriendsChatColor()
 	{
 		return new Color(170, 0, 255);
 	}
@@ -231,11 +231,11 @@ public interface PlayerIndicatorsConfig extends Config
 		keyName = "clanIndicatorModes",
 		name = "Indicator Mode",
 		description = "Location(s) of the overlay",
-		section = "clanSection",
+		section = "friendsChatSection",
 		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> clanIndicatorModes()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> friendsChatIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -243,11 +243,11 @@ public interface PlayerIndicatorsConfig extends Config
 	@ConfigItem(
 		position = 3,
 		keyName = "clanMenuIcons",
-		name = "Show clan ranks",
-		description = "Add clan rank to right click menu and next to player names",
-		section = "clanSection"
+		name = "Show friends chat ranks",
+		description = "Add friends chat rank to right click menu and next to player names",
+		section = "friendsChatSection"
 	)
-	default boolean showClanRanks()
+	default boolean showFriendsChatRanks()
 	{
 		return false;
 	}
@@ -491,7 +491,7 @@ public interface PlayerIndicatorsConfig extends Config
 		position = 2,
 		keyName = "useClanchatRanks",
 		name = "Use Ranks as Callers",
-		description = "Uses clanchat ranks as the list of callers",
+		description = "Uses friends chat ranks as the list of callers",
 		section = "callersSection",
 		titleSection = "callerConfiguration"
 	)
@@ -503,14 +503,14 @@ public interface PlayerIndicatorsConfig extends Config
 	@ConfigItem(
 		position = 3,
 		keyName = "callerRank",
-		name = "Minimum rank for Clan Caller",
-		description = "Chooses the minimum rank to use as clanchat callers.",
+		name = "Minimum rank for friends chat Caller",
+		description = "Chooses the minimum rank to use as friends chat callers.",
 		section = "callersSection",
 		titleSection = "callerConfiguration"
 	)
-	default ClanMemberRank callerRank()
+	default FriendsChatRank callerRank()
 	{
-		return ClanMemberRank.CAPTAIN;
+		return FriendsChatRank.CAPTAIN;
 	}
 
 	@ConfigItem(

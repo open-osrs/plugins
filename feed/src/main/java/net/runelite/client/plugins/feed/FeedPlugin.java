@@ -25,7 +25,9 @@
 package net.runelite.client.plugins.feed;
 
 import com.google.common.base.Suppliers;
+import com.google.inject.Binder;
 import com.google.inject.Provides;
+import com.google.inject.TypeLiteral;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
@@ -46,6 +48,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.feed.FeedClient;
 import net.runelite.http.api.feed.FeedResult;
+import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
 @Extension
@@ -88,9 +91,18 @@ public class FeedPlugin extends Plugin
 	}, 10, TimeUnit.MINUTES);
 
 	@Override
+	public void configure(Binder binder)
+	{
+		// CHECKSTYLE:OFF
+		binder.bind(new TypeLiteral<Supplier<FeedResult>>(){})
+			.toInstance(feedSupplier);
+		// CHECKSTYLE:ON
+	}
+
+	@Override
 	protected void startUp()
 	{
-		feedPanel = new FeedPanel(config, feedSupplier);
+		feedPanel = injector.getInstance(FeedPanel.class);
 
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "icon.png");
 
@@ -139,5 +151,11 @@ public class FeedPlugin extends Plugin
 	FeedConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(FeedConfig.class);
+	}
+
+	@Provides
+	FeedClient provideFeedClient(OkHttpClient okHttpClient)
+	{
+		return new FeedClient(okHttpClient);
 	}
 }
