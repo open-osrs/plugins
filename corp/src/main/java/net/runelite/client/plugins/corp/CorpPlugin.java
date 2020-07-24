@@ -35,15 +35,12 @@ import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import static net.runelite.api.MenuOpcode.MENU_ACTION_DEPRIORITIZE_OFFSET;
-import static net.runelite.api.MenuOpcode.NPC_SECOND_OPTION;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.InteractingChanged;
-import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.chat.ChatColorType;
@@ -68,9 +65,6 @@ import org.pf4j.Extension;
 @Slf4j
 public class CorpPlugin extends Plugin
 {
-	private static final String ATTACK = "Attack";
-	private static final String DARK_ENERGY_CORE = "Dark energy core";
-
 	@Getter(AccessLevel.PACKAGE)
 	private NPC corp;
 
@@ -225,25 +219,5 @@ public class CorpPlugin extends Plugin
 		}
 
 		players.add(source);
-	}
-
-	@Subscribe
-	private void onMenuEntryAdded(MenuEntryAdded event)
-	{
-		if (event.getOpcode() != NPC_SECOND_OPTION.getId()
-			|| !config.leftClickCore() || !event.getOption().equals(ATTACK))
-		{
-			return;
-		}
-
-		final int npcIndex = event.getIdentifier();
-		final NPC npc = client.getCachedNPCs()[npcIndex];
-		if (npc == null || !npc.getName().equals(DARK_ENERGY_CORE))
-		{
-			return;
-		}
-
-		event.setOpcode(NPC_SECOND_OPTION.getId() + MENU_ACTION_DEPRIORITIZE_OFFSET);
-		event.setModified();
 	}
 }
