@@ -36,7 +36,6 @@ import javax.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ItemID;
-import net.runelite.api.NpcID;
 
 @Getter(AccessLevel.PACKAGE)
 enum Task
