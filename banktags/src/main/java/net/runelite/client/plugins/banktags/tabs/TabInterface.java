@@ -718,7 +718,7 @@ public class TabInterface
 		}
 
 		if ((event.getParam1() == WidgetInfo.BANK_ITEM_CONTAINER.getId()
-				 || event.getParam1() == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getId())
+				|| event.getParam1() == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getId())
 			&& event.getMenuOpcode() == MenuOpcode.CC_OP_LOW_PRIORITY
 			&& (event.getOption().equalsIgnoreCase("withdraw-x")
 					|| event.getOption().equalsIgnoreCase("deposit-x")))
@@ -762,14 +762,14 @@ public class TabInterface
 			handleDeposit(event, event.getParam1() == WidgetInfo.BANK_DEPOSIT_INVENTORY.getId());
 		}
 		else if (activeTab != null && ((event.getParam1() == WidgetInfo.BANK_EQUIPMENT_BUTTON.getId() && event.getOption().equals(SHOW_WORN))
-										   || (event.getParam1() == WidgetInfo.BANK_SETTINGS_BUTTON.getId() && event.getOption().equals(SHOW_SETTINGS))
-										   || (event.getParam1() == WidgetInfo.BANK_TUTORIAL_BUTTON.getId() && event.getOption().equals(SHOW_TUTORIAL))))
+										|| (event.getParam1() == WidgetInfo.BANK_SETTINGS_BUTTON.getId() && event.getOption().equals(SHOW_SETTINGS))
+										|| (event.getParam1() == WidgetInfo.BANK_TUTORIAL_BUTTON.getId() && event.getOption().equals(SHOW_TUTORIAL))))
 		{
 			saveTab();
 			rememberedSearch = TAG_SEARCH + activeTab.getTag();
 		}
 		else if (!Strings.isNullOrEmpty(rememberedSearch) && ((event.getParam1() == WidgetInfo.BANK_EQUIPMENT_BUTTON.getId() && event.getOption().equals(HIDE_WORN))
-																  || (event.getParam1() == WidgetInfo.BANK_SETTINGS_BUTTON.getId() && event.getOption().equals(HIDE_SETTINGS))))
+																|| (event.getParam1() == WidgetInfo.BANK_SETTINGS_BUTTON.getId() && event.getOption().equals(HIDE_SETTINGS))))
 		{
 			bankSearch.reset(true);
 			bankSearch.search(InputType.NONE, rememberedSearch, true);
