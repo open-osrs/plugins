@@ -347,7 +347,7 @@ public class TabInterface
 
 					final Iterator<String> dataIter = Text.fromCSV(dataString).iterator();
 					String name = dataIter.next();
-					StringBuffer sb = new StringBuffer();
+					StringBuilder sb = new StringBuilder();
 					for (char c : name.toCharArray())
 					{
 						if (FILTERED_CHARS.test(c))
