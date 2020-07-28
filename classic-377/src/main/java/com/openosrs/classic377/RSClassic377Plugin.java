@@ -27,7 +27,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "RS Classic 377",
 	description = "RS Classic Rev 377",
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.MISCELLANEOUS,
+	enabledByDefault = false
 )
 @Slf4j
 public class RSClassic377Plugin extends Plugin
