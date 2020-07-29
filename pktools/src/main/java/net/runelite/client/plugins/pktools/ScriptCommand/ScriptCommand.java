@@ -459,7 +459,7 @@ class Group1Command implements ScriptCommand
 			{
 				if ("Group 1".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
 					click(client);
 					Thread.sleep(config.clickDelay());
 				}
@@ -490,7 +490,7 @@ class Group2Command implements ScriptCommand
 			{
 				if ("Group 2".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
 					click(client);
 					Thread.sleep(config.clickDelay());
 				}
@@ -521,7 +521,7 @@ class Group3Command implements ScriptCommand
 			{
 				if ("Group 3".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
 					click(client);
 					Thread.sleep(config.clickDelay());
 				}
@@ -552,7 +552,7 @@ class Group4Command implements ScriptCommand
 			{
 				if ("Group 4".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + plugin.itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
+					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
 					click(client);
 					Thread.sleep(config.clickDelay());
 				}

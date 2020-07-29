@@ -1,6 +1,4 @@
 import com.savvasdalkitsis.jsonmerger.JsonMerger
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.gradle.api.DefaultTask
@@ -27,28 +25,21 @@ open class BootstrapTask : DefaultTask() {
         return MessageDigest.getInstance("SHA-512").digest(file).fold("", { str, it -> str + "%02x".format(it) }).toUpperCase()
     }
 
-    private fun getBootstrap(): JSONArray? {
-        val client = OkHttpClient()
-
-        val url = "https://raw.githubusercontent.com/ben93riggs/plugin-hosting/master/plugins.json"
-        val request = Request.Builder()
-                .url(url)
-                .build()
-
-        client.newCall(request).execute().use { response -> return JSONObject("{\"plugins\":${response.body!!.string()}}").getJSONArray("plugins") }
+    private fun getBootstrap(filename: String): JSONArray? {
+        val bootstrapFile = File(filename).readLines()
+        return JSONObject("{\"plugins\":$bootstrapFile}").getJSONArray("plugins")
     }
 
     @TaskAction
     fun boostrap() {
         if (project == project.rootProject) {
-            val bootstrapDir = File("${project.buildDir}/bootstrap")
-            val bootstrapReleaseDir = File("${project.buildDir}/bootstrap/release")
+            val bootstrapDir = File("${project.projectDir}")
+            val bootstrapReleaseDir = File("${project.projectDir}/release")
 
-            bootstrapDir.mkdirs()
             bootstrapReleaseDir.mkdirs()
 
             val plugins = ArrayList<JSONObject>()
-            val baseBootstrap = getBootstrap() ?: throw RuntimeException("Base bootstrap is null!")
+            val baseBootstrap = getBootstrap("$bootstrapDir/plugins.json") ?: throw RuntimeException("Base bootstrap is null!")
 
             project.subprojects.forEach {
                 if (it.project.properties.containsKey("PluginName") && it.project.properties.containsKey("PluginDescription")) {
@@ -61,7 +52,7 @@ open class BootstrapTask : DefaultTask() {
                             "version" to it.project.version,
                             "requires" to ProjectVersions.apiVersion,
                             "date" to formatDate(Date()),
-                            "url" to "https://github.com/ben93riggs/plugin-hosting/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
+                            "url" to "https://github.com/ben93riggs/plugins/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 
@@ -69,8 +60,8 @@ open class BootstrapTask : DefaultTask() {
                             "name" to it.project.extra.get("PluginName"),
                             "id" to nameToId(it.project.extra.get("PluginName") as String),
                             "description" to it.project.extra.get("PluginDescription"),
-                            "provider" to "ben93riggs",
-                            "projectUrl" to "https://discord.gg/7qrYdaC",
+                            "provider" to it.project.extra.get("PluginProvider"),
+                            "projectUrl" to it.project.extra.get("ProjectUrl"),
                             "releases" to releases.toTypedArray()
                     ).jsonObject()
 
@@ -91,12 +82,11 @@ open class BootstrapTask : DefaultTask() {
                         pluginAdded = true
                     }
 
-                    if (!pluginAdded)
-                    {
+                    if (!pluginAdded) {
                         plugins.add(pluginObject)
                     }
 
-                    plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile())
+                    plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile(), overwrite = true)
                 }
             }
 

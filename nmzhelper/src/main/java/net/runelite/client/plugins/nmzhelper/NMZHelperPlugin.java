@@ -23,10 +23,6 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
@@ -48,14 +44,11 @@ public class NMZHelperPlugin extends Plugin
 	private ItemManager itemManager;
 
 	private MenuEntry entry;
+	private int entryTimeout = 0;
 
 	private static final int[] NMZ_MAP_REGION = {9033};
 
 	private int rockCakeDelay = 0;
-
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Provides
 	NMZHelperConfig provideConfig(final ConfigManager configManager)
@@ -98,6 +91,19 @@ public class NMZHelperPlugin extends Plugin
 			return;
 		}
 
+		if (entryTimeout > 0)
+		{
+			entryTimeout--;
+			return;
+		}
+
+		if (entry != null)
+		{
+			entry = null;
+			return;
+		}
+
+
 		if (!isInNightmareZone())
 		{
 			return;
@@ -110,6 +116,11 @@ public class NMZHelperPlugin extends Plugin
 	public void onClientTick(ClientTick event)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
+		if (entryTimeout > 0 || entry != null)
 		{
 			return;
 		}
@@ -131,7 +142,7 @@ public class NMZHelperPlugin extends Plugin
 		}
 
 		//check if overloaded
-		if (!isOverloaded())
+		if (!isOverloaded() && hasOverloads())
 		{
 			return;
 		}
@@ -164,6 +175,18 @@ public class NMZHelperPlugin extends Plugin
 		return overloadVarbit != 0;
 	}
 
+	private boolean hasOverloads()
+	{
+		Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventory == null)
+		{
+			return false;
+		}
+
+		return inventory.getWidgetItems().stream().anyMatch(item -> isOverloadPotion(item));
+	}
+
 	private void checkOverload()
 	{
 		if (isOverloaded())
@@ -193,92 +216,102 @@ public class NMZHelperPlugin extends Plugin
 
 	private void guzzleRockCake()
 	{
-		this.executor.submit(() -> {
-			try
+		try
+		{
+			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+
+			if (inventory == null)
 			{
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+				return;
+			}
 
-				if (inventory == null)
+			for (WidgetItem item : inventory.getWidgetItems())
+			{
+				if (item.getId() == ItemID.DWARVEN_ROCK_CAKE_7510)
 				{
-					return;
-				}
-
-				for (WidgetItem item : inventory.getWidgetItems())
-				{
-					if (item.getId() == ItemID.DWARVEN_ROCK_CAKE_7510)
-					{
-						entry = new MenuEntry("Guzzle", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_THIRD_OPTION.getId(), item.getIndex(), 9764864, false);
-						click();
-						Thread.sleep(100);
-						break;
-					}
+					entry = new MenuEntry("Guzzle", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_THIRD_OPTION.getId(), item.getIndex(), 9764864, false);
+					click();
+					entryTimeout = 1;
+					break;
 				}
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private void drinkAbsorption()
 	{
-		executor.submit(() -> {
-			try
+		try
+		{
+			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+
+			if (inventory == null)
 			{
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+				return;
+			}
 
-				if (inventory == null)
+			for (WidgetItem item : inventory.getWidgetItems())
+			{
+				if (isAbsorptionPotion(item))
 				{
-					return;
-				}
-
-				for (WidgetItem item : inventory.getWidgetItems())
-				{
-					if (isAbsorptionPotion(item))
-					{
-						entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
-						click();
-						Thread.sleep(100);
-						break;
-					}
+					entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
+					click();
+					entryTimeout = 1;
+					break;
 				}
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private void drinkOverload()
 	{
-		executor.submit(() -> {
-			try
+		try
+		{
+			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+
+			if (inventory == null)
 			{
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+				return;
+			}
 
-				if (inventory == null)
+			for (WidgetItem item : inventory.getWidgetItems())
+			{
+				if (isOverloadPotion(item))
 				{
-					return;
-				}
-
-				for (WidgetItem item : inventory.getWidgetItems())
-				{
-					if (isOverloadPotion(item))
-					{
-						entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
-						click();
-						Thread.sleep(100);
-						break;
-					}
+					entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
+					click();
+					entryTimeout = 1;
+					break;
 				}
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex)
+	{
+		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
+	}
+
+	boolean isInNightmareZone()
+	{
+		if (client.getLocalPlayer() == null)
+		{
+			return false;
+		}
+
+		// NMZ and the KBD lair uses the same region ID but NMZ uses planes 1-3 and KBD uses plane 0
+		return client.getLocalPlayer().getWorldLocation().getPlane() > 0 && Arrays.equals(client.getMapRegions(), NMZ_MAP_REGION);
 	}
 
 	private boolean isAbsorptionPotion(WidgetItem item)
@@ -323,22 +356,6 @@ public class NMZHelperPlugin extends Plugin
 		}
 
 		return false;
-	}
-
-	private MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex)
-	{
-		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
-	}
-
-	boolean isInNightmareZone()
-	{
-		if (client.getLocalPlayer() == null)
-		{
-			return false;
-		}
-
-		// NMZ and the KBD lair uses the same region ID but NMZ uses planes 1-3 and KBD uses plane 0
-		return client.getLocalPlayer().getWorldLocation().getPlane() > 0 && Arrays.equals(client.getMapRegions(), NMZ_MAP_REGION);
 	}
 
 	@Subscribe
