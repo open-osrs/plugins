@@ -36,9 +36,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
+import net.runelite.api.EnumDefinition;
+import net.runelite.api.EnumID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import static net.runelite.api.ScriptID.XPDROP_DISABLED;
+import static net.runelite.api.ScriptID.*;
 import net.runelite.api.Skill;
 import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientInt;
@@ -48,11 +50,10 @@ import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.WidgetHiddenChanged;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import static net.runelite.api.widgets.WidgetInfo.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -69,7 +70,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "XP Drop",
 	description = "Enable customization of the way XP drops are displayed",
-	tags = {"experience", "levels", "tick", "prayer"},
+	tags = {"experience", "levels", "tick", "prayer", "xpdrop"},
 	type = PluginType.UTILITY
 )
 public class XpDropPlugin extends Plugin
@@ -178,119 +179,95 @@ public class XpDropPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onWidgetHiddenChanged(WidgetHiddenChanged event)
+	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
-		Widget widget = event.getWidget();
-
-		int group = WidgetInfo.TO_GROUP(widget.getId());
-
-		if (group != WidgetID.EXPERIENCE_DROP_GROUP_ID)
+		if (scriptPreFired.getScriptId() == XPDROPS_SETDROPSIZE)
 		{
-			return;
+			final int[] intStack = client.getIntStack();
+			final int intStackSize = client.getIntStackSize();
+			// This runs prior to the proc being invoked, so the arguments are still on the stack.
+			// Grab the first argument to the script.
+			final int widgetId = intStack[intStackSize - 4];
+			processXpDrop(widgetId);
 		}
+	}
 
-		if (widget.isHidden())
-		{
-			return;
-		}
+	private void processXpDrop(int widgetId)
+	{
+		final Widget xpdrop = client.getWidget(TO_GROUP(widgetId), TO_CHILD(widgetId));
+		final Widget[] children = xpdrop.getChildren();
+		// child 0 is the xpdrop text, everything else are sprite ids for skills
+		final Widget text = children[0];
 
-		if (config.hideSkillIcons())
-		{
-			if (widget.getSpriteId() > 0)
-			{
-				widget.setHidden(true);
-				return;
-			}
-			else if (!widget.getText().isEmpty())
-			{
-				// Align text accordingly to take up hidden skill icon space
-				int width = 0;
-				for (Widget w : widget.getParent().getDynamicChildren())
-				{
-					if (w.getSpriteId() != -1)
-					{
-						if (width > 0)
-						{
-							// Add in space between sprites
-							width += XPDROP_PADDING;
-						}
-						width += w.getWidth(); // width of sprite
-					}
-				}
-
-				final int xpDropPosition = client.getVar(Varbits.EXPERIENCE_TRACKER_POSITION);
-				switch (xpDropPosition)
-				{
-					case 2: // left
-						int cur = widget.getRelativeX();
-						cur -= width;
-						widget.setRelativeX(cur);
-						break;
-					case 0: // right
-						break;
-					case 1: // center
-						cur = widget.getRelativeX();
-						cur -= width / 2;
-						widget.setRelativeX(cur);
-						break;
-				}
-			}
-		}
-
-		PrayerType prayer = currentTickPrayer;
+		PrayerType prayer = getActivePrayerType();
 		if (prayer == null)
 		{
-			resetTextColor(widget);
+			hideSkillIcons(xpdrop);
+			resetTextColor(text);
 			return;
 		}
 
-		String text = widget.getText();
 		final IntStream spriteIDs =
-			Arrays.stream(widget.getParent().getDynamicChildren()).mapToInt(Widget::getSpriteId);
+			Arrays.stream(children)
+				.skip(1)
+				.mapToInt(Widget::getSpriteId);
 
-		if (text != null)
+		int color = 0;
+
+		switch (prayer)
 		{
-			int color = widget.getTextColor();
-
-			switch (prayer)
-			{
-				case MELEE:
-					if (spriteIDs.anyMatch(
-						id ->
-							id == SpriteID.SKILL_ATTACK
-								|| id == SpriteID.SKILL_STRENGTH
-								|| id == SpriteID.SKILL_DEFENCE
-								|| correctPrayer))
-					{
-						color = config.getMeleePrayerColor().getRGB();
-						correctPrayer = true;
-					}
-					break;
-				case RANGE:
-					if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_RANGED || correctPrayer))
-					{
-						color = config.getRangePrayerColor().getRGB();
-						correctPrayer = true;
-					}
-					break;
-				case MAGIC:
-					if (spriteIDs.anyMatch(id -> id == SpriteID.SKILL_MAGIC || correctPrayer))
-					{
-						color = config.getMagePrayerColor().getRGB();
-						correctPrayer = true;
-					}
-					break;
-			}
-
-			widget.setTextColor(color);
+			case MELEE:
+				if (correctPrayer || spriteIDs.anyMatch(id ->
+					id == SpriteID.SKILL_ATTACK || id == SpriteID.SKILL_STRENGTH || id == SpriteID.SKILL_DEFENCE))
+				{
+					color = config.getMeleePrayerColor().getRGB();
+					correctPrayer = true;
+				}
+				break;
+			case RANGE:
+				if (correctPrayer || spriteIDs.anyMatch(id -> id == SpriteID.SKILL_RANGED))
+				{
+					color = config.getRangePrayerColor().getRGB();
+					correctPrayer = true;
+				}
+				break;
+			case MAGIC:
+				if (correctPrayer || spriteIDs.anyMatch(id -> id == SpriteID.SKILL_MAGIC))
+				{
+					color = config.getMagePrayerColor().getRGB();
+					correctPrayer = true;
+				}
+				break;
 		}
+
+		if (color != 0)
+		{
+			text.setTextColor(color);
+		}
+		else
+		{
+			resetTextColor(text);
+		}
+		
+		hideSkillIcons(xpdrop);
 	}
 
 	private void resetTextColor(Widget widget)
 	{
-		int defaultColorIdx = client.getVar(Varbits.EXPERIENCE_DROP_COLOR);
-		int defaultColor = DefaultColors.values()[defaultColorIdx].getColor().getRGB();
-		widget.setTextColor(defaultColor);
+		EnumDefinition colorEnum = client.getEnum(EnumID.XPDROP_COLORS);
+		int defaultColorId = client.getVar(Varbits.EXPERIENCE_DROP_COLOR);
+		int color = colorEnum.getIntValue(defaultColorId);
+		widget.setTextColor(color);
+	}
+	
+	private void hideSkillIcons(Widget xpdrop)
+	{
+		if (config.hideSkillIcons())
+		{
+			Widget[] children = xpdrop.getChildren();
+			// keep only text
+			Arrays.fill(children, 1, children.length, null);
+		}
 	}
 
 	private PrayerType getActivePrayerType()
@@ -315,7 +292,6 @@ public class XpDropPlugin extends Plugin
 			tickShow--;
 		}
 
-		currentTickPrayer = getActivePrayerType();
 		correctPrayer = false;
 
 		final int fakeTickDelay = config.fakeXpDropDelay();

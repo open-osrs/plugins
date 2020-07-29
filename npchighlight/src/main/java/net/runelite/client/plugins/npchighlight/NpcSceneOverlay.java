@@ -221,17 +221,34 @@ public class NpcSceneOverlay extends Overlay
 			{
 				int size = 1;
 				NPCDefinition composition = actor.getTransformedDefinition();
-
 				if (composition != null)
 				{
 					size = composition.getSize();
 				}
-
-				final WorldPoint wp = actor.getWorldLocation();
-				final Color squareColor = color;
-
-				getSquare(wp, size).forEach(square ->
-					drawTile(graphics, square, squareColor, 1, 255, 50));
+				LocalPoint lp = LocalPoint.fromWorld(client, actor.getWorldLocation());
+				if (lp != null)
+				{
+					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
+					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
+					renderPoly(graphics, color, tilePoly);
+				}
+				break;
+			}
+			case THIN_TRUE_LOCATIONS:
+			{
+				int size = 1;
+				NPCDefinition composition = actor.getTransformedDefinition();
+				if (composition != null)
+				{
+					size = composition.getSize();
+				}
+				LocalPoint lp = LocalPoint.fromWorld(client, actor.getWorldLocation());
+				if (lp != null)
+				{
+					lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
+					final Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
+					renderPoly(graphics, color, tilePoly, 1);
+				}
 				break;
 			}
 		}

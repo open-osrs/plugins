@@ -23,10 +23,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.12"
+version = "0.0.13"
 
 project.extra["PluginName"] = "Chat Commands"
 project.extra["PluginDescription"] = "Enable chat commands"
+
+dependencies {
+    compileOnly(project(":grandexchange"))
+
+    testImplementation(project(":grandexchange"))
+}
 
 tasks {
     jar {
@@ -35,6 +41,7 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to nameToId("grandexchange"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

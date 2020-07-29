@@ -23,13 +23,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.24"
+version = "0.0.26"
 
 project.extra["PluginName"] = "Loottracker"
 project.extra["PluginDescription"] = "Tracks loot from monsters and minigames"
 
 dependencies {
-    compileOnly(group = "org.jooq", name = "jooq", version = "3.13.2")
+    compileOnly(group = "org.jooq", name = "jooq", version = "3.13.3")
 }
 
 tasks {

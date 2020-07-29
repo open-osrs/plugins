@@ -30,13 +30,11 @@ package net.runelite.client.plugins.friendnotes;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.tooltip.Tooltip;
 import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 
-@Singleton
 class FriendNoteOverlay extends Overlay
 {
 	private final Client client;
@@ -44,7 +42,7 @@ class FriendNoteOverlay extends Overlay
 	private final TooltipManager tooltipManager;
 
 	@Inject
-	private FriendNoteOverlay(final Client client, final FriendNotesPlugin plugin, final TooltipManager tooltipManager)
+	private FriendNoteOverlay(Client client, FriendNotesPlugin plugin, TooltipManager tooltipManager)
 	{
 		this.client = client;
 		this.plugin = plugin;

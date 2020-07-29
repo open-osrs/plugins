@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.35"
+version = "0.0.38"
 
 project.extra["PluginName"] = "Clue Scroll"
 project.extra["PluginDescription"] = "Show answers to clue scroll riddles, anagrams, ciphers, and cryptic clues"

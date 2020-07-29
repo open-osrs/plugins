@@ -36,7 +36,6 @@ import javax.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ItemID;
-import net.runelite.api.NpcID;
 
 @Getter(AccessLevel.PACKAGE)
 enum Task
@@ -75,11 +74,9 @@ enum Task
 		asList("Chicken", "Rooster", "Terrorbird", "Seagull", "Chompy bird", "Jubbly bird", "Oomlie bird", "Vulture"), Collections.emptyList()),
 	BLACK_DEMONS("Black demons", ItemID.BLACK_DEMON_MASK,
 		asList("Demonic gorilla", "Balfrug kreeyath", "Skotizo"), Collections.emptyList()),
-	BLACK_DRAGONS("Black dragons", ItemID.BLACK_DRAGON_MASK,
-		Collections.emptyList(), asList(NpcID.BABY_BLACK_DRAGON, NpcID.BABY_BLACK_DRAGON_1872, NpcID.BABY_BLACK_DRAGON_7955)),
+	BLACK_DRAGONS("Black dragons", ItemID.BLACK_DRAGON_MASK, Collections.singletonList("Baby black dragon"), Collections.emptyList()),
 	BLOODVELD("Bloodveld", ItemID.BLOODVELD),
-	BLUE_DRAGONS("Blue dragons", ItemID.BLUE_DRAGON_MASK,
-		Collections.singletonList("Vorkath"), asList(NpcID.BABY_BLUE_DRAGON, NpcID.BABY_BLUE_DRAGON_242, NpcID.BABY_BLUE_DRAGON_243)),
+	BLUE_DRAGONS("Blue dragons", ItemID.BLUE_DRAGON_MASK, asList("Vorkath", "Baby blue dragon"), Collections.emptyList()),
 	BRINE_RATS("Brine rats", ItemID.BRINE_RAT),
 	BRONZE_DRAGONS("Bronze dragons", ItemID.BRONZE_DRAGON_MASK),
 	CALLISTO("Callisto", ItemID.CALLISTO_CUB),
@@ -138,7 +135,7 @@ enum Task
 	GREATER_DEMONS("Greater demons", ItemID.GREATER_DEMON_MASK,
 		asList("K'ril Tsutsaroth", "Tstanon Karlak", "Skotizo"), Collections.emptyList()),
 	GREEN_DRAGONS("Green dragons", ItemID.GREEN_DRAGON_MASK,
-		Collections.emptyList(), asList(NpcID.BABY_GREEN_DRAGON, NpcID.BABY_GREEN_DRAGON_5872, NpcID.BABY_GREEN_DRAGON_5873)),
+		Collections.singletonList("Baby green dragon"), Collections.emptyList()),
 	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.MIDNIGHT,
 		asList("Dusk", "Dawn"), Collections.emptyList(), 0, ItemID.ROCK_HAMMER),
 	HARPIE_BUG_SWARMS("Harpie bug swarms", ItemID.SWARM),
@@ -196,7 +193,7 @@ enum Task
 		Collections.singletonList("Flaming pyrelord"), Collections.emptyList()),
 	RATS("Rats", ItemID.RATS_TAIL),
 	RED_DRAGONS("Red dragons", ItemID.BABY_RED_DRAGON,
-		Collections.emptyList(), asList(NpcID.BABY_RED_DRAGON_244, NpcID.BABY_RED_DRAGON_245, NpcID.BABY_RED_DRAGON_246)),
+		Collections.singletonList("Baby red dragon"), Collections.emptyList()),
 	ROCKSLUGS("Rockslugs", ItemID.ROCKSLUG, 4, ItemID.BAG_OF_SALT),
 	RUNE_DRAGONS("Rune dragons", ItemID.RUNE_DRAGON_MASK),
 	SCORPIA("Scorpia", ItemID.SCORPIAS_OFFSPRING),

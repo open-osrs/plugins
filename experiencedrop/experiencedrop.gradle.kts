@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.6"
+version = "0.0.8"
 
 project.extra["PluginName"] = "XP Drop"
 project.extra["PluginDescription"] = "Enable customization of the way XP drops are displayed"

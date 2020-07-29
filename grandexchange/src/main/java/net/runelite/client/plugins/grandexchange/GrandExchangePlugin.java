@@ -102,6 +102,7 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.LinkBrowser;
 import net.runelite.client.util.OSType;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.RuneLiteAPI;
@@ -111,6 +112,7 @@ import net.runelite.http.api.item.ItemStats;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import net.runelite.http.api.worlds.WorldType;
+import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.text.similarity.FuzzyScore;
 import org.pf4j.Extension;
@@ -132,7 +134,6 @@ public class GrandExchangePlugin extends Plugin
 	private static final int OFFER_QUANTITY_HEADING = 28;
 	private static final String OFFER_QUANTITY_DEFAULT_HEADING = "Quantity:";
 	private static final int OFFER_DEFAULT_ITEM_ID = 6512;
-	private static final OSBGrandExchangeClient CLIENT = new OSBGrandExchangeClient();
 	private static final String OSB_GE_TEXT = "<br>OSBuddy Actively traded price: ";
 	private static final String BUY_LIMIT_GE_TEXT = "<br>Buy limit: ";
 	private static final String BUY_LIMIT_KEY = "buylimit_";
@@ -186,6 +187,9 @@ public class GrandExchangePlugin extends Plugin
 
 	@Inject
 	private ConfigManager configManager;
+
+	@Inject
+	private OSBGrandExchangeClient osbGrandExchangeClient;
 
 	private Widget grandExchangeText;
 	private Widget grandExchangeItem;
@@ -299,6 +303,18 @@ public class GrandExchangePlugin extends Plugin
 	GrandExchangeConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(GrandExchangeConfig.class);
+	}
+
+	@Provides
+	OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient)
+	{
+		return new OSBGrandExchangeClient(okHttpClient);
+	}
+
+	@Provides
+	GrandExchangeClient provideGrandExchangeClient(OkHttpClient okHttpClient)
+	{
+		return new GrandExchangeClient(okHttpClient);
 	}
 
 	@Override
@@ -930,7 +946,7 @@ public class GrandExchangePlugin extends Plugin
 		final String start = text;
 		executorService.submit(() ->
 		{
-			CLIENT.lookupItem(itemId)
+			osbGrandExchangeClient.lookupItem(itemId)
 				.subscribeOn(Schedulers.io())
 				.observeOn(Schedulers.single())
 				.subscribe(
@@ -947,5 +963,15 @@ public class GrandExchangePlugin extends Plugin
 					(e) -> log.debug("Error getting price of item {}", itemId, e)
 				);
 		});
+	}
+
+	static void openGeLink(String name, int itemId)
+	{
+		final String url = "https://services.runescape.com/m=itemdb_oldschool/"
+			+ name.replaceAll(" ", "+")
+			+ "/viewitem?obj="
+			+ itemId;
+
+		LinkBrowser.browse(url);
 	}
 }
