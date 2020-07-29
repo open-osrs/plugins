@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.lavacrafter;
 
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -8,22 +9,30 @@ import javax.inject.Inject;
 import com.google.inject.Provides;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.PlayerAppearance;
 import net.runelite.api.Point;
+import net.runelite.api.Skill;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.StatChanged;
 import net.runelite.api.queries.BankItemQuery;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -31,6 +40,8 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.ui.overlay.OverlayManager;
+import org.apache.commons.lang3.time.StopWatch;
 import org.pf4j.Extension;
 
 @SuppressWarnings("DuplicateBranchesInSwitch")
@@ -41,6 +52,7 @@ import org.pf4j.Extension;
 	tags = {"rc", "rune", "crafting", "runecrafting", "lava", "craft", "crafter", "skilling", "helper", "automation", "ben"},
 	enabledByDefault = false,
 	type = PluginType.SKILLING
+
 )
 public class LavaCrafterPlugin extends Plugin
 {
@@ -53,10 +65,21 @@ public class LavaCrafterPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private LavaCrafterOverlay overlay;
+
+	Random r = new Random();
+	int nextRunVal = r.nextInt(99) + 1;
+
 	private MenuEntry entry;
 
-	private boolean pluginStarted = false;
+	boolean pluginStarted = false;
 	private int tickDelay = 0;
+
+	StopWatch watch = new StopWatch();
 
 	LavaCrafterState state = LavaCrafterState.USE_BANK_CHEST;
 
@@ -73,14 +96,18 @@ public class LavaCrafterPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		overlayManager.add(overlay);
+		pluginStarted = false;
 		state = LavaCrafterState.USE_BANK_CHEST;
+		tickDelay = 0;
+		watch.reset();
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		state = LavaCrafterState.USE_BANK_CHEST;
-		executor.shutdownNow();
+		overlayManager.remove(overlay);
+		stopPlugin();
 	}
 
 	@Subscribe
@@ -94,11 +121,24 @@ public class LavaCrafterPlugin extends Plugin
 		if (event.getKey().equals("startButton"))
 		{
 			pluginStarted = true;
+			state = LavaCrafterState.USE_BANK_CHEST;
+			tickDelay = 0;
+			watch.reset();
+			watch.start();
 		}
 		else if (event.getKey().equals("stopButton"))
 		{
-			pluginStarted = false;
+			stopPlugin();
 		}
+	}
+
+	public void stopPlugin()
+	{
+		pluginStarted = false;
+		state = LavaCrafterState.USE_BANK_CHEST;
+		tickDelay = 0;
+		executor.shutdownNow();
+		watch.reset();
 	}
 
 	public GameObject findNearestGameObjectWithin(WorldPoint worldPoint, int dist, int id)
@@ -116,33 +156,195 @@ public class LavaCrafterPlugin extends Plugin
 	}
 
 	@Subscribe
+	private void onChatMessage(ChatMessage event)
+	{
+		ChatMessageType type = event.getType();
+		String msg = event.getMessage();
+
+		if (type == ChatMessageType.GAMEMESSAGE)
+		{
+			if (state == LavaCrafterState.TELE_DUEL_ARENA || state == LavaCrafterState.TELE_CASTLE_WARS)
+			{
+				if (msg.contains("ring of dueling"))
+				{
+					iterateState();
+					tickDelay = getRandomTickDelay(1);
+				}
+			}
+			else if (state == LavaCrafterState.USE_EARTHS_ON_ALTAR)
+			{
+				if (msg.equals("You bind the temple's power into lava runes."))
+				{
+					iterateState();
+					tickDelay = getRandomTickDelay(1);
+				}
+			}
+		}
+		else if (type == ChatMessageType.SPAM)
+		{
+			if (state == LavaCrafterState.ENTER_RUINS)
+			{
+				if (msg.equals("You feel a powerful force take hold of you..."))
+				{
+					iterateState();
+					tickDelay = getRandomTickDelay(1);
+				}
+			}
+			else if (state == LavaCrafterState.CAST_MAGIC_IMBUE)
+			{
+				if (msg.contains("You are charged to combine runes!"))
+				{
+					iterateState();
+					tickDelay = getRandomTickDelay(1);
+				}
+			}
+		}
+	}
+
+	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		if (tickDelay > 0)
-		{
-			tickDelay--;
-			return;
-		}
-
 		if (!pluginStarted)
 			return;
 
-		System.out.println("Current state is:\t" + state.name());
+		if (client.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			stopPlugin();
+			return;
+		}
+
+		if (config.useTimeStopCondition() && watch.getTime(TimeUnit.MINUTES) > config.timeStopConditionValue())
+		{
+			stopPlugin();
+			return;
+		}
 
 		Player localPlayer = client.getLocalPlayer();
 
 		if (localPlayer == null)
 			return;
 
+		//if we toggled run, there is already a menu entry to be processed. skip the tick.
+		if (handleRunOnGameTick())
+		{
+			return;
+		}
+
+		handleTaskCompletions(localPlayer);
+
+		if (tickDelay > 0)
+		{
+			tickDelay--;
+			return;
+		}
+
 		entry = getEntry(localPlayer);
 
 		if (entry != null)
 		{
 			click();
-			tickDelay = state.tickDelay;
+			tickDelay = getRandomTickDelay(state.tickDelay);
+		}
+	}
+
+	@Subscribe
+	public void onStatChanged(StatChanged event)
+	{
+		if (config.useLevelStopCondition())
+		{
+			if (event.getSkill() != Skill.RUNECRAFT)
+				return;
+
+			if (event.getLevel() == config.levelStopConditionValue())
+				stopPlugin();
+		}
+	}
+
+	public boolean handleRunOnGameTick()
+	{
+		if (!config.autoEnableRun())
+			return false;
+
+		boolean runEnabled = client.getVarpValue(173) == 1;
+		int energy = client.getEnergy();
+
+		if (!runEnabled && energy > nextRunVal)
+		{
+			entry = new MenuEntry("Toggle Run", "", 1, MenuOpcode.CC_OP.getId(), -1, 10485782, false);
+			click();
+			nextRunVal = r.nextInt(99) + 1;
+
+			return true;
 		}
 
-		iterateState();
+		return false;
+	}
+
+	private void handleTaskCompletions(Player localPlayer)
+	{
+		switch (state)
+		{
+			case USE_BANK_CHEST:
+				if (isBankOpen())
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+			case USE_EARTH_RUNES:
+				//todo: (unnecessary?)
+				iterateState();
+				break;
+			case DEPOSIT_LAVAS:
+				if (getInventoryItem(ItemID.LAVA_RUNE) == null)
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+			case WEAR_BINDING_NECKLACE:
+				if (checkHasBindingNecklace(localPlayer))
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+			case WEAR_DUELING_RING:
+				if (checkHasDuelingRing(localPlayer))
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+			case WITHDRAW_DUELING_RING:
+				if (getInventoryItem(ItemID.RING_OF_DUELING8, ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING6, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING3, ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING1) != null)
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+			case WITHDRAW_TALISMAN:
+				if (getInventoryItem(ItemID.EARTH_TALISMAN) != null)
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+			case WITHDRAW_BINDING_NECKLACE:
+				if (getInventoryItem(ItemID.BINDING_NECKLACE) != null)
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+			case WITHDRAW_ESSENCE:
+				if (getInventoryItem(ItemID.PURE_ESSENCE) != null)
+				{
+					tickDelay = getRandomTickDelay();
+					iterateState();
+				}
+				break;
+		}
 	}
 
 	private void iterateState()
@@ -156,7 +358,10 @@ public class LavaCrafterPlugin extends Plugin
 				state = LavaCrafterState.WEAR_DUELING_RING;
 				break;
 			case WEAR_DUELING_RING:
-				state = LavaCrafterState.WITHDRAW_BINDING_NECKLACE;
+				if (!config.useBindingNecklace())
+					state = LavaCrafterState.DEPOSIT_LAVAS;
+				else
+					state = LavaCrafterState.WITHDRAW_BINDING_NECKLACE;
 				break;
 			case WITHDRAW_BINDING_NECKLACE:
 				state = LavaCrafterState.WEAR_BINDING_NECKLACE;
@@ -165,7 +370,10 @@ public class LavaCrafterPlugin extends Plugin
 				state = LavaCrafterState.DEPOSIT_LAVAS;
 				break;
 			case DEPOSIT_LAVAS:
-				state = LavaCrafterState.WITHDRAW_TALISMAN;
+				if (config.useMagicImbue())
+					state = LavaCrafterState.WITHDRAW_ESSENCE;
+				else
+					state = LavaCrafterState.WITHDRAW_TALISMAN;
 				break;
 			case WITHDRAW_TALISMAN:
 				state = LavaCrafterState.WITHDRAW_ESSENCE;
@@ -177,6 +385,12 @@ public class LavaCrafterPlugin extends Plugin
 				state = LavaCrafterState.ENTER_RUINS;
 				break;
 			case ENTER_RUINS:
+				if (config.useMagicImbue())
+					state = LavaCrafterState.CAST_MAGIC_IMBUE;
+				else
+					state = LavaCrafterState.USE_EARTH_RUNES;
+				break;
+			case CAST_MAGIC_IMBUE:
 				state = LavaCrafterState.USE_EARTH_RUNES;
 				break;
 			case USE_EARTH_RUNES:
@@ -188,10 +402,23 @@ public class LavaCrafterPlugin extends Plugin
 			case TELE_CASTLE_WARS:
 				state = LavaCrafterState.USE_BANK_CHEST;
 				break;
-			default:
-				state = LavaCrafterState.USE_BANK_CHEST;
-				break;
 		}
+	}
+
+	private int getRandomTickDelay()
+	{
+		return r.nextInt(config.clickDelayMax() - config.clickDelayMin() + 1) + config.clickDelayMin();
+	}
+
+	private int getRandomTickDelay(int min)
+	{
+		int next = r.nextInt(config.clickDelayMax() - config.clickDelayMin() + 1) + config.clickDelayMin();
+
+		//clamp to min
+		if (next < min)
+			next = min;
+
+		return next;
 	}
 
 	public MenuEntry getEntry(Player localPlayer)
@@ -354,6 +581,18 @@ public class LavaCrafterPlugin extends Plugin
 	public WidgetItem getInventoryItem(int... ids)
 	{
 		return new InventoryWidgetItemQuery().idEquals(ids).result(client).first();
+	}
+
+	public boolean isBankOpen()
+	{
+		Widget widget = client.getWidget(WidgetInfo.BANK_CONTAINER);
+
+		if (widget != null && !widget.isHidden())
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	@Subscribe

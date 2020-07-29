@@ -231,7 +231,7 @@ public class NMZHelperPlugin extends Plugin
 				{
 					entry = new MenuEntry("Guzzle", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_THIRD_OPTION.getId(), item.getIndex(), 9764864, false);
 					click();
-					entryTimeout = 2;
+					entryTimeout = 1;
 					break;
 				}
 			}
@@ -259,7 +259,7 @@ public class NMZHelperPlugin extends Plugin
 				{
 					entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
 					click();
-					entryTimeout = 2;
+					entryTimeout = 1;
 					break;
 				}
 			}
@@ -287,7 +287,7 @@ public class NMZHelperPlugin extends Plugin
 				{
 					entry = getConsumableEntry(itemManager.getItemDefinition(item.getId()).getName(), item.getId(), item.getIndex());
 					click();
-					entryTimeout = 2;
+					entryTimeout = 1;
 					break;
 				}
 			}
@@ -367,7 +367,6 @@ public class NMZHelperPlugin extends Plugin
 		}
 
 		entry = null;
-		entryTimeout = 0;
 	}
 
 	public void click()

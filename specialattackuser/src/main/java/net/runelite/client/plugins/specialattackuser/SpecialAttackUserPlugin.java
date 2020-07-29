@@ -5,6 +5,8 @@ import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -59,6 +61,18 @@ public class SpecialAttackUserPlugin extends Plugin
 	{
 	}
 
+	public boolean isBankOpen()
+	{
+		Widget widget = client.getWidget(WidgetInfo.BANK_CONTAINER);
+
+		if (widget != null && !widget.isHidden())
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
@@ -78,6 +92,11 @@ public class SpecialAttackUserPlugin extends Plugin
 		int spec_percent = client.getVar(VarPlayer.SPECIAL_ATTACK_PERCENT);
 
 		if (spec_percent < config.specialPercent() * 10)
+		{
+			return;
+		}
+
+		if (isBankOpen())
 		{
 			return;
 		}
