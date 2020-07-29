@@ -38,7 +38,6 @@ public class CameraOverlay extends OverlayPanel
 {
 	private final Client client;
 	private final DevToolsPlugin plugin;
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	CameraOverlay(Client client, DevToolsPlugin plugin)
