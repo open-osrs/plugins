@@ -9,10 +9,11 @@ include(":itemcombiner")
 include(":itemuser")
 include(":jadautoprayer")
 include(":lavacrafter")
+include(":nmzhelper")
 include(":pktools")
 include(":praypotdrinker")
 include(":specialattackuser")
-include(":nmzhelper")
+
 
 for (project in rootProject.children) {
     project.apply {
