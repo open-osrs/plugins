@@ -70,7 +70,12 @@ public class OverloadTask extends Task
 			return;
 		}
 
-		entry = MiscUtils.getConsumableEntry("", items.first().getId(), items.first().getIndex());
+		WidgetItem item = items.first();
+
+		if (item == null)
+			return;
+
+		entry = MiscUtils.getConsumableEntry("", item.getId(), item.getIndex());
 		click();
 	}
 }

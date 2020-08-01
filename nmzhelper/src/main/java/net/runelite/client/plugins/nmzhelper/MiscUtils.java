@@ -24,4 +24,9 @@ public class MiscUtils
 	{
 		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
 	}
+
+	public static boolean isDreamCreated(Client client)
+	{
+		return client.getVarbitValue(3946) == 123;
+	}
 }
