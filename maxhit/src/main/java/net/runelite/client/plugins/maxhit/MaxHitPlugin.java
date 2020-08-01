@@ -94,13 +94,17 @@ public class MaxHitPlugin extends Plugin
 
 	private void setWidgetMaxHit(MaxHit maxhit)
 	{
-		Widget equipYourCharacter = client.getWidget(WidgetInfo.EQUIP_YOUR_CHARACTER);
-		String maxHitText = "Melee Max Hit: " + maxhit.getMaxMeleeHit();
-		maxHitText += "<br>Range Max Hit: " + maxhit.getMaxRangeHit();
-		maxHitText += "<br>Magic Max Hit: " + maxhit.getMaxMagicHit();
+		Widget equipmentPanel = client.getWidget(WidgetInfo.EQUIP_YOUR_CHARACTER);
+		if (equipmentPanel != null)
+		{
+			Widget equipYourCharacter = equipmentPanel.getChildren()[1];
+			String maxHitText = "Max Hit:  Melee: " + maxhit.getMaxMeleeHit();
+			maxHitText += " - Ranged: " + maxhit.getMaxRangeHit();
+			maxHitText += " - Magic: " + maxhit.getMaxMagicHit();
 
 
-		equipYourCharacter.setText(maxHitText);
+			equipYourCharacter.setText(maxHitText);
+		}
 	}
 
 	private static class MaxHit
