@@ -129,10 +129,22 @@ public class NMZHelperPlugin extends Plugin
 
 		String msg = Text.removeTags(event.getMessage()); //remove color
 
-		if (event.getType() == ChatMessageType.SPAM
-			&& msg.contains("You drink some of your overload potion."))
+		switch (event.getType())
 		{
-			rockCakeDelay = 12;
+			case SPAM:
+				if (msg.contains("You drink some of your overload potion."))
+				{
+					rockCakeDelay = 12;
+				}
+				break;
+			case GAMEMESSAGE:
+				if (msg.contains("This barrel is empty."))
+				{
+					pluginStarted = false;
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -149,6 +161,12 @@ public class NMZHelperPlugin extends Plugin
 			return;
 		}
 
+		if (client.getVarbitValue(3948) < 26)
+		{
+			pluginStarted = false;
+			return;
+		}
+
 		Task task = tasks.getValidTask();
 		if (task != null)
 		{
@@ -157,7 +175,7 @@ public class NMZHelperPlugin extends Plugin
 		}
 		else
 		{
-			System.out.println("Proper task not found...");
+			System.out.println("ERROR: (NMZHelper) Proper task not found...");
 		}
 	}
 
