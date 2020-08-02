@@ -101,6 +101,13 @@ public class SpecialAttackUserPlugin extends Plugin
 			return;
 		}
 
+		Widget specialOrb = client.getWidget(160, 30);
+
+		if (specialOrb == null || specialOrb.isHidden())
+		{
+			return;
+		}
+
 		this.executor.submit(() -> {
 			try
 			{

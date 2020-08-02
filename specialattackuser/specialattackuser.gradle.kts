@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.3.0"
+version = "0.4.0"
 
 project.extra["PluginName"] = "Special Attack User"
 project.extra["PluginDescription"] = "Automatically enables special attack"
