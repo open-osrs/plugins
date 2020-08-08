@@ -1,25 +1,17 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
 import java.awt.event.KeyEvent;
-import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class DominicDialogue2Task extends Task
 {
-	public DominicDialogue2Task(Client client, NMZHelperConfig config)
+	public DominicDialogue2Task(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 7;
+		super(priority);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package net.runelite.client.plugins.nmzhelper;
 
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Point;
@@ -10,19 +11,32 @@ import net.runelite.api.events.MenuOptionClicked;
 
 public abstract class Task
 {
-	public MenuEntry entry;
+	@Inject
 	public Client client;
+
+	@Inject
 	public NMZHelperConfig config;
 
-	public Task(Client client, NMZHelperConfig config)
+	public MenuEntry entry;
+
+	private final int priority;
+
+	public Task(int priority)
 	{
-		this.client = client;
-		this.config = config;
+		this.priority = priority;
 	}
 
-	public abstract int priority();
+	public int priority()
+	{
+		return priority;
+	}
+
 	public abstract boolean validate();
-	public abstract String getTaskDescription();
+
+	public String getTaskDescription()
+	{
+		return this.getClass().getName();
+	}
 
 	public void onGameTick(GameTick event) { return; }
 	public void onMenuOptionClicked(MenuOptionClicked event)

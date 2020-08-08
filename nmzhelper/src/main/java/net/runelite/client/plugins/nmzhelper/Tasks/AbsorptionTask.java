@@ -1,6 +1,5 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.QueryResults;
 import net.runelite.api.Varbits;
@@ -9,19 +8,12 @@ import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
 import net.runelite.client.plugins.nmzhelper.Task;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 
 public class AbsorptionTask extends Task
 {
-	public AbsorptionTask(Client client, NMZHelperConfig config)
+	public AbsorptionTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 1;
+		super(priority);
 	}
 
 	@Override
@@ -34,10 +26,7 @@ public class AbsorptionTask extends Task
 			return false;
 
 		//already met the absorption point threshold
-		if (client.getVar(Varbits.NMZ_ABSORPTION) >= config.absorptionThreshold())
-			return false;
-
-		return true;
+		return client.getVar(Varbits.NMZ_ABSORPTION) < config.absorptionThreshold();
 	}
 
 	@Override

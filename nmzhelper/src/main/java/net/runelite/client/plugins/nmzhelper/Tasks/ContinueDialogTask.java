@@ -1,26 +1,18 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class ContinueDialogTask extends Task
 {
-	public ContinueDialogTask(Client client, NMZHelperConfig config)
+	public ContinueDialogTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 6;
+		super(priority);
 	}
 
 	@Override
@@ -32,10 +24,7 @@ public class ContinueDialogTask extends Task
 
 		Widget widget = client.getWidget(WidgetInfo.DIALOG_NPC_CONTINUE);
 
-		if (widget != null)
-			return true;
-
-		return false;
+		return widget != null;
 	}
 
 	@Override

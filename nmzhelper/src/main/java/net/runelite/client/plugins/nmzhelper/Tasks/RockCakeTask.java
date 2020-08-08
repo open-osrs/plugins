@@ -1,6 +1,5 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
@@ -12,20 +11,13 @@ import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
 import net.runelite.client.plugins.nmzhelper.Task;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.NMZHelperPlugin;
 
 public class RockCakeTask extends Task
 {
-	public RockCakeTask(Client client, NMZHelperConfig config)
+	public RockCakeTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 3;
+		super(priority);
 	}
 
 	@Override
@@ -53,10 +45,7 @@ public class RockCakeTask extends Task
 			return false;
 
 		//out of absorption points
-		if (client.getVar(Varbits.NMZ_ABSORPTION) <= 0)
-			return false;
-
-		return true;
+		return client.getVar(Varbits.NMZ_ABSORPTION) > 0;
 	}
 
 	@Override

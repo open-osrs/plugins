@@ -1,6 +1,5 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
@@ -12,20 +11,13 @@ import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class DrinkPotionTask extends Task
 {
-	public DrinkPotionTask(Client client, NMZHelperConfig config)
+	public DrinkPotionTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 2;
+		super(priority);
 	}
 
 	@Override
@@ -35,11 +27,11 @@ public class DrinkPotionTask extends Task
 		if (MiscUtils.isInNightmareZone(client))
 			return false;
 
-		//doesnt have absorptions
+		//doesn't have absorptions
 		if (getAbsorptionDoseCount() < config.absorptionDoses())
 			return false;
 
-		//doesnt have overloads
+		//doesn't have overloads
 		if (getOverloadDoseCount() < config.overloadDoses())
 			return false;
 
@@ -51,12 +43,7 @@ public class DrinkPotionTask extends Task
 
 		Widget acceptWidget = client.getWidget(129, 6);
 
-		if (acceptWidget != null && !acceptWidget.isHidden())
-		{
-			return false;
-		}
-
-		return true;
+		return acceptWidget == null || acceptWidget.isHidden();
 	}
 
 	@Override

@@ -1,24 +1,16 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class AcceptDreamTask extends Task
 {
-	public AcceptDreamTask(Client client, NMZHelperConfig config)
+	public AcceptDreamTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 1;
+		super(priority);
 	}
 
 	@Override
@@ -27,12 +19,7 @@ public class AcceptDreamTask extends Task
 		//nmz dream accept button
 		Widget acceptWidget = client.getWidget(129, 6);
 
-		if (acceptWidget == null || acceptWidget.isHidden())
-		{
-			return false;
-		}
-
-		return true;
+		return acceptWidget != null && !acceptWidget.isHidden();
 	}
 
 	@Override

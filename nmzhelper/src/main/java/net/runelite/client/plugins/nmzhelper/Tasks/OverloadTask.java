@@ -1,6 +1,5 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.QueryResults;
 import net.runelite.api.Skill;
@@ -10,19 +9,12 @@ import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
 import net.runelite.client.plugins.nmzhelper.Task;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 
 public class OverloadTask extends Task
 {
-	public OverloadTask(Client client, NMZHelperConfig config)
+	public OverloadTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 2;
+		super(priority);
 	}
 
 	@Override
@@ -46,10 +38,7 @@ public class OverloadTask extends Task
 			return false;
 
 		//less than 50 hp
-		if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= 50)
-			return false;
-
-		return true;
+		return client.getBoostedSkillLevel(Skill.HITPOINTS) > 50;
 	}
 
 	@Override

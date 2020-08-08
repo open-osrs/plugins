@@ -1,9 +1,6 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import java.util.Collection;
-import net.runelite.api.Client;
 import net.runelite.api.ItemID;
-import net.runelite.api.LocatableQueryResults;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
@@ -16,20 +13,13 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class DominicDreamTask extends Task
 {
-	public DominicDreamTask(Client client, NMZHelperConfig config)
+	public DominicDreamTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 4;
+		super(priority);
 	}
 
 	@Override
@@ -65,12 +55,7 @@ public class DominicDreamTask extends Task
 
 		Widget dialogNpcContinueWidget = client.getWidget(WidgetInfo.DIALOG_NPC_CONTINUE);
 
-		if (dialogNpcContinueWidget != null && !dialogNpcContinueWidget.isHidden())
-		{
-			return false;
-		}
-
-		return true;
+		return dialogNpcContinueWidget == null || dialogNpcContinueWidget.isHidden();
 	}
 
 	@Override

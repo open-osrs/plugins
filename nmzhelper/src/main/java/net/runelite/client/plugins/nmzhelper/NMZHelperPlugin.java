@@ -2,7 +2,6 @@ package net.runelite.client.plugins.nmzhelper;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.ChatMessage;
@@ -42,6 +41,12 @@ import org.pf4j.Extension;
 )
 public class NMZHelperPlugin extends Plugin
 {
+	/*
+		varbits
+		absorptions - 3954 (doses in storage)
+		overloads - 3953 (doses in storage)
+	 */
+
 	@Inject
 	private Client client;
 
@@ -66,7 +71,7 @@ public class NMZHelperPlugin extends Plugin
 	}
 
 	public String status = "initializing...";
-	private TaskSet tasks = new TaskSet();
+	private final TaskSet tasks = new TaskSet();
 
 	public static int rockCakeDelay = 0;
 
@@ -78,19 +83,19 @@ public class NMZHelperPlugin extends Plugin
 		status = "initializing...";
 		tasks.clear();
 		tasks.addAll(
-			new OverloadTask(client, config),
-			new AbsorptionTask(client, config),
-			new RockCakeTask(client, config),
-			new OpenAbsorptionsBarrelTask(client, config),
-			new OpenOverloadsBarrel(client, config),
-			new WithdrawAbsorptionTask(client, config),
-			new WithdrawOverloadTask(client, config),
-			new DominicDreamTask(client, config),
-			new DominicDialogue1Task(client, config),
-			new DominicDialogue2Task(client, config),
-			new ContinueDialogTask(client, config),
-			new DrinkPotionTask(client, config),
-			new AcceptDreamTask(client, config));
+			new OverloadTask(3),
+			new AbsorptionTask(2),
+			new RockCakeTask(1),
+			new OpenAbsorptionsBarrelTask(8),
+			new OpenOverloadsBarrel(6),
+			new WithdrawAbsorptionTask(7),
+			new WithdrawOverloadTask(5),
+			new DominicDreamTask(4),
+			new DominicDialogue1Task(5),
+			new DominicDialogue2Task(7),
+			new ContinueDialogTask(6),
+			new DrinkPotionTask(2),
+			new AcceptDreamTask(1));
 	}
 
 	@Override
@@ -122,6 +127,8 @@ public class NMZHelperPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
+		//System.out.println(event.getType() + "\t|\t" + event.getMessage());
+
 		if (!pluginStarted)
 		{
 			return;
@@ -138,7 +145,9 @@ public class NMZHelperPlugin extends Plugin
 				}
 				break;
 			case GAMEMESSAGE:
-				if (msg.contains("This barrel is empty."))
+				if (msg.contains("This barrel is empty.")
+					|| msg.contains("There is no ammo left in your quiver.")
+					|| msg.contains("blowpipe empty message here")) //TODO: fix me
 				{
 					pluginStarted = false;
 				}

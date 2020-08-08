@@ -17,10 +17,10 @@ import net.runelite.client.ui.overlay.components.table.TableComponent;
 
 public class NMZHelperOverlay extends Overlay
 {
-	private Client client;
-	private NMZHelperPlugin plugin;
-	private NMZHelperConfig config;
-	private PanelComponent panelComponent = new PanelComponent();
+	private final Client client;
+	private final NMZHelperPlugin plugin;
+	private final NMZHelperConfig config;
+	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	private NMZHelperOverlay(Client client, NMZHelperPlugin plugin, NMZHelperConfig config)

@@ -1,10 +1,8 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
 import java.awt.event.KeyEvent;
-import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.QueryResults;
-import net.runelite.api.Script;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
@@ -14,20 +12,13 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class WithdrawOverloadTask extends Task
 {
-	public WithdrawOverloadTask(Client client, NMZHelperConfig config)
+	public WithdrawOverloadTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 5;
+		super(priority);
 	}
 
 	@Override
@@ -55,12 +46,7 @@ public class WithdrawOverloadTask extends Task
 			return false;
 		}
 
-		if (!chatTitle.getText().contains("How many doses of overload potion will you withdraw?"))
-		{
-			return false;
-		}
-
-		return true;
+		return chatTitle.getText().contains("How many doses of overload potion will you withdraw?");
 	}
 
 	@Override

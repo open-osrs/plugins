@@ -1,6 +1,5 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
-import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
@@ -14,20 +13,13 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
-import net.runelite.client.plugins.nmzhelper.NMZHelperConfig;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class OpenAbsorptionsBarrelTask extends Task
 {
-	public OpenAbsorptionsBarrelTask(Client client, NMZHelperConfig config)
+	public OpenAbsorptionsBarrelTask(int priority)
 	{
-		super(client, config);
-	}
-
-	@Override
-	public int priority()
-	{
-		return 8;
+		super(priority);
 	}
 
 	@Override
@@ -50,10 +42,7 @@ public class OpenAbsorptionsBarrelTask extends Task
 		Widget chatTitle = client.getWidget(WidgetInfo.CHATBOX_TITLE);
 		if (chatTitle != null)
 		{
-			if (chatTitle.getText().contains("How many doses of absorption potion will you withdraw?"))
-			{
-				return false;
-			}
+			return !chatTitle.getText().contains("How many doses of absorption potion will you withdraw?");
 		}
 
 		return true;
