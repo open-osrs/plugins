@@ -3,7 +3,6 @@ package net.runelite.client.plugins.cannonreloader;
 import com.google.inject.Provides;
 import net.runelite.api.*;
 import net.runelite.api.Point;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.config.ConfigManager;

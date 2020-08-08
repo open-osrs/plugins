@@ -4,7 +4,6 @@ import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Title;
 
 @ConfigGroup("lavacrafter")

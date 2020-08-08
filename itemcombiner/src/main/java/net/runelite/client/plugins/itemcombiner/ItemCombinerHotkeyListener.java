@@ -20,8 +20,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static net.runelite.api.ObjectID.DWARF_MULTICANNON;
-
 public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListener
 {
 	private Client client;
