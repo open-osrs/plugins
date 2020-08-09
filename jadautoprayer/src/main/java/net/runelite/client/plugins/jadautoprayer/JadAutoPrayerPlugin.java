@@ -27,44 +27,17 @@ import java.util.concurrent.TimeUnit;
 @Extension
 @PluginDescriptor(
 	name = "Jad Auto Prayer",
-	description = "Auto click proper prayers against Jad.",
+	description = "Auto click proper prayers against Jad(s).",
 	tags = {"bosses", "combat", "minigame", "overlay", "prayer", "pve", "pvm", "jad", "firecape", "fight", "cave", "caves"},
 	enabledByDefault = false,
 	type = PluginType.MINIGAME
 )
 public class JadAutoPrayerPlugin extends Plugin
 {
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
-
 	@Inject
 	private Client client;
 
-	@Inject
-	ConfigManager configManager;
-
-	@Inject
-	private JadAutoPrayerConfig config;
-
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
-	public int protectMageVarbit;
-
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
-	public int protectRangeVarbit;
-
-	private NPC jad;
-
-	//this is our current custom entry to swap in
 	public MenuEntry entry;
-
-	@Provides
-	JadAutoPrayerConfig getConfig(final ConfigManager configManager)
-	{
-		return configManager.getConfig(JadAutoPrayerConfig.class);
-	}
 
 	@Override
 	protected void startUp() throws Exception
@@ -74,77 +47,47 @@ public class JadAutoPrayerPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
-		this.jad = null;
-	}
-
-	@Subscribe
-	public void onVarbitChanged(final VarbitChanged event)
-	{
-		if (this.client.getGameState() != GameState.LOGGED_IN)
-		{
-			return;
-		}
-
-		if (this.client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 1)
-		{
-			this.setProtectMageVarbit(1);
-		}
-		else
-		{
-			this.setProtectMageVarbit(0);
-		}
-
-		if (this.client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 1)
-		{
-			this.setProtectRangeVarbit(1);
-		}
-		else
-		{
-			this.setProtectRangeVarbit(0);
-		}
-	}
-
-	@Subscribe
-	public void onNpcSpawned(NpcSpawned event)
-	{
-		int id = event.getNpc().getId();
-
-		if (id == NpcID.TZTOKJAD || id == NpcID.TZTOKJAD_6506)
-		{
-			this.jad = event.getNpc();
-		}
-	}
-
-	@Subscribe
-	public void onNpcDespawned(NpcDespawned event)
-	{
-		if (this.jad == event.getNpc())
-		{
-			this.jad = null;
-		}
 	}
 
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged event)
 	{
-		if (event.getActor() != this.jad)
+		Actor actor = event.getActor();
+
+		if (actor == null)
 		{
 			return;
 		}
 
-		executor.submit(() -> {
-			final boolean PROTECT_RANGED = this.client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
-			final boolean PROTECT_MAGIC = this.client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
+		switch (actor.getAnimation())
+		{
+			case AnimationID.TZTOK_JAD_MAGIC_ATTACK:
+			case AnimationID.JALTOK_JAD_MAGE_ATTACK:
+				if (client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 0)
+				{
+					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
+				}
+				break;
+			case AnimationID.TZTOK_JAD_RANGE_ATTACK:
+			case AnimationID.JALTOK_JAD_RANGE_ATTACK:
+				if (client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 0)
+				{
+					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
+				}
+				break;
+			default:
+				break;
+		}
+	}
 
-			if (this.jad.getAnimation() == JadAttack.MAGIC.getAnimation() && !PROTECT_MAGIC)
-			{
-				activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
-			}
-			else if (this.jad.getAnimation() == JadAttack.RANGE.getAnimation() && !PROTECT_RANGED)
-			{
-				activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
-			}
-		});
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (entry != null)
+		{
+			event.setMenuEntry(entry);
+		}
+		entry = null;
 	}
 
 	public void activatePrayer(WidgetInfo widgetInfo)
@@ -163,25 +106,6 @@ public class JadAutoPrayerPlugin extends Plugin
 
 		entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
 		click();
-
-		try
-		{
-			Thread.sleep(50);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (entry != null)
-		{
-			event.setMenuEntry(entry);
-		}
-		entry = null;
 	}
 
 	public void click()
