@@ -293,6 +293,7 @@ class DevToolsOverlay extends Overlay
 		if (poly != null && poly.contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY()))
 		{
 			toolTipManager.add(new Tooltip("World Location: " + tile.getWorldLocation().getX() + ", " + tile.getWorldLocation().getY() + ", " + client.getPlane()));
+			toolTipManager.add(new Tooltip("Local Location: " + tile.getLocalLocation().getX() + ", " + tile.getLocalLocation().getY() + ", " + client.getPlane()));
 			OverlayUtil.renderPolygon(graphics, poly, GREEN);
 		}
 	}
