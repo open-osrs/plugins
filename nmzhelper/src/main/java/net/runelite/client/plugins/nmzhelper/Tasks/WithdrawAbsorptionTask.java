@@ -15,11 +15,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class WithdrawAbsorptionTask extends Task
 {
-	public WithdrawAbsorptionTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

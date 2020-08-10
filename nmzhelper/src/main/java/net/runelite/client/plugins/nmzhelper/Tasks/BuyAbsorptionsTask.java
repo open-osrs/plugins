@@ -8,11 +8,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class BuyAbsorptionsTask extends Task
 {
-	public BuyAbsorptionsTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

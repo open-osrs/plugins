@@ -17,11 +17,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class DominicDreamTask extends Task
 {
-	public DominicDreamTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

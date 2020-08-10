@@ -17,11 +17,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class OpenOverloadsBarrel extends Task
 {
-	public OpenOverloadsBarrel(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

@@ -4,10 +4,12 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -26,6 +28,7 @@ import net.runelite.client.plugins.nmzhelper.Tasks.OpenAbsorptionsBarrelTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.OpenOverloadsBarrel;
 import net.runelite.client.plugins.nmzhelper.Tasks.OverloadTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.RockCakeTask;
+import net.runelite.client.plugins.nmzhelper.Tasks.SpecialAttackTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.WithdrawAbsorptionTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.WithdrawOverloadTask;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -71,7 +74,8 @@ public class NMZHelperPlugin extends Plugin
 	}
 
 	public String status = "initializing...";
-	private final TaskSet tasks = new TaskSet();
+
+	private TaskSet tasks = new TaskSet();
 
 	public static int rockCakeDelay = 0;
 
@@ -82,20 +86,26 @@ public class NMZHelperPlugin extends Plugin
 		overlayManager.add(overlay);
 		status = "initializing...";
 		tasks.clear();
-		tasks.addAll(
-			new OverloadTask(3),
-			new AbsorptionTask(2),
-			new RockCakeTask(1),
-			new OpenAbsorptionsBarrelTask(8),
-			new OpenOverloadsBarrel(6),
-			new WithdrawAbsorptionTask(7),
-			new WithdrawOverloadTask(5),
-			new DominicDreamTask(4),
-			new DominicDialogue1Task(5),
-			new DominicDialogue2Task(7),
-			new ContinueDialogTask(6),
-			new DrinkPotionTask(2),
-			new AcceptDreamTask(1));
+		tasks.addAll(client, config,
+			new SpecialAttackTask(),
+			new OverloadTask(),
+			new AbsorptionTask(),
+			new RockCakeTask(),
+
+			new WithdrawAbsorptionTask(),
+			new WithdrawOverloadTask(),
+			new OpenAbsorptionsBarrelTask(),
+			new OpenOverloadsBarrel(),
+
+			new DominicDreamTask(),
+			new DominicDialogue1Task(),
+			new DominicDialogue2Task(),
+
+			new ContinueDialogTask(),
+
+			new DrinkPotionTask(),
+			new AcceptDreamTask()
+		);
 	}
 
 	@Override
@@ -127,8 +137,6 @@ public class NMZHelperPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		//System.out.println(event.getType() + "\t|\t" + event.getMessage());
-
 		if (!pluginStarted)
 		{
 			return;
@@ -147,7 +155,9 @@ public class NMZHelperPlugin extends Plugin
 			case GAMEMESSAGE:
 				if (msg.contains("This barrel is empty.")
 					|| msg.contains("There is no ammo left in your quiver.")
-					|| msg.contains("blowpipe empty message here")) //TODO: fix me
+					|| msg.contains("Your blowpipe has run out of scales and darts.")
+					|| msg.contains("Your blowpipe has run out of darts.")
+					|| msg.contains("Your blowpipe needs to be charged with Zulrah's scales."))
 				{
 					pluginStarted = false;
 				}
@@ -167,6 +177,16 @@ public class NMZHelperPlugin extends Plugin
 
 		if (client.getGameState() != GameState.LOGGED_IN)
 		{
+			return;
+		}
+
+		//if we don't have a rock cake, stop the plugin
+		if (new InventoryWidgetItemQuery()
+			.idEquals(ItemID.DWARVEN_ROCK_CAKE_7510)
+			.result(client)
+			.isEmpty())
+		{
+			pluginStarted = false;
 			return;
 		}
 

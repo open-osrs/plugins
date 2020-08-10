@@ -15,11 +15,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class DrinkPotionTask extends Task
 {
-	public DrinkPotionTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

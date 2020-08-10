@@ -1,34 +1,73 @@
 package net.runelite.client.plugins.nmzhelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.TreeSet;
+import java.util.List;
+import net.runelite.api.Client;
 
-public class TaskSet extends TreeSet<Task>
+public class TaskSet
 {
-	/**
-	 * Default constructor that initializes the comparator and sets the stop condition to none.
-	 */
-	public TaskSet() {
-		super((o1, o2) -> Integer.compare(o2.priority(), o1.priority()) < 0 ? -1 : 1);
+	public List<Task> taskList = new ArrayList<>();
+
+	public TaskSet(Task... tasks)
+	{
+		taskList.addAll(Arrays.asList(tasks));
 	}
 
-	/**
-	 * Constructs a task set and adds all the tasks in the array to the set.
-	 * Tasks are sorted by priority in descending order.
-	 * @param tasks The tasks to be added.
-	 */
-	public TaskSet(Task... tasks) {
-		super((o1, o2) -> Integer.compare(o2.priority(), o1.priority()) < 0 ? -1 : 1);
-		addAll(tasks);
+	public void addAll(Task... tasks)
+	{
+		taskList.addAll(Arrays.asList(tasks));
 	}
 
-	/**
-	 * Adds all the tasks in the array to the set.
-	 * @param tasks The tasks to be added.
-	 * @return True if the set changed, false otherwise.
-	 */
-	public boolean addAll(Task... tasks) {
-		return super.addAll(Arrays.asList(tasks));
+	public TaskSet(Client client, NMZHelperConfig config, Task... tasks)
+	{
+		taskList.addAll(Arrays.asList(tasks));
+		verifyClient(client);
+		verifyConfig(config);
+	}
+
+	public void addAll(Client client, NMZHelperConfig config, Task... tasks)
+	{
+		taskList.addAll(Arrays.asList(tasks));
+		verifyClient(client);
+		verifyConfig(config);
+	}
+
+	public void clear()
+	{
+		taskList.clear();
+	}
+
+	public void verifyClient(Client client)
+	{
+		if (client == null)
+		{
+			return;
+		}
+
+		for (Task task : taskList)
+		{
+			if (task.client == null)
+			{
+				task.client = client;
+			}
+		}
+	}
+
+	public void verifyConfig(NMZHelperConfig config)
+	{
+		if (config == null)
+		{
+			return;
+		}
+
+		for (Task task : taskList)
+		{
+			if (task.config == null)
+			{
+				task.config = config;
+			}
+		}
 	}
 
 	/**
@@ -36,10 +75,15 @@ public class TaskSet extends TreeSet<Task>
 	 * the highest priority valid task.
 	 * @return The first valid task from the task list or null if no valid task.
 	 */
-	public Task getValidTask() {
-		for (Task task : this)
+	public Task getValidTask()
+	{
+		for (Task task : this.taskList)
+		{
 			if (task.validate())
+			{
 				return task;
+			}
+		}
 		return null;
 	}
 }

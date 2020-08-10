@@ -15,11 +15,6 @@ import net.runelite.client.plugins.nmzhelper.NMZHelperPlugin;
 
 public class RockCakeTask extends Task
 {
-	public RockCakeTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

@@ -11,11 +11,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class SearchRewardsChestTask extends Task
 {
-	public SearchRewardsChestTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

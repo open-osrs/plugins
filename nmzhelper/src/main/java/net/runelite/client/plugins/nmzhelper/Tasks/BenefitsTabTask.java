@@ -9,11 +9,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class BenefitsTabTask extends Task
 {
-	public BenefitsTabTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

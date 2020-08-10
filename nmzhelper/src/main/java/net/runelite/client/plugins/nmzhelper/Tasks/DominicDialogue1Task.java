@@ -9,11 +9,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class DominicDialogue1Task extends Task
 {
-	public DominicDialogue1Task(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

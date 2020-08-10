@@ -16,11 +16,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class WithdrawOverloadTask extends Task
 {
-	public WithdrawOverloadTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

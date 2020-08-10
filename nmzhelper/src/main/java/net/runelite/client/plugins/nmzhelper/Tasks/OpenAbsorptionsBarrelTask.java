@@ -17,11 +17,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class OpenAbsorptionsBarrelTask extends Task
 {
-	public OpenAbsorptionsBarrelTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

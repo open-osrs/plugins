@@ -12,11 +12,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class OverloadTask extends Task
 {
-	public OverloadTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

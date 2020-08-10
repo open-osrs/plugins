@@ -10,11 +10,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class ContinueDialogTask extends Task
 {
-	public ContinueDialogTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

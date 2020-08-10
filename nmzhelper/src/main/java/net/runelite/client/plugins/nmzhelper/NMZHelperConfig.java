@@ -35,10 +35,28 @@ public interface NMZHelperConfig extends Config
 	)
 	default int absorptionDoses() { return 88; }
 
+	@ConfigItem(
+		keyName = "useSpecialAttack",
+		name = "Use Special Attack",
+		description = "Whether to use special attack or not",
+		position = 4
+	)
+	default boolean useSpecialAttack() { return false; }
+
+	@ConfigItem(
+		keyName = "specialAttackValue",
+		name = "Special Attack Value",
+		description = "The value to use special attack at",
+		position = 5,
+		hidden = true,
+		unhide = "useSpecialAttack"
+	)
+	default int specialAttackValue() { return 100; }
+
 	@ConfigItem(keyName = "startButton",
 		name = "Start",
 		description = "",
-		position = 4
+		position = 6
 	)
 	default Button startButton() { return new Button(); }
 
@@ -46,7 +64,7 @@ public interface NMZHelperConfig extends Config
 		keyName = "stopButton",
 		name = "Stop",
 		description = "",
-		position = 5
+		position = 7
 	)
 	default Button stopButton() { return new Button(); }
 }

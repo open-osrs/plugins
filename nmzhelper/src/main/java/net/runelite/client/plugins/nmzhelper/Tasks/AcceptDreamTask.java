@@ -8,11 +8,6 @@ import net.runelite.client.plugins.nmzhelper.Task;
 
 public class AcceptDreamTask extends Task
 {
-	public AcceptDreamTask(int priority)
-	{
-		super(priority);
-	}
-
 	@Override
 	public boolean validate()
 	{

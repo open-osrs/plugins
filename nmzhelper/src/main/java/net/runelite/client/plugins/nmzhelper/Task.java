@@ -11,25 +11,15 @@ import net.runelite.api.events.MenuOptionClicked;
 
 public abstract class Task
 {
-	@Inject
+	public Task()
+	{
+	}
+
 	public Client client;
 
-	@Inject
 	public NMZHelperConfig config;
 
 	public MenuEntry entry;
-
-	private final int priority;
-
-	public Task(int priority)
-	{
-		this.priority = priority;
-	}
-
-	public int priority()
-	{
-		return priority;
-	}
 
 	public abstract boolean validate();
 
@@ -38,7 +28,11 @@ public abstract class Task
 		return this.getClass().getName();
 	}
 
-	public void onGameTick(GameTick event) { return; }
+	public void onGameTick(GameTick event)
+	{
+		return;
+	}
+
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (entry != null)
