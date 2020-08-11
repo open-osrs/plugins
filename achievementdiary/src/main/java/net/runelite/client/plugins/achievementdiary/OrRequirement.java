@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
+import net.runelite.api.Client;
 
 public class OrRequirement implements Requirement
 {
@@ -44,5 +45,17 @@ public class OrRequirement implements Requirement
 	public String toString()
 	{
 		return Joiner.on(" or ").join(requirements);
+	}
+
+	public boolean satisfiesRequirement(Client client)
+	{
+		for (Requirement r : getRequirements())
+		{
+			if (r.satisfiesRequirement(client))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -60,6 +60,7 @@ public class NightmareZonePlugin extends Plugin
 {
 	private static final int[] NMZ_MAP_REGION = {9033};
 	private static final Duration HOUR = Duration.ofHours(1);
+	private static final Duration OVERLOAD_DURATION = Duration.ofMinutes(5);
 
 	@Inject
 	private Notifier notifier;
@@ -84,12 +85,16 @@ public class NightmareZonePlugin extends Plugin
 	// This starts as true since you need to get
 	// above the threshold before sending notifications
 	private boolean absorptionNotificationSend = true;
+	private boolean overloadNotificationSend = false;
+	private Instant lastOverload;
 
 	@Override
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
 		overlay.removeAbsorptionCounter();
+
+		overloadNotificationSend = false;
 	}
 
 	@Override
@@ -148,6 +153,11 @@ public class NightmareZonePlugin extends Plugin
 			checkAbsorption();
 		}
 
+		if (overloadNotificationSend && config.overloadNotification() && config.overloadEarlyWarningSeconds() > 0)
+		{
+			checkOverload();
+		}
+
 		if (config.moveOverlay())
 		{
 			pointsPerHour = calculatePointsPerHour();
@@ -157,8 +167,9 @@ public class NightmareZonePlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE
-			|| !isInNightmareZone())
+		if (!isInNightmareZone()
+			|| (event.getType() != ChatMessageType.GAMEMESSAGE
+			&& event.getType() != ChatMessageType.SPAM))
 		{
 			return;
 		}
@@ -166,6 +177,9 @@ public class NightmareZonePlugin extends Plugin
 		String msg = Text.removeTags(event.getMessage()); //remove color
 		if (msg.contains("The effects of overload have worn off, and you feel normal again."))
 		{
+			// Prevents notification from being sent after overload expiry, if the user disables and re-enables warnings
+			overloadNotificationSend = false;
+
 			if (config.overloadNotification())
 			{
 				notifier.notify("Your overload has worn off");
@@ -201,6 +215,21 @@ public class NightmareZonePlugin extends Plugin
 					notifier.notify(msg);
 				}
 			}
+		}
+		else if (msg.contains("You drink some of your overload potion."))
+		{
+			lastOverload = Instant.now();  // Save time of last overload
+			overloadNotificationSend = true;  // Queue up a overload notification once time threshold is reached
+		}
+	}
+
+	private void checkOverload()
+	{
+		if (Instant.now().isAfter(lastOverload.plus(OVERLOAD_DURATION).
+			minus(Duration.ofSeconds(config.overloadEarlyWarningSeconds()))))
+		{
+			notifier.notify("Your overload potion is about to expire!");
+			overloadNotificationSend = false;
 		}
 	}
 

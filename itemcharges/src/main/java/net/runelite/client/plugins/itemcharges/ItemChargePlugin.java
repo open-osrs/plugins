@@ -79,7 +79,7 @@ public class ItemChargePlugin extends Plugin
 		"Your dodgy necklace has (\\d+) charges? left\\.");
 	private static final String CHAT_BRACELET_SLAUGHTER = "Your bracelet of slaughter prevents your slayer";
 	private static final Pattern CHAT_BRACELET_SLAUGHTER_REGEX = Pattern.compile(
-		"Your bracelet of slaughter prevents your slayer count decreasing. It has (\\d{1,2}) charge[s]? left.");
+		"Your bracelet of slaughter prevents your slayer count from decreasing. It has (\\d{1,2}) charge[s]? left.");
 	private static final String CHAT_BRACELET_EXPEDITIOUS = "Your expeditious bracelet helps you progress your";
 	private static final Pattern CHAT_BRACELET_EXPEDITIOUS_REGEX = Pattern.compile(
 		"Your expeditious bracelet helps you progress your slayer (?:task )?faster. It has (\\d{1,2}) charge[s]? left.");
