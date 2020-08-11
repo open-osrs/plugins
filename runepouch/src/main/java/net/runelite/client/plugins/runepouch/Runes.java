@@ -61,8 +61,8 @@ public enum Runes
 	@Getter(AccessLevel.PUBLIC)
 	private final int itemId;
 
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PUBLIC)
+	@Setter(AccessLevel.PUBLIC)
 	private BufferedImage image;
 
 	private static final Map<Integer, Runes> runes;
