@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.16"
+version = "0.0.17"
 
 project.extra["PluginName"] = "World Map"
 project.extra["PluginDescription"] = "Enhance the world map to display additional information"

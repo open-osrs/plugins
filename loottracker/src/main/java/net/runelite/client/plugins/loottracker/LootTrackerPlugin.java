@@ -189,12 +189,21 @@ public class LootTrackerPlugin extends Plugin
 	// Chest loot handling
 	private static final String CHEST_LOOTED_MESSAGE = "You find some treasure in the chest!";
 	private static final Pattern LARRAN_LOOTED_PATTERN = Pattern.compile("You have opened Larran's (big|small) chest .*");
+	private static final String STONE_CHEST_LOOTED_MESSAGE = "You steal some loot from the chest.";
+	private static final String DORGESH_KAAN_CHEST_LOOTED_MESSAGE = "You find treasure inside!";
+	private static final String GRUBBY_CHEST_LOOTED_MESSAGE = "You unlock the chest with your key.";
+	private static final Pattern HAM_CHEST_LOOTED_PATTERN = Pattern.compile("Your (?<key>[a-z]+) key breaks in the lock.*");
+	private static final int HAM_STOREROOM_REGION = 10321;
 	private static final Map<Integer, String> CHEST_EVENT_TYPES = Map.of(
 		5179, "Brimstone Chest",
 		11573, "Crystal Chest",
 		12093, "Larran's big chest",
 		13113, "Larran's small chest",
-		13151, "Elven Crystal Chest"
+		13151, "Elven Crystal Chest",
+		5277, "Stone chest",
+		10835, "Dorgesh-Kaan Chest",
+		10834, "Dorgesh-Kaan Chest",
+		7323, "Grubby Chest"
 	);
 	private static final File LOOT_RECORDS_FILE = new File(RuneLite.RUNELITE_DIR, "lootRecords.json");
 	private static final Set<Integer> RESPAWN_REGIONS = Set.of(
@@ -252,6 +261,10 @@ public class LootTrackerPlugin extends Plugin
 	private static final Set<Integer> LAST_MAN_STANDING_REGIONS = Set.of(13658, 13659, 13914, 13915, 13916);
 
 	private static final Pattern PICKPOCKET_REGEX = Pattern.compile("You pick (the )?(?<target>.+)'s? pocket.*");
+
+	private static final String BIRDNEST_EVENT = "Bird nest";
+	private static final Set<Integer> BIRDNEST_IDS = Set.of(ItemID.BIRD_NEST, ItemID.BIRD_NEST_5071, ItemID.BIRD_NEST_5072, ItemID.BIRD_NEST_5073, ItemID.BIRD_NEST_5074, ItemID.BIRD_NEST_7413, ItemID.BIRD_NEST_13653, ItemID.BIRD_NEST_22798, ItemID.BIRD_NEST_22800);
+
 
 	/*
 	 * This map is used when a pickpocket target has a different name in the chat message than their in-game name.
@@ -660,7 +673,7 @@ public class LootTrackerPlugin extends Plugin
 		}
 
 		LootRecord lootRecord = new LootRecord(name, localUsername, LootRecordType.NPC,
-			toGameItems(items), Instant.now());
+			null, toGameItems(items), Instant.now());
 		SwingUtilities.invokeLater(() -> panel.add(name, localUsername, lootRecord.getType(), combat, entries));
 
 		if (config.saveLoot())
@@ -722,7 +735,7 @@ public class LootTrackerPlugin extends Plugin
 		final LootTrackerItem[] entries = buildEntries(stack(items));
 		String localUsername = client.getLocalPlayer().getName();
 		LootRecord lootRecord = new LootRecord(name, localUsername, LootRecordType.PLAYER,
-			toGameItems(items), Instant.now());
+			null, toGameItems(items), Instant.now());
 		SwingUtilities.invokeLater(() -> panel.add(name, localUsername, lootRecord.getType(), combat, entries));
 		if (config.saveLoot())
 		{
@@ -858,7 +871,7 @@ public class LootTrackerPlugin extends Plugin
 		final LootTrackerItem[] entries = buildEntries(stack(items));
 
 		LootRecord lootRecord = new LootRecord(event, client.getLocalPlayer().getName(), LootRecordType.EVENT,
-			toGameItems(items), Instant.now());
+			null, toGameItems(items), Instant.now());
 		SwingUtilities.invokeLater(() -> panel.add(event, client.getLocalPlayer().getName(), lootRecord.getType(), -1, entries));
 
 		if (config.saveLoot())
@@ -896,7 +909,9 @@ public class LootTrackerPlugin extends Plugin
 			gotPet = true;
 		}
 
-		if (message.equals(CHEST_LOOTED_MESSAGE) || LARRAN_LOOTED_PATTERN.matcher(message).matches())
+		if (message.equals(CHEST_LOOTED_MESSAGE) || message.equals(STONE_CHEST_LOOTED_MESSAGE)
+			|| message.equals(DORGESH_KAAN_CHEST_LOOTED_MESSAGE) || message.equals(GRUBBY_CHEST_LOOTED_MESSAGE)
+			|| LARRAN_LOOTED_PATTERN.matcher(message).matches())
 		{
 			final int regionID = client.getLocalPlayer().getWorldLocation().getRegionID();
 			if (!CHEST_EVENT_TYPES.containsKey(regionID))
@@ -947,6 +962,16 @@ public class LootTrackerPlugin extends Plugin
 		if (GAUNTLET_LOBBY_REGION == regionID && message.equals(GAUNTLET_LOOTED_MESSAGE))
 		{
 			eventType = GAUNTLET_EVENT;
+			lootRecordType = LootRecordType.EVENT;
+			takeInventorySnapshot();
+			return;
+		}
+
+		final Matcher hamStoreroomMatcher = HAM_CHEST_LOOTED_PATTERN.matcher(message);
+		if (hamStoreroomMatcher.matches() && regionID == HAM_STOREROOM_REGION)
+		{
+			String keyType = hamStoreroomMatcher.group("key");
+			eventType = String.format("H.A.M. chest (%s)", keyType);
 			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
 			return;
@@ -1069,7 +1094,7 @@ public class LootTrackerPlugin extends Plugin
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
-		if (client.getLocalPlayer() == null || event.getContainerId() != InventoryID.INVENTORY.getId())
+		if (client.getLocalPlayer() == null || event.getContainerId() != InventoryID.INVENTORY.getId() || eventType == null)
 		{
 			return;
 		}
@@ -1101,7 +1126,7 @@ public class LootTrackerPlugin extends Plugin
 					final LootTrackerItem[] entries = buildEntries(stack(itemsLost));
 					String name = "Death: " + client.getLocalPlayer().getName();
 					LootRecord lootRecord = new LootRecord(name, client.getLocalPlayer().getName(), LootRecordType.DEATH,
-						toGameItems(itemsLost), Instant.now());
+						null, toGameItems(itemsLost), Instant.now());
 					SwingUtilities.invokeLater(() -> panel.add(name, client.getLocalPlayer().getName(),
 						lootRecord.getType(), client.getLocalPlayer().getCombatLevel(), entries));
 					if (config.saveLoot())
@@ -1134,6 +1159,8 @@ public class LootTrackerPlugin extends Plugin
 			|| HESPORI_EVENT.equals(eventType)
 			|| SEEDPACK_EVENT.equals(eventType)
 			|| CASKET_EVENT.equals(eventType)
+			|| BIRDNEST_EVENT.equals(eventType)
+			|| eventType.startsWith("H.A.M. chest")
 			|| GAUNTLET_EVENT.equals(eventType)
 			|| WINTERTODT_EVENT.equals(eventType)
 			|| lootRecordType == LootRecordType.PICKPOCKET)
@@ -1188,6 +1215,13 @@ public class LootTrackerPlugin extends Plugin
 		if (option.equals("Open") && SHADE_CHEST_OBJECTS.containsKey(event.getIdentifier()))
 		{
 			eventType = SHADE_CHEST_OBJECTS.get(event.getIdentifier());
+			lootRecordType = LootRecordType.EVENT;
+			takeInventorySnapshot();
+		}
+
+		if (option.equals("Search") && BIRDNEST_IDS.contains(itemId))
+		{
+			eventType = BIRDNEST_EVENT;
 			lootRecordType = LootRecordType.EVENT;
 			takeInventorySnapshot();
 		}
@@ -1334,7 +1368,7 @@ public class LootTrackerPlugin extends Plugin
 			final LootTrackerItem[] entries = buildEntries(stack(items));
 
 			LootRecord lootRecord = new LootRecord(event, client.getLocalPlayer().getName(),
-				LootRecordType.EVENT, toGameItems(items), Instant.now());
+				LootRecordType.EVENT, null, toGameItems(items), Instant.now());
 
 			SwingUtilities.invokeLater(() -> panel.add(event, client.getLocalPlayer().getName(), lootRecord.getType(), -1, entries));
 			if (config.saveLoot())
@@ -1382,7 +1416,7 @@ public class LootTrackerPlugin extends Plugin
 		final LootTrackerItem[] entries = buildEntries(stack(herbs));
 
 		LootRecord lootRecord = new LootRecord(HERBIBOAR_EVENT, client.getLocalPlayer().getName(),
-			LootRecordType.EVENT, toGameItems(herbs), Instant.now());
+			LootRecordType.EVENT, null, toGameItems(herbs), Instant.now());
 
 		SwingUtilities.invokeLater(() -> panel.add(HERBIBOAR_EVENT, client.getLocalPlayer().getName(), lootRecord.getType(), -1, entries));
 		if (config.saveLoot())
