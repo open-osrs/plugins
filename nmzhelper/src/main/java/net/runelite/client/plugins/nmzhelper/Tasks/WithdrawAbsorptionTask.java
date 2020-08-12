@@ -35,6 +35,7 @@ public class WithdrawAbsorptionTask extends Task
 			return false;
 
 		Widget chatTitle = client.getWidget(WidgetInfo.CHATBOX_TITLE);
+
 		if (chatTitle == null || chatTitle.isHidden())
 		{
 			return false;

@@ -20,7 +20,7 @@ public class SearchRewardsChestTask extends Task
 	@Override
 	public String getTaskDescription()
 	{
-		return null;
+		return "Search Rewards Chest";
 	}
 	
 	@Override

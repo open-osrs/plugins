@@ -25,7 +25,7 @@ public abstract class Task
 
 	public String getTaskDescription()
 	{
-		return this.getClass().getName();
+		return this.getClass().getSimpleName();
 	}
 
 	public void onGameTick(GameTick event)

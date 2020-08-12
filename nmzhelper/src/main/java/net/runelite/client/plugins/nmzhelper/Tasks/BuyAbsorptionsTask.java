@@ -29,7 +29,7 @@ public class BuyAbsorptionsTask extends Task
 		//client.getWidget(206 6)[9]
 		Widget rewardsShopWidget = client.getWidget(206, 6);
 
-		if (rewardsShopWidget == null)
+		if (rewardsShopWidget == null || rewardsShopWidget.isHidden())
 		{
 			return;
 		}
@@ -45,7 +45,7 @@ public class BuyAbsorptionsTask extends Task
 			return;
 		}
 
-		if (absorptionWidget == null || !absorptionWidget.getName().equals("<col=ff9040>Absorption (1)"))
+		if (absorptionWidget == null || absorptionWidget.isHidden() || !absorptionWidget.getName().equals("<col=ff9040>Absorption (1)"))
 		{
 			return;
 		}

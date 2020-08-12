@@ -2,6 +2,7 @@ package net.runelite.client.plugins.nmzhelper;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
@@ -34,6 +35,7 @@ import net.runelite.client.plugins.nmzhelper.Tasks.WithdrawOverloadTask;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
+@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "NMZ Helper",
@@ -160,6 +162,7 @@ public class NMZHelperPlugin extends Plugin
 					|| msg.contains("Your blowpipe needs to be charged with Zulrah's scales."))
 				{
 					pluginStarted = false;
+					log.info("pluginStarted set to false because we received game message: " + msg);
 				}
 				break;
 			default:
@@ -180,23 +183,27 @@ public class NMZHelperPlugin extends Plugin
 			return;
 		}
 
-		//if we don't have a rock cake, stop the plugin
+		//if we don't have a rock cake, return...may need to stop the plugin but this is causing it to stop
+		//	randomly for some reason
 		if (new InventoryWidgetItemQuery()
 			.idEquals(ItemID.DWARVEN_ROCK_CAKE_7510)
 			.result(client)
 			.isEmpty())
 		{
-			pluginStarted = false;
+			//pluginStarted = false;
+			log.info("Rock cake not found...");
 			return;
 		}
 
 		if (client.getVarbitValue(3948) < 26)
 		{
 			pluginStarted = false;
+			log.info("pluginStarted set to false because client varbit value 3948 < 26");
 			return;
 		}
 
 		Task task = tasks.getValidTask();
+
 		if (task != null)
 		{
 			status = task.getTaskDescription();
@@ -204,7 +211,7 @@ public class NMZHelperPlugin extends Plugin
 		}
 		else
 		{
-			System.out.println("ERROR: (NMZHelper) Proper task not found...");
+			//System.out.println("ERROR: (NMZHelper) Proper task not found...");
 		}
 	}
 

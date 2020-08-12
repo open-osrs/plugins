@@ -48,6 +48,12 @@ public class SpecialAttackTask extends Task
 	}
 
 	@Override
+	public String getTaskDescription()
+	{
+		return "Use Special Attack";
+	}
+
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);

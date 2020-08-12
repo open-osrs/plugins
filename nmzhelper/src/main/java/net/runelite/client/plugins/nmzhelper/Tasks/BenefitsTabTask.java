@@ -28,7 +28,7 @@ public class BenefitsTabTask extends Task
 		 */
 		Widget rewardsTabList = client.getWidget(206, 2);
 
-		if (rewardsTabList == null)
+		if (rewardsTabList == null || rewardsTabList.isHidden())
 		{
 			return;
 		}

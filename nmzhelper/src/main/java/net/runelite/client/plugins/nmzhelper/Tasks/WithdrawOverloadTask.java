@@ -36,7 +36,8 @@ public class WithdrawOverloadTask extends Task
 			return false;
 
 		Widget chatTitle = client.getWidget(WidgetInfo.CHATBOX_TITLE);
-		if (chatTitle == null)
+
+		if (chatTitle == null || chatTitle.isHidden())
 		{
 			return false;
 		}

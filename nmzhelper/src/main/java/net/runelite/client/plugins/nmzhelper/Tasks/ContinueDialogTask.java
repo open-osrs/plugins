@@ -19,7 +19,7 @@ public class ContinueDialogTask extends Task
 
 		Widget widget = client.getWidget(WidgetInfo.DIALOG_NPC_CONTINUE);
 
-		return widget != null;
+		return widget != null && !widget.isHidden();
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class ContinueDialogTask extends Task
 	{
 		Widget widget = client.getWidget(WidgetInfo.DIALOG_NPC_CONTINUE);
 
-		if (widget == null)
+		if (widget == null || widget.isHidden())
 		{
 			return;
 		}

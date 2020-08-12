@@ -19,7 +19,7 @@ public class BuyOverloadsTask extends Task
 	{
 		Widget rewardsShopWidget = client.getWidget(206, 6);
 
-		if (rewardsShopWidget == null)
+		if (rewardsShopWidget == null || rewardsShopWidget.isHidden())
 		{
 			return;
 		}
@@ -35,7 +35,7 @@ public class BuyOverloadsTask extends Task
 			return;
 		}
 
-		if (overloadWidget == null || !overloadWidget.getName().equals("<col=ff9040>Overload (1)"))
+		if (overloadWidget == null || overloadWidget.isHidden() || !overloadWidget.getName().equals("<col=ff9040>Overload (1)"))
 		{
 			return;
 		}
