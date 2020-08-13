@@ -10,14 +10,11 @@ import net.runelite.client.plugins.pktools.PkToolsConfig;
 import net.runelite.client.plugins.pktools.PkToolsOverlay;
 import net.runelite.client.plugins.pktools.PkToolsPlugin;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
-
 import static net.runelite.client.plugins.pktools.PkToolsHotkeyListener.getTag;
 
 public interface ScriptCommand
 {
-	void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager);
+	void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager);
 
 	default void clickPrayer(WidgetInfo widgetInfo, Client client, PkToolsPlugin plugin)
 	{
@@ -35,8 +32,7 @@ public interface ScriptCommand
 				return;
 			}
 
-			plugin.entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
-			click(client);
+			plugin.entryList.add(new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false));
 		}
 		catch (Exception e)
 		{
@@ -57,8 +53,7 @@ public interface ScriptCommand
 				return;
 			}
 
-			plugin.entry = new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.CC_OP.getId(), spell_widget.getItemId(), spell_widget.getId(), false);
-			click(client);
+			plugin.entryList.add(new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.CC_OP.getId(), spell_widget.getItemId(), spell_widget.getId(), false));
 		}
 		catch (Exception e)
 		{
@@ -79,8 +74,7 @@ public interface ScriptCommand
 				return;
 			}
 
-			plugin.entry = new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.WIDGET_TYPE_2.getId(), spell_widget.getItemId(), spell_widget.getId(), false);
-			click(client);
+			plugin.entryList.add(new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.WIDGET_TYPE_2.getId(), spell_widget.getItemId(), spell_widget.getId(), false));
 		}
 		catch (Exception e)
 		{
@@ -88,33 +82,11 @@ public interface ScriptCommand
 			e.printStackTrace();
 		}
 	}
-
-	default void click(Client client)
-	{
-		Point pos = client.getMouseCanvasPosition();
-
-		if (client.isStretchedEnabled())
-		{
-			final Dimension stretched = client.getStretchedDimensions();
-			final Dimension real = client.getRealDimensions();
-			final double width = (stretched.width / real.getWidth());
-			final double height = (stretched.height / real.getHeight());
-			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
-			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
-			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
-			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
-			return;
-		}
-
-		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
-		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
-		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
-	}
 }
 
 class RigourCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getRigourVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 74)
 		{
@@ -127,7 +99,7 @@ class RigourCommand implements ScriptCommand
 
 class AuguryCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getAuguryVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 77)
 		{
@@ -140,7 +112,7 @@ class AuguryCommand implements ScriptCommand
 
 class PietyCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getPietyVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 70)
 		{
@@ -153,7 +125,7 @@ class PietyCommand implements ScriptCommand
 
 class IncredibleReflexesCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getIncredibleReflexesVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 31)
 		{
@@ -166,7 +138,7 @@ class IncredibleReflexesCommand implements ScriptCommand
 
 class UltimateStrengthCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getUltimateStrengthVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 34)
 		{
@@ -179,7 +151,7 @@ class UltimateStrengthCommand implements ScriptCommand
 
 class SteelSkinCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getSteelSkinVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 28)
 		{
@@ -192,7 +164,7 @@ class SteelSkinCommand implements ScriptCommand
 
 class EagleEyeCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getEagleEyeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 44)
 		{
@@ -205,7 +177,7 @@ class EagleEyeCommand implements ScriptCommand
 
 class MysticMightCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getMysticMightVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 45)
 		{
@@ -218,7 +190,7 @@ class MysticMightCommand implements ScriptCommand
 
 class ProtectFromMagicCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getProtectMageVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 37)
 		{
@@ -231,7 +203,7 @@ class ProtectFromMagicCommand implements ScriptCommand
 
 class ProtectFromMissilesCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getProtectRangeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 40)
 		{
@@ -244,7 +216,7 @@ class ProtectFromMissilesCommand implements ScriptCommand
 
 class ProtectFromMeleeCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getProtectMeleeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 43)
 		{
@@ -257,7 +229,7 @@ class ProtectFromMeleeCommand implements ScriptCommand
 
 class ProtectItemCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		if (plugin.getProtectItemVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 21)
 		{
@@ -270,7 +242,7 @@ class ProtectItemCommand implements ScriptCommand
 
 class ClickEnemyCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -281,8 +253,8 @@ class ClickEnemyCommand implements ScriptCommand
 				return;
 			}
 
-			int randx = (int) (Math.random() * 5 + 1);
-			int randy = (int) (Math.random() * 5 + 1);
+			//int randx = (int) (Math.random() * 5 + 1);
+			//int randy = (int) (Math.random() * 5 + 1);
 
 			//InputHandler.leftClick(client, new Point(lastEnemyLoc.getX() + randx, lastEnemyLoc.getY() + randy));
 		}
@@ -296,18 +268,14 @@ class ClickEnemyCommand implements ScriptCommand
 
 class FreezeCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 
 		try
 		{
 			int boosted_level = client.getBoostedSkillLevel(Skill.MAGIC);
 
-			if (boosted_level < 82)
-			{
-				return;
-			}
-			else if (boosted_level < 94)
+			if (boosted_level >= 82 && boosted_level < 94)
 			{
 				clickSpell(WidgetInfo.SPELL_ICE_BLITZ, client, plugin);
 			}
@@ -326,7 +294,7 @@ class FreezeCommand implements ScriptCommand
 
 class VengeanceCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -347,7 +315,7 @@ class VengeanceCommand implements ScriptCommand
 
 class TeleBlockCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -368,7 +336,7 @@ class TeleBlockCommand implements ScriptCommand
 
 class EntangleCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -389,7 +357,7 @@ class EntangleCommand implements ScriptCommand
 
 class SpecCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -400,39 +368,7 @@ class SpecCommand implements ScriptCommand
 				return;
 			}
 
-			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
-			click(client);
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-}
-
-class DoubleSpecCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
-	{
-		try
-		{
-			boolean spec_enabled = (client.getVar(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1);
-
-			if (spec_enabled)
-			{
-				return;
-			}
-
-			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
-			click(client);
-
-			Thread.sleep(config.clickDelay());
-
-			plugin.entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
-			click(client);
-
-			Thread.sleep(config.clickDelay());
+			plugin.entryList.add(new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false));
 		}
 		catch (Exception e)
 		{
@@ -444,7 +380,7 @@ class DoubleSpecCommand implements ScriptCommand
 
 class Group1Command implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -459,9 +395,7 @@ class Group1Command implements ScriptCommand
 			{
 				if ("Group 1".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					click(client);
-					Thread.sleep(config.clickDelay());
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
 		}
@@ -475,7 +409,7 @@ class Group1Command implements ScriptCommand
 
 class Group2Command implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -490,9 +424,7 @@ class Group2Command implements ScriptCommand
 			{
 				if ("Group 2".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					click(client);
-					Thread.sleep(config.clickDelay());
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
 		}
@@ -506,7 +438,7 @@ class Group2Command implements ScriptCommand
 
 class Group3Command implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -521,9 +453,7 @@ class Group3Command implements ScriptCommand
 			{
 				if ("Group 3".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					click(client);
-					Thread.sleep(config.clickDelay());
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
 		}
@@ -537,7 +467,7 @@ class Group3Command implements ScriptCommand
 
 class Group4Command implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -552,9 +482,7 @@ class Group4Command implements ScriptCommand
 			{
 				if ("Group 4".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entry = new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false);
-					click(client);
-					Thread.sleep(config.clickDelay());
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
 		}
@@ -568,7 +496,7 @@ class Group4Command implements ScriptCommand
 
 class WaitCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
 		{
@@ -584,7 +512,7 @@ class WaitCommand implements ScriptCommand
 
 class ExceptionCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, PkToolsOverlay overlay, ConfigManager configManager)
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		System.out.println("Command could not be read.");
 	}

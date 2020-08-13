@@ -173,7 +173,11 @@ public class AutoTheiverPlugin extends Plugin
 	public void openPouches()
 	{
 		List<WidgetItem> list = new InventoryWidgetItemQuery()
-			.idEquals(ItemID.COIN_POUCH_22531)
+			.idEquals(ItemID.COIN_POUCH, ItemID.COIN_POUCH_22522, ItemID.COIN_POUCH_22523, ItemID.COIN_POUCH_22524,
+				ItemID.COIN_POUCH_22525, ItemID.COIN_POUCH_22526, ItemID.COIN_POUCH_22527, ItemID.COIN_POUCH_22528,
+				ItemID.COIN_POUCH_22529, ItemID.COIN_POUCH_22530, ItemID.COIN_POUCH_22531, ItemID.COIN_POUCH_22532,
+				ItemID.COIN_POUCH_22533, ItemID.COIN_POUCH_22534, ItemID.COIN_POUCH_22535, ItemID.COIN_POUCH_22536,
+				ItemID.COIN_POUCH_22537, ItemID.COIN_POUCH_22538)
 			.result(client)
 			.list;
 

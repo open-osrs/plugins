@@ -1,6 +1,10 @@
 package net.runelite.client.plugins.pktools;
 
 import com.google.inject.Provides;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +21,8 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.plugins.pktools.ScriptCommand.ScriptCommand;
+import net.runelite.client.plugins.pktools.ScriptCommand.ScriptCommandFactory;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import org.pf4j.Extension;
@@ -28,10 +34,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
@@ -43,10 +45,6 @@ import java.util.concurrent.TimeUnit;
 )
 public class PkToolsPlugin extends Plugin
 {
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
-
 	private static final Duration WAIT = Duration.ofSeconds(5);
 
 	@Getter(AccessLevel.PUBLIC)
@@ -55,6 +53,9 @@ public class PkToolsPlugin extends Plugin
 		protectItemVarbit,
 		mysticMightVarbit, eagleEyeVarbit,
 		steelSkinVarbit, ultimateStrengthVarbit, incredibleReflexesVarbit, protectMeleeVarbit, protectMageVarbit, protectRangeVarbit;
+
+	public Queue<ScriptCommand> commandList = new ConcurrentLinkedQueue<>();
+	public Queue<MenuEntry> entryList = new ConcurrentLinkedQueue<>();
 
 	@Inject
 	public Client client;
@@ -81,9 +82,6 @@ public class PkToolsPlugin extends Plugin
 	public Player lastEnemy;
 
 	private Instant lastTime;
-
-	//this is our current custom entry to swap in
-	public MenuEntry entry;
 
 	@Provides
 	PkToolsConfig provideConfig(final ConfigManager configManager)
@@ -174,17 +172,39 @@ public class PkToolsPlugin extends Plugin
 		}
 
 		lastEnemyTimer();
+
 		doAutoSwapPrayers();
+
+		processCommands();
+
+		handleHotkeyTasks();
+	}
+
+	private void processCommands()
+	{
+		while (commandList.peek() != null)
+		{
+			commandList.poll().execute(client, config, this, configManager);
+		}
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (entry != null)
+		if (entryList != null && !entryList.isEmpty())
 		{
-			event.setMenuEntry(entry);
+			event.setMenuEntry(entryList.poll());
 		}
-		entry = null;
+	}
+
+	public void handleHotkeyTasks()
+	{
+		if (entryList == null || entryList.isEmpty() || entryList.size() == 1)
+		{
+			return;
+		}
+
+		click();
 	}
 
 	public void lastEnemyTimer()
@@ -212,18 +232,7 @@ public class PkToolsPlugin extends Plugin
 			return;
 		}
 
-		entry = new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false);
-		click();
-
-		try
-		{
-			Thread.sleep(config.clickDelay());
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
+		entryList.add(new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false));
 	}
 
 	public void doAutoSwapPrayers()
@@ -238,55 +247,53 @@ public class PkToolsPlugin extends Plugin
 			return;
 		}
 
-		this.executor.submit(() -> {
-			try
+		try
+		{
+			boolean PROTECT_MELEE = client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) != 0;
+			boolean PROTECT_RANGED = client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
+			boolean PROTECT_MAGIC = client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
+
+			if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
 			{
-				boolean PROTECT_MELEE = client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) != 0;
-				boolean PROTECT_RANGED = client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) != 0;
-				boolean PROTECT_MAGIC = client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) != 0;
-
-				if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0)
-				{
-					return;
-				}
-
-				if (lastEnemy == null)
-				{
-					return;
-				}
-
-				PlayerAppearance lastEnemyAppearance = lastEnemy.getPlayerAppearance();
-
-				if (lastEnemyAppearance == null)
-				{
-					return;
-				}
-
-				int WEAPON_INT = lastEnemyAppearance.getEquipmentId(KitType.WEAPON);
-
-				if (WEAPON_INT <= 0)
-				{
-					return;
-				}
-
-				if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_MELEE)
-				{
-					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MELEE);
-				}
-				else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_RANGED)
-				{
-					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
-				}
-				else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_MAGIC)
-				{
-					activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
-				}
+				return;
 			}
-			catch (Exception e)
+
+			if (lastEnemy == null)
 			{
-				e.printStackTrace();
+				return;
 			}
-		});
+
+			PlayerAppearance lastEnemyAppearance = lastEnemy.getPlayerAppearance();
+
+			if (lastEnemyAppearance == null)
+			{
+				return;
+			}
+
+			int WEAPON_INT = lastEnemyAppearance.getEquipmentId(KitType.WEAPON);
+
+			if (WEAPON_INT <= 0)
+			{
+				return;
+			}
+
+			if (Arrays.stream(PkToolsOverlay.MELEE_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_MELEE)
+			{
+				activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MELEE);
+			}
+			else if (Arrays.stream(PkToolsOverlay.RANGED_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_RANGED)
+			{
+				activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MISSILES);
+			}
+			else if (Arrays.stream(PkToolsOverlay.MAGIC_LIST).anyMatch(x -> x == WEAPON_INT) && !PROTECT_MAGIC)
+			{
+				activatePrayer(WidgetInfo.PRAYER_PROTECT_FROM_MAGIC);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void click()

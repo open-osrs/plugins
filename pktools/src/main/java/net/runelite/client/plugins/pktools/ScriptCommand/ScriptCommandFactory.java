@@ -40,8 +40,6 @@ public class ScriptCommandFactory
 				return new EntangleCommand();
 			case "spec":
 				return new SpecCommand();
-			case "doublespec":
-				return new DoubleSpecCommand();
 			case "wait":
 				return new WaitCommand();
 			case "group1":

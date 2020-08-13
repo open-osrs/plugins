@@ -14,9 +14,7 @@ public interface PkToolsConfig extends Config
 
 	String commands = "protectitem, rigour, augury, piety, " +
 		"incrediblereflexes, ultimatestrength, steelskin, eagleeye, mysticmight, " +
-		"freeze, vengeance, teleblock, entangle, " +
-		"spec, doublespec, wait, clickenemy, " +
-		"group1, group2, group3, group4";
+		"freeze, vengeance, teleblock, entangle, spec, wait, group1, group2, group3, group4";
 
 	@ConfigItem(
 		keyName = "label1",
