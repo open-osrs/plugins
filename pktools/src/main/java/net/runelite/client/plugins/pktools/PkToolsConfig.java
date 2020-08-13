@@ -11,10 +11,10 @@ import java.awt.event.KeyEvent;
 @ConfigGroup("pktools")
 public interface PkToolsConfig extends Config
 {
-
 	String commands = "protectitem, rigour, augury, piety, " +
 		"incrediblereflexes, ultimatestrength, steelskin, eagleeye, mysticmight, " +
-		"freeze, vengeance, teleblock, entangle, spec, wait, group1, group2, group3, group4";
+		"freeze, vengeance, teleblock, entangle, spec, wait, group1, group2, group3, group4, " +
+		"protectfrommagic, protectfrommissiles, protectfrommelee";
 
 	@ConfigItem(
 		keyName = "label1",
@@ -83,7 +83,40 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
+		keyName = "key6",
+		name = "Hotkey 6",
+		description = "Activates script for this key.",
+		position = 7
+	)
+	default Keybind key6()
+	{
+		return new Keybind(KeyEvent.VK_6, 0);
+	}
+
+	@ConfigItem(
+		keyName = "key7",
+		name = "Hotkey 7",
+		description = "Activates script for this key.",
+		position = 8
+	)
+	default Keybind key7()
+	{
+		return new Keybind(KeyEvent.VK_7, 0);
+	}
+
+	@ConfigItem(
+		keyName = "key8",
+		name = "Hotkey 8",
+		description = "Activates script for this key.",
+		position = 9
+	)
+	default Keybind key8()
+	{
+		return new Keybind(KeyEvent.VK_8, 0);
+	}
+
+	@ConfigItem(
+		position = 10,
 		keyName = "key1_script",
 		name = "Key 1 Script",
 		description = PkToolsConfig.commands
@@ -94,7 +127,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 8,
+		position = 11,
 		keyName = "key2_script",
 		name = "Key 2 Script",
 		description = PkToolsConfig.commands
@@ -105,7 +138,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 9,
+		position = 12,
 		keyName = "key3_script",
 		name = "Key 3 Script",
 		description = PkToolsConfig.commands
@@ -116,7 +149,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 10,
+		position = 13,
 		keyName = "key4_script",
 		name = "Key 4 Script",
 		description = PkToolsConfig.commands
@@ -127,21 +160,54 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 11,
+		position = 14,
 		keyName = "key5_script",
 		name = "Key 5 Script",
 		description = PkToolsConfig.commands
 	)
 	default String key5_script()
 	{
-		return "freeze\nclickenemy";
+		return "protectfrommagic";
+	}
+
+	@ConfigItem(
+		position = 15,
+		keyName = "key6_script",
+		name = "Key 6 Script",
+		description = PkToolsConfig.commands
+	)
+	default String key6_script()
+	{
+		return "protectfrommissiles";
+	}
+
+	@ConfigItem(
+		position = 16,
+		keyName = "key7_script",
+		name = "Key 7 Script",
+		description = PkToolsConfig.commands
+	)
+	default String key7_script()
+	{
+		return "protectfrommelee";
+	}
+
+	@ConfigItem(
+		position = 17,
+		keyName = "key8_script",
+		name = "Key 8 Script",
+		description = PkToolsConfig.commands
+	)
+	default String key8_script()
+	{
+		return "freeze";
 	}
 
 	@ConfigItem(
 		keyName = "label2",
 		name = "Prayer",
 		description = "",
-		position = 12
+		position = 18
 	)
 	default Title label2()
 	{
@@ -149,7 +215,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 13,
+		position = 19,
 		keyName = "autoPrayerSwitcher",
 		name = "Auto Prayer Switcher",
 		description = "Automatic Prayer Switching"
@@ -160,7 +226,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 20,
 		keyName = "autoPrayerSwitcherHotkey",
 		name = "Prayer Switch Toggle Hotkey",
 		description = "Hotkey to toggle the prayer switcher on/off"
@@ -171,7 +237,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 15,
+		position = 21,
 		keyName = "autoPrayerSwitcherEnabled",
 		name = "Prayer Switcher Enabled",
 		description = "",
@@ -183,7 +249,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 22,
 		keyName = "prayerHelper",
 		name = "Prayer Helper",
 		description = "Draws icons to suggest proper prayer switches"
@@ -194,7 +260,7 @@ public interface PkToolsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 23,
 		keyName = "clickDelay",
 		name = "Click Delay",
 		description = "Sets the delay between clicks"

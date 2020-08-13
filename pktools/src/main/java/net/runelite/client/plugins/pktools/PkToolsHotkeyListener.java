@@ -82,6 +82,18 @@ public class PkToolsHotkeyListener extends MouseAdapter implements KeyListener
 			{
 				addCommands(config.key5_script(), plugin);
 			}
+			else if (key_code == config.key6().getKeyCode())
+			{
+				addCommands(config.key6_script(), plugin);
+			}
+			else if (key_code == config.key7().getKeyCode())
+			{
+				addCommands(config.key7_script(), plugin);
+			}
+			else if (key_code == config.key8().getKeyCode())
+			{
+				addCommands(config.key8_script(), plugin);
+			}
 		}
 		catch (Throwable ex)
 		{
