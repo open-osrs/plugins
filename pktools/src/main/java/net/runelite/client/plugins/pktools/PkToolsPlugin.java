@@ -1,13 +1,10 @@
 package net.runelite.client.plugins.pktools;
 
 import com.google.inject.Provides;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import net.runelite.api.*;
 import net.runelite.api.Point;
@@ -22,7 +19,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.pktools.ScriptCommand.ScriptCommand;
-import net.runelite.client.plugins.pktools.ScriptCommand.ScriptCommandFactory;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import org.pf4j.Extension;
@@ -46,13 +42,6 @@ import java.util.List;
 public class PkToolsPlugin extends Plugin
 {
 	private static final Duration WAIT = Duration.ofSeconds(5);
-
-	@Getter(AccessLevel.PUBLIC)
-	@Setter(AccessLevel.PUBLIC)
-	public int pietyVarbit, auguryVarbit, rigourVarbit,
-		protectItemVarbit,
-		mysticMightVarbit, eagleEyeVarbit,
-		steelSkinVarbit, ultimateStrengthVarbit, incredibleReflexesVarbit, protectMeleeVarbit, protectMageVarbit, protectRangeVarbit;
 
 	public Queue<ScriptCommand> commandList = new ConcurrentLinkedQueue<>();
 	public Queue<MenuEntry> entryList = new ConcurrentLinkedQueue<>();
@@ -90,44 +79,18 @@ public class PkToolsPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		overlayManager.add(pkToolsOverlay);
 		keyManager.registerKeyListener(pkToolsHotkeyListener);
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		lastTime = null;
 		overlayManager.remove(pkToolsOverlay);
 		keyManager.unregisterKeyListener(pkToolsHotkeyListener);
-	}
-
-	@Subscribe
-	public void onVarbitChanged(final VarbitChanged event)
-	{
-		if (client.getGameState() != GameState.LOGGED_IN)
-		{
-			return;
-		}
-
-		setProtectMeleeVarbit((client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) == 1) ? 1 : 0);
-		setProtectMageVarbit((client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 1) ? 1 : 0);
-		setProtectRangeVarbit((client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 1) ? 1 : 0);
-
-		setPietyVarbit((client.getVar(Prayer.PIETY.getVarbit()) == 1) ? 1 : 0);
-		setAuguryVarbit((client.getVar(Prayer.AUGURY.getVarbit()) == 1) ? 1 : 0);
-		setRigourVarbit((client.getVar(Prayer.RIGOUR.getVarbit()) == 1) ? 1 : 0);
-
-		setProtectItemVarbit((client.getVar(Prayer.PROTECT_ITEM.getVarbit()) == 1) ? 1 : 0);
-
-		setMysticMightVarbit((client.getVar(Prayer.MYSTIC_MIGHT.getVarbit()) == 1) ? 1 : 0);
-		setEagleEyeVarbit((client.getVar(Prayer.EAGLE_EYE.getVarbit()) == 1) ? 1 : 0);
-
-		setSteelSkinVarbit((client.getVar(Prayer.STEEL_SKIN.getVarbit()) == 1) ? 1 : 0);
-		setUltimateStrengthVarbit((client.getVar(Prayer.ULTIMATE_STRENGTH.getVarbit()) == 1) ? 1 : 0);
-		setIncredibleReflexesVarbit((client.getVar(Prayer.INCREDIBLE_REFLEXES.getVarbit()) == 1) ? 1 : 0);
 	}
 
 	@Subscribe
@@ -156,7 +119,7 @@ public class PkToolsPlugin extends Plugin
 
 		for (final Player player : players)
 		{
-			if (player == localPlayer.getInteracting())
+			if (localPlayer != null && player == localPlayer.getInteracting())
 			{
 				lastEnemy = player;
 			}
@@ -176,8 +139,6 @@ public class PkToolsPlugin extends Plugin
 		doAutoSwapPrayers();
 
 		processCommands();
-
-		handleHotkeyTasks();
 	}
 
 	private void processCommands()
@@ -194,12 +155,13 @@ public class PkToolsPlugin extends Plugin
 		if (entryList != null && !entryList.isEmpty())
 		{
 			event.setMenuEntry(entryList.poll());
+			handleHotkeyTasks();
 		}
 	}
 
 	public void handleHotkeyTasks()
 	{
-		if (entryList == null || entryList.isEmpty() || entryList.size() == 1)
+		if (entryList == null || entryList.isEmpty())
 		{
 			return;
 		}
@@ -209,7 +171,19 @@ public class PkToolsPlugin extends Plugin
 
 	public void lastEnemyTimer()
 	{
-		if (lastEnemy != null && client.getLocalPlayer().getInteracting() == null)
+		Player localPlayer = client.getLocalPlayer();
+
+		if (localPlayer == null)
+		{
+			return;
+		}
+
+		if (lastEnemy == null)
+		{
+			return;
+		}
+
+		if (localPlayer.getInteracting() == null)
 		{
 			if (Duration.between(lastTime, Instant.now()).compareTo(PkToolsPlugin.WAIT) > 0)
 			{

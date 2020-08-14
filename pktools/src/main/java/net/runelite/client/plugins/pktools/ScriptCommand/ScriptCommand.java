@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.pktools.ScriptCommand;
 
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
@@ -7,7 +9,6 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.pktools.PkToolsConfig;
-import net.runelite.client.plugins.pktools.PkToolsOverlay;
 import net.runelite.client.plugins.pktools.PkToolsPlugin;
 
 import static net.runelite.client.plugins.pktools.PkToolsHotkeyListener.getTag;
@@ -33,6 +34,7 @@ public interface ScriptCommand
 			}
 
 			plugin.entryList.add(new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false));
+			click(client);
 		}
 		catch (Exception e)
 		{
@@ -54,6 +56,7 @@ public interface ScriptCommand
 			}
 
 			plugin.entryList.add(new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.CC_OP.getId(), spell_widget.getItemId(), spell_widget.getId(), false));
+			click(client);
 		}
 		catch (Exception e)
 		{
@@ -75,6 +78,7 @@ public interface ScriptCommand
 			}
 
 			plugin.entryList.add(new MenuEntry(spell_widget.getTargetVerb(), spell_widget.getName(), 0, MenuOpcode.WIDGET_TYPE_2.getId(), spell_widget.getItemId(), spell_widget.getId(), false));
+			click(client);
 		}
 		catch (Exception e)
 		{
@@ -82,13 +86,35 @@ public interface ScriptCommand
 			e.printStackTrace();
 		}
 	}
+
+	default void click(Client client)
+	{
+		Point pos = client.getMouseCanvasPosition();
+
+		if (client.isStretchedEnabled())
+		{
+			final Dimension stretched = client.getStretchedDimensions();
+			final Dimension real = client.getRealDimensions();
+			final double width = (stretched.width / real.getWidth());
+			final double height = (stretched.height / real.getHeight());
+			final Point point = new Point((int) (pos.getX() * width), (int) (pos.getY() * height));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, point.getX(), point.getY(), 1, false, 1));
+			return;
+		}
+
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+	}
 }
 
 class RigourCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getRigourVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 74)
+		if (client.getVar(Prayer.RIGOUR.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 74)
 		{
 			return;
 		}
@@ -101,7 +127,7 @@ class AuguryCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getAuguryVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 77)
+		if (client.getVar(Prayer.AUGURY.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 77)
 		{
 			return;
 		}
@@ -114,7 +140,7 @@ class PietyCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getPietyVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 70)
+		if (client.getVar(Prayer.PIETY.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 70)
 		{
 			return;
 		}
@@ -127,7 +153,7 @@ class IncredibleReflexesCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getIncredibleReflexesVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 31)
+		if (client.getVar(Prayer.INCREDIBLE_REFLEXES.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 31)
 		{
 			return;
 		}
@@ -140,7 +166,7 @@ class UltimateStrengthCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getUltimateStrengthVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 34)
+		if (client.getVar(Prayer.ULTIMATE_STRENGTH.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 34)
 		{
 			return;
 		}
@@ -153,7 +179,7 @@ class SteelSkinCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getSteelSkinVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 28)
+		if (client.getVar(Prayer.STEEL_SKIN.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 28)
 		{
 			return;
 		}
@@ -166,7 +192,7 @@ class EagleEyeCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getEagleEyeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 44)
+		if (client.getVar(Prayer.EAGLE_EYE.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 44)
 		{
 			return;
 		}
@@ -179,7 +205,7 @@ class MysticMightCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getMysticMightVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 45)
+		if (client.getVar(Prayer.MYSTIC_MIGHT.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 45)
 		{
 			return;
 		}
@@ -192,7 +218,7 @@ class ProtectFromMagicCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getProtectMageVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 37)
+		if (client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 37)
 		{
 			return;
 		}
@@ -205,7 +231,7 @@ class ProtectFromMissilesCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getProtectRangeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 40)
+		if (client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 40)
 		{
 			return;
 		}
@@ -218,7 +244,7 @@ class ProtectFromMeleeCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getProtectMeleeVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 43)
+		if (client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 43)
 		{
 			return;
 		}
@@ -231,7 +257,7 @@ class ProtectItemCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (plugin.getProtectItemVarbit() != 0 || client.getRealSkillLevel(Skill.PRAYER) < 21)
+		if (client.getVar(Prayer.PROTECT_ITEM.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 21)
 		{
 			return;
 		}
@@ -240,37 +266,10 @@ class ProtectItemCommand implements ScriptCommand
 	}
 }
 
-class ClickEnemyCommand implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
-	{
-		try
-		{
-			Point lastEnemyLoc = PkToolsOverlay.lastEnemyLocation;
-
-			if (lastEnemyLoc == null)
-			{
-				return;
-			}
-
-			//int randx = (int) (Math.random() * 5 + 1);
-			//int randy = (int) (Math.random() * 5 + 1);
-
-			//InputHandler.leftClick(client, new Point(lastEnemyLoc.getX() + randx, lastEnemyLoc.getY() + randy));
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-}
-
 class FreezeCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-
 		try
 		{
 			int boosted_level = client.getBoostedSkillLevel(Skill.MAGIC);
@@ -369,6 +368,7 @@ class SpecCommand implements ScriptCommand
 			}
 
 			plugin.entryList.add(new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false));
+			click(client);
 		}
 		catch (Exception e)
 		{
@@ -398,6 +398,7 @@ class Group1Command implements ScriptCommand
 					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
+			click(client);
 		}
 		catch (Throwable e)
 		{
@@ -427,6 +428,7 @@ class Group2Command implements ScriptCommand
 					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
+			click(client);
 		}
 		catch (Throwable e)
 		{
@@ -456,6 +458,7 @@ class Group3Command implements ScriptCommand
 					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
+			click(client);
 		}
 		catch (Throwable e)
 		{
@@ -485,6 +488,7 @@ class Group4Command implements ScriptCommand
 					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
 				}
 			}
+			click(client);
 		}
 		catch (Throwable e)
 		{

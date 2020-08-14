@@ -28,8 +28,6 @@ public class ScriptCommandFactory
 				return new ProtectFromMeleeCommand();
 			case "protectfrommissiles":
 				return new ProtectFromMissilesCommand();
-			case "clickenemy":
-				return new ClickEnemyCommand();
 			case "freeze":
 				return new FreezeCommand();
 			case "vengeance":
