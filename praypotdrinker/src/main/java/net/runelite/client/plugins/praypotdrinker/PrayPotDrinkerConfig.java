@@ -8,13 +8,18 @@ import net.runelite.client.config.ConfigItem;
 public interface PrayPotDrinkerConfig extends Config
 {
 	@ConfigItem(
-		keyName = "potionNames",
-		name = "Potion Names",
-		description = "The names of the prayer potions to drink, separated by commas.",
+		keyName = "minPrayerLevel",
+		name = "Minimum",
+		description = "",
 		position = 1
 	)
-	default String potionNames()
-	{
-		return new String("Prayer potion(1),Prayer potion(2),Prayer potion(3),Prayer potion(4),Super restore(4),Super restore(3),Super restore(2),Super restore(1)");
-	}
+	default int minPrayerLevel() { return 1; }
+
+	@ConfigItem(
+		keyName = "maxPrayerLevel",
+		name = "Maximum",
+		description = "",
+		position = 2
+	)
+	default int maxPrayerLevel() { return 30; }
 }

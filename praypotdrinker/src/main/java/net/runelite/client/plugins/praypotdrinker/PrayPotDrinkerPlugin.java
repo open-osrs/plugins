@@ -1,14 +1,19 @@
 package net.runelite.client.plugins.praypotdrinker;
 
 import com.google.inject.Provides;
-import net.runelite.api.*;
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.util.Random;
+import javax.inject.Inject;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.Point;
+import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
-import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -17,15 +22,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
-
-import javax.inject.Inject;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
@@ -44,18 +40,12 @@ public class PrayPotDrinkerPlugin extends Plugin
 	private PrayPotDrinkerConfig config;
 
 	@Inject
-	private Notifier notifier;
-
-	@Inject
 	private ItemManager itemManager;
-
-	private String[] potions;
 
 	private MenuEntry entry;
 
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
+	private Random r = new Random();
+	private int nextRestoreVal = 0;
 
 	@Provides
 	PrayPotDrinkerConfig provideConfig(final ConfigManager configManager)
@@ -66,7 +56,7 @@ public class PrayPotDrinkerPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		potions = config.potionNames().split(",");
+		nextRestoreVal = r.nextInt(config.maxPrayerLevel() - config.minPrayerLevel()) + config.minPrayerLevel();
 	}
 
 	@Override
@@ -82,7 +72,7 @@ public class PrayPotDrinkerPlugin extends Plugin
 			return;
 		}
 
-		potions = config.potionNames().split(",");
+		nextRestoreVal = r.nextInt(config.maxPrayerLevel() - config.minPrayerLevel()) + config.minPrayerLevel();
 	}
 
 	@Subscribe
@@ -93,43 +83,35 @@ public class PrayPotDrinkerPlugin extends Plugin
 			return;
 		}
 
-		this.executor.submit(() -> {
-			try
+		try
+		{
+			WidgetItem restoreItem = getRestoreItem();
+
+			if (restoreItem == null)
 			{
-				//7 + 25%
-				int currentPrayerPoints = client.getBoostedSkillLevel(Skill.PRAYER);
-				int maxPrayerPoints = client.getRealSkillLevel(Skill.PRAYER);
-				int boostAmount = 7 + (int) Math.floor(maxPrayerPoints * .25);
-
-				if (currentPrayerPoints + boostAmount > maxPrayerPoints)
-				{
-					return;
-				}
-
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-
-				if (inventory == null)
-				{
-					return;
-				}
-
-				for (WidgetItem item : inventory.getWidgetItems())
-				{
-					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
-					if (Arrays.asList(potions).contains(name))
-					{
-						entry = getConsumableEntry(name, item.getId(), item.getIndex());
-						click();
-						Thread.sleep(50);
-						return;
-					}
-				}
+				return;
 			}
-			catch (Exception e)
+
+			int currentPrayerPoints = client.getBoostedSkillLevel(Skill.PRAYER);
+			int prayerLevel = client.getRealSkillLevel(Skill.PRAYER);
+			int boostAmount = getBoostAmount(restoreItem, prayerLevel);
+
+			if (currentPrayerPoints + boostAmount > prayerLevel)
 			{
-				e.printStackTrace();
+				return;
 			}
-		});
+
+			if (currentPrayerPoints <= nextRestoreVal)
+			{
+				entry = getConsumableEntry(itemManager.getItemDefinition(restoreItem.getId()).getName(), restoreItem.getId(), restoreItem.getIndex());
+				click();
+				nextRestoreVal = r.nextInt(config.maxPrayerLevel() - config.minPrayerLevel()) + config.minPrayerLevel();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Subscribe
@@ -146,6 +128,47 @@ public class PrayPotDrinkerPlugin extends Plugin
 	private MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex)
 	{
 		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
+	}
+
+	public WidgetItem getRestoreItem()
+	{
+		WidgetItem item;
+
+		item = PrayerRestoreType.PRAYER_POTION.getItemFromInventory(client);
+
+		if (item != null)
+		{
+			return item;
+		}
+
+		item = PrayerRestoreType.SANFEW_SERUM.getItemFromInventory(client);
+
+		if (item != null)
+		{
+			return item;
+		}
+
+		item = PrayerRestoreType.SUPER_RESTORE.getItemFromInventory(client);
+
+		return item;
+	}
+
+	public int getBoostAmount(WidgetItem restoreItem, int prayerLevel)
+	{
+		if (PrayerRestoreType.PRAYER_POTION.containsId(restoreItem.getId()))
+		{
+			return 7 + (int) Math.floor(prayerLevel * .25);
+		}
+		else if (PrayerRestoreType.SANFEW_SERUM.containsId(restoreItem.getId()))
+		{
+			return 4 + (int) Math.floor(prayerLevel * (double)(3 / 10));
+		}
+		else if (PrayerRestoreType.SUPER_RESTORE.containsId(restoreItem.getId()))
+		{
+			return 8 + (int) Math.floor(prayerLevel * .25);
+		}
+
+		return 0;
 	}
 
 	public void click()
