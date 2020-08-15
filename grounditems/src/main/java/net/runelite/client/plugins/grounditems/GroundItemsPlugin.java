@@ -441,7 +441,7 @@ public class GroundItemsPlugin extends Plugin
 	private LoadingCache<NamedQuantity, Boolean> highlightedItems;
 
 	@Provides
-	GroundItemsConfig provideConfig(ConfigManager configManager)
+	GroundItemsConfig provideConfig(final ConfigManager configManager)
 	{
 		return configManager.getConfig(GroundItemsConfig.class);
 	}
@@ -471,9 +471,9 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick event)
+	private void onGameTick(final GameTick event)
 	{
-		for (GroundItem item : collectedGroundItems.values())
+		for (final GroundItem item : collectedGroundItems.values())
 		{
 			if (item.getTicks() == -1)
 			{
@@ -484,7 +484,7 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
+	private void onConfigChanged(final ConfigChanged event)
 	{
 		if (event.getGroup().equals("grounditems"))
 		{
@@ -502,15 +502,15 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemSpawned(ItemSpawned itemSpawned)
+	private void onItemSpawned(final ItemSpawned itemSpawned)
 	{
-		TileItem item = itemSpawned.getItem();
-		Tile tile = itemSpawned.getTile();
+		final TileItem item = itemSpawned.getItem();
+		final Tile tile = itemSpawned.getTile();
 
-		GroundItem groundItem = buildGroundItem(tile, item);
+		final GroundItem groundItem = buildGroundItem(tile, item);
 
-		GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
-		GroundItem existing = collectedGroundItems.putIfAbsent(groundItemKey, groundItem);
+		final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
+		final GroundItem existing = collectedGroundItems.putIfAbsent(groundItemKey, groundItem);
 		if (existing != null)
 		{
 			existing.setQuantity(existing.getQuantity() + groundItem.getQuantity());
@@ -524,13 +524,13 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemDespawned(ItemDespawned itemDespawned)
+	private void onItemDespawned(final ItemDespawned itemDespawned)
 	{
-		TileItem item = itemDespawned.getItem();
-		Tile tile = itemDespawned.getTile();
+		final TileItem item = itemDespawned.getItem();
+		final Tile tile = itemDespawned.getTile();
 
-		GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
-		GroundItem groundItem = collectedGroundItems.get(groundItemKey);
+		final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
+		final GroundItem groundItem = collectedGroundItems.get(groundItemKey);
 		if (groundItem == null)
 		{
 			return;
@@ -551,16 +551,16 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemQuantityChanged(ItemQuantityChanged itemQuantityChanged)
+	private void onItemQuantityChanged(final ItemQuantityChanged itemQuantityChanged)
 	{
-		TileItem item = itemQuantityChanged.getItem();
-		Tile tile = itemQuantityChanged.getTile();
-		int oldQuantity = itemQuantityChanged.getOldQuantity();
-		int newQuantity = itemQuantityChanged.getNewQuantity();
+		final TileItem item = itemQuantityChanged.getItem();
+		final Tile tile = itemQuantityChanged.getTile();
+		final int oldQuantity = itemQuantityChanged.getOldQuantity();
+		final int newQuantity = itemQuantityChanged.getNewQuantity();
 
-		int diff = newQuantity - oldQuantity;
-		GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
-		GroundItem groundItem = collectedGroundItems.get(groundItemKey);
+		final int diff = newQuantity - oldQuantity;
+		final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
+		final GroundItem groundItem = collectedGroundItems.get(groundItemKey);
 		if (groundItem != null)
 		{
 			groundItem.setQuantity(groundItem.getQuantity() + diff);
@@ -568,11 +568,11 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onNpcLootReceived(NpcLootReceived npcLootReceived)
+	private void onNpcLootReceived(final NpcLootReceived npcLootReceived)
 	{
 		npcLootReceived.getItems().forEach(item ->
 			{
-				GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), npcLootReceived.getNpc().getWorldLocation());
+				final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), npcLootReceived.getNpc().getWorldLocation());
 				if (collectedGroundItems.containsKey(groundItemKey))
 				{
 					collectedGroundItems.get(groundItemKey).setOwnedByPlayer(true);
@@ -580,26 +580,26 @@ public class GroundItemsPlugin extends Plugin
 			}
 		);
 
-		Collection<ItemStack> items = npcLootReceived.getItems();
+		final Collection<ItemStack> items = npcLootReceived.getItems();
 		lootReceived(items, LootType.PVM);
 		lootNotifier(items);
 	}
 
 	@Subscribe
-	private void onPlayerLootReceived(PlayerLootReceived playerLootReceived)
+	private void onPlayerLootReceived(final PlayerLootReceived playerLootReceived)
 	{
-		Collection<ItemStack> items = playerLootReceived.getItems();
+		final Collection<ItemStack> items = playerLootReceived.getItems();
 		lootReceived(items, LootType.PVP);
 		lootNotifier(items);
 	}
 
-	private void lootNotifier(Collection<ItemStack> items)
+	private void lootNotifier(final Collection<ItemStack> items)
 	{
 		ItemDefinition composition;
-		for (ItemStack is : items)
+		for (final ItemStack is : items)
 		{
 			composition = itemManager.getItemDefinition(is.getId());
-			Color itemColor = getHighlighted(new NamedQuantity(composition.getName(), is.getQuantity()), itemManager.getItemPrice(is.getId()) * is.getQuantity(), itemManager.getAlchValue(is.getId()) * is.getQuantity());
+			final Color itemColor = getHighlighted(new NamedQuantity(composition.getName(), is.getQuantity()), itemManager.getItemPrice(is.getId()) * is.getQuantity(), itemManager.getAlchValue(is.getId()) * is.getQuantity());
 			if (itemColor != null)
 			{
 				if (config.notifyHighlightedDrops() && itemColor.equals(config.highlightedColor()))
@@ -626,15 +626,15 @@ public class GroundItemsPlugin extends Plugin
 		}
 	}
 
-	private void sendLootNotification(String itemName, String message)
+	private void sendLootNotification(final String itemName, final String message)
 	{
-		String notification = "[" + client.getLocalPlayer().getName() + "] " +
+		final String notification = "[" + client.getLocalPlayer().getName() + "] " +
 			"Received a " + message + " item: " + itemName;
 		notifier.notify(notification);
 	}
 
 	@Subscribe
-	private void onClientTick(ClientTick event)
+	private void onClientTick(final ClientTick event)
 	{
 		final MenuEntry[] menuEntries = client.getMenuEntries();
 		final List<MenuEntryWithCount> newEntries = new ArrayList<>(menuEntries.length);
@@ -642,15 +642,15 @@ public class GroundItemsPlugin extends Plugin
 		outer:
 		for (int i = menuEntries.length - 1; i >= 0; i--)
 		{
-			MenuEntry menuEntry = menuEntries[i];
+			final MenuEntry menuEntry = menuEntries[i];
 
 			if (config.collapseEntries())
 			{
-				int menuType = menuEntry.getOpcode();
+				final int menuType = menuEntry.getOpcode();
 				if (menuType == FIRST_OPTION || menuType == SECOND_OPTION || menuType == THIRD_OPTION
 					|| menuType == FOURTH_OPTION || menuType == FIFTH_OPTION || menuType == EXAMINE_ITEM)
 				{
-					for (MenuEntryWithCount entryWCount : newEntries)
+					for (final MenuEntryWithCount entryWCount : newEntries)
 					{
 						if (entryWCount.getEntry().equals(menuEntry))
 						{
@@ -740,13 +740,13 @@ public class GroundItemsPlugin extends Plugin
 		}).toArray(MenuEntry[]::new));
 	}
 
-	private void lootReceived(Collection<ItemStack> items, LootType lootType)
+	private void lootReceived(final Collection<ItemStack> items, final LootType lootType)
 	{
-		for (ItemStack itemStack : items)
+		for (final ItemStack itemStack : items)
 		{
-			WorldPoint location = WorldPoint.fromLocal(client, itemStack.getLocation());
-			GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(itemStack.getId(), location);
-			GroundItem groundItem = collectedGroundItems.get(groundItemKey);
+			final WorldPoint location = WorldPoint.fromLocal(client, itemStack.getLocation());
+			final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(itemStack.getId(), location);
+			final GroundItem groundItem = collectedGroundItems.get(groundItemKey);
 			if (groundItem != null)
 			{
 				groundItem.setMine(true);
@@ -768,10 +768,10 @@ public class GroundItemsPlugin extends Plugin
 		final ItemDefinition itemComposition = itemManager.getItemDefinition(itemId);
 		final int realItemId = itemComposition.getNote() != -1 ? itemComposition.getLinkedNoteId() : itemId;
 		final int alchPrice = itemManager.getAlchValue(realItemId);
-		int durationMillis;
-		int durationTicks;
+		final int durationMillis;
+		final int durationTicks;
 
-		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+		final WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 
 		if (client.isInInstancedRegion())
 		{
@@ -843,7 +843,7 @@ public class GroundItemsPlugin extends Plugin
 			.build(new WildcardMatchLoader(hiddenItemList));
 
 		// Cache colors
-		ImmutableList.Builder<PriceHighlight> priceCheckBuilder = ImmutableList.builder();
+		final ImmutableList.Builder<PriceHighlight> priceCheckBuilder = ImmutableList.builder();
 
 		if (config.insaneValuePrice() > 0)
 		{
@@ -869,7 +869,7 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onMenuEntryAdded(MenuEntryAdded lastEntry)
+	private void onMenuEntryAdded(final MenuEntryAdded lastEntry)
 	{
 		if (config.itemHighlightMode() != OVERLAY)
 		{
@@ -884,9 +884,9 @@ public class GroundItemsPlugin extends Plugin
 			final int sceneY = lastEntry.getParam1();
 
 			final WorldPoint worldPoint = WorldPoint.fromScene(client, sceneX, sceneY, client.getPlane());
-			GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(itemId, worldPoint);
-			GroundItem groundItem = collectedGroundItems.get(groundItemKey);
-			int quantity = groundItem.getQuantity();
+			final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(itemId, worldPoint);
+			final GroundItem groundItem = collectedGroundItems.get(groundItemKey);
+			final int quantity = groundItem.getQuantity();
 
 			final int gePrice = groundItem.getGePrice();
 			final int haPrice = groundItem.getHaPrice();
@@ -940,7 +940,7 @@ public class GroundItemsPlugin extends Plugin
 		}
 	}
 
-	void updateList(String item, boolean hiddenList)
+	void updateList(final String item, final boolean hiddenList)
 	{
 		final List<String> hiddenItemSet = new ArrayList<>(hiddenItemList);
 		final List<String> highlightedItemSet = new ArrayList<>(highlightedItemsList);
@@ -980,7 +980,7 @@ public class GroundItemsPlugin extends Plugin
 		return config.defaultColor();
 	}
 
-	Color getHighlighted(NamedQuantity item, int gePrice, int haPrice)
+	Color getHighlighted(final NamedQuantity item, final int gePrice, final int haPrice)
 	{
 		if (TRUE.equals(highlightedItems.getUnchecked(item)))
 		{
@@ -994,7 +994,7 @@ public class GroundItemsPlugin extends Plugin
 		}
 
 		final int price = getValueByMode(gePrice, haPrice);
-		for (PriceHighlight highlight : priceChecks)
+		for (final PriceHighlight highlight : priceChecks)
 		{
 			if (price > highlight.getPrice())
 			{
@@ -1005,7 +1005,7 @@ public class GroundItemsPlugin extends Plugin
 		return null;
 	}
 
-	Color getHidden(NamedQuantity item, int gePrice, int haPrice, boolean isTradeable)
+	Color getHidden(final NamedQuantity item, final int gePrice, final int haPrice, final boolean isTradeable)
 	{
 		final boolean isExplicitHidden = TRUE.equals(hiddenItems.getUnchecked(item));
 		final boolean isExplicitHighlight = TRUE.equals(highlightedItems.getUnchecked(item));
@@ -1019,7 +1019,7 @@ public class GroundItemsPlugin extends Plugin
 			: null;
 	}
 
-	private int getGePriceFromItemId(int itemId)
+	private int getGePriceFromItemId(final int itemId)
 	{
 		final ItemDefinition itemComposition = itemManager.getItemDefinition(itemId);
 		final int realItemId = itemComposition.getNote() != -1 ? itemComposition.getLinkedNoteId() : itemId;
@@ -1027,7 +1027,7 @@ public class GroundItemsPlugin extends Plugin
 		return itemManager.getItemPrice(realItemId);
 	}
 
-	private boolean isItemIdHidden(int itemId, int quantity)
+	private boolean isItemIdHidden(final int itemId, final int quantity)
 	{
 		final ItemDefinition itemComposition = itemManager.getItemDefinition(itemId);
 		final int realItemId = itemComposition.getNote() != -1 ? itemComposition.getLinkedNoteId() : itemId;
@@ -1037,12 +1037,12 @@ public class GroundItemsPlugin extends Plugin
 		return getHidden(new NamedQuantity(itemComposition.getName(), quantity), gePrice, alchPrice, itemComposition.isTradeable()) != null;
 	}
 
-	private int getCollapsedItemQuantity(int itemId, String item)
+	private int getCollapsedItemQuantity(final int itemId, final String item)
 	{
 		final ItemDefinition itemComposition = itemManager.getItemDefinition(itemId);
 		final boolean itemNameIncludesQuantity = Pattern.compile("\\(\\d+\\)").matcher(itemComposition.getName()).find();
 
-		Matcher matcher = Pattern.compile("\\((\\d+)\\)").matcher(item);
+		final Matcher matcher = Pattern.compile("\\((\\d+)\\)").matcher(item);
 		int matches = 0;
 		String lastMatch = "1";
 		while (matcher.find())
@@ -1059,7 +1059,7 @@ public class GroundItemsPlugin extends Plugin
 		return Integer.parseInt(lastMatch);
 	}
 
-	Color getItemColor(Color highlighted, Color hidden)
+	Color getItemColor(final Color highlighted, final Color hidden)
 	{
 		if (highlighted != null)
 		{
@@ -1075,7 +1075,7 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onFocusChanged(FocusChanged focusChanged)
+	private void onFocusChanged(final FocusChanged focusChanged)
 	{
 		if (!focusChanged.isFocused())
 		{
@@ -1084,18 +1084,18 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
+	private void onMenuOptionClicked(final MenuOptionClicked menuOptionClicked)
 	{
 		if (menuOptionClicked.getMenuOpcode() == MenuOpcode.ITEM_DROP)
 		{
-			int itemId = menuOptionClicked.getIdentifier();
+			final int itemId = menuOptionClicked.getIdentifier();
 			// Keep a queue of recently dropped items to better detect
 			// item spawns that are drops
 			droppedItemQueue.add(itemId);
 		}
 	}
 
-	private void notifyHighlightedItem(GroundItem item)
+	private void notifyHighlightedItem(final GroundItem item)
 	{
 		final boolean shouldNotifyHighlighted = config.notifyHighlightedDrops() &&
 			config.highlightedColor().equals(getHighlighted(
@@ -1147,7 +1147,7 @@ public class GroundItemsPlugin extends Plugin
 		notifier.notify(notificationStringBuilder.toString());
 	}
 
-	private int getValueByMode(int gePrice, int haPrice)
+	private int getValueByMode(final int gePrice, final int haPrice)
 	{
 		switch (config.valueCalculationMode())
 		{
