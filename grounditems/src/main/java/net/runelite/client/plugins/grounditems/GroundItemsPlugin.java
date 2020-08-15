@@ -109,10 +109,10 @@ import org.pf4j.Extension;
 public class GroundItemsPlugin extends Plugin
 {
 	@Value
-	static class PriceHighlight
+	private static class PriceHighlight
 	{
-		private final int price;
-		private final Color color;
+		int price;
+		Color color;
 	}
 
 	@Getter(AccessLevel.PUBLIC)
