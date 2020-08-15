@@ -628,8 +628,15 @@ public class GroundItemsPlugin extends Plugin
 
 	private void sendLootNotification(final String itemName, final String message)
 	{
-		final String notification = "[" + client.getLocalPlayer().getName() + "] " +
-			"Received a " + message + " item: " + itemName;
+		final Player player = client.getLocalPlayer();
+
+		if (player == null)
+		{
+			return;
+		}
+
+		final String notification = String.format("[%s] Received a %s item: %s", player.getName(), message, itemName);
+
 		notifier.notify(notification);
 	}
 
