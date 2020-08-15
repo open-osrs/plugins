@@ -49,6 +49,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -509,6 +510,11 @@ public class GroundItemsPlugin extends Plugin
 
 		final GroundItem groundItem = buildGroundItem(tile, item);
 
+		if (groundItem == null)
+		{
+			return;
+		}
+
 		final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
 		final GroundItem existing = collectedGroundItems.putIfAbsent(groundItemKey, groundItem);
 		if (existing != null)
@@ -768,6 +774,7 @@ public class GroundItemsPlugin extends Plugin
 		}
 	}
 
+	@Nullable
 	private GroundItem buildGroundItem(final Tile tile, final TileItem item)
 	{
 		// Collect the data for the item
@@ -778,7 +785,14 @@ public class GroundItemsPlugin extends Plugin
 		final int durationMillis;
 		final int durationTicks;
 
-		final WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+		final Player player = client.getLocalPlayer();
+
+		if (player == null)
+		{
+			return null;
+		}
+
+		final WorldPoint playerLocation = player.getWorldLocation();
 
 		if (client.isInInstancedRegion())
 		{
@@ -1135,6 +1149,12 @@ public class GroundItemsPlugin extends Plugin
 		}
 
 		final Player local = client.getLocalPlayer();
+
+		if (local == null)
+		{
+			return;
+		}
+
 		final StringBuilder notificationStringBuilder = new StringBuilder()
 			.append("[")
 			.append(local.getName())
