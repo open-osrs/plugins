@@ -886,6 +886,12 @@ public class GroundItemsPlugin extends Plugin
 			final WorldPoint worldPoint = WorldPoint.fromScene(client, sceneX, sceneY, client.getPlane());
 			final GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(itemId, worldPoint);
 			final GroundItem groundItem = collectedGroundItems.get(groundItemKey);
+
+			if (groundItem == null)
+			{
+				return;
+			}
+
 			final int quantity = groundItem.getQuantity();
 
 			final int gePrice = groundItem.getGePrice();
