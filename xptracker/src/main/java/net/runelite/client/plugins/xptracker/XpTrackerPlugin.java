@@ -71,6 +71,7 @@ import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.xp.XpClient;
 import okhttp3.OkHttpClient;
@@ -754,6 +755,11 @@ public class XpTrackerPlugin extends Plugin
 	@Subscribe
 	public void onOverlayMenuClicked(OverlayMenuClicked event)
 	{
+		if (!(event.getOverlay() instanceof XpInfoBoxOverlay) || event.getEntry().getOption().equals(OPTION_CONFIGURE))
+		{
+			return;
+		}
+
 		final Skill skill = Skill.valueOf(Text.removeTags(event.getEntry().getTarget()).toUpperCase());
 
 		if (event.getEntry().getMenuOpcode() == MenuOpcode.RUNELITE_OVERLAY &&
