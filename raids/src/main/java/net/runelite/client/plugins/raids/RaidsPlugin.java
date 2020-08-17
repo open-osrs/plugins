@@ -869,7 +869,7 @@ public class RaidsPlugin extends Plugin
 				}
 				else
 				{
-					log.info("RaidsPlugin: Could not find an item ID for item: " + itemName);
+					log.debug("RaidsPlugin: Could not find an item ID for item: " + itemName);
 				}
 			}
 		}
