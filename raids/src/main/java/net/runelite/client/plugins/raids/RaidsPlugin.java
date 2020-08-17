@@ -116,7 +116,7 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "CoX Scouter",
+	name = "CoX",
 	enabledByDefault = false,
 	description = "Show helpful information for the Chambers of Xeric raid",
 	tags = {"combat", "raid", "overlay", "pve", "pvm", "bosses", "cox", "olm", "scout"},
