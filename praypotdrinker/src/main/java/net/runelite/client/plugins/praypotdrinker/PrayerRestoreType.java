@@ -2,10 +2,11 @@ package net.runelite.client.plugins.praypotdrinker;
 
 import java.util.Arrays;
 import net.runelite.api.Client;
+import net.runelite.api.Item;
 import net.runelite.api.ItemID;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
-
 public enum PrayerRestoreType
 {
 	PRAYER_POTION(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3, ItemID.PRAYER_POTION4),
@@ -28,6 +29,21 @@ public enum PrayerRestoreType
 
 	public WidgetItem getItemFromInventory(Client client)
 	{
-		return new InventoryWidgetItemQuery().idEquals(ItemIDs).result(client).first();
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return null;
+		}
+
+		for (WidgetItem item : inventoryWidget.getWidgetItems())
+		{
+			if (Arrays.stream(ItemIDs).anyMatch(i -> i == item.getId()))
+			{
+				return item;
+			}
+		}
+
+		return null;
 	}
 }
