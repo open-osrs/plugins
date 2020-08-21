@@ -1,12 +1,12 @@
-package net.runelite.client.plugins.autotheiver;
+package net.runelite.client.plugins.autothiever;
 
 import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("autotheiver")
-public interface AutoTheiverConfig extends Config
+@ConfigGroup("autothiever")
+public interface AutoThieverConfig extends Config
 {
 	@ConfigItem(
 		keyName = "hpCheckStyle",

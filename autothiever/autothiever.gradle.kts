@@ -25,8 +25,8 @@
 
 version = "0.6.0"
 
-project.extra["PluginName"] = "Auto Theiver"
-project.extra["PluginDescription"] = "Automatically theives from npcs"
+project.extra["PluginName"] = "Auto Thiever"
+project.extra["PluginDescription"] = "Automatically thieves from npcs"
 
 tasks {
     jar {

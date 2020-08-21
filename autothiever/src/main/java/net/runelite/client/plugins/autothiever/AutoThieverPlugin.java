@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.autotheiver;
+package net.runelite.client.plugins.autothiever;
 
 import com.google.inject.Provides;
 import java.awt.Dimension;
@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
@@ -24,6 +25,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -38,59 +40,54 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Auto Theiver",
-	description = "Automatically theives npcs",
-	tags = {"auto", "theiver", "theiving", "skill", "skilling"},
+	name = "Auto Thiever",
+	description = "Automatically thieves npcs",
+	tags = {"auto", "thiever", "thieving", "skill", "skilling"},
 	enabledByDefault = false,
 	type = PluginType.SKILLING
 )
-public class AutoTheiverPlugin extends Plugin
+public class AutoThieverPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private AutoTheiverConfig config;
+	private AutoThieverConfig config;
 
 	@Inject
 	private ItemManager itemManager;
 
 	private MenuEntry entry;
-	private int entryTimeout;
 
 	private Random r = new Random();
 
+	private int nextOpenPouchCount;
 	private boolean emptyPouches = false;
 
 	private boolean pluginStarted = false;
 	private int tickDelay = 0;
-	private int frameDelay = 0;
-
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Provides
-	AutoTheiverConfig provideConfig(final ConfigManager configManager)
+	AutoThieverConfig provideConfig(final ConfigManager configManager)
 	{
-		return configManager.getConfig(AutoTheiverConfig.class);
+		return configManager.getConfig(AutoThieverConfig.class);
 	}
 
 	@Override
 	protected void startUp() throws Exception
 	{
+		nextOpenPouchCount = getRandom(1, 28);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		executor.shutdownNow();
 	}
 
 	@Subscribe
 	public void onConfigButtonClicked(ConfigButtonClicked event)
 	{
-		if (!event.getGroup().equals("autotheiver"))
+		if (!event.getGroup().equals("autothiever"))
 		{
 			return;
 		}
@@ -98,6 +95,7 @@ public class AutoTheiverPlugin extends Plugin
 		if (event.getKey().equals("startButton"))
 		{
 			pluginStarted = true;
+			nextOpenPouchCount = getRandom(1, 28);
 		}
 		else if (event.getKey().equals("stopButton"))
 		{
@@ -123,6 +121,7 @@ public class AutoTheiverPlugin extends Plugin
 			else if (message.startsWith("You open all of the pouches"))
 			{
 				emptyPouches = false;
+				nextOpenPouchCount = getRandom(1, 28);
 			}
 		}
 		else if (event.getType() == ChatMessageType.GAMEMESSAGE)
@@ -151,6 +150,8 @@ public class AutoTheiverPlugin extends Plugin
 			return;
 		}
 
+		handleRandomPouchOpening();
+
 		if (emptyPouches)
 		{
 			openPouches();
@@ -171,6 +172,25 @@ public class AutoTheiverPlugin extends Plugin
 		entry = new MenuEntry("Pickpocket", "<col=ffff00>" + npc.getName() + "<col=ff00>  (level-" + npc.getCombatLevel() + ")", npc.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
 		click();
 		tickDelay = 1;
+	}
+
+	public void handleRandomPouchOpening()
+	{
+		WidgetItem item = getInventoryItem(ItemID.COIN_POUCH, ItemID.COIN_POUCH_22522, ItemID.COIN_POUCH_22523, ItemID.COIN_POUCH_22524,
+			ItemID.COIN_POUCH_22525, ItemID.COIN_POUCH_22526, ItemID.COIN_POUCH_22527, ItemID.COIN_POUCH_22528,
+			ItemID.COIN_POUCH_22529, ItemID.COIN_POUCH_22530, ItemID.COIN_POUCH_22531, ItemID.COIN_POUCH_22532,
+			ItemID.COIN_POUCH_22533, ItemID.COIN_POUCH_22534, ItemID.COIN_POUCH_22535, ItemID.COIN_POUCH_22536,
+			ItemID.COIN_POUCH_22537, ItemID.COIN_POUCH_22538);
+
+		if (item == null)
+		{
+			return;
+		}
+
+		if (item.getQuantity() >= nextOpenPouchCount)
+		{
+			emptyPouches = true;
+		}
 	}
 
 	public void openPouches()
@@ -248,7 +268,6 @@ public class AutoTheiverPlugin extends Plugin
 		}
 
 		entry = null;
-		entryTimeout = 0;
 	}
 
 	public void click()
