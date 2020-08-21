@@ -1,8 +1,15 @@
 package net.runelite.client.plugins.specialattackuser;
 
 import com.google.inject.Provides;
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import javax.inject.Inject;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.Point;
-import net.runelite.api.*;
+import net.runelite.api.VarPlayer;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
@@ -13,14 +20,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import org.pf4j.Extension;
-
-import javax.inject.Inject;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
@@ -39,10 +38,6 @@ public class SpecialAttackUserPlugin extends Plugin
 	private SpecialAttackUserConfig config;
 
 	private MenuEntry entry;
-
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Provides
 	SpecialAttackUserConfig provideConfig(final ConfigManager configManager)
@@ -108,17 +103,15 @@ public class SpecialAttackUserPlugin extends Plugin
 			return;
 		}
 
-		this.executor.submit(() -> {
-			try
-			{
-				entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
-				click();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		try
+		{
+			entry = new MenuEntry("Use <col=00ff00>Special Attack</col>", "", 1, MenuOpcode.CC_OP.getId(), -1, 38862884, false);
+			click();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Subscribe
