@@ -79,10 +79,6 @@ public class CannonReloaderPlugin extends Plugin
 	@Inject
 	private Client client;
 
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
-
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -238,25 +234,23 @@ public class CannonReloaderPlugin extends Plugin
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
-		this.executor.submit(() -> {
-			try
+		try
+		{
+			if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
 			{
-				if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
-				{
-					return;
-				}
-
-				entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
-				click();
-
-				nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
-				Thread.sleep(config.clickDelay());
+				return;
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+
+			entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
+			click();
+
+			nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
+			Thread.sleep(config.clickDelay());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Subscribe
