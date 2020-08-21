@@ -1,14 +1,19 @@
 package net.runelite.client.plugins.itemuser;
 
 import com.google.inject.Provides;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.util.Text;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -26,10 +31,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
@@ -46,6 +47,9 @@ public class ItemUserPlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private ClientThread clientThread;
+
+	@Inject
 	private ConfigManager configManager;
 
 	@Inject
@@ -60,31 +64,36 @@ public class ItemUserPlugin extends Plugin
 	@Inject
 	private MenuManager menuManager;
 
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
-
 	private GameObject object;
 	private final List<WidgetItem> items = new ArrayList<>();
 	private String item_name;
 	private boolean iterating;
 	private int iterTicks;
 
-	private MenuEntry entry;
+	public Queue<MenuEntry> entryList = new ConcurrentLinkedQueue<>();
 
 	private final HotkeyListener toggle = new HotkeyListener(() -> config.useItemsKeybind())
 	{
 		@Override
 		public void hotkeyPressed()
 		{
-			List<WidgetItem> list = new InventoryWidgetItemQuery()
-				.idEquals(config.itemId())
-				.result(client)
-				.list;
+			clientThread.invokeLater(() -> {
+				Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 
-			items.addAll(list);
-			object = findNearestGameObject(config.objectId());
-			item_name = Text.standardize(itemManager.getItemDefinition(config.itemId()).getName());
+				if (inventoryWidget == null)
+				{
+					return;
+				}
+
+				List<WidgetItem> list = inventoryWidget.getWidgetItems()
+					.stream()
+					.filter(item -> item.getId() == config.itemId())
+					.collect(Collectors.toList());
+
+				items.addAll(list);
+				object = findNearestGameObject(config.objectId());
+				item_name = Text.standardize(itemManager.getItemDefinition(config.itemId()).getName());
+			});
 		}
 	};
 
@@ -122,23 +131,10 @@ public class ItemUserPlugin extends Plugin
 			}
 			return;
 		}
-		executor.submit(() -> {
-			useItems();
-			System.out.println("Clearing items");
-			items.clear();
-		});
-	}
 
-	private void sleep(long ms)
-	{
-		try
-		{
-			Thread.sleep(ms);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
+		useItems();
+		System.out.println("Clearing items");
+		items.clear();
 	}
 
 	private void useItems()
@@ -160,17 +156,12 @@ public class ItemUserPlugin extends Plugin
 			return;
 		}
 
-		System.out.println("Using items");
 		for (WidgetItem item : items)
 		{
-			entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_USE.getId(), item.getIndex(), 9764864, false);
-			click();
-			sleep(config.clickDelay());
-
-			entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName() + "<col=ffffff> -> <col=ffff>" + client.getObjectDefinition(object.getId()).getName(), object.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), object.getSceneMinLocation().getX(), object.getSceneMinLocation().getY(), false);
-			click();
-			sleep(config.clickDelay());
+			entryList.add(new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_USE.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
+			entryList.add(new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName() + "<col=ffffff> -> <col=ffff>" + client.getObjectDefinition(object.getId()).getName(), object.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), object.getSceneMinLocation().getX(), object.getSceneMinLocation().getY(), false));
 		}
+		click();
 	}
 
 	@Nullable
@@ -198,12 +189,17 @@ public class ItemUserPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (entry != null)
+		if (entryList != null && !entryList.isEmpty())
 		{
-			event.setMenuEntry(entry);
-		}
+			event.setMenuEntry(entryList.poll());
 
-		entry = null;
+			if (entryList == null || entryList.isEmpty())
+			{
+				return;
+			}
+
+			click();
+		}
 	}
 
 	public void click()

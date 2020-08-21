@@ -44,15 +44,4 @@ public interface ItemUserConfig extends Config
 	{
 		return new Keybind(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK);
 	}
-
-	@ConfigItem(
-		keyName = "clickDelay",
-		name = "Click Delay",
-		description = "The keybind to drop the items",
-		position = 3
-	)
-	default int clickDelay()
-	{
-		return 30;
-	}
 }
