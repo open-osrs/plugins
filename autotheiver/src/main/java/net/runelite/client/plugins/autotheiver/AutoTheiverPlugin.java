@@ -1,15 +1,17 @@
 package net.runelite.client.plugins.autotheiver;
 
+import com.google.inject.Provides;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
-import com.google.inject.Provides;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
@@ -22,8 +24,9 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.queries.NPCQuery;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -172,21 +175,11 @@ public class AutoTheiverPlugin extends Plugin
 
 	public void openPouches()
 	{
-		List<WidgetItem> list = new InventoryWidgetItemQuery()
-			.idEquals(ItemID.COIN_POUCH, ItemID.COIN_POUCH_22522, ItemID.COIN_POUCH_22523, ItemID.COIN_POUCH_22524,
-				ItemID.COIN_POUCH_22525, ItemID.COIN_POUCH_22526, ItemID.COIN_POUCH_22527, ItemID.COIN_POUCH_22528,
-				ItemID.COIN_POUCH_22529, ItemID.COIN_POUCH_22530, ItemID.COIN_POUCH_22531, ItemID.COIN_POUCH_22532,
-				ItemID.COIN_POUCH_22533, ItemID.COIN_POUCH_22534, ItemID.COIN_POUCH_22535, ItemID.COIN_POUCH_22536,
-				ItemID.COIN_POUCH_22537, ItemID.COIN_POUCH_22538)
-			.result(client)
-			.list;
-
-		if (list == null || list.isEmpty())
-		{
-			return;
-		}
-
-		WidgetItem item = list.get(0);
+		WidgetItem item = getInventoryItem(ItemID.COIN_POUCH, ItemID.COIN_POUCH_22522, ItemID.COIN_POUCH_22523, ItemID.COIN_POUCH_22524,
+			ItemID.COIN_POUCH_22525, ItemID.COIN_POUCH_22526, ItemID.COIN_POUCH_22527, ItemID.COIN_POUCH_22528,
+			ItemID.COIN_POUCH_22529, ItemID.COIN_POUCH_22530, ItemID.COIN_POUCH_22531, ItemID.COIN_POUCH_22532,
+			ItemID.COIN_POUCH_22533, ItemID.COIN_POUCH_22534, ItemID.COIN_POUCH_22535, ItemID.COIN_POUCH_22536,
+			ItemID.COIN_POUCH_22537, ItemID.COIN_POUCH_22538);
 
 		if (item == null)
 		{
@@ -194,17 +187,21 @@ public class AutoTheiverPlugin extends Plugin
 		}
 
 		//String option, String target, int identifier, int opcode, int param0, int param1, boolean forceLeftClick
-		entry = new MenuEntry("Open-all", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(), 9764864, false);
+		entry = new MenuEntry("Open-all", "<col=ff9040>" + itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 		click();
 		tickDelay = 1;
 	}
 
 	public void eat()
 	{
-		List<WidgetItem> list = new InventoryWidgetItemQuery()
-			.idEquals(config.itemId())
-			.result(client)
-			.list;
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return;
+		}
+
+		List<WidgetItem> list = inventoryWidget.getWidgetItems().stream().filter(item -> config.itemId() == item.getId()).collect(Collectors.toList());
 
 		if (list == null || list.isEmpty())
 		{
@@ -218,7 +215,7 @@ public class AutoTheiverPlugin extends Plugin
 			return;
 		}
 
-		entry = new MenuEntry("Eat", "<col=ff9040>" + this.itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(), 9764864, false);
+		entry = new MenuEntry("Eat", "<col=ff9040>" + this.itemManager.getItemDefinition(item.getId()).getName(), item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 		click();
 		tickDelay = 4;
 	}
@@ -274,5 +271,25 @@ public class AutoTheiverPlugin extends Plugin
 		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 501, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
 		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 502, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
 		client.getCanvas().dispatchEvent(new MouseEvent(client.getCanvas(), 500, System.currentTimeMillis(), 0, pos.getX(), pos.getY(), 1, false, 1));
+	}
+
+	public WidgetItem getInventoryItem(int... ids)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return null;
+		}
+
+		for (WidgetItem item : inventoryWidget.getWidgetItems())
+		{
+			if (Arrays.stream(ids).anyMatch(i -> i == item.getId()))
+			{
+				return item;
+			}
+		}
+
+		return null;
 	}
 }
