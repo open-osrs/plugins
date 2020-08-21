@@ -1,19 +1,7 @@
 package net.runelite.client.plugins.cannonreloader;
 
 import com.google.inject.Provides;
-import net.runelite.api.*;
-import net.runelite.api.Point;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
-import org.pf4j.Extension;
-
-import javax.inject.Inject;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -22,12 +10,34 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.inject.Inject;
+import net.runelite.api.AnimationID;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.GameObject;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
+import static net.runelite.api.ObjectID.BROKEN_MULTICANNON_14916;
 import static net.runelite.api.ObjectID.CANNON_BASE;
 import static net.runelite.api.ObjectID.DWARF_MULTICANNON;
-import static net.runelite.api.ObjectID.BROKEN_MULTICANNON_14916;
+import net.runelite.api.Player;
+import net.runelite.api.Point;
+import net.runelite.api.Projectile;
 import static net.runelite.api.ProjectileID.CANNONBALL;
 import static net.runelite.api.ProjectileID.GRANITE_CANNONBALL;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.ClientTick;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.ProjectileMoved;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
+import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
