@@ -1,10 +1,12 @@
 package net.runelite.client.plugins.lavacrafter;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import com.google.inject.Provides;
 import java.awt.Dimension;
@@ -30,7 +32,6 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.queries.BankItemQuery;
 import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -52,7 +53,6 @@ import org.pf4j.Extension;
 	tags = {"rc", "rune", "crafting", "runecrafting", "lava", "craft", "crafter", "skilling", "helper", "automation", "ben"},
 	enabledByDefault = false,
 	type = PluginType.SKILLING
-
 )
 public class LavaCrafterPlugin extends Plugin
 {
@@ -580,7 +580,22 @@ public class LavaCrafterPlugin extends Plugin
 
 	public WidgetItem getInventoryItem(int... ids)
 	{
-		return new InventoryWidgetItemQuery().idEquals(ids).result(client).first();
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return null;
+		}
+
+		for (WidgetItem item : inventoryWidget.getWidgetItems())
+		{
+			if (Arrays.stream(ids).anyMatch(i -> i == item.getId()))
+			{
+				return item;
+			}
+		}
+
+		return null;
 	}
 
 	public boolean isBankOpen()

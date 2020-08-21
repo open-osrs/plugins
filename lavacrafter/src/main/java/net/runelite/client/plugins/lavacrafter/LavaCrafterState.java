@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.lavacrafter;
 
+import net.runelite.api.widgets.WidgetInfo;
+
 public enum LavaCrafterState
 {
 	USE_BANK_CHEST(20, "Use", "<col=ffff>Bank chest", 4483, 3, 52, 43, LavaCrafterStateType.GAME_OBJECT),
@@ -9,7 +11,7 @@ public enum LavaCrafterState
 	TELE_DUEL_ARENA(20, "Duel Arena", "<col=ff9040>Ring of dueling(4)</col>", 2, 57, -1, 25362455),
 	ENTER_RUINS(20, "Enter", "<col=ffff>Mysterious ruins", 34817, 3, 48, 70, LavaCrafterStateType.GAME_OBJECT),
 	CAST_MAGIC_IMBUE(10, "Cast", "<col=00ff00>Magic Imbue</col>", 1, 57, -1, 14286972),
-	USE_EARTH_RUNES(1, "Use", "<col=ff9040>Earth rune", 557, 38, 0, 9764864, LavaCrafterStateType.INVENTORY_ITEM),
+	USE_EARTH_RUNES(1, "Use", "<col=ff9040>Earth rune", 557, 38, 0, WidgetInfo.INVENTORY.getId(), LavaCrafterStateType.INVENTORY_ITEM),
 	USE_EARTHS_ON_ALTAR(20, "Use", "<col=ff9040>Earth rune<col=ffffff> -> <col=ffff>Altar", 34764, 1, 56, 37, LavaCrafterStateType.GAME_OBJECT),
 	TELE_CASTLE_WARS(20, "Castle Wars", "<col=ff9040>Ring of dueling(4)</col>", 3, 57, -1, 25362455),
 	WITHDRAW_DUELING_RING(10, "Withdraw-1", "<col=ff9040>Ring of dueling(8)</col>", 1, 57, 70, 786444, LavaCrafterStateType.BANK_ITEM),
@@ -24,7 +26,7 @@ public enum LavaCrafterState
 	int param0;
 	int param1;
 
-	int tickDelay = 0;
+	int tickDelay;
 
 	LavaCrafterStateType type = LavaCrafterStateType.DEFAULT;
 
