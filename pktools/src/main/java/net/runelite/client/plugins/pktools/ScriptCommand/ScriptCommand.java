@@ -3,7 +3,6 @@ package net.runelite.client.plugins.pktools.ScriptCommand;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import net.runelite.api.*;
-import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -395,7 +394,7 @@ class Group1Command implements ScriptCommand
 			{
 				if ("Group 1".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
 				}
 			}
 			click(client);
@@ -425,7 +424,7 @@ class Group2Command implements ScriptCommand
 			{
 				if ("Group 2".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
 				}
 			}
 			click(client);
@@ -455,7 +454,7 @@ class Group3Command implements ScriptCommand
 			{
 				if ("Group 3".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
 				}
 			}
 			click(client);
@@ -485,12 +484,29 @@ class Group4Command implements ScriptCommand
 			{
 				if ("Group 4".equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
-					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), 9764864, false));
+					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
 				}
 			}
 			click(client);
 		}
 		catch (Throwable e)
+		{
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+}
+
+class ClickEnemyCommand implements ScriptCommand
+{
+	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
+	{
+		try
+		{
+			plugin.entryList.add(new MenuEntry("", "", plugin.lastEnemy.getPlayerId(), client.isSpellSelected() ? MenuOpcode.SPELL_CAST_ON_PLAYER.getId() : MenuOpcode.PLAYER_SECOND_OPTION.getId(), 0, 0, false));
+			click(client);
+		}
+		catch (Exception e)
 		{
 			System.out.println(e.getMessage());
 			e.printStackTrace();

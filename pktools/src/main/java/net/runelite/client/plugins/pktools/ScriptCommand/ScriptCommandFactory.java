@@ -48,6 +48,8 @@ public class ScriptCommandFactory
 				return new Group3Command();
 			case "group4":
 				return new Group4Command();
+			case "clickenemy":
+				return new ClickEnemyCommand();
 			case "protectitem":
 				return new ProtectItemCommand();
 			default:
