@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.4.0"
+version = "0.5.0"
 
 project.extra["PluginName"] = "Ardy Iron Powerminer"
 project.extra["PluginDescription"] = "Automatically powermines iron"

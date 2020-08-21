@@ -1,10 +1,12 @@
 package net.runelite.client.plugins.ardyironpowerminer;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import com.google.inject.Provides;
 import java.awt.Dimension;
@@ -23,7 +25,6 @@ import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -132,10 +133,14 @@ public class ArdyIronPowerminerPlugin extends Plugin
 			return;
 		}
 
-		List<WidgetItem> list = new InventoryWidgetItemQuery()
-			.idEquals(ItemID.IRON_ORE)
-			.result(client)
-			.list;
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return;
+		}
+
+		List<WidgetItem> list = inventoryWidget.getWidgetItems().stream().filter(item -> item.getId() == ItemID.IRON_ORE).collect(Collectors.toList());
 
 		if (list == null || list.isEmpty())
 		{
@@ -143,7 +148,7 @@ public class ArdyIronPowerminerPlugin extends Plugin
 			return;
 		}
 
-		entry = new MenuEntry("Drop", "<col=ff9040>Iron ore", list.get(0).getId(), MenuOpcode.ITEM_FIFTH_OPTION.getId(), list.get(0).getIndex(), 9764864, false);
+		entry = new MenuEntry("Drop", "<col=ff9040>Iron ore", list.get(0).getId(), MenuOpcode.ITEM_FIFTH_OPTION.getId(), list.get(0).getIndex(), WidgetInfo.INVENTORY.getId(), false);
 		click();
 		frameDelay = 10;
 	}
@@ -241,6 +246,26 @@ public class ArdyIronPowerminerPlugin extends Plugin
 		}
 
 		entry = null;
+	}
+
+	public WidgetItem getItemFromInventory(int itemId)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return null;
+		}
+
+		for (WidgetItem item : inventoryWidget.getWidgetItems())
+		{
+			if (itemId == item.getId())
+			{
+				return item;
+			}
+		}
+
+		return null;
 	}
 
 	public void click()
