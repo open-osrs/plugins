@@ -14,7 +14,6 @@ include(":pktools")
 include(":praypotdrinker")
 include(":specialattackuser")
 
-
 for (project in rootProject.children) {
     project.apply {
         projectDir = file(name)
