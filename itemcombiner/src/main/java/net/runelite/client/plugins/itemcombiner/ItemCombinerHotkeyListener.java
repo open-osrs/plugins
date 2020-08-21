@@ -19,7 +19,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListener
 {
 	private Client client;
@@ -111,11 +110,11 @@ public class ItemCombinerHotkeyListener extends MouseAdapter implements KeyListe
 				return;
 			}
 
-			plugin.entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(firstItem.getId()).getName(), firstItem.getId(), MenuOpcode.ITEM_USE.getId(), firstItem.getIndex(), 9764864, false);
+			plugin.entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(firstItem.getId()).getName(), firstItem.getId(), MenuOpcode.ITEM_USE.getId(), firstItem.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 			click();
 			Thread.sleep(config.clickDelay());
 
-			plugin.entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(firstItem.getId()).getName() + "<col=ffffff> -> <col=ff9040>" + itemManager.getItemDefinition(secondItem.getId()).getName(), secondItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(), secondItem.getIndex(), 9764864, false);
+			plugin.entry = new MenuEntry("Use", "<col=ff9040>" + itemManager.getItemDefinition(firstItem.getId()).getName() + "<col=ffffff> -> <col=ff9040>" + itemManager.getItemDefinition(secondItem.getId()).getName(), secondItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(), secondItem.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 			click();
 			Thread.sleep(config.clickDelay());
 		}
