@@ -4,6 +4,7 @@ import java.util.Arrays;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.widgets.WidgetInfo;
 
 public class MiscUtils
 {
@@ -22,7 +23,7 @@ public class MiscUtils
 
 	public static MenuEntry getConsumableEntry(String itemName, int itemId, int itemIndex)
 	{
-		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, 9764864, false);
+		return new MenuEntry("Drink", "<col=ff9040>" + itemName, itemId, MenuOpcode.ITEM_FIRST_OPTION.getId(), itemIndex, WidgetInfo.INVENTORY.getId(), false);
 	}
 
 	public static boolean isDreamCreated(Client client)

@@ -1,5 +1,8 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
@@ -8,7 +11,6 @@ import net.runelite.api.ObjectID;
 import net.runelite.api.QueryResults;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -75,11 +77,20 @@ public class OpenOverloadsBarrel extends Task
 
 	public int getDoseCount()
 	{
-		QueryResults<WidgetItem> result = new InventoryWidgetItemQuery()
-			.idEquals(ItemID.OVERLOAD_1, ItemID.OVERLOAD_2, ItemID.OVERLOAD_3, ItemID.OVERLOAD_4)
-			.result(client);
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 
-		if (result == null || result.isEmpty())
+		if (inventoryWidget == null)
+		{
+			return 0;
+		}
+
+		List<WidgetItem> result = inventoryWidget.getWidgetItems()
+			.stream()
+			.filter(item -> Arrays.asList(ItemID.OVERLOAD_1, ItemID.OVERLOAD_2, ItemID.OVERLOAD_3, ItemID.OVERLOAD_4)
+				.contains(item.getId()))
+			.collect(Collectors.toList());
+
+		if (result.isEmpty())
 			return 0;
 
 		int doseCount = (int) result.stream().filter(item -> item.getId() == ItemID.OVERLOAD_1).count();

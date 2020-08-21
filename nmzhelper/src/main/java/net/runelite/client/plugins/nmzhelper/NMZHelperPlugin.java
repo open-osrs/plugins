@@ -1,6 +1,8 @@
 package net.runelite.client.plugins.nmzhelper;
 
 import com.google.inject.Provides;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -10,8 +12,9 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.util.Text;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -185,9 +188,17 @@ public class NMZHelperPlugin extends Plugin
 
 		//if we don't have a rock cake, return...may need to stop the plugin but this is causing it to stop
 		//	randomly for some reason
-		if (new InventoryWidgetItemQuery()
-			.idEquals(ItemID.DWARVEN_ROCK_CAKE_7510)
-			.result(client)
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return;
+		}
+
+		if (inventoryWidget.getWidgetItems()
+			.stream()
+			.filter(item -> item.getId() == ItemID.DWARVEN_ROCK_CAKE_7510)
+			.collect(Collectors.toList())
 			.isEmpty())
 		{
 			//pluginStarted = false;

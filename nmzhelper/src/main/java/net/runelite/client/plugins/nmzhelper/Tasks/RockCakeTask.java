@@ -1,5 +1,8 @@
 package net.runelite.client.plugins.nmzhelper.Tasks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
@@ -7,7 +10,8 @@ import net.runelite.api.QueryResults;
 import net.runelite.api.Skill;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
 import net.runelite.client.plugins.nmzhelper.Task;
@@ -29,10 +33,17 @@ public class RockCakeTask extends Task
 			return false;
 
 		//don't have rock cake
-		if (new InventoryWidgetItemQuery()
-			.idEquals(ItemID.DWARVEN_ROCK_CAKE_7510)
-			.result(client)
-			.isEmpty())
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return false;
+		}
+
+		if (inventoryWidget.getWidgetItems()
+			.stream()
+			.filter(item -> item.getId() == ItemID.DWARVEN_ROCK_CAKE_7510)
+			.collect(Collectors.toList()).isEmpty())
 			return false;
 
 		//already 1 hp
@@ -58,16 +69,26 @@ public class RockCakeTask extends Task
 			return;
 		}
 
-		QueryResults<WidgetItem> items = new InventoryWidgetItemQuery()
-			.idEquals(ItemID.DWARVEN_ROCK_CAKE_7510)
-			.result(client);
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+		if (inventoryWidget == null)
+		{
+			return;
+		}
+
+		List<WidgetItem> items = inventoryWidget.getWidgetItems()
+			.stream()
+			.filter(item -> item.getId() == ItemID.DWARVEN_ROCK_CAKE_7510)
+			.collect(Collectors.toList());
 
 		if (items == null || items.isEmpty())
 		{
 			return;
 		}
 
-		entry = new MenuEntry("Guzzle", "<col=ff9040>Dwarven rock cake", items.first().getId(), MenuOpcode.ITEM_THIRD_OPTION.getId(), items.first().getIndex(), 9764864, false);
+		WidgetItem item = items.get(0);
+
+		entry = new MenuEntry("Guzzle", "<col=ff9040>Dwarven rock cake", item.getId(), MenuOpcode.ITEM_THIRD_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 		click();
 	}
 }
