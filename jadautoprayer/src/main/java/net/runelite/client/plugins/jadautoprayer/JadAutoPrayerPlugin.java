@@ -1,15 +1,12 @@
 package net.runelite.client.plugins.jadautoprayer;
 
-import com.google.inject.Provides;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.reflect.Field;
+import java.util.Set;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -19,10 +16,6 @@ import org.pf4j.Extension;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Extension
 @PluginDescriptor(
