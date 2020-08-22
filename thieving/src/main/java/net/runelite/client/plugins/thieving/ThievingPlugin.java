@@ -134,7 +134,7 @@ public class ThievingPlugin extends Plugin
 		}
 
 		Duration statTimeout = Duration.ofMinutes(config.statTimeout());
-		Duration sinceCut = Duration.between(session.getLastTheivingAction(), Instant.now());
+		Duration sinceCut = Duration.between(session.getLastThievingAction(), Instant.now());
 
 		if (sinceCut.compareTo(statTimeout) >= 0)
 		{
@@ -159,7 +159,7 @@ public class ThievingPlugin extends Plugin
 				session = new ThievingSession();
 			}
 
-			session.updateLastThevingAction();
+			session.updateLastThievingAction();
 			session.hasSucceeded();
 		}
 		else if (message.startsWith("You fail to pick") || message.startsWith("You fail to steal"))
@@ -169,7 +169,7 @@ public class ThievingPlugin extends Plugin
 				session = new ThievingSession();
 			}
 
-			session.updateLastThevingAction();
+			session.updateLastThievingAction();
 			session.hasFailed();
 		}
 	}
