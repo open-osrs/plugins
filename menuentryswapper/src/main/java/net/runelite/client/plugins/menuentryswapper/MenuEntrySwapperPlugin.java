@@ -112,7 +112,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		MenuOpcode.NPC_FOURTH_OPTION, MenuOpcode.NPC_FIFTH_OPTION, MenuOpcode.EXAMINE_NPC
 	);
 	private static final List<String> jewelleryBox = Arrays.asList(
-		"duel arena", "castle wars", "clan wars", "burthorpe", "barbarian outpost", "corporeal beast",
+		"duel arena", "castle wars", "ferox enclave", "burthorpe", "barbarian outpost", "corporeal beast",
 		"tears of guthix", "wintertodt camp", "warriors' guild", "champions' guild", "monastery", "ranging guild",
 		"fishing guild", "mining guild", "crafting guild", "cooking guild", "woodcutting guild", "farming guild",
 		"miscellania", "grand exchange", "falador park", "dondakan's rock", "edgeville", "karamja",
