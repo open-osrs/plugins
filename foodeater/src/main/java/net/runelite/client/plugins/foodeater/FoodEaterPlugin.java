@@ -49,10 +49,6 @@ public class FoodEaterPlugin extends Plugin
 
 	private MenuEntry entry;
 
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
-
 	@Provides
 	FoodEaterConfig provideConfig(final ConfigManager configManager)
 	{
@@ -72,41 +68,38 @@ public class FoodEaterPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(final GameTick event)
 	{
-		this.executor.submit(() -> {
-			try
-			{
-				int health = this.client.getBoostedSkillLevel(Skill.HITPOINTS);
+		try
+		{
+			int health = this.client.getBoostedSkillLevel(Skill.HITPOINTS);
 
-				if (health > this.config.minimumHealth())
+			if (health > this.config.minimumHealth())
+			{
+				return;
+			}
+
+			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+
+			if (inventory == null)
+			{
+				return;
+			}
+
+			for (WidgetItem item : inventory.getWidgetItems())
+			{
+				final String name = this.itemManager.getItemDefinition(item.getId()).getName();
+
+				if (name.equalsIgnoreCase(this.config.foodToEat()))
 				{
+					entry = getConsumableEntry(name, item.getId(), item.getIndex());
+					click();
 					return;
 				}
-
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-
-				if (inventory == null)
-				{
-					return;
-				}
-
-				for (WidgetItem item : inventory.getWidgetItems())
-				{
-					final String name = this.itemManager.getItemDefinition(item.getId()).getName();
-
-					if (name.equalsIgnoreCase(this.config.foodToEat()))
-					{
-						entry = getConsumableEntry(name, item.getId(), item.getIndex());
-						click();
-						Thread.sleep(50);
-						return;
-					}
-				}
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Subscribe

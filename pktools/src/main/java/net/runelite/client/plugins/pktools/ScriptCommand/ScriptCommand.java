@@ -520,7 +520,7 @@ class WaitCommand implements ScriptCommand
 	{
 		try
 		{
-			Thread.sleep(config.clickDelay());
+			//Thread.sleep(config.clickDelay());
 		}
 		catch (Exception e)
 		{

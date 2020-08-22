@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.8.0"
+version = "0.9.0"
 
 project.extra["PluginName"] = "PK Tools"
 project.extra["PluginDescription"] = "Arsenal of PKing Tools"

@@ -118,12 +118,6 @@ public class CannonReloaderPlugin extends Plugin
 			{
 				entry = new MenuEntry("Repair", "<col=ffff>Broken multicannon", gameObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
 				click();
-				try
-				{
-					Thread.sleep(50);
-				}
-				catch (Exception e)
-				{ /*ignored*/ }
 			}
 		}
 	}
@@ -245,7 +239,6 @@ public class CannonReloaderPlugin extends Plugin
 			click();
 
 			nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
-			Thread.sleep(config.clickDelay());
 		}
 		catch (Exception e)
 		{
