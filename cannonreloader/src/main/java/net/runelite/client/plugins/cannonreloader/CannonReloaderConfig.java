@@ -28,15 +28,4 @@ public interface CannonReloaderConfig extends Config
 	{
 		return 14;
 	}
-
-	@ConfigItem(
-		keyName = "clickDelay",
-		name = "Click Delay (ms)",
-		description = "The delay between clicks on the cannon (in milliseconds)",
-		position = 3
-	)
-	default int clickDelay()
-	{
-		return 2000;
-	}
 }

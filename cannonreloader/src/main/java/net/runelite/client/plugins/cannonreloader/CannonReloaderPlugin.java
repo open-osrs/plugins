@@ -4,10 +4,6 @@ import com.google.inject.Provides;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
@@ -27,7 +23,6 @@ import static net.runelite.api.ProjectileID.CANNONBALL;
 import static net.runelite.api.ProjectileID.GRANITE_CANNONBALL;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -75,6 +70,7 @@ public class CannonReloaderPlugin extends Plugin
 	private GameObject cannon;
 
 	private MenuEntry entry;
+	private int tickDelay;
 
 	@Inject
 	private Client client;
@@ -226,30 +222,25 @@ public class CannonReloaderPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onClientTick(ClientTick event)
-	{
-		try
-		{
-			if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
-			{
-				return;
-			}
-
-			entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
-			click();
-
-			nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Subscribe
 	public void onGameTick(GameTick event)
 	{
 		skipProjectileCheckThisTick = false;
+
+		if (tickDelay > 0)
+		{
+			tickDelay--;
+			return;
+		}
+
+		if (!cannonPlaced || cannonPosition == null || cballsLeft > nextReloadCount)
+		{
+			return;
+		}
+
+		entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
+		click();
+
+		nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 	}
 
 	@Subscribe
