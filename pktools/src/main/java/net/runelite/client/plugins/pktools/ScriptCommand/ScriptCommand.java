@@ -113,7 +113,7 @@ class RigourCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.RIGOUR.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 74)
+		if (client.getVar(Prayer.RIGOUR.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -125,7 +125,7 @@ class AuguryCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.AUGURY.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 77)
+		if (client.getVar(Prayer.AUGURY.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -138,7 +138,7 @@ class PietyCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.PIETY.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 70)
+		if (client.getVar(Prayer.PIETY.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -151,7 +151,7 @@ class IncredibleReflexesCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.INCREDIBLE_REFLEXES.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 31)
+		if (client.getVar(Prayer.INCREDIBLE_REFLEXES.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -164,7 +164,7 @@ class UltimateStrengthCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.ULTIMATE_STRENGTH.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 34)
+		if (client.getVar(Prayer.ULTIMATE_STRENGTH.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -177,7 +177,7 @@ class SteelSkinCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.STEEL_SKIN.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 28)
+		if (client.getVar(Prayer.STEEL_SKIN.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -190,7 +190,7 @@ class EagleEyeCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.EAGLE_EYE.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 44)
+		if (client.getVar(Prayer.EAGLE_EYE.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -203,7 +203,7 @@ class MysticMightCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.MYSTIC_MIGHT.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 45)
+		if (client.getVar(Prayer.MYSTIC_MIGHT.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -216,7 +216,7 @@ class ProtectFromMagicCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 37)
+		if (client.getVar(Prayer.PROTECT_FROM_MAGIC.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -229,7 +229,7 @@ class ProtectFromMissilesCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 40)
+		if (client.getVar(Prayer.PROTECT_FROM_MISSILES.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -242,7 +242,7 @@ class ProtectFromMeleeCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 43)
+		if (client.getVar(Prayer.PROTECT_FROM_MELEE.getVarbit()) == 1)
 		{
 			return;
 		}
@@ -255,7 +255,7 @@ class ProtectItemCommand implements ScriptCommand
 {
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
-		if (client.getVar(Prayer.PROTECT_ITEM.getVarbit()) == 1 || client.getRealSkillLevel(Skill.PRAYER) < 21)
+		if (client.getVar(Prayer.PROTECT_ITEM.getVarbit()) == 1)
 		{
 			return;
 		}
