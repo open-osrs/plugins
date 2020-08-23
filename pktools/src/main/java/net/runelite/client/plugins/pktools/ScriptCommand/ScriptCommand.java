@@ -32,7 +32,7 @@ public interface ScriptCommand
 				return;
 			}
 
-			plugin.entryList.add(new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false));
+			plugin.entryList.add(new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), -1, prayer_widget.getId(), false));
 			click(client);
 		}
 		catch (Exception e)
@@ -117,7 +117,6 @@ class RigourCommand implements ScriptCommand
 		{
 			return;
 		}
-
 		clickPrayer(WidgetInfo.PRAYER_RIGOUR, client, plugin);
 	}
 }

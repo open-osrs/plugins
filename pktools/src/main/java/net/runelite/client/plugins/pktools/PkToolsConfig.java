@@ -258,15 +258,4 @@ public interface PkToolsConfig extends Config
 	{
 		return true;
 	}
-
-	@ConfigItem(
-		position = 23,
-		keyName = "clickDelay",
-		name = "Click Delay",
-		description = "Sets the delay between clicks"
-	)
-	default int clickDelay()
-	{
-		return 30;
-	}
 }

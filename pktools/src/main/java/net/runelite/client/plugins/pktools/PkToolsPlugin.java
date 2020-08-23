@@ -136,9 +136,18 @@ public class PkToolsPlugin extends Plugin
 
 		lastEnemyTimer();
 
-		doAutoSwapPrayers();
-
 		processCommands();
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
+		doAutoSwapPrayers();
 	}
 
 	private void processCommands()
@@ -207,6 +216,7 @@ public class PkToolsPlugin extends Plugin
 		}
 
 		entryList.add(new MenuEntry("Activate", prayer_widget.getName(), 1, MenuOpcode.CC_OP.getId(), prayer_widget.getItemId(), prayer_widget.getId(), false));
+		click();
 	}
 
 	public void doAutoSwapPrayers()
