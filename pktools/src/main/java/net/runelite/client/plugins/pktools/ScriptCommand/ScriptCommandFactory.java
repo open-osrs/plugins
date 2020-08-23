@@ -40,20 +40,23 @@ public class ScriptCommandFactory
 				return new SpecCommand();
 			case "wait":
 				return new WaitCommand();
-			case "group1":
-				return new Group1Command();
-			case "group2":
-				return new Group2Command();
-			case "group3":
-				return new Group3Command();
-			case "group4":
-				return new Group4Command();
 			case "clickenemy":
 				return new ClickEnemyCommand();
 			case "protectitem":
 				return new ProtectItemCommand();
 			default:
-				return new ExceptionCommand();
+				if (scriptCommand.toLowerCase().startsWith("group"))
+				{
+					return new GroupCommand(scriptCommand.replace("group", ""));
+				}
+				else if (scriptCommand.toLowerCase().startsWith("id_"))
+				{
+					return new ItemCommand(scriptCommand.replace("id_", ""));
+				}
+				else
+				{
+					return new ExceptionCommand();
+				}
 		}
 	}
 }

@@ -377,8 +377,22 @@ class SpecCommand implements ScriptCommand
 	}
 }
 
-class Group1Command implements ScriptCommand
+class GroupCommand implements ScriptCommand
 {
+	int groupNumber;
+
+	GroupCommand(String groupNumberString)
+	{
+		try
+		{
+			this.groupNumber = Integer.parseInt(groupNumberString);
+		}
+		catch (Exception e)
+		{
+			//ignored
+		}
+	}
+
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
@@ -392,7 +406,7 @@ class Group1Command implements ScriptCommand
 
 			for (WidgetItem item : inventory.getWidgetItems())
 			{
-				if ("Group 1".equalsIgnoreCase(getTag(configManager, item.getId())))
+				if (("Group " + groupNumber).equalsIgnoreCase(getTag(configManager, item.getId())))
 				{
 					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
 				}
@@ -407,38 +421,22 @@ class Group1Command implements ScriptCommand
 	}
 }
 
-class Group2Command implements ScriptCommand
+class ItemCommand implements ScriptCommand
 {
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
+	int itemId;
+
+	ItemCommand(String itemIdString)
 	{
 		try
 		{
-			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-
-			if (inventory == null)
-			{
-				return;
-			}
-
-			for (WidgetItem item : inventory.getWidgetItems())
-			{
-				if ("Group 2".equalsIgnoreCase(getTag(configManager, item.getId())))
-				{
-					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
-				}
-			}
-			click(client);
+			this.itemId = Integer.parseInt(itemIdString);
 		}
-		catch (Throwable e)
+		catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			//ignored
 		}
 	}
-}
 
-class Group3Command implements ScriptCommand
-{
 	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
 	{
 		try
@@ -452,42 +450,13 @@ class Group3Command implements ScriptCommand
 
 			for (WidgetItem item : inventory.getWidgetItems())
 			{
-				if ("Group 3".equalsIgnoreCase(getTag(configManager, item.getId())))
+				if (itemId == item.getId())
 				{
 					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
+					click(client);
+					return;
 				}
 			}
-			click(client);
-		}
-		catch (Throwable e)
-		{
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-}
-
-class Group4Command implements ScriptCommand
-{
-	public void execute(Client client, PkToolsConfig config, PkToolsPlugin plugin, ConfigManager configManager)
-	{
-		try
-		{
-			Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-
-			if (inventory == null)
-			{
-				return;
-			}
-
-			for (WidgetItem item : inventory.getWidgetItems())
-			{
-				if ("Group 4".equalsIgnoreCase(getTag(configManager, item.getId())))
-				{
-					plugin.entryList.add(new MenuEntry("Wield", "<col=ff9040>" + item.getId(), item.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), item.getIndex(), WidgetInfo.INVENTORY.getId(), false));
-				}
-			}
-			click(client);
 		}
 		catch (Throwable e)
 		{
