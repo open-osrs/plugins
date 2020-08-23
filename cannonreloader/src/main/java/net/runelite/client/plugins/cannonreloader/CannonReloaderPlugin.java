@@ -114,6 +114,7 @@ public class CannonReloaderPlugin extends Plugin
 			{
 				entry = new MenuEntry("Repair", "<col=ffff>Broken multicannon", gameObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
 				click();
+				tickDelay = 3;
 			}
 		}
 	}
@@ -239,6 +240,7 @@ public class CannonReloaderPlugin extends Plugin
 
 		entry = new MenuEntry("Fire", "<col=ffff>Dwarf multicannon", DWARF_MULTICANNON, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), cannon.getSceneMinLocation().getX(), cannon.getSceneMinLocation().getY(), false);
 		click();
+		tickDelay = 3;
 
 		nextReloadCount = r.nextInt(config.maxReloadAmount() - config.minReloadAmount()) + config.minReloadAmount();
 	}
