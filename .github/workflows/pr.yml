@@ -132,7 +132,7 @@ jobs:
         working-directory: OpenOSRS-plugins
 
       - name: Testing plugins
-        run: ./gradlew test --stacktrace -x test -x checkstyleMain --console=plain
+        run: ./gradlew test --stacktrace -x checkstyleMain --console=plain
         working-directory: OpenOSRS-plugins
 
   checkstyleMain:
