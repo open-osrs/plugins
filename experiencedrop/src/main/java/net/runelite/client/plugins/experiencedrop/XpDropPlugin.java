@@ -210,7 +210,7 @@ public class XpDropPlugin extends Plugin
 		final IntStream spriteIDs =
 			Arrays.stream(children)
 				.skip(1)
-				.mapToInt(Widget::getSpriteId);
+				.mapToInt(widget -> widget != null ? widget.getSpriteId() : -1);
 
 		int color = 0;
 
