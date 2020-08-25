@@ -110,6 +110,11 @@ public class CombatCounter extends Plugin
 		.put(8145, 4) // Rapier Stab, Lunge, Block
 		.put(390, 4) // Rapier Slash
 
+		.put(4503, 4) // Inq Mace Pound, Pummel, Block
+		.put(400, 4) // Inq Mace Spike
+
+		.put(3298, 4) // Bludgeon Pound, Pummel, Smash
+		
 		.put(7552, 5) // Armadyl Crossbow Accurate, Rapid, Longrange, Special
 
 		.put(1167, 4) // Trident Accurate, Accurate, Longrange
@@ -166,6 +171,11 @@ public class CombatCounter extends Plugin
 
 		.add(8145) // Rapier Stab, Lunge, Block
 		.add(390) // Rapier Slash
+		
+		.add(4503) // Inq Mace Pound, Pummel, Block
+		.add(400) // Inq Mace Spike
+
+		.add(3298) // Bludgeon Pound, Pummel, Smash
 
 		.add(401) // Dragon Warhammer Pound, Pummel, Block
 		.add(1378) // Dragon Warhammer Special
