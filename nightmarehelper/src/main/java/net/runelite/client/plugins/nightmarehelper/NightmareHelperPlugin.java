@@ -5,8 +5,6 @@ import java.awt.event.MouseEvent;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
@@ -41,7 +39,7 @@ import org.pf4j.Extension;
 
 @Slf4j
 @Singleton
-public class NightmarePlugin extends Plugin
+public class NightmareHelperPlugin extends Plugin
 {
 	@Inject
 	private Client client;
@@ -55,7 +53,7 @@ public class NightmarePlugin extends Plugin
 
 	private MenuEntry entry;
 
-	public NightmarePlugin()
+	public NightmareHelperPlugin()
 	{
 		inFight = false;
 	}
@@ -193,6 +191,11 @@ public class NightmarePlugin extends Plugin
 
 	public void activatePrayer(Prayer prayer)
 	{
+		if (client.isPrayerActive(prayer))
+		{
+			return;
+		}
+
 		Widget prayer_widget = client.getWidget(prayer.getWidgetInfo());
 
 		if (prayer_widget == null)
