@@ -6,8 +6,8 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
 
 @ConfigGroup("NightmareHelperConfig")
-public interface NightmareHelperConfig extends Config {
-
+public interface NightmareHelperConfig extends Config
+{
 	@ConfigItem(
 		position = 1,
 		keyName = "swapNightmareMelee",
@@ -20,7 +20,6 @@ public interface NightmareHelperConfig extends Config {
 	}
 
 	@Range(
-		min = 0,
 		max = 1
 	)
 	@ConfigItem(
@@ -35,7 +34,6 @@ public interface NightmareHelperConfig extends Config {
 	}
 
 	@Range(
-		min = 0,
 		max = 2
 	)
 	@ConfigItem(
