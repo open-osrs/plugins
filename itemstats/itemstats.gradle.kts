@@ -29,7 +29,7 @@ project.extra["PluginName"] = "Item Stats"
 project.extra["PluginDescription"] = "Show information about food and potion effects"
 
 dependencies {
-    testCompileOnly(group = "org.apache.commons", name = "commons-text", version = "1.8")
+    testCompileOnly(group = "org.apache.commons", name = "commons-text", version = "1.9")
 }
 
 tasks {
