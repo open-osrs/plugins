@@ -290,7 +290,7 @@ public class CombatCounter extends Plugin
 						{
 							ticks = 3;
 						}
-						// if harm orb equipped and surging, remove a tick
+						// if harm staff equipped and surging, remove a tick
 						else if (((Player) actor).getPlayerAppearance().getEquipmentId(KitType.WEAPON) == 24423
 							&& animation == 7855)
 						{
