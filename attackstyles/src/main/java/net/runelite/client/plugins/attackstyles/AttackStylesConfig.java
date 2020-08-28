@@ -43,10 +43,21 @@ public interface AttackStylesConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "warnForWeaponSwitch",
+		name = "Warn for weapon switch",
+		description = "Show flagged attack style warning in chat when weapon switching causes your selected attack style to change to a warned one",
+		position = 2
+	)
+	default boolean warnForWeaponSwitch()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "warnForDefensive",
 		name = "Warn for defence",
 		description = "Show warning when a Defence skill combat option is selected",
-		position = 2
+		position = 3
 	)
 	default boolean warnForDefence()
 	{
@@ -57,7 +68,7 @@ public interface AttackStylesConfig extends Config
 		keyName = "warnForAttack",
 		name = "Warn for attack",
 		description = "Show warning when an Attack skill combat option is selected",
-		position = 3
+		position = 4
 	)
 	default boolean warnForAttack()
 	{
@@ -68,7 +79,7 @@ public interface AttackStylesConfig extends Config
 		keyName = "warnForStrength",
 		name = "Warn for strength",
 		description = "Show warning when a Strength skill combat option is selected",
-		position = 4
+		position = 5
 	)
 	default boolean warnForStrength()
 	{
@@ -79,7 +90,7 @@ public interface AttackStylesConfig extends Config
 		keyName = "warnForRanged",
 		name = "Warn for ranged",
 		description = "Show warning when a Ranged skill combat option is selected",
-		position = 5
+		position = 6
 	)
 	default boolean warnForRanged()
 	{
@@ -90,7 +101,7 @@ public interface AttackStylesConfig extends Config
 		keyName = "warnForMagic",
 		name = "Warn for magic",
 		description = "Show warning when a Magic skill combat option is selected",
-		position = 6
+		position = 7
 	)
 	default boolean warnForMagic()
 	{
@@ -101,7 +112,7 @@ public interface AttackStylesConfig extends Config
 		keyName = "hideAutoRetaliate",
 		name = "Hide auto retaliate",
 		description = "Hide auto retaliate from the combat options tab",
-		position = 7
+		position = 8
 	)
 	default boolean hideAutoRetaliate()
 	{
@@ -112,7 +123,7 @@ public interface AttackStylesConfig extends Config
 		keyName = "removeWarnedStyles",
 		name = "Remove warned styles",
 		description = "Remove warned styles from the combat options tab",
-		position = 8
+		position = 9
 	)
 	default boolean removeWarnedStyles()
 	{

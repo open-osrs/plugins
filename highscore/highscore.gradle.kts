@@ -23,13 +23,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.2.5"
+version = "0.2.6"
 
 project.extra["PluginName"] = "Highscore"
 project.extra["PluginDescription"] = "Enable the highscore panel and an optional Lookup option on players"
 
 dependencies {
-    testCompileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.8.0")
+    testCompileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.8.1")
 }
 
 tasks {

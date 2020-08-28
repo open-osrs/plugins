@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.inventorytags.InventoryTagsConfig.DisplayMode;
 import net.runelite.client.ui.overlay.WidgetItemOverlay;
 
 @Singleton
@@ -39,12 +40,14 @@ public class InventoryTagsOverlay extends WidgetItemOverlay
 {
 	private final ItemManager itemManager;
 	private final InventoryTagsPlugin plugin;
+	private final InventoryTagsConfig config;
 
 	@Inject
-	private InventoryTagsOverlay(final ItemManager itemManager, final InventoryTagsPlugin plugin)
+	private InventoryTagsOverlay(final ItemManager itemManager, final InventoryTagsPlugin plugin, InventoryTagsConfig config)
 	{
 		this.itemManager = itemManager;
 		this.plugin = plugin;
+		this.config = config;
 		showOnEquipment();
 		showOnInventory();
 	}
@@ -56,11 +59,21 @@ public class InventoryTagsOverlay extends WidgetItemOverlay
 		if (group != null)
 		{
 			final Color color = plugin.getGroupNameColor(group);
+			final DisplayMode displayMode = config.getDisplayMode();
 			if (color != null)
 			{
 				Rectangle bounds = itemWidget.getCanvasBounds();
-				final BufferedImage outline = itemManager.getItemOutline(itemId, itemWidget.getQuantity(), color);
-				graphics.drawImage(outline, (int) bounds.getX(), (int) bounds.getY(), null);
+				if (displayMode == DisplayMode.OUTLINE)
+				{
+					final BufferedImage outline = itemManager.getItemOutline(itemId, itemWidget.getQuantity(), color);
+					graphics.drawImage(outline, (int) bounds.getX(), (int) bounds.getY(), null);
+				}
+				else
+				{
+					int heightOffSet = (int) bounds.getY() + (int) bounds.getHeight() + 2;
+					graphics.setColor(color);
+					graphics.drawLine((int) bounds.getX(), heightOffSet, (int) bounds.getX() + (int) bounds.getWidth(), heightOffSet);
+				}
 			}
 		}
 	}
