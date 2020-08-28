@@ -137,11 +137,27 @@ public interface GpuPluginConfig extends Config
 		return AntiAliasingMode.DISABLED;
 	}
 
+	@Range(
+		min = 0,
+		max = 16
+	)
+	@ConfigItem(
+		keyName = "anisotropicFilteringLevel",
+		name = "Anisotropic Filtering",
+		description = "Configures the anisotropic filtering level.",
+		position = 8,
+		titleSection = "ppTitle"
+	)
+	default int anisotropicFilteringLevel()
+	{
+		return 0;
+	}
+
 	@ConfigTitleSection(
 		keyName = "fogTitle",
 		name = "Fog",
 		description = "",
-		position = 8
+		position = 9
 	)
 	default Title fogTitle()
 	{
@@ -155,7 +171,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogDepth",
 		name = "Depth",
 		description = "Distance from the scene edge the fog starts",
-		position = 9,
+		position = 10,
 		titleSection = "fogTitle"
 	)
 	default int fogDepth()
@@ -170,7 +186,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogCircularity",
 		name = "Roundness",
 		description = "Fog circularity in %",
-		position = 10,
+		position = 11,
 		titleSection = "fogTitle"
 	)
 	default int fogCornerRadius()
@@ -185,7 +201,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogDensity",
 		name = "Density",
 		description = "Relative fog thickness",
-		position = 2,
+		position = 12,
 		titleSection = "fogTitle"
 	)
 	default int fogDensity()
@@ -197,7 +213,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "mirrorTitle",
 		name = "Mirror",
 		description = "",
-		position = 12
+		position = 13
 	)
 	default Title mirrorTitle()
 	{
@@ -212,7 +228,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "windowsScale",
 		name = "Windows Scale",
 		description = "Set this to the scale you use in Windows if mirror comes out incorrectly.",
-		position = 13,
+		position = 14,
 		titleSection = "mirrorTitle"
 	)
 	default WindowsScalingMode windowsScale()

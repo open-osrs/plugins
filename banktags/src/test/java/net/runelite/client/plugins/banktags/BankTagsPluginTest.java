@@ -27,13 +27,16 @@ package net.runelite.client.plugins.banktags;
 import com.google.inject.Guice;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
+import java.io.IOException;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import static net.runelite.api.ItemID.ABYSSAL_WHIP;
 import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.OpenOSRSConfig;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.plugins.banktags.tabs.TabInterface;
 import net.runelite.client.plugins.cluescrolls.ClueScrollService;
 import static org.junit.Assert.assertEquals;
@@ -74,6 +77,10 @@ public class BankTagsPluginTest
 
 	@Mock
 	@Bind
+	private OpenOSRSConfig openOSRSConfig;
+
+	@Mock
+	@Bind
 	private ConfigManager configManager;
 
 	@Inject
@@ -85,11 +92,12 @@ public class BankTagsPluginTest
 	private final ScriptCallbackEvent EVENT = new ScriptCallbackEvent();
 
 	@Before
-	public void before()
+	public void before() throws IOException
 	{
 		Guice.createInjector(BoundFieldModule.of(this)).injectMembers(this);
 
 		EVENT.setEventName("bankSearchFilter");
+		ItemVariationMapping.load();
 
 		when(itemManager.canonicalize(ABYSSAL_WHIP)).thenReturn(ABYSSAL_WHIP);
 		when(client.getIntStackSize()).thenReturn(2);

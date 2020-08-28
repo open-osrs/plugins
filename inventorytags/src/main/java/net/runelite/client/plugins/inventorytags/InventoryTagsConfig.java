@@ -33,6 +33,12 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("inventorytags")
 public interface InventoryTagsConfig extends Config
 {
+	enum DisplayMode
+	{
+		OUTLINE,
+		UNDERLINE
+	}
+
 	String GROUP = "inventorytags";
 
 	@RequiredArgsConstructor
@@ -242,5 +248,16 @@ public interface InventoryTagsConfig extends Config
 	default Color getGroup12Color()
 	{
 		return new Color(65, 61, 64);
+	}
+
+	@ConfigItem(
+		position = 13,
+		keyName = "displayMode",
+		name = "Display mode",
+		description = "How tags are displayed in the inventory"
+	)
+	default DisplayMode getDisplayMode()
+	{
+		return DisplayMode.OUTLINE;
 	}
 }

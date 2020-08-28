@@ -116,7 +116,7 @@ enum Task
 		asList("Dwarf", "Black guard"), Collections.emptyList()),
 	EARTH_WARRIORS("Earth warriors", ItemID.BRONZE_FULL_HELM_T),
 	ELVES("Elves", ItemID.ELF,
-		Collections.singletonList("Elf"), Collections.emptyList()),
+		asList("Elf", "Iorwerth Warrior"), Collections.emptyList()),
 	FEVER_SPIDERS("Fever spiders", ItemID.FEVER_SPIDER),
 	FIRE_GIANTS("Fire giants", ItemID.FIRE_BATTLESTAFF),
 	REVENANTS("Revenants", ItemID.REVENANT_ETHER,

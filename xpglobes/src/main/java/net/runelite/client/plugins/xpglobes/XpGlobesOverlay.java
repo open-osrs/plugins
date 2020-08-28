@@ -37,7 +37,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -101,17 +100,16 @@ public class XpGlobesOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		final int queueSize = plugin.getXpGlobesSize();
+		final List<XpGlobe> xpGlobes = plugin.getXpGlobes();
+		final int queueSize = xpGlobes.size();
 		if (queueSize == 0)
 		{
 			return null;
 		}
 
-		final List<XpGlobe> sortedXpGlobes = plugin.getXpGlobes();
-		sortedXpGlobes.sort(Comparator.comparing(XpGlobe::getSkill));
 
 		int curDrawX = 0;
-		for (final XpGlobe xpGlobe : sortedXpGlobes)
+		for (final XpGlobe xpGlobe : xpGlobes)
 		{
 			int startXp = xpTrackerService.getStartGoalXp(xpGlobe.getSkill());
 			int goalXp = xpTrackerService.getEndGoalXp(xpGlobe.getSkill());

@@ -23,10 +23,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.7"
+version = "0.0.8"
 
 project.extra["PluginName"] = "Mining"
 project.extra["PluginDescription"] = "Show ore respawn timers and coal bag overlay"
+
+dependencies {
+    compileOnly(project(":xptracker"))
+
+    testImplementation(project(":xptracker"))
+}
 
 tasks {
     jar {

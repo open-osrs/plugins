@@ -260,6 +260,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 	private int lastStretchedCanvasWidth;
 	private int lastStretchedCanvasHeight;
 	private AntiAliasingMode lastAntiAliasingMode;
+	private int lastAnisotropicFilteringLevel = -1;
 
 	private int centerX;
 	private int centerY;
@@ -299,6 +300,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 			try
 			{
 				bufferId = uvBufferId = uniformBufferId = tmpBufferId = tmpUvBufferId = tmpModelBufferId = tmpModelBufferSmallId = tmpModelBufferUnorderedId = tmpOutBufferId = tmpOutUvBufferId = -1;
+				texSceneHandle = fboSceneHandle = rboSceneHandle = -1; // AA FBO
 				unorderedModels = smallModels = largeModels = 0;
 				drawingModel = false;
 
@@ -1128,6 +1130,15 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 			int renderCanvasHeight = canvasHeight;
 			int renderViewportHeight = viewportHeight;
 			int renderViewportWidth = viewportWidth;
+
+			// Setup anisotropic filtering
+			final int anisotropicFilteringLevel = config.anisotropicFilteringLevel();
+
+			if (textureArrayId != -1 && lastAnisotropicFilteringLevel != anisotropicFilteringLevel)
+			{
+				textureManager.setAnisotropicFilteringLevel(textureArrayId, anisotropicFilteringLevel, gl);
+				lastAnisotropicFilteringLevel = anisotropicFilteringLevel;
+			}
 
 			if (client.isStretchedEnabled())
 			{
