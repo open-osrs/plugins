@@ -2,6 +2,7 @@
  * Copyright (c) 2017, Seth <Sethtroll3@gmail.com>
  * Copyright (c) 2018, Jordan Atwood <jordan.atwood423@gmail.com>
  * Copyright (c) 2019, Lucas <https://github.com/Lucwousin>
+ * Copyright (c) 2019, winterdaze
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +44,8 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import static net.runelite.api.ItemID.FIRE_CAPE;
+import static net.runelite.api.ItemID.INFERNAL_CAPE;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
@@ -79,13 +82,14 @@ import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.timers.GameIndicator.VENGEANCE_ACTIVE;
 import static net.runelite.client.plugins.timers.GameTimer.*;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
 	name = "Timers",
 	description = "Show various timers in an infobox",
-	tags = {"combat", "items", "magic", "potions", "prayer", "overlay", "abyssal", "sire"},
+	tags = {"combat", "items", "magic", "potions", "prayer", "overlay", "abyssal", "sire", "inferno", "fight", "caves", "cape", "timer", "tzhaar"},
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
@@ -123,6 +127,12 @@ public class TimersPlugin extends Plugin
 	private static final Pattern FULL_TELEBLOCK_PATTERN = Pattern.compile("A Tele Block spell has been cast on you by (.+)\\. It will expire in 5 minutes\\.</col>");
 	private static final Pattern HALF_TELEBLOCK_PATTERN = Pattern.compile("A Tele Block spell has been cast on you by (.+)\\. It will expire in 2 minutes, 30 seconds\\.</col>");
 	private static final Pattern DIVINE_POTION_PATTERN = Pattern.compile("You drink some of your divine (.+) potion\\.");
+	private static final int FIGHT_CAVES_REGION_ID = 9551;
+	private static final int INFERNO_REGION_ID = 9043;
+	private static final Pattern TZHAAR_WAVE_MESSAGE = Pattern.compile("Wave: (\\d+)");
+	private static final String TZHAAR_DEFEATED_MESSAGE = "You have been defeated!";
+	private static final Pattern TZHAAR_COMPLETE_MESSAGE = Pattern.compile("Your (TzTok-Jad|TzKal-Zuk) kill count is:");
+	private static final Pattern TZHAAR_PAUSED_MESSAGE = Pattern.compile("The (Inferno|Fight Cave) has been paused. You may now log out.");
 
 	private TimerTimer freezeTimer;
 	private int freezeTime = -1; // time frozen, in game ticks
@@ -143,6 +153,7 @@ public class TimersPlugin extends Plugin
 	private boolean widgetHiddenChangedOnPvpWorld;
 	private boolean skulledLastTick = false;
 	private boolean imbuedHeartClicked;
+	private ElapsedTimer tzhaarTimer;
 
 	@Inject
 	private ItemManager itemManager;
@@ -179,6 +190,7 @@ public class TimersPlugin extends Plugin
 		nextPoisonTick = 0;
 		imbuedHeartClicked = false;
 		staminaTimer = null;
+		removeTzhaarTimer();
 	}
 
 	@Subscribe
@@ -382,6 +394,11 @@ public class TimersPlugin extends Plugin
 		{
 			removeGameTimer(ANTIPOISON);
 			removeGameTimer(ANTIVENOM);
+		}
+
+		if (!config.showTzhaarTimers())
+		{
+			removeTzhaarTimer();
 		}
 	}
 
@@ -665,6 +682,90 @@ public class TimersPlugin extends Plugin
 				}
 			}
 		}
+
+		if (config.showTzhaarTimers())
+		{
+			String message = event.getMessage();
+			Matcher matcher = TZHAAR_COMPLETE_MESSAGE.matcher(message);
+
+			if (message.contains(TZHAAR_DEFEATED_MESSAGE) || matcher.matches())
+			{
+				removeTzhaarTimer();
+				config.tzhaarStartTime(null);
+				config.tzhaarLastTime(null);
+				return;
+			}
+
+			Instant now = Instant.now();
+			matcher = TZHAAR_PAUSED_MESSAGE.matcher(message);
+			if (matcher.find())
+			{
+				config.tzhaarLastTime(now);
+				createTzhaarTimer();
+				return;
+			}
+
+			matcher = TZHAAR_WAVE_MESSAGE.matcher(message);
+			if (!matcher.find())
+			{
+				return;
+			}
+
+			if (config.tzhaarStartTime() == null)
+			{
+				int wave = Integer.parseInt(matcher.group(1));
+				if (wave == 1)
+				{
+					config.tzhaarStartTime(now);
+					createTzhaarTimer();
+				}
+			}
+			else if (config.tzhaarLastTime() != null)
+			{
+				log.debug("Unpausing tzhaar timer");
+
+				// Advance start time by how long it has been paused
+				Instant tzhaarStartTime = config.tzhaarStartTime();
+				tzhaarStartTime = tzhaarStartTime.plus(Duration.between(config.tzhaarLastTime(), now));
+				config.tzhaarStartTime(tzhaarStartTime);
+
+				config.tzhaarLastTime(null);
+				createTzhaarTimer();
+			}
+		}
+	}
+
+	private boolean isInFightCaves()
+	{
+		return client.getMapRegions() != null && ArrayUtils.contains(client.getMapRegions(), FIGHT_CAVES_REGION_ID);
+	}
+
+	private boolean isInInferno()
+	{
+		return client.getMapRegions() != null && ArrayUtils.contains(client.getMapRegions(), INFERNO_REGION_ID);
+	}
+
+	private void createTzhaarTimer()
+	{
+		removeTzhaarTimer();
+
+		int imageItem = isInFightCaves() ? FIRE_CAPE : (isInInferno() ? INFERNAL_CAPE : -1);
+		if (imageItem == -1)
+		{
+			return;
+		}
+
+		tzhaarTimer = new ElapsedTimer(itemManager.getImage(imageItem), this, config.tzhaarStartTime(), config.tzhaarLastTime());
+		infoBoxManager.addInfoBox(tzhaarTimer);
+	}
+
+	private void removeTzhaarTimer()
+	{
+		if (tzhaarTimer != null)
+		{
+			infoBoxManager.removeInfoBox(tzhaarTimer);
+			tzhaarTimer = null;
+		}
 	}
 
 	@Subscribe
@@ -728,8 +829,24 @@ public class TimersPlugin extends Plugin
 	{
 		switch (gameStateChanged.getGameState())
 		{
+			case LOADING:
+				if (tzhaarTimer != null && !isInFightCaves() && !isInInferno())
+				{
+					removeTzhaarTimer();
+					config.tzhaarStartTime(null);
+					config.tzhaarLastTime(null);
+				}
+				break;
 			case HOPPING:
 			case LOGIN_SCREEN:
+				// pause tzhaar timer if logged out without pausing
+				if (config.tzhaarStartTime() != null && config.tzhaarLastTime() == null)
+				{
+					config.tzhaarLastTime(Instant.now());
+					log.debug("Pausing tzhaar timer");
+				}
+
+				removeTzhaarTimer(); // will be readded by the wave message
 				removeTbTimers();
 				break;
 			case LOGGED_IN:
