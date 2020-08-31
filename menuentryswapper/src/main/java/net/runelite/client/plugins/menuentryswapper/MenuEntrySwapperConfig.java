@@ -463,6 +463,18 @@ public interface MenuEntrySwapperConfig extends Config
 		return QuestCapeMode.TELEPORT;
 	}
 
+	@ConfigItem(
+		keyName = "swapMythicalCape",
+		name = "Mythical Cape",
+		description = "Enables swapping of 'Teleport' and 'Wear'.",
+		position = 12,
+		section = "equipmentSwapperSection"
+	)
+	default boolean getSwapMythicalCape()
+	{
+		return true;
+	}
+
 	//------------------------------------------------------------//
 	// Miscellaneous
 	//------------------------------------------------------------//

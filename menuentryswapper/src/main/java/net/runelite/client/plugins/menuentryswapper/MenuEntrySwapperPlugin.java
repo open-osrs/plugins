@@ -766,6 +766,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Teleport", "Explorer's ring 4");
 		}
 
+		if (config.getSwapMythicalCape())
+		{
+			menuManager.addPriorityEntry("Teleport", "Mythical Cape");
+		}
+
 		if (config.swapHardWoodGrove())
 		{
 			menuManager.addPriorityEntry("Send-parcel", "Rionasta");
@@ -1231,6 +1236,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry("Teleport", "Explorer's ring 2");
 		menuManager.removePriorityEntry("Teleport", "Explorer's ring 3");
 		menuManager.removePriorityEntry("Teleport", "Explorer's ring 4");
+		menuManager.removePriorityEntry("Teleport", "Mythical Cape");
 		menuManager.removePriorityEntry("Teleport", "Mage of zamorak");
 		menuManager.removePriorityEntry("Teleport", "Mounted Strength Cape");
 		menuManager.removePriorityEntry("Teleport", "Mounted Strength Cape (t)");
