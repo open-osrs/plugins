@@ -1,12 +1,11 @@
 package net.runelite.client.plugins.itemuser;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Keybind;
-
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 
 @ConfigGroup("itemuser")
 public interface ItemUserConfig extends Config
@@ -44,4 +43,20 @@ public interface ItemUserConfig extends Config
 	{
 		return new Keybind(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK);
 	}
+
+	@ConfigItem(
+		keyName = "waitMin",
+		name = "Delay Min",
+		description = "Minimum time to delay",
+		position = 3
+	)
+	default int waitMin() { return 5; }
+
+	@ConfigItem(
+		keyName = "waitMax",
+		name = "Delay Max",
+		description = "Maximum time to delay",
+		position = 5
+	)
+	default int waitMax() { return 30; }
 }
