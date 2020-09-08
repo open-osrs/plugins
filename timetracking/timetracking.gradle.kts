@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.7"
+version = "0.0.8"
 
 project.extra["PluginName"] = "Time Tracking"
 project.extra["PluginDescription"] = "Enable the Time Tracking panel, which contains timers, stopwatches, and farming and bird house trackers"

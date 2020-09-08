@@ -178,6 +178,7 @@ include(":worldmap")
 include(":xpglobes")
 include(":xptracker")
 include(":xpupdater")
+include(":zalcano")
 
 for (project in rootProject.children) {
     project.apply {

@@ -36,7 +36,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.OpenOSRSConfig;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.plugins.banktags.tabs.TabInterface;
 import net.runelite.client.plugins.cluescrolls.ClueScrollService;
 import static org.junit.Assert.assertEquals;
@@ -97,7 +96,6 @@ public class BankTagsPluginTest
 		Guice.createInjector(BoundFieldModule.of(this)).injectMembers(this);
 
 		EVENT.setEventName("bankSearchFilter");
-		ItemVariationMapping.load();
 
 		when(itemManager.canonicalize(ABYSSAL_WHIP)).thenReturn(ABYSSAL_WHIP);
 		when(client.getIntStackSize()).thenReturn(2);

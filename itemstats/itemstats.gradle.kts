@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.14"
+version = "0.0.15"
 
 project.extra["PluginName"] = "Item Stats"
 project.extra["PluginDescription"] = "Show information about food and potion effects"

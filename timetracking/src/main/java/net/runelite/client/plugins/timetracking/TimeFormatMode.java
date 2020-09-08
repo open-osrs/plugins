@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.timetracking;
 
-version = "0.0.18"
+import lombok.AllArgsConstructor;
 
-project.extra["PluginName"] = "Ground Items"
-project.extra["PluginDescription"] = "Highlight ground items and/or show price information"
+@AllArgsConstructor
+public enum TimeFormatMode
+{
+	RELATIVE("Relative"),
+	ABSOLUTE_12H("12 Hour"),
+	ABSOLUTE_24H("24 Hour");
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private final String name;
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

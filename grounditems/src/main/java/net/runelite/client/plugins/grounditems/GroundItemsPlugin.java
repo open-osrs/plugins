@@ -98,6 +98,7 @@ import static net.runelite.client.plugins.grounditems.config.MenuHighlightMode.O
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.QuantityFormatter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @Extension
@@ -110,14 +111,17 @@ import org.pf4j.Extension;
 public class GroundItemsPlugin extends Plugin
 {
 	@Value
-	private static class PriceHighlight
+	static class PriceHighlight
 	{
-		int price;
-		Color color;
+		private final int price;
+		private final Color color;
 	}
 
 	@Getter(AccessLevel.PUBLIC)
 	public static final Map<GroundItem.GroundItemKey, GroundItem> collectedGroundItems = new LinkedHashMap<>();
+	// The game won't send anything higher than this value to the plugin -
+	// so we replace any item quantity higher with "Lots" instead.
+	static final int MAX_QUANTITY = 65535;
 	// ItemID for coins
 	private static final int COINS = ItemID.COINS_995;
 	// items stay on the ground for 30 mins in an instance
@@ -141,6 +145,8 @@ public class GroundItemsPlugin extends Plugin
 	private static final int WALK = MenuOpcode.WALK.getId();
 	private static final int CAST_ON_ITEM = MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId();
 	private static final String TELEGRAB_TEXT = ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil.prependColorTag(" -> ", Color.WHITE);
+	private static final int KRAKEN_REGION = 9116;
+	private static final int KBD_NMZ_REGION = 9033;
 	private List<PriceHighlight> priceChecks = List.of();
 	private final Queue<Integer> droppedItemQueue = EvictingQueue.create(16); // recently dropped items
 	LoadingCache<NamedQuantity, Boolean> hiddenItems;
@@ -485,7 +491,7 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onConfigChanged(final ConfigChanged event)
+	void onConfigChanged(final ConfigChanged event)
 	{
 		if (event.getGroup().equals("grounditems"))
 		{
@@ -503,7 +509,7 @@ public class GroundItemsPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemSpawned(final ItemSpawned itemSpawned)
+	void onItemSpawned(final ItemSpawned itemSpawned)
 	{
 		final TileItem item = itemSpawned.getItem();
 		final Tile tile = itemSpawned.getTile();
@@ -782,8 +788,6 @@ public class GroundItemsPlugin extends Plugin
 		final ItemDefinition itemComposition = itemManager.getItemDefinition(itemId);
 		final int realItemId = itemComposition.getNote() != -1 ? itemComposition.getLinkedNoteId() : itemId;
 		final int alchPrice = itemManager.getAlchValue(realItemId);
-		final int durationMillis;
-		final int durationTicks;
 
 		final Player player = client.getLocalPlayer();
 
@@ -792,12 +796,56 @@ public class GroundItemsPlugin extends Plugin
 			return null;
 		}
 
-		final WorldPoint playerLocation = player.getWorldLocation();
+		int durationMillis;
+		int durationTicks;
+
+		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+		final boolean dropped = tile.getWorldLocation().equals(client.getLocalPlayer().getWorldLocation()) && droppedItemQueue.remove(itemId);
 
 		if (client.isInInstancedRegion())
 		{
-			durationMillis = INSTANCE_DURATION_MILLIS;
-			durationTicks = INSTANCE_DURATION_TICKS;
+			if (isInKraken())
+			{
+				durationMillis = -1;
+				durationTicks = -1;
+			}
+			else if (isInKBDorNMZ())
+			{
+				// NMZ and the KBD lair uses the same region ID but NMZ uses planes 1-3 and KBD uses plane 0
+				if (client.getLocalPlayer().getWorldLocation().getPlane() == 0)
+				{
+					// Items in the KBD instance use the standard despawn timer
+					if (dropped)
+					{
+						durationTicks = NORMAL_DURATION_TICKS * 3;
+						durationMillis = NORMAL_DURATION_MILLIS * 3;
+					}
+					else
+					{
+						durationTicks = NORMAL_DURATION_TICKS * 2;
+						durationMillis = NORMAL_DURATION_MILLIS * 2;
+					}
+				}
+				else
+				{
+					// Dropped items in the NMZ instance appear to never despawn?
+					if (dropped)
+					{
+						durationMillis = -1;
+						durationTicks = -1;
+					}
+					else
+					{
+						durationTicks = NORMAL_DURATION_TICKS * 2;
+						durationMillis = NORMAL_DURATION_MILLIS * 2;
+					}
+				}
+			}
+			else
+			{
+				durationMillis = INSTANCE_DURATION_MILLIS;
+				durationTicks = INSTANCE_DURATION_TICKS;
+			}
 		}
 		else if (!itemComposition.isTradeable() && realItemId != COINS)
 		{
@@ -806,10 +854,9 @@ public class GroundItemsPlugin extends Plugin
 		}
 		else
 		{
-			durationMillis = NORMAL_DURATION_MILLIS;
-			durationTicks = tile.getWorldLocation().equals(playerLocation) ? NORMAL_DURATION_TICKS * 2 : NORMAL_DURATION_TICKS;
+			durationTicks = dropped ? NORMAL_DURATION_TICKS * 3 : NORMAL_DURATION_TICKS * 2;
+			durationMillis = dropped ? NORMAL_DURATION_MILLIS * 3 : NORMAL_DURATION_MILLIS * 2;
 		}
-		final boolean dropped = tile.getWorldLocation().equals(client.getLocalPlayer().getWorldLocation()) && droppedItemQueue.remove(itemId);
 
 		final GroundItem groundItem = GroundItem.builder()
 			.id(itemId)
@@ -1125,10 +1172,7 @@ public class GroundItemsPlugin extends Plugin
 	private void notifyHighlightedItem(final GroundItem item)
 	{
 		final boolean shouldNotifyHighlighted = config.notifyHighlightedDrops() &&
-			config.highlightedColor().equals(getHighlighted(
-				new NamedQuantity(item),
-				item.getGePrice(),
-				item.getHaPrice()));
+			TRUE.equals(highlightedItems.getUnchecked(new NamedQuantity(item)));
 
 		final boolean shouldNotifyTier = config.notifyTier() != HighlightTier.OFF &&
 			getValueByMode(item.getGePrice(), item.getHaPrice()) > config.notifyTier().getValueFromTier(config) &&
@@ -1165,7 +1209,7 @@ public class GroundItemsPlugin extends Plugin
 
 		if (item.getQuantity() > 1)
 		{
-			if (item.getQuantity() > (int) Character.MAX_VALUE)
+			if (item.getQuantity() >= MAX_QUANTITY)
 			{
 				notificationStringBuilder.append(" (Lots!)");
 			}
@@ -1191,5 +1235,15 @@ public class GroundItemsPlugin extends Plugin
 			default: // Highest
 				return Math.max(gePrice, haPrice);
 		}
+	}
+
+	private boolean isInKraken()
+	{
+		return ArrayUtils.contains(client.getMapRegions(), KRAKEN_REGION);
+	}
+
+	private boolean isInKBDorNMZ()
+	{
+		return ArrayUtils.contains(client.getMapRegions(), KBD_NMZ_REGION);
 	}
 }

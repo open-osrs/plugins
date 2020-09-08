@@ -151,9 +151,9 @@ public class TimersPlugin extends Plugin
 	private int lastAnimation;
 	private boolean loggedInRace;
 	private boolean widgetHiddenChangedOnPvpWorld;
+	private ElapsedTimer tzhaarTimer;
 	private boolean skulledLastTick = false;
 	private boolean imbuedHeartClicked;
-	private ElapsedTimer tzhaarTimer;
 
 	@Inject
 	private ItemManager itemManager;
@@ -189,6 +189,7 @@ public class TimersPlugin extends Plugin
 		lastPoisonVarp = 0;
 		nextPoisonTick = 0;
 		imbuedHeartClicked = false;
+		removeTzhaarTimer();
 		staminaTimer = null;
 		removeTzhaarTimer();
 	}
@@ -816,8 +817,7 @@ public class TimersPlugin extends Plugin
 		widgetHiddenChangedOnPvpWorld = false;
 
 		Widget widget = client.getWidget(PVP_WORLD_SAFE_ZONE);
-		if (widget != null
-			&& !widget.isSelfHidden())
+		if (widget != null && !widget.isSelfHidden())
 		{
 			log.debug("Entered safe zone in PVP world, clearing Teleblock timer.");
 			removeTbTimers();
@@ -868,7 +868,7 @@ public class TimersPlugin extends Plugin
 			switch (npcId)
 			{
 				// Show the countdown when the Sire enters the stunned state.
-				case NpcID.ABYSSAL_SIRE_5887:
+				case NpcID.ABYSSAL_SIRE_5888:
 					createGameTimer(ABYSSAL_SIRE_STUN);
 					break;
 
@@ -876,7 +876,7 @@ public class TimersPlugin extends Plugin
 				// This is necessary because the Sire leaves the stunned
 				// state early once all all four respiratory systems are killed.
 				case NpcID.ABYSSAL_SIRE:
-				case NpcID.ABYSSAL_SIRE_5888:
+				case NpcID.ABYSSAL_SIRE_5887:
 				case NpcID.ABYSSAL_SIRE_5889:
 				case NpcID.ABYSSAL_SIRE_5890:
 				case NpcID.ABYSSAL_SIRE_5891:

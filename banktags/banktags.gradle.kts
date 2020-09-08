@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.19"
+version = "0.0.20"
 
 project.extra["PluginName"] = "Bank Tags"
 project.extra["PluginDescription"] = "Enable tagging of bank items and searching of bank tags"
