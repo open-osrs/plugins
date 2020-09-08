@@ -110,34 +110,38 @@ public enum EquipmentBonusConfig
 	MELEEVOID(BonusType.VOID_KNIGHT, new EquipmentItemset(Arrays.asList(
 		new EquipmentSlotItem(EquipmentInventorySlot.HEAD, new ArrayList<>(Arrays.asList(
 			ItemID.VOID_MELEE_HELM,
-			ItemID.VOID_MELEE_HELM_11676
+			ItemID.VOID_MELEE_HELM_L
 		))),
 		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Arrays.asList(
 			ItemID.VOID_KNIGHT_TOP,
-			ItemID.VOID_KNIGHT_TOP_10611
+			ItemID.VOID_KNIGHT_TOP_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Collections.singletonList(
-			ItemID.VOID_KNIGHT_ROBE
+		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Arrays.asList(
+			ItemID.VOID_KNIGHT_ROBE,
+			ItemID.VOID_KNIGHT_ROBE_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Collections.singletonList(
-			ItemID.VOID_KNIGHT_GLOVES
+		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Arrays.asList(
+			ItemID.VOID_KNIGHT_GLOVES,
+			ItemID.VOID_KNIGHT_GLOVES_L
 		)))
 	)), new EquipmentCombatBonus(0.1, 0, 0)),
 
 	RANGERVOID(BonusType.VOID_KNIGHT, new EquipmentItemset(Arrays.asList(
 		new EquipmentSlotItem(EquipmentInventorySlot.HEAD, new ArrayList<>(Arrays.asList(
 			ItemID.VOID_RANGER_HELM,
-			ItemID.VOID_RANGER_HELM_11675
+			ItemID.VOID_RANGER_HELM_L
 		))),
 		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Arrays.asList(
 			ItemID.VOID_KNIGHT_TOP,
-			ItemID.VOID_KNIGHT_TOP_10611
+			ItemID.VOID_KNIGHT_TOP_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Collections.singletonList(
-			ItemID.VOID_KNIGHT_ROBE
+		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Arrays.asList(
+			ItemID.VOID_KNIGHT_ROBE,
+			ItemID.VOID_KNIGHT_ROBE_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Collections.singletonList(
-			ItemID.VOID_KNIGHT_GLOVES
+		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Arrays.asList(
+			ItemID.VOID_KNIGHT_GLOVES,
+			ItemID.VOID_KNIGHT_GLOVES_L
 		)))
 	)), new EquipmentCombatBonus(0, 0.1, 0)),
 
@@ -145,16 +149,19 @@ public enum EquipmentBonusConfig
 	ELITEMELEERVOID(BonusType.VOID_KNIGHT, new EquipmentItemset(Arrays.asList(
 		new EquipmentSlotItem(EquipmentInventorySlot.HEAD, new ArrayList<>(Arrays.asList(
 			ItemID.VOID_MELEE_HELM,
-			ItemID.VOID_MELEE_HELM_11676
+			ItemID.VOID_MELEE_HELM_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Collections.singletonList(
-			ItemID.ELITE_VOID_TOP
+		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Arrays.asList(
+			ItemID.ELITE_VOID_TOP,
+			ItemID.ELITE_VOID_TOP_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Collections.singletonList(
-			ItemID.ELITE_VOID_ROBE
+		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Arrays.asList(
+			ItemID.ELITE_VOID_ROBE,
+			ItemID.ELITE_VOID_ROBE_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Collections.singletonList(
-			ItemID.VOID_KNIGHT_GLOVES
+		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Arrays.asList(
+			ItemID.VOID_KNIGHT_GLOVES,
+			ItemID.VOID_KNIGHT_GLOVES_L
 		)))
 	)), new EquipmentCombatBonus(0.125, 0, 0)),
 
@@ -162,32 +169,38 @@ public enum EquipmentBonusConfig
 	ELITERANGERVOID(BonusType.VOID_KNIGHT, new EquipmentItemset(Arrays.asList(
 		new EquipmentSlotItem(EquipmentInventorySlot.HEAD, new ArrayList<>(Arrays.asList(
 			ItemID.VOID_RANGER_HELM,
-			ItemID.VOID_RANGER_HELM_11675
+			ItemID.VOID_RANGER_HELM_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Collections.singletonList(
-			ItemID.ELITE_VOID_TOP
+		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Arrays.asList(
+			ItemID.ELITE_VOID_TOP,
+			ItemID.ELITE_VOID_TOP_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Collections.singletonList(
-			ItemID.ELITE_VOID_ROBE
+		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Arrays.asList(
+			ItemID.ELITE_VOID_ROBE,
+			ItemID.ELITE_VOID_ROBE_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Collections.singletonList(
-			ItemID.VOID_KNIGHT_GLOVES
+		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Arrays.asList(
+			ItemID.VOID_KNIGHT_GLOVES,
+			ItemID.VOID_KNIGHT_GLOVES_L
 		)))
 	)), new EquipmentCombatBonus(0, 0.125, 0)),
 
 	ELITEMAGICVOID(BonusType.EQUIPMENT, new EquipmentItemset(Arrays.asList(
 		new EquipmentSlotItem(EquipmentInventorySlot.HEAD, new ArrayList<>(Arrays.asList(
 			ItemID.VOID_MAGE_HELM,
-			ItemID.VOID_MAGE_HELM_11674
+			ItemID.VOID_MAGE_HELM_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Collections.singletonList(
-			ItemID.ELITE_VOID_TOP
+		new EquipmentSlotItem(EquipmentInventorySlot.BODY, new ArrayList<>(Arrays.asList(
+			ItemID.ELITE_VOID_TOP,
+			ItemID.ELITE_VOID_TOP_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Collections.singletonList(
-			ItemID.ELITE_VOID_ROBE
+		new EquipmentSlotItem(EquipmentInventorySlot.LEGS, new ArrayList<>(Arrays.asList(
+			ItemID.ELITE_VOID_ROBE,
+			ItemID.ELITE_VOID_ROBE_L
 		))),
-		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Collections.singletonList(
-			ItemID.VOID_KNIGHT_GLOVES
+		new EquipmentSlotItem(EquipmentInventorySlot.GLOVES, new ArrayList<>(Arrays.asList(
+			ItemID.VOID_KNIGHT_GLOVES,
+			ItemID.VOID_KNIGHT_GLOVES_L
 		)))
 	)), new EquipmentCombatBonus(0, 0, 0.025)),
 

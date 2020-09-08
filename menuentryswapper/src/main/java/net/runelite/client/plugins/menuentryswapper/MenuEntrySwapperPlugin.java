@@ -124,7 +124,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static final List<String> npcContact = Arrays.asList(
 		"honest jimmy", "bert the sandman", "advisor ghrim", "dark mage", "lanthus", "turael",
 		"mazchna", "vannaka", "chaeldar", "nieve", "steve", "duradel", "krystilia", "konar",
-		"murphy", "cyrisus", "smoggy", "ginea", "watson", "barbarian guard", "random"
+		"murphy", "cyrisus", "smoggy", "ginea", "watson", "barbarian guard", "amy", "random"
 	);
 	private static final List<String> dropFish = Arrays.asList(
 		"Raw shrimp", "Raw Sardine", "Raw karambwanji", "Raw herring", "Raw anchovies", "Raw mackerel",
@@ -828,6 +828,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Jatizso").setPriority(10);
 			menuManager.addPriorityEntry("Neitiznot").setPriority(10);
 			menuManager.addPriorityEntry("Rellekka").setPriority(10);
+			menuManager.addPriorityEntry("Ungael").setPriority(10);
+			menuManager.addPriorityEntry("Pirate's Cove").setPriority(10);
+			menuManager.addPriorityEntry("Waterbirth Island").setPriority(10);
+			menuManager.addPriorityEntry("Miscellania").setPriority(10);
+			menuManager.addPriorityEntry("Island of Stone").setPriority(10);
 			menuManager.addPriorityEntry("Follow", "Elkoy").setPriority(10);
 			menuManager.addPriorityEntry("Transport").setPriority(10);
 		}

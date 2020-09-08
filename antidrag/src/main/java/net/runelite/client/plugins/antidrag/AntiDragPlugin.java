@@ -166,7 +166,7 @@ public class AntiDragPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
-		if (widgetLoaded.getGroupId() == WidgetID.BANK_GROUP_ID || widgetLoaded.getGroupId() == WidgetID.BANK_INVENTORY_GROUP_ID)
+		if ((widgetLoaded.getGroupId() == WidgetID.BANK_GROUP_ID || widgetLoaded.getGroupId() == WidgetID.DEPOSIT_BOX_GROUP_ID) || widgetLoaded.getGroupId() == WidgetID.BANK_INVENTORY_GROUP_ID)
 		{
 			setBankDragDelay(config.alwaysOn() ? config.bankDragDelay() : DEFAULT_DELAY);
 		}
@@ -249,7 +249,8 @@ public class AntiDragPlugin extends Plugin
 	private void setBankDragDelay(int delay)
 	{
 		final Widget bankItemContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
-		final Widget bankInventoryContainer = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
+		final Widget bankInventoryItemsContainer = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
+		final Widget bankDepositContainer = client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER);
 
 		if (bankItemContainer != null)
 		{
@@ -259,9 +260,17 @@ public class AntiDragPlugin extends Plugin
 				item.setDragDeadTime(delay);
 			}
 		}
-		if (bankInventoryContainer != null)
+		if (bankInventoryItemsContainer != null)
 		{
-			Widget[] items = bankInventoryContainer.getDynamicChildren();
+			Widget[] items = bankInventoryItemsContainer.getDynamicChildren();
+			for (Widget item : items)
+			{
+				item.setDragDeadTime(delay);
+			}
+		}
+		if (bankDepositContainer != null)
+		{
+			Widget[] items = bankDepositContainer.getDynamicChildren();
 			for (Widget item : items)
 			{
 				item.setDragDeadTime(delay);

@@ -63,19 +63,10 @@ import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
-import static net.runelite.api.widgets.WidgetID.BARROWS_REWARD_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.CHAMBERS_OF_XERIC_REWARD_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.CHATBOX_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.CLUE_SCROLL_REWARD_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.DIALOG_SPRITE_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.KINGDOM_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.LEVEL_UP_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.PLAYER_TRADE_CONFIRM_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.THEATRE_OF_BLOOD_REWARD_GROUP_ID;
+import static net.runelite.api.widgets.WidgetID.*;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
-import static net.runelite.client.RuneLite.SCREENSHOT_DIR;
+import static net.runelite.client.RuneLite.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.PlayerLootReceived;
@@ -279,13 +270,19 @@ public class ScreenshotPlugin extends Plugin
 			String text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT).getText();
 			if (Text.removeTags(text).contains("High level gamble"))
 			{
-				fileName = parseBAHighGambleWidget(text);
-				screenshotSubDir = "BA High Gambles";
+				if (config.screenshotHighGamble())
+				{
+					fileName = parseBAHighGambleWidget(text);
+					screenshotSubDir = "BA High Gambles";
+				}
 			}
 			else
 			{
-				fileName = parseLevelUpWidget(client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT));
-				screenshotSubDir = "Levels";
+				if (config.screenshotLevels())
+				{
+					fileName = parseLevelUpWidget(client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT));
+					screenshotSubDir = "Levels";
+				}
 			}
 		}
 		else if (client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT) != null)
@@ -850,7 +847,7 @@ public class ScreenshotPlugin extends Plugin
 		return this.client.isInInstancedRegion()
 			&& this.client.getMapRegions().length > 0
 			&& (this.client.getMapRegions()[0] == GAUNTLET_REGION
-			|| this.client.getMapRegions()[0] == CORRUPTED_GAUNTLET_REGION);
+					|| this.client.getMapRegions()[0] == CORRUPTED_GAUNTLET_REGION);
 	}
 
 	@VisibleForTesting

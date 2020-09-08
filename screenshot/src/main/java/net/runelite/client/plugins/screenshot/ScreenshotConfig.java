@@ -232,25 +232,25 @@ public interface ScreenshotConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "secondTradeScreen",
-		name = "Screenshot 2nd Trade Screen",
-		description = "Configures whether screenshots are taken on the second trade screen.",
-		position = 18
-	)
-	default boolean screenshotSecondTradeScreen()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "baHighGamble",
 		name = "Screenshot BA high gambles",
 		description = "Take a screenshot of your reward from a high gamble at Barbarian Assault.",
-		position = 19
+		position = 18
 	)
 	default boolean screenshotHighGamble()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "secondTradeScreen",
+		name = "Screenshot 2nd Trade Screen",
+		description = "Configures whether screenshots are taken on the second trade screen.",
+		position = 19
+	)
+	default boolean screenshotSecondTradeScreen()
+	{
+		return true;
 	}
 
 	@ConfigItem(

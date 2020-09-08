@@ -72,7 +72,7 @@ public class PrayerPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private boolean prayersActive = false;
-	
+
 	@Getter(AccessLevel.PACKAGE)
 	private int prayerBonus;
 
@@ -187,7 +187,7 @@ public class PrayerPlugin extends Plugin
 		{
 			barOverlay.onTick();
 		}
-		
+
 		if (config.replaceOrbText() && isAnyPrayerActive())
 		{
 			setPrayerOrbText(getEstimatedTimeRemaining(true));
@@ -321,7 +321,7 @@ public class PrayerPlugin extends Plugin
 		infoBoxManager.removeIf(entry -> entry instanceof PrayerCounter
 			&& ((PrayerCounter) entry).getPrayerType().isOverhead());
 	}
-	
+
 	private void setPrayerOrbText(String text)
 	{
 		Widget prayerOrbText = client.getWidget(WidgetInfo.MINIMAP_PRAYER_ORB_TEXT);

@@ -26,6 +26,7 @@ package net.runelite.client.plugins.twitch;
 
 import com.google.common.base.Strings;
 import com.google.inject.Provides;
+import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import javax.inject.Inject;
@@ -215,8 +216,15 @@ public class TwitchPlugin extends Plugin implements TwitchListener
 		message = message.substring(2);
 		if (!message.isEmpty() && twitchIRCClient != null)
 		{
-			twitchIRCClient.privmsg(message);
-			addChatMessage(twitchConfig.username(), message);
+			try
+			{
+				twitchIRCClient.privmsg(message);
+				addChatMessage(twitchConfig.username(), message);
+			}
+			catch (IOException e)
+			{
+				log.warn("failed to send message", e);
+			}
 		}
 
 		chatboxInput.setStop();

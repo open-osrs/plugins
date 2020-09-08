@@ -54,9 +54,7 @@ public class PrayerPotion extends StatBoost
 	}
 
 	private static final Set<Integer> HOLY_WRENCH_IDS = Set.of(
-		ItemID.HOLY_WRENCH, ItemID.PRAYER_CAPE, ItemID.PRAYER_CAPET, ItemID.MAX_CAPE, ItemID.MAX_CAPE_13342,
-		// No idea what these are
-		ItemID.PRAYER_CAPE_10643, ItemID.MAX_CAPE_13282
+		ItemID.HOLY_WRENCH, ItemID.PRAYER_CAPE, ItemID.PRAYER_CAPET, ItemID.MAX_CAPE, ItemID.MAX_CAPE_13342
 	);
 
 	@Override
