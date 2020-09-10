@@ -8,7 +8,6 @@ import org.gradle.kotlin.dsl.get
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.nio.file.Paths
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,6 +15,8 @@ import kotlin.collections.ArrayList
 
 
 open class BootstrapTask : DefaultTask() {
+
+    private var repoURL: String = "ben93riggs/plugins"
 
     private fun formatDate(date: Date?) = with(date ?: Date()) {
         SimpleDateFormat("yyyy-MM-dd").format(this)
@@ -25,9 +26,13 @@ open class BootstrapTask : DefaultTask() {
         return MessageDigest.getInstance("SHA-512").digest(file).fold("", { str, it -> str + "%02x".format(it) }).toUpperCase()
     }
 
-    private fun getBootstrap(filename: String): JSONArray? {
-        val bootstrapFile = File(filename).readLines()
-        return JSONObject("{\"plugins\":$bootstrapFile}").getJSONArray("plugins")
+    private fun getBootstrap(): JSONArray? {
+        val client = OkHttpClient()
+        val url = "https://raw.githubusercontent.com/${repoURL}/master/plugins.json"
+        val request = Request.Builder()
+                .url(url)
+                .build()
+        client.newCall(request).execute().use { response -> return JSONObject("{\"plugins\":${response.body!!.string()}}").getJSONArray("plugins") }
     }
 
     @TaskAction
@@ -39,12 +44,12 @@ open class BootstrapTask : DefaultTask() {
             bootstrapReleaseDir.mkdirs()
 
             val plugins = ArrayList<JSONObject>()
-            val baseBootstrap = getBootstrap("$bootstrapDir/plugins.json") ?: throw RuntimeException("Base bootstrap is null!")
+            val baseBootstrap = getBootstrap() ?: throw RuntimeException("Base bootstrap is null!")
 
             project.subprojects.forEach {
                 if (it.project.properties.containsKey("PluginName") && it.project.properties.containsKey("PluginDescription")) {
                     var pluginAdded = false
-                    val plugin = it.project.tasks.get("jar").outputs.files.singleFile
+                    val plugin = it.project.tasks["jar"].outputs.files.singleFile
 
                     val releases = ArrayList<JsonBuilder>()
 
@@ -52,7 +57,7 @@ open class BootstrapTask : DefaultTask() {
                             "version" to it.project.version,
                             "requires" to ProjectVersions.apiVersion,
                             "date" to formatDate(Date()),
-                            "url" to "https://github.com/ben93riggs/plugins/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
+                            "url" to "https://github.com/${repoURL}/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 
@@ -68,7 +73,7 @@ open class BootstrapTask : DefaultTask() {
                     for (i in 0 until baseBootstrap.length()) {
                         val item = baseBootstrap.getJSONObject(i)
 
-                        if (!item.get("id").equals(nameToId(it.project.extra.get("PluginName") as String))) {
+                        if (item.get("id") != nameToId(it.project.extra.get("PluginName") as String)) {
                             continue
                         }
 
@@ -86,7 +91,7 @@ open class BootstrapTask : DefaultTask() {
                         plugins.add(pluginObject)
                     }
 
-                    plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile(), overwrite = true)
+                    //plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile(), overwrite = true)
                 }
             }
 
