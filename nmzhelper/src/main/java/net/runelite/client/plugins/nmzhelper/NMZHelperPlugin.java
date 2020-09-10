@@ -1,10 +1,8 @@
 package net.runelite.client.plugins.nmzhelper;
 
 import com.google.inject.Provides;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
@@ -15,14 +13,20 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.nmzhelper.Tasks.AbsorptionTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.AcceptDreamTask;
+import net.runelite.client.plugins.nmzhelper.Tasks.BenefitsTabTask;
+import net.runelite.client.plugins.nmzhelper.Tasks.BuyAbsorptionsTask;
+import net.runelite.client.plugins.nmzhelper.Tasks.BuyOverloadsTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.ContinueDialogTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.DominicDialogue1Task;
 import net.runelite.client.plugins.nmzhelper.Tasks.DominicDialogue2Task;
@@ -32,13 +36,13 @@ import net.runelite.client.plugins.nmzhelper.Tasks.OpenAbsorptionsBarrelTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.OpenOverloadsBarrel;
 import net.runelite.client.plugins.nmzhelper.Tasks.OverloadTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.RockCakeTask;
+import net.runelite.client.plugins.nmzhelper.Tasks.SearchRewardsChestTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.SpecialAttackTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.WithdrawAbsorptionTask;
 import net.runelite.client.plugins.nmzhelper.Tasks.WithdrawOverloadTask;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
-@Slf4j
 @Extension
 @PluginDescriptor(
 	name = "NMZ Helper",
@@ -59,9 +63,6 @@ public class NMZHelperPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private ItemManager itemManager;
-
-	@Inject
 	private NMZHelperConfig config;
 
 	@Inject
@@ -69,6 +70,9 @@ public class NMZHelperPlugin extends Plugin
 
 	@Inject
 	private NMZHelperOverlay overlay;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
 
 	boolean pluginStarted;
 
@@ -96,6 +100,13 @@ public class NMZHelperPlugin extends Plugin
 			new OverloadTask(),
 			new AbsorptionTask(),
 			new RockCakeTask(),
+
+			//--------------------------
+			new SearchRewardsChestTask(),
+			new BenefitsTabTask(),
+			new BuyAbsorptionsTask(),
+			new BuyOverloadsTask(),
+			//--------------------------
 
 			new WithdrawAbsorptionTask(),
 			new WithdrawOverloadTask(),
@@ -165,7 +176,7 @@ public class NMZHelperPlugin extends Plugin
 					|| msg.contains("Your blowpipe needs to be charged with Zulrah's scales."))
 				{
 					pluginStarted = false;
-					log.info("pluginStarted set to false because we received game message: " + msg);
+					sendGameMessage("NMZHelper stopped because we received game message: " + msg);
 				}
 				break;
 			default:
@@ -191,25 +202,20 @@ public class NMZHelperPlugin extends Plugin
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 
 		if (inventoryWidget == null)
-		{
 			return;
-		}
 
 		if (inventoryWidget.getWidgetItems()
-			.stream()
-			.filter(item -> item.getId() == ItemID.DWARVEN_ROCK_CAKE_7510)
-			.collect(Collectors.toList())
-			.isEmpty())
+			.stream().noneMatch(item -> item.getId() == ItemID.DWARVEN_ROCK_CAKE_7510))
 		{
 			//pluginStarted = false;
-			log.info("Rock cake not found...");
+			sendGameMessage("Rock cake not found...");
 			return;
 		}
 
 		if (client.getVarbitValue(3948) < 26)
 		{
 			pluginStarted = false;
-			log.info("pluginStarted set to false because client varbit value 3948 < 26");
+			sendGameMessage("varbit value 3948 < 26 (you may need to put money in the coffer)");
 			return;
 		}
 
@@ -219,10 +225,6 @@ public class NMZHelperPlugin extends Plugin
 		{
 			status = task.getTaskDescription();
 			task.onGameTick(event);
-		}
-		else
-		{
-			//System.out.println("ERROR: (NMZHelper) Proper task not found...");
 		}
 	}
 
@@ -245,5 +247,18 @@ public class NMZHelperPlugin extends Plugin
 			status = task.getTaskDescription();
 			task.onMenuOptionClicked(event);
 		}
+	}
+
+	public void sendGameMessage(String message)
+	{
+		chatMessageManager
+			.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(
+					new ChatMessageBuilder()
+					.append(ChatColorType.HIGHLIGHT)
+					.append(message)
+					.build())
+				.build());
 	}
 }

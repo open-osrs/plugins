@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.runelite.api.ItemID;
-import net.runelite.api.QueryResults;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
@@ -31,6 +30,14 @@ public class WithdrawAbsorptionTask extends Task
 		{
 			return false;
 		}
+
+		//if we have enough absorption doses in storage already
+		if (client.getVarbitValue(3954) < config.absorptionDoses())
+			return false;
+
+		//if we have enough overload doses in storage already
+		if (client.getVarbitValue(3953) < config.overloadDoses())
+			return false;
 
 		//already have overloads
 		if (getDoseCount() >= config.absorptionDoses())

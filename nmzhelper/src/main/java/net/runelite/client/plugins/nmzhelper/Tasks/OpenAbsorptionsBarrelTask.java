@@ -22,14 +22,22 @@ public class OpenAbsorptionsBarrelTask extends Task
 	@Override
 	public boolean validate()
 	{
+		//not in the nightmare zone
+		if (MiscUtils.isInNightmareZone(client))
+			return false;
+
 		//check if dream is not created
 		if (!MiscUtils.isDreamCreated(client))
 		{
 			return false;
 		}
 
-		//not in the nightmare zone
-		if (MiscUtils.isInNightmareZone(client))
+		//if we have enough absorption doses in storage already
+		if (client.getVarbitValue(3954) < config.absorptionDoses())
+			return false;
+
+		//if we have enough overload doses in storage already
+		if (client.getVarbitValue(3953) < config.overloadDoses())
 			return false;
 
 		//already have absorptions
