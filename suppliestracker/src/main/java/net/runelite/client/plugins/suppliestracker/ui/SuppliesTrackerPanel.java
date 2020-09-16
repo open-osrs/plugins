@@ -76,9 +76,11 @@ public class SuppliesTrackerPanel extends PluginPanel
 	private JButton info;
 	private int overallSuppliesUsed;
 	private int overallCost;
+	private final SuppliesTrackerPlugin plugin;
 
 	public SuppliesTrackerPanel(final ItemManager itemManager, SuppliesTrackerPlugin plugin, SuppliesTrackerConfig config)
 	{
+		this.plugin = plugin;
 		setBorder(new EmptyBorder(6, 6, 6, 6));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 		setLayout(new BorderLayout());
@@ -119,15 +121,8 @@ public class SuppliesTrackerPanel extends PluginPanel
 		final JMenuItem reset = new JMenuItem("Reset All");
 		reset.addActionListener(e ->
 		{
-			overallSuppliesUsed = 0;
-			overallCost = 0;
-			plugin.clearSupplies();
-			for (SuppliesBox box : boxList)
-			{
-				box.clearAll();
-			}
-			updateOverall();
-			logsContainer.repaint();
+			resetAll();
+			this.plugin.clearSupplies();
 		});
 
 		// Create popup menu
@@ -217,6 +212,18 @@ public class SuppliesTrackerPanel extends PluginPanel
 			}
 		}
 		updateOverall();
+	}
+
+	public void resetAll()
+	{
+		this.overallSuppliesUsed = 0;
+		this.overallCost = 0;
+		for (SuppliesBox box : boxList)
+		{
+			box.clearAll();
+		}
+		updateOverall();
+		this.logsContainer.repaint();
 	}
 
 	/**
