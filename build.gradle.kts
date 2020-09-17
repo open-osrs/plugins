@@ -22,6 +22,7 @@ allprojects {
 }
 
 subprojects {
+    var subprojectName = name
     group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "OpenOSRS"
@@ -138,6 +139,15 @@ subprojects {
                 copy {
                     from("./build/libs/")
                     into("../release/")
+                }
+
+                val externalManagerDirectory: String = project.findProperty("externalManagerDirectory")?.toString() ?: System.getProperty("user.home") + "/.runelite/externalmanager"
+                val releaseToExternalModules: List<String> = project.findProperty("releaseToExternalmanager")?.toString()?.split(",") ?: emptyList()
+                if (releaseToExternalModules.contains(subprojectName) || releaseToExternalModules.contains("all")) {
+                    copy {
+                        from("./build/libs/")
+                        into(externalManagerDirectory)
+                    }
                 }
             }
         }
