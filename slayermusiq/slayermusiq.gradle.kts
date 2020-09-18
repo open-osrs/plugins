@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Slayermusiq1 Guides"
 project.extra["PluginDescription"] = "Adds a right-click option to go to Slayermusiq1's guides from the quest tab"
