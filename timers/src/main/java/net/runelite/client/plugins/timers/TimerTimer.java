@@ -41,9 +41,9 @@ class TimerTimer extends Timer
 		setPriority(InfoBoxPriority.MED);
 	}
 
-	TimerTimer(final GameTimer timer, final int amount, final Plugin plugin)
+	TimerTimer(final GameTimer timer, Duration duration, final Plugin plugin)
 	{
-		super(timer.getDuration().toMillis() * amount, ChronoUnit.MILLIS, null, plugin);
+		super(duration.toMillis(), ChronoUnit.MILLIS, null, plugin);
 		this.timer = timer;
 		setPriority(InfoBoxPriority.MED);
 	}

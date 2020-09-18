@@ -267,13 +267,13 @@ public class TimersPlugin extends Plugin
 			}
 			else if (poisonVarp >= VENOM_VALUE_CUTOFF)
 			{
-				int duration = 600 * (nextPoisonTick - client.getTickCount() + Math.abs((poisonVarp + 1) * POISON_TICK_LENGTH));
+				Duration duration = Duration.ofMillis((long) 600 * (nextPoisonTick - client.getTickCount() + Math.abs((poisonVarp + 1) * POISON_TICK_LENGTH)));
 				removeGameTimer(ANTIVENOM);
 				createGameTimer(ANTIPOISON, duration);
 			}
 			else
 			{
-				int duration = 600 * (nextPoisonTick - client.getTickCount() + Math.abs((poisonVarp + 1 - VENOM_VALUE_CUTOFF) * POISON_TICK_LENGTH));
+				Duration duration = Duration.ofMillis((long) 600 * (nextPoisonTick - client.getTickCount() + Math.abs((poisonVarp + 1 - VENOM_VALUE_CUTOFF) * POISON_TICK_LENGTH)));
 				removeGameTimer(ANTIPOISON);
 				createGameTimer(ANTIVENOM, duration);
 			}
@@ -1090,11 +1090,11 @@ public class TimersPlugin extends Plugin
 
 	private void createStaminaTimer()
 	{
-		long duration = Duration.ofMinutes(wasWearingEndurance ? 4 : 2).toMillis();
-		staminaTimer = createGameTimer(STAMINA, (int) duration);
+		Duration duration = Duration.ofMinutes(wasWearingEndurance ? 4 : 2);
+		staminaTimer = createGameTimer(STAMINA, duration);
 	}
 
-	private TimerTimer createGameTimer(final GameTimer timer, final int duration)
+	private TimerTimer createGameTimer(final GameTimer timer, Duration duration)
 	{
 		removeGameTimer(timer);
 
