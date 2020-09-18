@@ -2,7 +2,6 @@
  * Copyright (c) 2017, Seth <Sethtroll3@gmail.com>
  * Copyright (c) 2018, Jordan Atwood <jordan.atwood423@gmail.com>
  * Copyright (c) 2019, Lucas <https://github.com/Lucwousin>
- * Copyright (c) 2019, winterdaze
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,8 +43,6 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
-import static net.runelite.api.ItemID.FIRE_CAPE;
-import static net.runelite.api.ItemID.INFERNAL_CAPE;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
@@ -82,15 +79,14 @@ import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.timers.GameIndicator.VENGEANCE_ACTIVE;
 import static net.runelite.client.plugins.timers.GameTimer.*;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
-import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-		name = "Timers",
-		description = "Show various timers in an infobox",
-		tags = {"combat", "items", "magic", "potions", "prayer", "overlay", "abyssal", "sire", "inferno", "fight", "caves", "cape", "timer", "tzhaar"},
-		type = PluginType.MISCELLANEOUS
+	name = "Timers",
+	description = "Show various timers in an infobox",
+	tags = {"combat", "items", "magic", "potions", "prayer", "overlay", "abyssal", "sire"},
+	type = PluginType.MISCELLANEOUS
 )
 @Slf4j
 public class TimersPlugin extends Plugin
@@ -127,12 +123,6 @@ public class TimersPlugin extends Plugin
 	private static final Pattern FULL_TELEBLOCK_PATTERN = Pattern.compile("A Tele Block spell has been cast on you by (.+)\\. It will expire in 5 minutes\\.</col>");
 	private static final Pattern HALF_TELEBLOCK_PATTERN = Pattern.compile("A Tele Block spell has been cast on you by (.+)\\. It will expire in 2 minutes, 30 seconds\\.</col>");
 	private static final Pattern DIVINE_POTION_PATTERN = Pattern.compile("You drink some of your divine (.+) potion\\.");
-	private static final int FIGHT_CAVES_REGION_ID = 9551;
-	private static final int INFERNO_REGION_ID = 9043;
-	private static final Pattern TZHAAR_WAVE_MESSAGE = Pattern.compile("Wave: (\\d+)");
-	private static final String TZHAAR_DEFEATED_MESSAGE = "You have been defeated!";
-	private static final Pattern TZHAAR_COMPLETE_MESSAGE = Pattern.compile("Your (TzTok-Jad|TzKal-Zuk) kill count is:");
-	private static final Pattern TZHAAR_PAUSED_MESSAGE = Pattern.compile("The (Inferno|Fight Cave) has been paused. You may now log out.");
 
 	private TimerTimer freezeTimer;
 	private int freezeTime = -1; // time frozen, in game ticks
@@ -151,7 +141,6 @@ public class TimersPlugin extends Plugin
 	private int lastAnimation;
 	private boolean loggedInRace;
 	private boolean widgetHiddenChangedOnPvpWorld;
-	private ElapsedTimer tzhaarTimer;
 	private boolean skulledLastTick = false;
 	private boolean imbuedHeartClicked;
 
@@ -189,9 +178,7 @@ public class TimersPlugin extends Plugin
 		lastPoisonVarp = 0;
 		nextPoisonTick = 0;
 		imbuedHeartClicked = false;
-		removeTzhaarTimer();
 		staminaTimer = null;
-		removeTzhaarTimer();
 	}
 
 	@Subscribe
@@ -240,11 +227,11 @@ public class TimersPlugin extends Plugin
 		int inWilderness = client.getVar(Varbits.IN_WILDERNESS);
 
 		if (lastWildernessVarb != inWilderness
-				&& client.getGameState() == GameState.LOGGED_IN
-				&& !loggedInRace)
+			&& client.getGameState() == GameState.LOGGED_IN
+			&& !loggedInRace)
 		{
 			if (!WorldType.isPvpWorld(client.getWorldType())
-					&& inWilderness == 0)
+				&& inWilderness == 0)
 			{
 				log.debug("Left wilderness in non-PVP world, clearing Teleblock timer.");
 				removeTbTimers();
@@ -287,7 +274,7 @@ public class TimersPlugin extends Plugin
 	{
 		Widget widget = event.getWidget();
 		if (WorldType.isPvpWorld(client.getWorldType())
-				&& WidgetInfo.TO_GROUP(widget.getId()) == WidgetID.PVP_GROUP_ID)
+			&& WidgetInfo.TO_GROUP(widget.getId()) == WidgetID.PVP_GROUP_ID)
 		{
 			widgetHiddenChangedOnPvpWorld = true;
 		}
@@ -396,24 +383,19 @@ public class TimersPlugin extends Plugin
 			removeGameTimer(ANTIPOISON);
 			removeGameTimer(ANTIVENOM);
 		}
-
-		if (!config.showTzhaarTimers())
-		{
-			removeTzhaarTimer();
-		}
 	}
 
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (config.showStamina()
-				&& event.getOption().contains("Drink")
-				&& (event.getIdentifier() == ItemID.STAMINA_MIX1
-				|| event.getIdentifier() == ItemID.STAMINA_MIX2
-				|| event.getIdentifier() == ItemID.EGNIOL_POTION_1
-				|| event.getIdentifier() == ItemID.EGNIOL_POTION_2
-				|| event.getIdentifier() == ItemID.EGNIOL_POTION_3
-				|| event.getIdentifier() == ItemID.EGNIOL_POTION_4))
+			&& event.getOption().contains("Drink")
+			&& (event.getIdentifier() == ItemID.STAMINA_MIX1
+			|| event.getIdentifier() == ItemID.STAMINA_MIX2
+			|| event.getIdentifier() == ItemID.EGNIOL_POTION_1
+			|| event.getIdentifier() == ItemID.EGNIOL_POTION_2
+			|| event.getIdentifier() == ItemID.EGNIOL_POTION_3
+			|| event.getIdentifier() == ItemID.EGNIOL_POTION_4))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createStaminaTimer();
@@ -421,9 +403,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-				&& event.getOption().contains("Drink")
-				&& (event.getIdentifier() == ItemID.ANTIFIRE_MIX1
-				|| event.getIdentifier() == ItemID.ANTIFIRE_MIX2))
+			&& event.getOption().contains("Drink")
+			&& (event.getIdentifier() == ItemID.ANTIFIRE_MIX1
+			|| event.getIdentifier() == ItemID.ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(ANTIFIRE);
@@ -431,9 +413,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-				&& event.getOption().contains("Drink")
-				&& (event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX1
-				|| event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX2))
+			&& event.getOption().contains("Drink")
+			&& (event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX1
+			|| event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(EXANTIFIRE);
@@ -441,9 +423,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-				&& event.getOption().contains("Drink")
-				&& (event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX1
-				|| event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX2))
+			&& event.getOption().contains("Drink")
+			&& (event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX1
+			|| event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(SUPERANTIFIRE);
@@ -451,9 +433,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-				&& event.getOption().contains("Drink")
-				&& (event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX1
-				|| event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX2))
+			&& event.getOption().contains("Drink")
+			&& (event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX1
+			|| event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(EXSUPERANTIFIRE);
@@ -467,7 +449,7 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showImbuedHeart()
-				&& event.getOption().contains("Invigorate"))
+			&& event.getOption().contains("Invigorate"))
 		{
 			// Needs a hook as there's a few cases where potions boost the same amount as the heart
 			imbuedHeartClicked = true;
@@ -683,90 +665,6 @@ public class TimersPlugin extends Plugin
 				}
 			}
 		}
-
-		if (config.showTzhaarTimers())
-		{
-			String message = event.getMessage();
-			Matcher matcher = TZHAAR_COMPLETE_MESSAGE.matcher(message);
-
-			if (message.contains(TZHAAR_DEFEATED_MESSAGE) || matcher.matches())
-			{
-				removeTzhaarTimer();
-				config.tzhaarStartTime(null);
-				config.tzhaarLastTime(null);
-				return;
-			}
-
-			Instant now = Instant.now();
-			matcher = TZHAAR_PAUSED_MESSAGE.matcher(message);
-			if (matcher.find())
-			{
-				config.tzhaarLastTime(now);
-				createTzhaarTimer();
-				return;
-			}
-
-			matcher = TZHAAR_WAVE_MESSAGE.matcher(message);
-			if (!matcher.find())
-			{
-				return;
-			}
-
-			if (config.tzhaarStartTime() == null)
-			{
-				int wave = Integer.parseInt(matcher.group(1));
-				if (wave == 1)
-				{
-					config.tzhaarStartTime(now);
-					createTzhaarTimer();
-				}
-			}
-			else if (config.tzhaarLastTime() != null)
-			{
-				log.debug("Unpausing tzhaar timer");
-
-				// Advance start time by how long it has been paused
-				Instant tzhaarStartTime = config.tzhaarStartTime();
-				tzhaarStartTime = tzhaarStartTime.plus(Duration.between(config.tzhaarLastTime(), now));
-				config.tzhaarStartTime(tzhaarStartTime);
-
-				config.tzhaarLastTime(null);
-				createTzhaarTimer();
-			}
-		}
-	}
-
-	private boolean isInFightCaves()
-	{
-		return client.getMapRegions() != null && ArrayUtils.contains(client.getMapRegions(), FIGHT_CAVES_REGION_ID);
-	}
-
-	private boolean isInInferno()
-	{
-		return client.getMapRegions() != null && ArrayUtils.contains(client.getMapRegions(), INFERNO_REGION_ID);
-	}
-
-	private void createTzhaarTimer()
-	{
-		removeTzhaarTimer();
-
-		int imageItem = isInFightCaves() ? FIRE_CAPE : (isInInferno() ? INFERNAL_CAPE : -1);
-		if (imageItem == -1)
-		{
-			return;
-		}
-
-		tzhaarTimer = new ElapsedTimer(itemManager.getImage(imageItem), this, config.tzhaarStartTime(), config.tzhaarLastTime());
-		infoBoxManager.addInfoBox(tzhaarTimer);
-	}
-
-	private void removeTzhaarTimer()
-	{
-		if (tzhaarTimer != null)
-		{
-			infoBoxManager.removeInfoBox(tzhaarTimer);
-			tzhaarTimer = null;
-		}
 	}
 
 	@Subscribe
@@ -799,9 +697,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (freezeTimer != null &&
-				// assume movement means unfrozen
-				freezeTime != client.getTickCount()
-				&& !currentWorldPoint.equals(lastPoint))
+			// assume movement means unfrozen
+			freezeTime != client.getTickCount()
+			&& !currentWorldPoint.equals(lastPoint))
 		{
 			removeGameTimer(freezeTimer.getTimer());
 			freezeTimer = null;
@@ -817,7 +715,8 @@ public class TimersPlugin extends Plugin
 		widgetHiddenChangedOnPvpWorld = false;
 
 		Widget widget = client.getWidget(PVP_WORLD_SAFE_ZONE);
-		if (widget != null && !widget.isSelfHidden())
+		if (widget != null
+			&& !widget.isSelfHidden())
 		{
 			log.debug("Entered safe zone in PVP world, clearing Teleblock timer.");
 			removeTbTimers();
@@ -829,24 +728,8 @@ public class TimersPlugin extends Plugin
 	{
 		switch (gameStateChanged.getGameState())
 		{
-			case LOADING:
-				if (tzhaarTimer != null && !isInFightCaves() && !isInInferno())
-				{
-					removeTzhaarTimer();
-					config.tzhaarStartTime(null);
-					config.tzhaarLastTime(null);
-				}
-				break;
 			case HOPPING:
 			case LOGIN_SCREEN:
-				// pause tzhaar timer if logged out without pausing
-				if (config.tzhaarStartTime() != null && config.tzhaarLastTime() == null)
-				{
-					config.tzhaarLastTime(Instant.now());
-					log.debug("Pausing tzhaar timer");
-				}
-
-				removeTzhaarTimer(); // will be readded by the wave message
 				removeTbTimers();
 				break;
 			case LOGGED_IN:
@@ -861,14 +744,14 @@ public class TimersPlugin extends Plugin
 		Actor actor = event.getActor();
 
 		if (config.showAbyssalSireStun()
-				&& actor instanceof NPC)
+			&& actor instanceof NPC)
 		{
 			int npcId = ((NPC) actor).getId();
 
 			switch (npcId)
 			{
 				// Show the countdown when the Sire enters the stunned state.
-				case NpcID.ABYSSAL_SIRE_5888:
+				case NpcID.ABYSSAL_SIRE_5887:
 					createGameTimer(ABYSSAL_SIRE_STUN);
 					break;
 
@@ -876,7 +759,7 @@ public class TimersPlugin extends Plugin
 				// This is necessary because the Sire leaves the stunned
 				// state early once all all four respiratory systems are killed.
 				case NpcID.ABYSSAL_SIRE:
-				case NpcID.ABYSSAL_SIRE_5887:
+				case NpcID.ABYSSAL_SIRE_5888:
 				case NpcID.ABYSSAL_SIRE_5889:
 				case NpcID.ABYSSAL_SIRE_5890:
 				case NpcID.ABYSSAL_SIRE_5891:
@@ -886,15 +769,17 @@ public class TimersPlugin extends Plugin
 			}
 		}
 
-		if (actor != client.getLocalPlayer())
+		Player player = client.getLocalPlayer();
+
+		if (player == null || actor != player)
 		{
 			return;
 		}
 
 		if (config.showHomeMinigameTeleports()
-				&& client.getLocalPlayer().getAnimation() == AnimationID.IDLE
-				&& (lastAnimation == AnimationID.BOOK_HOME_TELEPORT_5
-				|| lastAnimation == AnimationID.COW_HOME_TELEPORT_6))
+			&& player.getAnimation() == AnimationID.IDLE
+			&& (lastAnimation == AnimationID.BOOK_HOME_TELEPORT_5
+			|| lastAnimation == AnimationID.COW_HOME_TELEPORT_6))
 		{
 			if (lastTeleportClicked == TeleportWidget.HOME_TELEPORT)
 			{
@@ -911,7 +796,7 @@ public class TimersPlugin extends Plugin
 			createGameTimer(DRAGON_FIRE_SHIELD);
 		}
 
-		lastAnimation = actor.getAnimation();
+		lastAnimation = player.getAnimation();
 	}
 
 	@Subscribe
@@ -985,10 +870,10 @@ public class TimersPlugin extends Plugin
 		ItemContainer container = itemContainerChanged.getItemContainer();
 		Item weapon = container.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
 		if (weapon == null ||
-				(weapon.getId() != ItemID.STAFF_OF_THE_DEAD &&
-						weapon.getId() != ItemID.TOXIC_STAFF_OF_THE_DEAD &&
-						weapon.getId() != ItemID.STAFF_OF_LIGHT &&
-						weapon.getId() != ItemID.TOXIC_STAFF_UNCHARGED))
+			(weapon.getId() != ItemID.STAFF_OF_THE_DEAD &&
+				weapon.getId() != ItemID.TOXIC_STAFF_OF_THE_DEAD &&
+				weapon.getId() != ItemID.STAFF_OF_LIGHT &&
+				weapon.getId() != ItemID.TOXIC_STAFF_UNCHARGED))
 		{
 			// remove sotd timer if the staff has been unwielded
 			removeGameTimer(STAFF_OF_THE_DEAD);
