@@ -38,7 +38,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -142,12 +141,6 @@ public class MiningPlugin extends Plugin
 	@Nullable
 	private Pickaxe pickaxe;
 
-	@Provides
-	MiningConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(MiningConfig.class);
-	}
-
 	@Override
 	protected void startUp()
 	{
@@ -179,6 +172,12 @@ public class MiningPlugin extends Plugin
 		}
 	}
 
+	@Provides
+	MiningConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(MiningConfig.class);
+	}
+
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
@@ -207,24 +206,10 @@ public class MiningPlugin extends Plugin
 		}
 
 		int animId = local.getAnimation();
-		if (animId == AnimationID.DENSE_ESSENCE_CHIPPING)
+		Pickaxe pickaxe = Pickaxe.fromAnimation(animId);
+		if (pickaxe != null)
 		{
-			// Can't use chat messages to start mining session on Dense Essence as they don't have a chat message when mined,
-			// so we track the session here instead.
-			if (session == null)
-			{
-				session = new MiningSession();
-			}
-
-			session.setLastMined();
-		}
-		else
-		{
-			Pickaxe pickaxe = Pickaxe.fromAnimation(animId);
-			if (pickaxe != null)
-			{
-				this.pickaxe = pickaxe;
-			}
+			this.pickaxe = pickaxe;
 		}
 	}
 
@@ -233,6 +218,7 @@ public class MiningPlugin extends Plugin
 	{
 		respawns.removeIf(RockRespawn::isExpired);
 		recentlyLoggedIn = false;
+
 
 
 		if (session == null || session.getLastMined() == null)
