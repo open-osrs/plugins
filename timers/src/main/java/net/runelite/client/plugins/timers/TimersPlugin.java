@@ -87,10 +87,10 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Timers",
-	description = "Show various timers in an infobox",
-	tags = {"combat", "items", "magic", "potions", "prayer", "overlay", "abyssal", "sire", "inferno", "fight", "caves", "cape", "timer", "tzhaar"},
-	type = PluginType.MISCELLANEOUS
+		name = "Timers",
+		description = "Show various timers in an infobox",
+		tags = {"combat", "items", "magic", "potions", "prayer", "overlay", "abyssal", "sire", "inferno", "fight", "caves", "cape", "timer", "tzhaar"},
+		type = PluginType.MISCELLANEOUS
 )
 @Slf4j
 public class TimersPlugin extends Plugin
@@ -240,11 +240,11 @@ public class TimersPlugin extends Plugin
 		int inWilderness = client.getVar(Varbits.IN_WILDERNESS);
 
 		if (lastWildernessVarb != inWilderness
-			&& client.getGameState() == GameState.LOGGED_IN
-			&& !loggedInRace)
+				&& client.getGameState() == GameState.LOGGED_IN
+				&& !loggedInRace)
 		{
 			if (!WorldType.isPvpWorld(client.getWorldType())
-				&& inWilderness == 0)
+					&& inWilderness == 0)
 			{
 				log.debug("Left wilderness in non-PVP world, clearing Teleblock timer.");
 				removeTbTimers();
@@ -287,7 +287,7 @@ public class TimersPlugin extends Plugin
 	{
 		Widget widget = event.getWidget();
 		if (WorldType.isPvpWorld(client.getWorldType())
-			&& WidgetInfo.TO_GROUP(widget.getId()) == WidgetID.PVP_GROUP_ID)
+				&& WidgetInfo.TO_GROUP(widget.getId()) == WidgetID.PVP_GROUP_ID)
 		{
 			widgetHiddenChangedOnPvpWorld = true;
 		}
@@ -407,13 +407,13 @@ public class TimersPlugin extends Plugin
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (config.showStamina()
-			&& event.getOption().contains("Drink")
-			&& (event.getIdentifier() == ItemID.STAMINA_MIX1
-			|| event.getIdentifier() == ItemID.STAMINA_MIX2
-			|| event.getIdentifier() == ItemID.EGNIOL_POTION_1
-			|| event.getIdentifier() == ItemID.EGNIOL_POTION_2
-			|| event.getIdentifier() == ItemID.EGNIOL_POTION_3
-			|| event.getIdentifier() == ItemID.EGNIOL_POTION_4))
+				&& event.getOption().contains("Drink")
+				&& (event.getIdentifier() == ItemID.STAMINA_MIX1
+				|| event.getIdentifier() == ItemID.STAMINA_MIX2
+				|| event.getIdentifier() == ItemID.EGNIOL_POTION_1
+				|| event.getIdentifier() == ItemID.EGNIOL_POTION_2
+				|| event.getIdentifier() == ItemID.EGNIOL_POTION_3
+				|| event.getIdentifier() == ItemID.EGNIOL_POTION_4))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createStaminaTimer();
@@ -421,9 +421,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-			&& event.getOption().contains("Drink")
-			&& (event.getIdentifier() == ItemID.ANTIFIRE_MIX1
-			|| event.getIdentifier() == ItemID.ANTIFIRE_MIX2))
+				&& event.getOption().contains("Drink")
+				&& (event.getIdentifier() == ItemID.ANTIFIRE_MIX1
+				|| event.getIdentifier() == ItemID.ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(ANTIFIRE);
@@ -431,9 +431,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-			&& event.getOption().contains("Drink")
-			&& (event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX1
-			|| event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX2))
+				&& event.getOption().contains("Drink")
+				&& (event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX1
+				|| event.getIdentifier() == ItemID.EXTENDED_ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(EXANTIFIRE);
@@ -441,9 +441,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-			&& event.getOption().contains("Drink")
-			&& (event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX1
-			|| event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX2))
+				&& event.getOption().contains("Drink")
+				&& (event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX1
+				|| event.getIdentifier() == ItemID.SUPER_ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(SUPERANTIFIRE);
@@ -451,9 +451,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showAntiFire()
-			&& event.getOption().contains("Drink")
-			&& (event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX1
-			|| event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX2))
+				&& event.getOption().contains("Drink")
+				&& (event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX1
+				|| event.getIdentifier() == ItemID.EXTENDED_SUPER_ANTIFIRE_MIX2))
 		{
 			// Needs menu option hook because mixes use a common drink message, distinct from their standard potion messages
 			createGameTimer(EXSUPERANTIFIRE);
@@ -467,7 +467,7 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (config.showImbuedHeart()
-			&& event.getOption().contains("Invigorate"))
+				&& event.getOption().contains("Invigorate"))
 		{
 			// Needs a hook as there's a few cases where potions boost the same amount as the heart
 			imbuedHeartClicked = true;
@@ -799,9 +799,9 @@ public class TimersPlugin extends Plugin
 		}
 
 		if (freezeTimer != null &&
-			// assume movement means unfrozen
-			freezeTime != client.getTickCount()
-			&& !currentWorldPoint.equals(lastPoint))
+				// assume movement means unfrozen
+				freezeTime != client.getTickCount()
+				&& !currentWorldPoint.equals(lastPoint))
 		{
 			removeGameTimer(freezeTimer.getTimer());
 			freezeTimer = null;
@@ -861,7 +861,7 @@ public class TimersPlugin extends Plugin
 		Actor actor = event.getActor();
 
 		if (config.showAbyssalSireStun()
-			&& actor instanceof NPC)
+				&& actor instanceof NPC)
 		{
 			int npcId = ((NPC) actor).getId();
 
@@ -886,17 +886,15 @@ public class TimersPlugin extends Plugin
 			}
 		}
 
-		Player player = client.getLocalPlayer();
-
-		if (player == null || actor != player)
+		if (actor != client.getLocalPlayer())
 		{
 			return;
 		}
 
 		if (config.showHomeMinigameTeleports()
-			&& player.getAnimation() == AnimationID.IDLE
-			&& (lastAnimation == AnimationID.BOOK_HOME_TELEPORT_5
-			|| lastAnimation == AnimationID.COW_HOME_TELEPORT_6))
+				&& client.getLocalPlayer().getAnimation() == AnimationID.IDLE
+				&& (lastAnimation == AnimationID.BOOK_HOME_TELEPORT_5
+				|| lastAnimation == AnimationID.COW_HOME_TELEPORT_6))
 		{
 			if (lastTeleportClicked == TeleportWidget.HOME_TELEPORT)
 			{
@@ -913,7 +911,7 @@ public class TimersPlugin extends Plugin
 			createGameTimer(DRAGON_FIRE_SHIELD);
 		}
 
-		lastAnimation = player.getAnimation();
+		lastAnimation = actor.getAnimation();
 	}
 
 	@Subscribe
@@ -987,10 +985,10 @@ public class TimersPlugin extends Plugin
 		ItemContainer container = itemContainerChanged.getItemContainer();
 		Item weapon = container.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
 		if (weapon == null ||
-			(weapon.getId() != ItemID.STAFF_OF_THE_DEAD &&
-				weapon.getId() != ItemID.TOXIC_STAFF_OF_THE_DEAD &&
-				weapon.getId() != ItemID.STAFF_OF_LIGHT &&
-				weapon.getId() != ItemID.TOXIC_STAFF_UNCHARGED))
+				(weapon.getId() != ItemID.STAFF_OF_THE_DEAD &&
+						weapon.getId() != ItemID.TOXIC_STAFF_OF_THE_DEAD &&
+						weapon.getId() != ItemID.STAFF_OF_LIGHT &&
+						weapon.getId() != ItemID.TOXIC_STAFF_UNCHARGED))
 		{
 			// remove sotd timer if the staff has been unwielded
 			removeGameTimer(STAFF_OF_THE_DEAD);

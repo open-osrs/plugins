@@ -382,8 +382,7 @@ public class DiscordPlugin extends Plugin
 			return;
 		}
 
-		final WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
-		final int playerRegionID = worldPoint == null ? 0 : worldPoint.getRegionID();
+		final int playerRegionID = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
 
 		if (playerRegionID == 0)
 		{
@@ -447,6 +446,8 @@ public class DiscordPlugin extends Plugin
 				return config.showDungeonActivity();
 			case MINIGAMES:
 				return config.showMinigameActivity();
+			case REGIONS:
+				return config.showRegionsActivity();
 		}
 
 		return false;

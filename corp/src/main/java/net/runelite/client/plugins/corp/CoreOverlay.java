@@ -39,21 +39,23 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 @Singleton
 class CoreOverlay extends Overlay
 {
-	private final CorpPlugin corpPlugin;
+	private final CorpPlugin plugin;
+	private final CorpConfig config;
 
 	@Inject
-	private CoreOverlay(final CorpPlugin corpPlugin)
+	private CoreOverlay(final CorpPlugin corpPlugin, final CorpConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
-		this.corpPlugin = corpPlugin;
+		this.plugin = corpPlugin;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		NPC core = corpPlugin.getCore();
-		if (core != null)
+		NPC core = plugin.getCore();
+		if (core != null && config.markDarkCore())
 		{
 			Polygon canvasTilePoly = core.getCanvasTilePoly();
 			if (canvasTilePoly != null)
