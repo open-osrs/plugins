@@ -86,6 +86,7 @@ enum GameTimer
 	private final Integer graphicId;
 	private final String description;
 	private final boolean removedOnDeath;
+
 	private final int imageId;
 	private final GameTimerImageType imageType;
 
@@ -116,10 +117,6 @@ enum GameTimer
 
 	GameTimer(final int imageId, final GameTimerImageType idType, final String description, final boolean removedOnDeath)
 	{
-		this.duration = null;
-		this.graphicId = null;
-		this.description = description;
-		this.removedOnDeath = removedOnDeath;
-		this.imageId = imageId;
-		this.imageType = idType;	}
+		this(imageId, idType, description, null, 1, ChronoUnit.MILLIS, removedOnDeath);
+	}
 }

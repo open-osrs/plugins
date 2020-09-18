@@ -28,7 +28,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import net.runelite.api.AnimationID;
 import net.runelite.api.Client;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Skill;
@@ -72,35 +71,35 @@ class MiningOverlay extends OverlayPanel
 		}
 
 		Pickaxe pickaxe = plugin.getPickaxe();
-		if (pickaxe != null && (pickaxe.matchesMiningAnimation(client.getLocalPlayer()) || client.getLocalPlayer().getAnimation() == AnimationID.DENSE_ESSENCE_CHIPPING))
+		if (pickaxe != null && pickaxe.matchesMiningAnimation(client.getLocalPlayer()))
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
-					.text("Mining")
-					.color(Color.GREEN)
-					.build());
+				.text("Mining")
+				.color(Color.GREEN)
+				.build());
 		}
 		else
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
-					.text("NOT mining")
-					.color(Color.RED)
-					.build());
+				.text("NOT mining")
+				.color(Color.RED)
+				.build());
 		}
 
 		int actions = xpTrackerService.getActions(Skill.MINING);
 		if (actions > 0)
 		{
 			panelComponent.getChildren().add(LineComponent.builder()
-					.left("Total mined:")
-					.right(Integer.toString(actions))
-					.build());
+				.left("Total mined:")
+				.right(Integer.toString(actions))
+				.build());
 
 			if (actions > 2)
 			{
 				panelComponent.getChildren().add(LineComponent.builder()
-						.left("Mined/hr:")
-						.right(Integer.toString(xpTrackerService.getActionsHr(Skill.MINING)))
-						.build());
+					.left("Mined/hr:")
+					.right(Integer.toString(xpTrackerService.getActionsHr(Skill.MINING)))
+					.build());
 			}
 		}
 

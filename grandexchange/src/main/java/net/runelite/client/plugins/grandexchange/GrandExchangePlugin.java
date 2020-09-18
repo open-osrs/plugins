@@ -37,7 +37,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -120,10 +119,10 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-		name = "Grand Exchange",
-		description = "Provide additional and/or easier access to Grand Exchange information",
-		tags = {"external", "integration", "notifications", "panel", "prices", "trade"},
-		type = PluginType.UTILITY
+	name = "Grand Exchange",
+	description = "Provide additional and/or easier access to Grand Exchange information",
+	tags = {"external", "integration", "notifications", "panel", "prices", "trade"},
+	type = PluginType.UTILITY
 )
 @Slf4j
 public class GrandExchangePlugin extends Plugin
@@ -203,11 +202,9 @@ public class GrandExchangePlugin extends Plugin
 	@Inject
 	private GrandExchangeClient grandExchangeClient;
 	private boolean loginBurstGeUpdates;
+	private static String machineUuid;
 
 	private boolean wasFuzzySearch;
-
-	private static String machineUuid;
-	private String lastUsername;
 
 	static
 	{
@@ -264,7 +261,7 @@ public class GrandExchangePlugin extends Plugin
 
 			boolean termCharacterMatchFound = false;
 			for (; termIndex < termLowerCase.length()
-					&& !termCharacterMatchFound; termIndex++)
+				&& !termCharacterMatchFound; termIndex++)
 			{
 				final char termChar = termLowerCase.charAt(termIndex);
 
@@ -328,11 +325,11 @@ public class GrandExchangePlugin extends Plugin
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "ge_icon.png");
 
 		button = NavigationButton.builder()
-				.tooltip("Grand Exchange")
-				.icon(icon)
-				.priority(3)
-				.panel(panel)
-				.build();
+			.tooltip("Grand Exchange")
+			.icon(icon)
+			.priority(3)
+			.panel(panel)
+			.build();
 
 		clientToolbar.addNavigation(button);
 
@@ -366,7 +363,6 @@ public class GrandExchangePlugin extends Plugin
 		grandExchangeText = null;
 		grandExchangeItem = null;
 		grandExchangeOfferQuantityHeading = null;
-		lastUsername = machineUuid = null;
 	}
 
 	@Subscribe
@@ -409,15 +405,8 @@ public class GrandExchangePlugin extends Plugin
 		final int slot = offerEvent.getSlot();
 		final GrandExchangeOffer offer = offerEvent.getOffer();
 
-		if (offer.getState() == GrandExchangeOfferState.EMPTY && client.getGameState() != GameState.LOGGED_IN)
-		{
-			// Trades are cleared by the client during LOGIN_SCREEN/HOPPING/LOGGING_IN, ignore those so we don't
-			// zero and re-submit the trade on login as an update
-			return;
-		}
-
 		log.debug("GE offer updated: state: {}, slot: {}, item: {}, qty: {}, login: {}",
-				offer.getState(), slot, offer.getItemId(), offer.getQuantitySold(), loginBurstGeUpdates);
+			offer.getState(), slot, offer.getItemId(), offer.getQuantitySold(), loginBurstGeUpdates);
 
 		ItemDefinition offerItem = itemManager.getItemDefinition(offer.getItemId());
 		boolean shouldStack = offerItem.isStackable() || offer.getTotalQuantity() > 1;
@@ -580,10 +569,6 @@ public class GrandExchangePlugin extends Plugin
 			panel.getOffersPanel().resetOffers();
 			loginBurstGeUpdates = true;
 		}
-		else if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
-		{
-			grandExchangeClient.setMachineId(getMachineUuid());
-		}
 	}
 
 	@Subscribe
@@ -726,13 +711,13 @@ public class GrandExchangePlugin extends Plugin
 		if (searchMode == GrandExchangeSearchMode.FUZZY_FALLBACK)
 		{
 			List<Integer> ids = IntStream.range(0, client.getItemCount())
-					.mapToObj(itemManager::getItemDefinition)
-					.filter(item -> item.isTradeable() && item.getNote() == -1
-							&& item.getName().toLowerCase().contains(input))
-					.limit(MAX_RESULT_COUNT + 1)
-					.sorted(Comparator.comparing(ItemDefinition::getName))
-					.map(ItemDefinition::getId)
-					.collect(Collectors.toList());
+				.mapToObj(itemManager::getItemDefinition)
+				.filter(item -> item.isTradeable() && item.getNote() == -1
+					&& item.getName().toLowerCase().contains(input))
+				.limit(MAX_RESULT_COUNT + 1)
+				.sorted(Comparator.comparing(ItemDefinition::getName))
+				.map(ItemDefinition::getId)
+				.collect(Collectors.toList());
 			if (ids.size() > MAX_RESULT_COUNT)
 			{
 				client.setGeSearchResultCount(-1);
@@ -761,14 +746,14 @@ public class GrandExchangePlugin extends Plugin
 			};
 
 			List<Integer> ids = IntStream.range(0, client.getItemCount())
-					.mapToObj(itemManager::getItemDefinition)
-					.filter(item -> item.isTradeable() && item.getNote() == -1)
-					.filter(item -> getScore.applyAsInt(item) > 0)
-					.sorted(Comparator.comparingInt(getScore).reversed()
-							.thenComparing(ItemDefinition::getName))
-					.limit(MAX_RESULT_COUNT)
-					.map(ItemDefinition::getId)
-					.collect(Collectors.toList());
+				.mapToObj(itemManager::getItemDefinition)
+				.filter(item -> item.isTradeable() && item.getNote() == -1)
+				.filter(item -> getScore.applyAsInt(item) > 0)
+				.sorted(Comparator.comparingInt(getScore).reversed()
+					.thenComparing(ItemDefinition::getName))
+				.limit(MAX_RESULT_COUNT)
+				.map(ItemDefinition::getId)
+				.collect(Collectors.toList());
 
 			client.setGeSearchResultCount(ids.size());
 			client.setGeSearchResultIds(Shorts.toArray(ids));
@@ -822,19 +807,19 @@ public class GrandExchangePlugin extends Plugin
 	private void setLimitResetTime(int itemId)
 	{
 		Instant lastDateTime = configManager.getConfiguration(GrandExchangeConfig.CONFIG_GROUP,
-				BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId, Instant.class);
+			BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId, Instant.class);
 		if (lastDateTime == null || lastDateTime.isBefore(Instant.now()))
 		{
 			configManager.setConfiguration(GrandExchangeConfig.CONFIG_GROUP,
-					BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId,
-					Instant.now().plus(BUY_LIMIT_RESET));
+				BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId,
+				Instant.now().plus(BUY_LIMIT_RESET));
 		}
 	}
 
 	private Instant getLimitResetTime(int itemId)
 	{
 		Instant lastDateTime = configManager.getConfiguration(GrandExchangeConfig.CONFIG_GROUP,
-				BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId, Instant.class);
+			BUY_LIMIT_KEY + client.getUsername().toLowerCase() + "." + itemId, Instant.class);
 		if (lastDateTime == null)
 		{
 			return null;
@@ -852,8 +837,8 @@ public class GrandExchangePlugin extends Plugin
 	private void updateLimitTimer(GrandExchangeOffer offer)
 	{
 		if (offer.getState() == GrandExchangeOfferState.BOUGHT ||
-				(offer.getQuantitySold() > 0 &&
-						offer.getState() == GrandExchangeOfferState.BUYING))
+			(offer.getQuantitySold() > 0 &&
+				offer.getState() == GrandExchangeOfferState.BUYING))
 		{
 			setLimitResetTime(offer.getItemId());
 		}
@@ -962,74 +947,31 @@ public class GrandExchangePlugin extends Plugin
 		executorService.submit(() ->
 		{
 			osbGrandExchangeClient.lookupItem(itemId)
-					.subscribeOn(Schedulers.io())
-					.observeOn(Schedulers.single())
-					.subscribe(
-							(osbresult) ->
-							{
-								if (osbresult != null && osbresult.getOverall_average() > 0)
-								{
-									osbGrandExchangeResult = osbresult;
-									// Update the text on the widget too
-									grandExchangeExamine = start + OSB_GE_TEXT + QuantityFormatter.formatNumber(osbresult.getOverall_average());
-									geText.setText(grandExchangeExamine);
-								}
-							},
-							(e) -> log.debug("Error getting price of item {}", itemId, e)
-					);
+				.subscribeOn(Schedulers.io())
+				.observeOn(Schedulers.single())
+				.subscribe(
+					(osbresult) ->
+					{
+						if (osbresult != null && osbresult.getOverall_average() > 0)
+						{
+							osbGrandExchangeResult = osbresult;
+							// Update the text on the widget too
+							grandExchangeExamine = start + OSB_GE_TEXT + QuantityFormatter.formatNumber(osbresult.getOverall_average());
+							geText.setText(grandExchangeExamine);
+						}
+					},
+					(e) -> log.debug("Error getting price of item {}", itemId, e)
+				);
 		});
 	}
 
 	static void openGeLink(String name, int itemId)
 	{
 		final String url = "https://services.runescape.com/m=itemdb_oldschool/"
-				+ name.replaceAll(" ", "+")
-				+ "/viewitem?obj="
-				+ itemId;
+			+ name.replaceAll(" ", "+")
+			+ "/viewitem?obj="
+			+ itemId;
 
 		LinkBrowser.browse(url);
-	}
-
-	private String getMachineUuid()
-	{
-		String username = client.getUsername();
-		if (lastUsername == username)
-		{
-			return machineUuid;
-		}
-
-		lastUsername = username;
-
-		try
-		{
-			Hasher hasher = Hashing.sha256().newHasher();
-			Runtime runtime = Runtime.getRuntime();
-
-			hasher.putByte((byte) OSType.getOSType().ordinal());
-			hasher.putByte((byte) runtime.availableProcessors());
-			hasher.putUnencodedChars(System.getProperty("os.arch", ""));
-			hasher.putUnencodedChars(System.getProperty("os.version", ""));
-			hasher.putUnencodedChars(System.getProperty("user.name", ""));
-
-			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-			while (networkInterfaces.hasMoreElements())
-			{
-				NetworkInterface networkInterface = networkInterfaces.nextElement();
-				byte[] hardwareAddress = networkInterface.getHardwareAddress();
-				if (hardwareAddress != null)
-				{
-					hasher.putBytes(hardwareAddress);
-				}
-			}
-			hasher.putUnencodedChars(username);
-			machineUuid = hasher.hash().toString();
-			return machineUuid;
-		}
-		catch (SocketException ex)
-		{
-			log.debug("unable to generate machine id", ex);
-			machineUuid = null;
-			return null;
-		}
 	}
 }
