@@ -41,4 +41,15 @@ public interface CorpConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "markDarkCore",
+		name = "Mark dark core",
+		description = "Marks the dark energy core.",
+		position = 1
+	)
+	default boolean markDarkCore()
+	{
+		return true;
+	}
 }
