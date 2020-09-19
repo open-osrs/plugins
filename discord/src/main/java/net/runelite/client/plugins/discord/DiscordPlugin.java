@@ -447,6 +447,8 @@ public class DiscordPlugin extends Plugin
 				return config.showDungeonActivity();
 			case MINIGAMES:
 				return config.showMinigameActivity();
+			case REGIONS:
+				return config.showRegionsActivity();
 		}
 
 		return false;
