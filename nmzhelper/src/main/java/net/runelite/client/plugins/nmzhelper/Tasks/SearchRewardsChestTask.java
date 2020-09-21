@@ -36,6 +36,23 @@ public class SearchRewardsChestTask extends Task
 			getOverloadDoseCount() >= config.overloadDoses())
 			return false;
 
+		//get the game object
+		QueryResults<GameObject> results = new GameObjectQuery()
+			.idEquals(ObjectID.REWARDS_CHEST)
+			.result(client);
+
+		if (results == null || results.isEmpty())
+		{
+			return false;
+		}
+
+		GameObject obj = results.first();
+
+		if (obj == null)
+		{
+			return false;
+		}
+
 		Widget rewardsShopWidget = client.getWidget(206, 0);
 
 		if (rewardsShopWidget != null && !rewardsShopWidget.isHidden())

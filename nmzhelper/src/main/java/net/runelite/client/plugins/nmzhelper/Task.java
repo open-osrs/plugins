@@ -2,6 +2,7 @@ package net.runelite.client.plugins.nmzhelper;
 
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Point;
@@ -10,12 +11,11 @@ import net.runelite.api.events.MenuOptionClicked;
 
 public abstract class Task
 {
-	public Task()
-	{
-	}
+	public Task() { }
 
 	public Client client;
 
+	@Inject
 	public NMZHelperConfig config;
 
 	public MenuEntry entry;
@@ -27,10 +27,7 @@ public abstract class Task
 		return this.getClass().getSimpleName();
 	}
 
-	public void onGameTick(GameTick event)
-	{
-		return;
-	}
+	public void onGameTick(GameTick event) { }
 
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{

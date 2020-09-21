@@ -53,10 +53,45 @@ public interface NMZHelperConfig extends Config
 	)
 	default int specialAttackValue() { return 100; }
 
+	@ConfigItem(
+		keyName = "powerSurge",
+		name = "Power Surge?",
+		description = "Will activate power surge if one spawns on screen.",
+		position = 6
+	)
+	default boolean powerSurge() { return false; }
+
+	@ConfigItem(
+		keyName = "autoRelog",
+		name = "Auto Re-Log",
+		description = "Log back in after 6 hour logout?",
+		position = 7
+	)
+	default boolean autoRelog() { return false; }
+
+	//username
+	@ConfigItem(
+		keyName = "email",
+		name = "Login Email",
+		description = "email",
+		position = 8
+	)
+	default String email() { return ""; }
+
+	//password
+	@ConfigItem(
+		keyName = "password",
+		name = "Password",
+		description = "password",
+		position = 9,
+		secret = true
+	)
+	default String password() { return ""; }
+
 	@ConfigItem(keyName = "startButton",
 		name = "Start",
 		description = "",
-		position = 6
+		position = 10
 	)
 	default Button startButton() { return new Button(); }
 
@@ -64,7 +99,7 @@ public interface NMZHelperConfig extends Config
 		keyName = "stopButton",
 		name = "Stop",
 		description = "",
-		position = 7
+		position = 11
 	)
 	default Button stopButton() { return new Button(); }
 }

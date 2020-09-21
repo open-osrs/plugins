@@ -2,12 +2,14 @@ package net.runelite.client.plugins.nmzhelper;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.util.Text;
@@ -22,27 +24,11 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.nmzhelper.Tasks.AbsorptionTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.AcceptDreamTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.BenefitsTabTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.BuyAbsorptionsTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.BuyOverloadsTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.ContinueDialogTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.DominicDialogue1Task;
-import net.runelite.client.plugins.nmzhelper.Tasks.DominicDialogue2Task;
-import net.runelite.client.plugins.nmzhelper.Tasks.DominicDreamTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.DrinkPotionTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.OpenAbsorptionsBarrelTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.OpenOverloadsBarrel;
-import net.runelite.client.plugins.nmzhelper.Tasks.OverloadTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.RockCakeTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.SearchRewardsChestTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.SpecialAttackTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.WithdrawAbsorptionTask;
-import net.runelite.client.plugins.nmzhelper.Tasks.WithdrawOverloadTask;
+import net.runelite.client.plugins.nmzhelper.Tasks.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
+@Singleton
 @Extension
 @PluginDescriptor(
 	name = "NMZ Helper",
@@ -72,9 +58,9 @@ public class NMZHelperPlugin extends Plugin
 	private NMZHelperOverlay overlay;
 
 	@Inject
-	private ChatMessageManager chatMessageManager;
+	private static ChatMessageManager chatMessageManager;
 
-	boolean pluginStarted;
+	static boolean pluginStarted;
 
 	@Provides
 	NMZHelperConfig provideConfig(final ConfigManager configManager)
@@ -96,10 +82,12 @@ public class NMZHelperPlugin extends Plugin
 		status = "initializing...";
 		tasks.clear();
 		tasks.addAll(client, config,
+			//loginTask,
 			new SpecialAttackTask(),
 			new OverloadTask(),
 			new AbsorptionTask(),
 			new RockCakeTask(),
+			new PowerSurgeTask(),
 
 			//--------------------------
 			new SearchRewardsChestTask(),
@@ -175,8 +163,7 @@ public class NMZHelperPlugin extends Plugin
 					|| msg.contains("Your blowpipe has run out of darts.")
 					|| msg.contains("Your blowpipe needs to be charged with Zulrah's scales."))
 				{
-					pluginStarted = false;
-					sendGameMessage("NMZHelper stopped because we received game message: " + msg);
+					stopPlugin("Received game message: " + msg);
 				}
 				break;
 			default:
@@ -212,10 +199,9 @@ public class NMZHelperPlugin extends Plugin
 			return;
 		}
 
-		if (client.getVarbitValue(3948) < 26)
+		if (client.getVarbitValue(3948) < 26 && !MiscUtils.isInNightmareZone(client))
 		{
-			pluginStarted = false;
-			sendGameMessage("varbit value 3948 < 26 (you may need to put money in the coffer)");
+			stopPlugin("You need to put money in the coffer!");
 			return;
 		}
 
@@ -226,6 +212,23 @@ public class NMZHelperPlugin extends Plugin
 			status = task.getTaskDescription();
 			task.onGameTick(event);
 		}
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event)
+	{
+		if (!pluginStarted)
+			return;
+
+		if (!config.autoRelog())
+			return;
+
+		if (client.getGameState() != GameState.LOGIN_SCREEN)
+			return;
+
+		client.setUsername(config.email());
+		client.setPassword(config.password());
+		client.setGameState(GameState.LOGGING_IN);
 	}
 
 	@Subscribe
@@ -249,7 +252,7 @@ public class NMZHelperPlugin extends Plugin
 		}
 	}
 
-	public void sendGameMessage(String message)
+	private static void sendGameMessage(String message)
 	{
 		chatMessageManager
 			.queue(QueuedMessage.builder()
@@ -260,5 +263,18 @@ public class NMZHelperPlugin extends Plugin
 					.append(message)
 					.build())
 				.build());
+	}
+
+	public static void stopPlugin()
+	{
+		stopPlugin("");
+	}
+
+	public static void stopPlugin(String reason)
+	{
+		pluginStarted = false;
+
+		if (reason != null && !reason.isEmpty())
+			sendGameMessage("NMZHelper Stopped: " + reason);
 	}
 }
