@@ -19,16 +19,18 @@ public class TaskSet
 		taskList.addAll(Arrays.asList(tasks));
 	}
 
-	public TaskSet(Client client, NMZHelperConfig config, Task... tasks)
+	public TaskSet(NMZHelperPlugin plugin, Client client, NMZHelperConfig config, Task... tasks)
 	{
 		taskList.addAll(Arrays.asList(tasks));
+		verifyPlugin(plugin);
 		verifyClient(client);
 		verifyConfig(config);
 	}
 
-	public void addAll(Client client, NMZHelperConfig config, Task... tasks)
+	public void addAll(NMZHelperPlugin plugin, Client client, NMZHelperConfig config, Task... tasks)
 	{
 		taskList.addAll(Arrays.asList(tasks));
+		verifyPlugin(plugin);
 		verifyClient(client);
 		verifyConfig(config);
 	}
@@ -36,6 +38,22 @@ public class TaskSet
 	public void clear()
 	{
 		taskList.clear();
+	}
+
+	public void verifyPlugin(NMZHelperPlugin plugin)
+	{
+		if (plugin == null)
+		{
+			return;
+		}
+
+		for (Task task : taskList)
+		{
+			if (task.plugin == null)
+			{
+				task.plugin = plugin;
+			}
+		}
 	}
 
 	public void verifyClient(Client client)

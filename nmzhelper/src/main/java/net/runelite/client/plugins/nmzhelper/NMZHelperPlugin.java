@@ -58,9 +58,9 @@ public class NMZHelperPlugin extends Plugin
 	private NMZHelperOverlay overlay;
 
 	@Inject
-	private static ChatMessageManager chatMessageManager;
+	private ChatMessageManager chatMessageManager;
 
-	static boolean pluginStarted;
+	boolean pluginStarted;
 
 	@Provides
 	NMZHelperConfig provideConfig(final ConfigManager configManager)
@@ -81,7 +81,7 @@ public class NMZHelperPlugin extends Plugin
 		overlayManager.add(overlay);
 		status = "initializing...";
 		tasks.clear();
-		tasks.addAll(client, config,
+		tasks.addAll(this, client, config,
 			//loginTask,
 			new SpecialAttackTask(),
 			new OverloadTask(),
@@ -252,7 +252,7 @@ public class NMZHelperPlugin extends Plugin
 		}
 	}
 
-	private static void sendGameMessage(String message)
+	private void sendGameMessage(String message)
 	{
 		chatMessageManager
 			.queue(QueuedMessage.builder()
@@ -265,12 +265,12 @@ public class NMZHelperPlugin extends Plugin
 				.build());
 	}
 
-	public static void stopPlugin()
+	public void stopPlugin()
 	{
 		stopPlugin("");
 	}
 
-	public static void stopPlugin(String reason)
+	public void stopPlugin(String reason)
 	{
 		pluginStarted = false;
 

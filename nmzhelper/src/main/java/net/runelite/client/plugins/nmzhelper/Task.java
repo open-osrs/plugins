@@ -13,6 +13,10 @@ public abstract class Task
 {
 	public Task() { }
 
+	@Inject
+	public NMZHelperPlugin plugin;
+
+	@Inject
 	public Client client;
 
 	@Inject

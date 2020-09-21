@@ -6,13 +6,12 @@ import java.util.stream.Collectors;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
-import net.runelite.api.Varbits;
+import net.runelite.api.VarPlayer;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.nmzhelper.MiscUtils;
-import net.runelite.client.plugins.nmzhelper.NMZHelperPlugin;
 import net.runelite.client.plugins.nmzhelper.Task;
 
 public class BuyOverloadsTask extends Task
@@ -67,9 +66,9 @@ public class BuyOverloadsTask extends Task
 	public void onGameTick(GameTick event)
 	{
 		//if amount of points is less than doses to buy * 1000
-		if (client.getVar(Varbits.NMZ_POINTS) / 1500 < (config.overloadDoses() - client.getVarbitValue(3953)))
+		if (client.getVar(VarPlayer.NMZ_REWARD_POINTS) / 1500 < (config.overloadDoses() - client.getVarbitValue(3953)))
 		{
-			NMZHelperPlugin.stopPlugin("Not enough points to buy absorption potions!");
+			plugin.stopPlugin("Not enough points to buy absorption potions!");
 			return;
 		}
 
