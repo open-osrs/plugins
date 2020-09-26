@@ -262,10 +262,33 @@ public interface IdleNotifierConfig extends Config
 		name = "PKer Notifier",
 		description = "Notifies if an attackable player based on your level range appears on screen.",
 		position = 21,
-		section = "pvpSection",
-		warning = "This will not notify you if the player is in your cc or is online on your friends list."
+		section = "pvpSection"
 	)
 	default boolean notifyPkers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "pkersIgnoreFriends",
+			name = "Pker Notifier (ignore friends)",
+			description = "If Pker Notifier is turned on, do not notify when friends appear.",
+			position = 22,
+			section = "pvpSection"
+	)
+	default boolean notifyPkersIgnoreFriends()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "pkersIgnoreClan",
+			name = "PKer Notifier (ignore clan members)",
+			description = "If Pker Notifier is turned on, do not notify when friends appear.",
+			position = 23,
+			section = "pvpSection"
+	)
+	default boolean notifyPkersIgnoreClan()
 	{
 		return false;
 	}
@@ -274,7 +297,7 @@ public interface IdleNotifierConfig extends Config
 		keyName = "resourceDoor",
 		name = "Resource Door Notifier",
 		description = "Notifies if the wilderness resource area door is opened",
-		position = 22,
+		position = 24,
 		section = "pvpSection"
 	)
 	default boolean notifyResourceDoor()

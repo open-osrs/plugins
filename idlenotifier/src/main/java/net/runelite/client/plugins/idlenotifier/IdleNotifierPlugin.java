@@ -337,9 +337,14 @@ public class IdleNotifierPlugin extends Plugin
 	private void onPlayerSpawned(PlayerSpawned event)
 	{
 		final Player p = event.getPlayer();
+		boolean checkFriends = config.notifyPkersIgnoreFriends();
+		boolean checkClanChat = config.notifyPkersIgnoreClan();
+		boolean friendConditionalMet = client.isFriended(p.getName(), false) && checkFriends;
+		boolean clanChatConditionalMet = friendChatManager.isMember(p.getName()) && checkClanChat;
+
 		if (config.notifyPkers() && p != null && p != client.getLocalPlayer()
-			&& PvPUtil.isAttackable(client, p) && !client.isFriended(p.getName(), false)
-			&& !friendChatManager.isMember(p.getName()))
+			&& PvPUtil.isAttackable(client, p) && friendConditionalMet
+			&& clanChatConditionalMet)
 		{
 			String playerName = p.getName();
 			int combat = p.getCombatLevel();
