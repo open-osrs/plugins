@@ -831,7 +831,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Ungael").setPriority(10);
 			menuManager.addPriorityEntry("Pirate's Cove").setPriority(10);
 			menuManager.addPriorityEntry("Waterbirth Island").setPriority(10);
-			menuManager.addPriorityEntry("Miscellania").setPriority(10);
+			menuManager.addPriorityEntry("Miscellania", "Sailor").setPriority(10);
 			menuManager.addPriorityEntry("Island of Stone").setPriority(10);
 			menuManager.addPriorityEntry("Follow", "Elkoy").setPriority(10);
 			menuManager.addPriorityEntry("Transport").setPriority(10);
