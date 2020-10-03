@@ -7,8 +7,8 @@ buildscript {
 plugins {
     checkstyle
     java
-    id("com.github.ben-manes.versions") version "0.29.0"
-    id("se.patrikerdes.use-latest-versions") version "0.2.14"
+    id("com.github.ben-manes.versions") version "0.33.0"
+    id("se.patrikerdes.use-latest-versions") version "0.2.15"
     id("com.simonharrer.modernizer") version "2.1.0-1" apply false
 }
 
@@ -81,7 +81,7 @@ subprojects {
         compileOnly(group = "net.sf.jopt-simple", name = "jopt-simple", version = "5.0.4")
         compileOnly(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
         compileOnly(group = "org.projectlombok", name = "lombok", version = "1.18.12")
-        compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.8.1")
+        compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.0")
         compileOnly(group = "org.pf4j", name = "pf4j", version = "3.4.1")
         compileOnly(group = "io.reactivex.rxjava3", name = "rxjava", version = "3.0.6")
         compileOnly(group = "org.pushing-pixels", name = "radiance-substance", version = "2.5.1")
@@ -97,8 +97,8 @@ subprojects {
         testImplementation(group = "com.google.code.gson", name = "gson", version = "2.8.6")
         testImplementation(group = "net.sf.jopt-simple", name = "jopt-simple", version = "5.0.4")
         testImplementation(group = "junit", name = "junit", version = "4.13")
-        testImplementation(group = "org.mockito", name = "mockito-core", version = "3.5.7")
-        testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.5.7")
+        testImplementation(group = "org.mockito", name = "mockito-core", version = "3.5.13")
+        testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.5.13")
         testImplementation(group = "org.projectlombok", name = "lombok", version = "1.18.12")
         testImplementation(group = "org.hamcrest", name = "hamcrest-library", version = "2.2")
         testImplementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.30")
