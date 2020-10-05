@@ -118,9 +118,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		"miscellania", "grand exchange", "falador park", "dondakan's rock", "edgeville", "karamja",
 		"draynor village", "al kharid"
 	);
-	private static final List<String> pharaohsSceptre = Arrays.asList(
-		"Pharaoh's Sceptre (3)", "Pharaoh's Sceptre (2)", "Pharaoh's Sceptre (1)", "Pharaoh's Sceptre"
-	);
 	private static final List<String> npcContact = Arrays.asList(
 		"honest jimmy", "bert the sandman", "advisor ghrim", "dark mage", "lanthus", "turael",
 		"mazchna", "vannaka", "chaeldar", "nieve", "steve", "duradel", "krystilia", "konar",
@@ -831,7 +828,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Ungael").setPriority(10);
 			menuManager.addPriorityEntry("Pirate's Cove").setPriority(10);
 			menuManager.addPriorityEntry("Waterbirth Island").setPriority(10);
-			menuManager.addPriorityEntry("Miscellania").setPriority(10);
+			menuManager.addPriorityEntry("Miscellania", "Sailor").setPriority(10);
 			menuManager.addPriorityEntry("Island of Stone").setPriority(10);
 			menuManager.addPriorityEntry("Follow", "Elkoy").setPriority(10);
 			menuManager.addPriorityEntry("Transport").setPriority(10);
@@ -1095,14 +1092,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 
-		if (config.swapPharaohsSceptre())
-		{
-			for (String pharaohsSceptre : pharaohsSceptre)
-			{
-				menuManager.addPriorityEntry("Wield", pharaohsSceptre);
-			}
-		}
-
 		if (config.swapDropFish())
 		{
 			for (String dropFish : dropFish)
@@ -1280,10 +1269,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
 			menuManager.removePriorityEntry(jewellerybox, "fancy jewellery box");
 			menuManager.removePriorityEntry(jewellerybox, "ornate jewellery box");
-		}
-		for (String pharaohsSceptre : pharaohsSceptre)
-		{
-			menuManager.removePriorityEntry("Wield", pharaohsSceptre);
 		}
 
 		for (String dropFish : dropFish)
