@@ -54,7 +54,6 @@ public enum ItemType
 	CHARGES("Charges"),
 	FARMING("Farming"),
 	DEATH("Deaths"),
-	CONSTRUCTION("Construction"),
 	PRAYER("Prayer");
 
 	@Getter(AccessLevel.PUBLIC)
@@ -91,10 +90,6 @@ public enum ItemType
 		else if (item.getName().toLowerCase().contains("rune"))
 		{
 			return ItemType.RUNE;
-		}
-		else if (item.getName().toLowerCase().contains("plank"))
-		{
-			return ItemType.CONSTRUCTION;
 		}
 		else if (item.getName().toLowerCase().contains("teleport"))
 		{

@@ -184,9 +184,6 @@ public class SuppliesTrackerPlugin extends Plugin
 	//farming stuff
 	private Farming farming;
 
-	//cons
-	private Item[] consOld;
-
 	private ItemContainer old;
 	private int ammoId = 0;
 	private int ammoAmount = 0;
@@ -216,7 +213,6 @@ public class SuppliesTrackerPlugin extends Plugin
 	private SuppliesTrackerConfig config;
 	@Inject
 	private Client client;
-	private boolean consAnimCheck = false;
 
 	/**
 	 * Checks if item name is potion
@@ -704,12 +700,6 @@ public class SuppliesTrackerPlugin extends Plugin
 						ensouledHeadId = 0;
 					}
 					break;
-				case 3676:
-					consAnimCheck = true;
-					break;
-				case -1:
-					consAnimCheck = false;
-					break;
 			}
 		}
 	}
@@ -718,7 +708,6 @@ public class SuppliesTrackerPlugin extends Plugin
 	private void onItemContainerChanged(ItemContainerChanged itemContainerChanged)
 	{
 		ItemContainer itemContainer = itemContainerChanged.getItemContainer();
-
 
 		if (itemContainer != null && itemContainer == client.getItemContainer(InventoryID.INVENTORY))
 		{
@@ -735,20 +724,6 @@ public class SuppliesTrackerPlugin extends Plugin
 				else
 				{
 					runepouchInInv = false;
-				}
-			}
-		}
-
-		if (itemContainer == client.getItemContainer(InventoryID.INVENTORY) &&
-				consOld != null && consAnimCheck)
-		{
-			System.out.println("cons items used");
-			for (int i = 0; i < consOld.length; i++)
-			{
-				System.out.println(consOld[i].getId() + " - " + client.getItemContainer(InventoryID.INVENTORY).getItems()[i].getId());
-				if (consOld[i].getId() != client.getItemContainer(InventoryID.INVENTORY).getItems()[i].getId())
-				{
-					buildEntries(consOld[i].getId());
 				}
 			}
 		}
@@ -884,16 +859,6 @@ public class SuppliesTrackerPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(final MenuOptionClicked event)
 	{
-
-		if (event.getOpcode() == 57 && event.getOption().equalsIgnoreCase("build"))
-		{
-			consOld = client.getItemContainer(InventoryID.INVENTORY).getItems();
-			for (int i = 0; i < client.getItemContainer(InventoryID.INVENTORY).getItems().length; i++)
-			{
-				System.out.println(client.getItemContainer(InventoryID.INVENTORY).getItems()[i].getId());
-			}
-		}
-
 		// Uses stacks to push/pop for tick eating
 		// Create pattern to find eat/drink at beginning
 		Pattern eatPattern = Pattern.compile(EAT_PATTERN);
@@ -1192,7 +1157,6 @@ public class SuppliesTrackerPlugin extends Plugin
 		final ItemDefinition itemComposition = itemManager.getItemDefinition(itemId);
 		String name = itemComposition.getName();
 		long calculatedPrice;
-
 
 		for (String raidsConsumables : RAIDS_CONSUMABLES)
 		{
