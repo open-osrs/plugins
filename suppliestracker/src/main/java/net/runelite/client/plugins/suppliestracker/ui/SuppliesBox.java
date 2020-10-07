@@ -68,6 +68,7 @@ public abstract class SuppliesBox extends JPanel
 
 	@Getter(AccessLevel.PUBLIC)
 	private final List<SuppliesTrackerItem> trackedItems = new ArrayList<>();
+
 	private long totalPrice;
 
 	protected SuppliesBox(
@@ -688,17 +689,15 @@ public abstract class SuppliesBox extends JPanel
 		@Override
 		final String buildTooltip(int itemId, int qty, SuppliesTrackerItem item)
 		{
-			if (itemId == HEALER_ICON_20802)
+			switch (itemId)
 			{
-				final long price = 100000 * qty;
-				return "ToB Deaths" + " x " + qty + " (" + QuantityFormatter.quantityToStackSize(price) + "gp) ";
+				case HEALER_ICON_20802:
+					return "ToB Deaths" + " x " + qty + " (" + QuantityFormatter.quantityToStackSize(100000 * qty) + "gp) ";
+				case HEALER_ICON_22308:
+					return "Vorkath Deaths" + " x " + qty + " (" + QuantityFormatter.quantityToStackSize(100000 * qty) + "gp) ";
+				default:
+					return "";
 			}
-			if (itemId == HEALER_ICON_22308)
-			{
-				final long price = 100000 * qty;
-				return "Vorkath Deaths" + " x " + qty + " (" + QuantityFormatter.quantityToStackSize(price) + "gp) ";
-			}
-			return "";
 		}
 
 		@Override

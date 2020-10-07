@@ -132,6 +132,7 @@ public class SuppliesTrackerPlugin extends Plugin
 
 	//Hold Supply Data
 	private final Map<Integer, SuppliesTrackerItem> suppliesEntry = new HashMap<>();
+	private final Map<Integer, SuppliesTrackerItem> currentSuppliesEntry = new HashMap<>();
 	private final Deque<MenuAction> actionStack = new ArrayDeque<>();
 
 	//Item arrays
@@ -183,6 +184,9 @@ public class SuppliesTrackerPlugin extends Plugin
 	//farming stuff
 	private Farming farming;
 
+	//cons
+	private Item[] consOld;
+
 	private ItemContainer old;
 	private int ammoId = 0;
 	private int ammoAmount = 0;
@@ -200,6 +204,8 @@ public class SuppliesTrackerPlugin extends Plugin
 	private SessionHandler sessionHandler;
 	private String sessionUser = "";
 
+	public boolean showSession = false;
+
 	private SuppliesTrackerPanel panel;
 	private NavigationButton navButton;
 	@Inject
@@ -210,6 +216,7 @@ public class SuppliesTrackerPlugin extends Plugin
 	private SuppliesTrackerConfig config;
 	@Inject
 	private Client client;
+	private boolean consAnimCheck = false;
 
 	/**
 	 * Checks if item name is potion
@@ -697,6 +704,12 @@ public class SuppliesTrackerPlugin extends Plugin
 						ensouledHeadId = 0;
 					}
 					break;
+				case 3676:
+					consAnimCheck = true;
+					break;
+				case -1:
+					consAnimCheck = false;
+					break;
 			}
 		}
 	}
@@ -722,6 +735,20 @@ public class SuppliesTrackerPlugin extends Plugin
 				else
 				{
 					runepouchInInv = false;
+				}
+			}
+		}
+
+		if (itemContainer == client.getItemContainer(InventoryID.INVENTORY) &&
+				consOld != null && consAnimCheck)
+		{
+			System.out.println("cons items used");
+			for (int i = 0; i < consOld.length; i++)
+			{
+				System.out.println(consOld[i].getId() + " - " + client.getItemContainer(InventoryID.INVENTORY).getItems()[i].getId());
+				if (consOld[i].getId() != client.getItemContainer(InventoryID.INVENTORY).getItems()[i].getId())
+				{
+					buildEntries(consOld[i].getId());
 				}
 			}
 		}
@@ -858,6 +885,15 @@ public class SuppliesTrackerPlugin extends Plugin
 	private void onMenuOptionClicked(final MenuOptionClicked event)
 	{
 
+		if (event.getOpcode() == 57 && event.getOption().equalsIgnoreCase("build"))
+		{
+			consOld = client.getItemContainer(InventoryID.INVENTORY).getItems();
+			for (int i = 0; i < client.getItemContainer(InventoryID.INVENTORY).getItems().length; i++)
+			{
+				System.out.println(client.getItemContainer(InventoryID.INVENTORY).getItems()[i].getId());
+			}
+		}
+
 		// Uses stacks to push/pop for tick eating
 		// Create pattern to find eat/drink at beginning
 		Pattern eatPattern = Pattern.compile(EAT_PATTERN);
@@ -953,6 +989,8 @@ public class SuppliesTrackerPlugin extends Plugin
 			}
 
 		}
+
+
 
 		if (event.getTarget().equals("Use") || event.getOption().toLowerCase().contains("bury"))
 		{
@@ -1155,6 +1193,7 @@ public class SuppliesTrackerPlugin extends Plugin
 		String name = itemComposition.getName();
 		long calculatedPrice;
 
+
 		for (String raidsConsumables : RAIDS_CONSUMABLES)
 		{
 			if (name.toLowerCase().contains(raidsConsumables))
@@ -1167,6 +1206,7 @@ public class SuppliesTrackerPlugin extends Plugin
 		{
 			return;
 		}
+
 		// convert potions, pizzas/pies, and cakes to their full equivalents
 		// e.g. a half pizza becomes full pizza, 3 dose potion becomes 4, etc...
 		if (isPotion(name))
@@ -1195,8 +1235,18 @@ public class SuppliesTrackerPlugin extends Plugin
 			newQuantity = count;
 		}
 
+		int newQuantityC;
+		if (currentSuppliesEntry.containsKey(itemId))
+		{
+			newQuantityC = currentSuppliesEntry.get(itemId).getQuantity() + count;
+		}
+		else
+		{
+			newQuantityC = count;
+		}
+
 		// calculate price for amount of doses used
-		calculatedPrice = ((long) itemManager.getItemPrice(itemId)) * ((long) newQuantity);
+		calculatedPrice = (itemManager.getItemPrice(itemId));
 		calculatedPrice = scalePriceByDoses(name, itemId, calculatedPrice);
 
 		// write the new quantity and calculated price for this entry
@@ -1204,13 +1254,32 @@ public class SuppliesTrackerPlugin extends Plugin
 				itemId,
 				name,
 				newQuantity,
-				calculatedPrice);
-
-		if (!sessionLoading) sessionHandler.addtoSession(itemId, count, "");
+				(calculatedPrice * newQuantity));
 
 		suppliesEntry.put(itemId, newEntry);
-		SwingUtilities.invokeLater(() ->
-				panel.addItem(newEntry));
+
+		SuppliesTrackerItem newEntryC = new SuppliesTrackerItem(
+				itemId,
+				name,
+				newQuantityC,
+				(calculatedPrice * newQuantityC));
+
+		if (!sessionLoading)
+		{
+			sessionHandler.addtoSession(itemId, count, "");
+			currentSuppliesEntry.put(itemId, newEntryC);
+		}
+
+		if (showSession)
+		{
+			SwingUtilities.invokeLater(() ->
+					panel.addItem(newEntryC));
+		}
+		else
+		{
+			SwingUtilities.invokeLater(() ->
+					panel.addItem(newEntry));
+		}
 	}
 
 	private void buildChargesEntries(int itemId)
@@ -1229,6 +1298,7 @@ public class SuppliesTrackerPlugin extends Plugin
 		String name = itemComposition.getName();
 		long calculatedPrice = 0;
 
+
 		int newQuantity;
 		if (suppliesEntry.containsKey(itemId))
 		{
@@ -1239,57 +1309,62 @@ public class SuppliesTrackerPlugin extends Plugin
 			newQuantity = count;
 		}
 
+		int newQuantityC;
+		if (currentSuppliesEntry.containsKey(itemId))
+		{
+			newQuantityC = currentSuppliesEntry.get(itemId).getQuantity() + count;
+		}
+		else
+		{
+			newQuantityC = count;
+		}
+
 		switch (itemId)
 		{
 			case AMULET_OF_GLORY6:
-				calculatedPrice = (((itemManager.getItemPrice(AMULET_OF_GLORY6) - (itemManager.getItemPrice(AMULET_OF_GLORY))) * newQuantity) / 6);
+				calculatedPrice = (((itemManager.getItemPrice(AMULET_OF_GLORY6) - (itemManager.getItemPrice(AMULET_OF_GLORY)))) / 6);
 				break;
 			case RING_OF_DUELING8:
-				calculatedPrice = ((itemManager.getItemPrice(RING_OF_DUELING8) * newQuantity) / 8);
+				calculatedPrice = ((itemManager.getItemPrice(RING_OF_DUELING8)) / 8);
 				break;
 			case RING_OF_WEALTH_5:
-				calculatedPrice = (((itemManager.getItemPrice(RING_OF_WEALTH_5) - (itemManager.getItemPrice(RING_OF_WEALTH))) * newQuantity) / 5);
+				calculatedPrice = (((itemManager.getItemPrice(RING_OF_WEALTH_5) - (itemManager.getItemPrice(RING_OF_WEALTH)))) / 5);
 				break;
 			case COMBAT_BRACELET6:
-				calculatedPrice = ((itemManager.getItemPrice(COMBAT_BRACELET6) * newQuantity) / 6);
+				calculatedPrice = (((itemManager.getItemPrice(COMBAT_BRACELET6) - (itemManager.getItemPrice(COMBAT_BRACELET)))) / 6);
 				break;
 			case GAMES_NECKLACE8:
-				calculatedPrice = ((itemManager.getItemPrice(GAMES_NECKLACE8) * newQuantity) / 8);
+				calculatedPrice = ((itemManager.getItemPrice(GAMES_NECKLACE8)) / 8);
 				break;
 			case SKILLS_NECKLACE6:
-				calculatedPrice = (((itemManager.getItemPrice(SKILLS_NECKLACE6) - (itemManager.getItemPrice(SKILLS_NECKLACE))) * newQuantity) / 6);
+				calculatedPrice = (((itemManager.getItemPrice(SKILLS_NECKLACE6) - (itemManager.getItemPrice(SKILLS_NECKLACE)))) / 6);
 				break;
 			case NECKLACE_OF_PASSAGE5:
-				calculatedPrice = ((itemManager.getItemPrice(NECKLACE_OF_PASSAGE5) * newQuantity) / 5);
+				calculatedPrice = ((itemManager.getItemPrice(NECKLACE_OF_PASSAGE5)) / 5);
 				break;
 			case BURNING_AMULET5:
-				calculatedPrice = ((itemManager.getItemPrice(BURNING_AMULET5) * newQuantity) / 5);
+				calculatedPrice = ((itemManager.getItemPrice(BURNING_AMULET5)) / 5);
 				break;
 			case SCYTHE_OF_VITUR:
-				calculatedPrice = (itemManager.getItemPrice(BLOOD_RUNE) * newQuantity * 3) + (itemManager.getItemPrice(VIAL_OF_BLOOD_22446) * newQuantity / 100);
+				calculatedPrice = (itemManager.getItemPrice(BLOOD_RUNE) * 3) + (itemManager.getItemPrice(VIAL_OF_BLOOD_22446) / 100);
 				break;
 			case TRIDENT_OF_THE_SWAMP:
-				calculatedPrice = (itemManager.getItemPrice(CHAOS_RUNE) * newQuantity) + (itemManager.getItemPrice(DEATH_RUNE) * newQuantity) +
-						(itemManager.getItemPrice(FIRE_RUNE) * newQuantity * 5) + (itemManager.getItemPrice(ZULRAHS_SCALES) * newQuantity);
+				calculatedPrice = (itemManager.getItemPrice(CHAOS_RUNE)) + (itemManager.getItemPrice(DEATH_RUNE)) +
+						(itemManager.getItemPrice(FIRE_RUNE) * 5) + (itemManager.getItemPrice(ZULRAHS_SCALES));
 				break;
 			case TRIDENT_OF_THE_SEAS:
-				calculatedPrice = (itemManager.getItemPrice(CHAOS_RUNE) * newQuantity) + (itemManager.getItemPrice(DEATH_RUNE) * newQuantity) +
-						(itemManager.getItemPrice(FIRE_RUNE) * newQuantity * 5) + (itemManager.getItemPrice(COINS_995) * newQuantity * 10);
+				calculatedPrice = (itemManager.getItemPrice(CHAOS_RUNE)) + (itemManager.getItemPrice(DEATH_RUNE)) +
+						(itemManager.getItemPrice(FIRE_RUNE) * 5) + (itemManager.getItemPrice(COINS_995) * 10);
 				break;
 			case SANGUINESTI_STAFF:
-				calculatedPrice = (itemManager.getItemPrice(BLOOD_RUNE) * newQuantity * 3);
+				calculatedPrice = (itemManager.getItemPrice(BLOOD_RUNE) * 3);
 				break;
 			case IBANS_STAFF:
-				calculatedPrice = ((itemManager.getItemPrice(DEATH_RUNE) * newQuantity) + (itemManager.getItemPrice(FIRE_RUNE) * newQuantity * 5));
+				calculatedPrice = ((itemManager.getItemPrice(DEATH_RUNE)) + (itemManager.getItemPrice(FIRE_RUNE) * 5));
 				break;
 			case BLADE_OF_SAELDOR:
 				calculatedPrice = 0;
 				break;
-		}
-
-		if (!sessionLoading)
-		{
-			sessionHandler.addtoSession(itemId, count, "c");
 		}
 
 		// write the new quantity and calculated price for this entry
@@ -1297,11 +1372,32 @@ public class SuppliesTrackerPlugin extends Plugin
 				itemId,
 				name,
 				newQuantity,
-				calculatedPrice);
+				(calculatedPrice * newQuantity));
 
 		suppliesEntry.put(itemId, newEntry);
-		SwingUtilities.invokeLater(() ->
-				panel.addItem(newEntry));
+
+		SuppliesTrackerItem newEntryC = new SuppliesTrackerItem(
+				itemId,
+				name,
+				newQuantityC,
+				(calculatedPrice * newQuantityC));
+
+		if (!sessionLoading)
+		{
+			sessionHandler.addtoSession(itemId, count, "c");
+			currentSuppliesEntry.put(itemId, newEntryC);
+		}
+
+		if (showSession)
+		{
+			SwingUtilities.invokeLater(() ->
+					panel.addItem(newEntryC));
+		}
+		else
+		{
+			SwingUtilities.invokeLater(() ->
+					panel.addItem(newEntry));
+		}
 	}
 
 
@@ -1311,6 +1407,7 @@ public class SuppliesTrackerPlugin extends Plugin
 	public void clearSupplies()
 	{
 		suppliesEntry.clear();
+		currentSuppliesEntry.clear();
 		sessionHandler.clearSupplies();
 	}
 
@@ -1322,6 +1419,7 @@ public class SuppliesTrackerPlugin extends Plugin
 	public void clearItem(int itemId)
 	{
 		suppliesEntry.remove(itemId);
+		currentSuppliesEntry.remove(itemId);
 		sessionHandler.clearItem(itemId);
 	}
 
@@ -1485,6 +1583,29 @@ public class SuppliesTrackerPlugin extends Plugin
 			}
 		}
 	}
+	public void switchTracking()
+	{
+		SwingUtilities.invokeLater(() ->
+				panel.resetAll());
 
+		showSession = !showSession;
+
+		if (showSession)
+		{
+			for (SuppliesTrackerItem item: currentSuppliesEntry.values())
+			{
+				SwingUtilities.invokeLater(() ->
+						panel.addItem(item));
+			}
+		}
+		else
+		{
+			for (SuppliesTrackerItem item: suppliesEntry.values())
+			{
+				SwingUtilities.invokeLater(() ->
+						panel.addItem(item));
+			}
+		}
+	}
 
 }
