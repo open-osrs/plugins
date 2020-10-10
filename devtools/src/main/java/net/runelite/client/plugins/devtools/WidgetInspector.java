@@ -137,7 +137,7 @@ class WidgetInspector extends JFrame
 		eventBus.subscribe(MenuOptionClicked.class, this, this::onMenuOptionClicked);
 		eventBus.subscribe(MenuEntryAdded.class, this, this::onMenuEntryAdded);
 
-		setTitle("RuneLite Widget Inspector");
+		setTitle("OpenOSRS Widget Inspector");
 		setIconImage(ClientUI.ICON);
 
 		// Reset highlight on close
