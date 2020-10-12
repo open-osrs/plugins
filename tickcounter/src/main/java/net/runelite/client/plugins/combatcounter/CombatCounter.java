@@ -110,6 +110,11 @@ public class CombatCounter extends Plugin
 		.put(8145, 4) // Rapier Stab, Lunge, Block
 		.put(390, 4) // Rapier Slash
 
+		.put(4503, 4) // Inq Mace Pound, Pummel, Block
+		.put(400, 4) // Inq Mace Spike
+
+		.put(3298, 4) // Bludgeon Pound, Pummel, Smash
+
 		.put(7552, 5) // Armadyl Crossbow Accurate, Rapid, Longrange, Special
 
 		.put(1167, 4) // Trident Accurate, Accurate, Longrange
@@ -120,6 +125,12 @@ public class CombatCounter extends Plugin
 		.put(393, 4) // Dragon Claws Chop, Slash, Block
 		.put(1067, 4) // Dragon Claws Lunge
 		.put(7514, 4) // Dragon Claws Special
+
+		.put(406, 7) // D2H Smash
+		.put(407, 7) // D2H Chop, Slash, Block
+		.put(3157, 7) // D2H Special
+
+		.put(7511, 7) // Dinh's Pummel, Special
 
 		.put(8288, 4) // Dragon Hunter Lance Lunge, Block
 		.put(8289, 4) // Dragon Hunter Lance Swipe
@@ -144,6 +155,9 @@ public class CombatCounter extends Plugin
 		//.put(419, 4) // Staff of Light Fend
 		.put(7967, 4) // Staff of Light Special
 
+		.put(7855, 5) // Surge Animation
+		.put(8352, 5) // Volatile Staff Special
+
 		.put(428, 7) // Crystal Halberd Jab, Fend
 		.put(419, 7) // Crystal Halberd Swipe
 		.put(1203, 7) // Crystal Halberd Special
@@ -166,6 +180,11 @@ public class CombatCounter extends Plugin
 
 		.add(8145) // Rapier Stab, Lunge, Block
 		.add(390) // Rapier Slash
+		
+		.add(4503) // Inq Mace Pound, Pummel, Block
+		.add(400) // Inq Mace Spike
+
+		.add(3298) // Bludgeon Pound, Pummel, Smash
 
 		.add(401) // Dragon Warhammer Pound, Pummel, Block
 		.add(1378) // Dragon Warhammer Special
@@ -173,6 +192,12 @@ public class CombatCounter extends Plugin
 		.add(393) // Dragon Claws Chop, Slash, Block
 		.add(1067) // Dragon Claws Lunge
 		.add(7514) // Dragon Claws Special
+
+		.add(406) // D2H Smash
+		.add(407) // D2H Chop, Slash, Block
+		.add(3157) // D2H Special
+
+		.add(7511) // Dinh's Pummel, Special
 
 		.add(8288) // Dragon Hunter Lance Lunge, Block
 		.add(8289) // Dragon Hunter Lance Swipe
@@ -211,7 +236,9 @@ public class CombatCounter extends Plugin
 	private static final Set<Integer> MAGE_ANIMATIONS = Set.of(
 		1167, // Trident Accurate, Accurate, Longrange
 		1978, // Ancient Magicks Blitz
-		1979 // Ancient Magicks Barrage
+		1979, // Ancient Magicks Barrage
+		7855, // Surge animation
+		8352  // Volatile Staff Special
 	);
 
 	@Override
@@ -262,6 +289,12 @@ public class CombatCounter extends Plugin
 							|| ((Player) actor).getPlayerAppearance().getEquipmentId(KitType.WEAPON) == 24219)
 						{
 							ticks = 3;
+						}
+						// if harm staff equipped and surging, remove a tick
+						else if (((Player) actor).getPlayerAppearance().getEquipmentId(KitType.WEAPON) == 24423
+							&& animation == 7855)
+						{
+							ticks--;
 						}
 						if (counter.containsKey(name))
 						{

@@ -38,10 +38,46 @@ import net.runelite.client.config.Units;
 public interface MiningConfig extends Config
 {
 	@ConfigTitleSection(
+		keyName = "sessionTitle",
+		name = "Session",
+		description = "",
+		position = 1
+	)
+	default Title sessionTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "statTimeout",
+		name = "Reset stats",
+		description = "Duration the mining indicator and session stats are displayed before being reset",
+		titleSection = "sessionTitle",
+		position = 2
+	)
+	@Units(Units.MINUTES)
+	default int statTimeout()
+	{
+		return 5;
+	}
+
+	@ConfigItem(
+		keyName = "showMiningStats",
+		name = "Show session stats",
+		description = "Configures whether to display mining session stats",
+		titleSection = "sessionTitle",
+		position = 3
+	)
+	default boolean showMiningStats()
+	{
+		return true;
+	}
+
+	@ConfigTitleSection(
 		keyName = "coalBagTitle",
 		name = "Coal bag",
 		description = "",
-		position = 1
+		position = 4
 	)
 	default Title coalBagTitle()
 	{
@@ -53,7 +89,7 @@ public interface MiningConfig extends Config
 		name = "Show coal bag overlay",
 		description = "Overlays how much coal is inside of your coal bag",
 		titleSection = "coalBagTitle",
-		position = 2
+		position = 5
 	)
 	default boolean showCoalBagOverlay()
 	{
@@ -64,7 +100,7 @@ public interface MiningConfig extends Config
 		keyName = "progressTitle",
 		name = "Progress",
 		description = "",
-		position = 3
+		position = 6
 	)
 	default Title progressTitle()
 	{
@@ -76,7 +112,7 @@ public interface MiningConfig extends Config
 		name = "Invert progress pie",
 		description = "Configures whether the progress pie goes from empty to full or the other way around",
 		titleSection = "progressTitle",
-		position = 4
+		position = 7
 	)
 	default boolean progressPieInverted()
 	{
@@ -92,7 +128,7 @@ public interface MiningConfig extends Config
 		name = "Progress pie diameter",
 		description = "Configures how big the progress pie is",
 		titleSection = "progressTitle",
-		position = 5
+		position = 8
 	)
 	@Units(Units.PIXELS)
 	default int progressPieDiameter()
@@ -104,7 +140,7 @@ public interface MiningConfig extends Config
 		keyName = "colorsTitle",
 		name = "Colors",
 		description = "",
-		position = 6
+		position = 9
 	)
 	default Title colorsTitle()
 	{
@@ -117,7 +153,7 @@ public interface MiningConfig extends Config
 		name = "Main progress pie color",
 		description = "Configures the color of the main progress pie",
 		titleSection = "colorsTitle",
-		position = 7
+		position = 10
 	)
 	default Color progressPieColor()
 	{
@@ -130,7 +166,7 @@ public interface MiningConfig extends Config
 		name = "Motherlode random respawn threshold progress pie color",
 		description = "Configures the color of the progress pie after Motherlode respawn threshold",
 		titleSection = "colorsTitle",
-		position = 8
+		position = 11
 	)
 	default Color progressPieColorMotherlode()
 	{

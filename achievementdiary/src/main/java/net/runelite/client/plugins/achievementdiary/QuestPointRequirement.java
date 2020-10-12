@@ -27,6 +27,8 @@ package net.runelite.client.plugins.achievementdiary;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.runelite.api.Client;
+import net.runelite.api.VarPlayer;
 
 @RequiredArgsConstructor
 @Getter(AccessLevel.PACKAGE)
@@ -38,5 +40,10 @@ public class QuestPointRequirement implements Requirement
 	public String toString()
 	{
 		return qp + " " + "Quest points";
+	}
+
+	public boolean satisfiesRequirement(Client client)
+	{
+		return client.getVar(VarPlayer.QUEST_POINTS) >= qp;
 	}
 }

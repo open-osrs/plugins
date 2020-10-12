@@ -89,6 +89,8 @@ public enum Emoji
 	PENSIVE("V_V"),
 	ACORN("<lt>D~"), // <D~
 	GORILLA(":G"),
+	PLEADING("(n_n)"),
+	XD("Xd"),
 	;
 
 	public static final Map<String, Emoji> emojiMap;

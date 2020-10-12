@@ -685,22 +685,10 @@ public interface MenuEntrySwapperConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "swapPharaohsSceptre",
-		name = "Swap Pharaoh's sceptre",
-		description = "Swap left click to Wield from Jalsavrah.",
-		position = 18,
-		section = "miscellaneousSection"
-	)
-	default boolean swapPharaohsSceptre()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		keyName = "swapTeleportNames",
 		name = "Swap Teleport Names",
 		description = "Swap Teleport Names for Teleports with silly names.",
-		position = 19,
+		position = 18,
 		section = "miscellaneousSection"
 	)
 	default boolean swapTeleportNames()
@@ -712,7 +700,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "getSwapOffer",
 		name = "Offer-All",
 		description = "Swap 'Offer', on trades with 'Offer-All'",
-		position = 20,
+		position = 19,
 		section = "miscellaneousSection"
 	)
 	default boolean getSwapOffer()
@@ -724,7 +712,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "swapCoalBag",
 		name = "Coal Bag",
 		description = "Makes Empty the left click option when in a bank",
-		position = 21,
+		position = 20,
 		section = "miscellaneousSection"
 	)
 	default boolean swapCoalBag()
@@ -736,7 +724,7 @@ public interface MenuEntrySwapperConfig extends Config
 		keyName = "deprioritizeChopDown",
 		name = "Deprioritize Chop Down",
 		description = "Makes chop down appear below walk here on trees",
-		position = 22,
+		position = 21,
 		section = "miscellaneousSection"
 	)
 	default boolean deprioritizeChopDown()

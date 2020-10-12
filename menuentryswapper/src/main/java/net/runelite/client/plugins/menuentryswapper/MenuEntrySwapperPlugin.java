@@ -112,19 +112,16 @@ public class MenuEntrySwapperPlugin extends Plugin
 		MenuOpcode.NPC_FOURTH_OPTION, MenuOpcode.NPC_FIFTH_OPTION, MenuOpcode.EXAMINE_NPC
 	);
 	private static final List<String> jewelleryBox = Arrays.asList(
-		"duel arena", "castle wars", "clan wars", "burthorpe", "barbarian outpost", "corporeal beast",
+		"duel arena", "castle wars", "ferox enclave", "burthorpe", "barbarian outpost", "corporeal beast",
 		"tears of guthix", "wintertodt camp", "warriors' guild", "champions' guild", "monastery", "ranging guild",
 		"fishing guild", "mining guild", "crafting guild", "cooking guild", "woodcutting guild", "farming guild",
 		"miscellania", "grand exchange", "falador park", "dondakan's rock", "edgeville", "karamja",
 		"draynor village", "al kharid"
 	);
-	private static final List<String> pharaohsSceptre = Arrays.asList(
-		"Pharaoh's Sceptre (3)", "Pharaoh's Sceptre (2)", "Pharaoh's Sceptre (1)", "Pharaoh's Sceptre"
-	);
 	private static final List<String> npcContact = Arrays.asList(
 		"honest jimmy", "bert the sandman", "advisor ghrim", "dark mage", "lanthus", "turael",
 		"mazchna", "vannaka", "chaeldar", "nieve", "steve", "duradel", "krystilia", "konar",
-		"murphy", "cyrisus", "smoggy", "ginea", "watson", "barbarian guard", "random"
+		"murphy", "cyrisus", "smoggy", "ginea", "watson", "barbarian guard", "amy", "random"
 	);
 	private static final List<String> dropFish = Arrays.asList(
 		"Raw shrimp", "Raw Sardine", "Raw karambwanji", "Raw herring", "Raw anchovies", "Raw mackerel",
@@ -828,6 +825,11 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.addPriorityEntry("Jatizso").setPriority(10);
 			menuManager.addPriorityEntry("Neitiznot").setPriority(10);
 			menuManager.addPriorityEntry("Rellekka").setPriority(10);
+			menuManager.addPriorityEntry("Ungael").setPriority(10);
+			menuManager.addPriorityEntry("Pirate's Cove").setPriority(10);
+			menuManager.addPriorityEntry("Waterbirth Island").setPriority(10);
+			menuManager.addPriorityEntry("Miscellania", "Sailor").setPriority(10);
+			menuManager.addPriorityEntry("Island of Stone").setPriority(10);
 			menuManager.addPriorityEntry("Follow", "Elkoy").setPriority(10);
 			menuManager.addPriorityEntry("Transport").setPriority(10);
 		}
@@ -1090,14 +1092,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			}
 		}
 
-		if (config.swapPharaohsSceptre())
-		{
-			for (String pharaohsSceptre : pharaohsSceptre)
-			{
-				menuManager.addPriorityEntry("Wield", pharaohsSceptre);
-			}
-		}
-
 		if (config.swapDropFish())
 		{
 			for (String dropFish : dropFish)
@@ -1275,10 +1269,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
 			menuManager.removePriorityEntry(jewellerybox, "fancy jewellery box");
 			menuManager.removePriorityEntry(jewellerybox, "ornate jewellery box");
-		}
-		for (String pharaohsSceptre : pharaohsSceptre)
-		{
-			menuManager.removePriorityEntry("Wield", pharaohsSceptre);
 		}
 
 		for (String dropFish : dropFish)

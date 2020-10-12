@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.6"
+version = "0.0.8"
 
 project.extra["PluginName"] = "Attack Styles"
 project.extra["PluginDescription"] = "Show your current attack style as an overlay"

@@ -40,12 +40,16 @@ import net.runelite.api.ScriptID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -92,6 +96,9 @@ public class AttackStylesPlugin extends Plugin
 
 	@Inject
 	private AttackStylesOverlay overlay;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
 
 	@Provides
 	AttackStylesConfig provideConfig(ConfigManager configManager)
@@ -177,7 +184,7 @@ public class AttackStylesPlugin extends Plugin
 		int currentEquippedWeaponTypeVarbit = client.getVar(Varbits.EQUIPPED_WEAPON_TYPE);
 		int currentCastingModeVarbit = client.getVar(Varbits.DEFENSIVE_CASTING_MODE);
 
-		if (attackStyleVarbit != currentAttackStyleVarbit || equippedWeaponTypeVarbit != currentEquippedWeaponTypeVarbit || castingModeVarbit != currentCastingModeVarbit)
+		if (attackStyleVarbit != currentAttackStyleVarbit || castingModeVarbit != currentCastingModeVarbit)
 		{
 			boolean weaponSwitch = currentEquippedWeaponTypeVarbit != equippedWeaponTypeVarbit;
 
@@ -278,10 +285,16 @@ public class AttackStylesPlugin extends Plugin
 			{
 				if (warnedSkills.contains(skill))
 				{
-//					if (weaponSwitch)
-//					{
-//						// TODO : chat message to warn players that their weapon switch also caused an unwanted attack style change
-//					}
+					if (weaponSwitch && config.warnForWeaponSwitch())
+					{
+						final String message = new ChatMessageBuilder()
+								.append("Warning, flagged attack style detected: " + skill.getName())
+								.build();
+						chatMessageManager.queue(QueuedMessage.builder()
+								.type(ChatMessageType.GAMEMESSAGE)
+								.runeLiteFormattedMessage(message)
+								.build());
+					}
 					warnedSkillSelected = true;
 					break;
 				}

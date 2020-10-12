@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.1"
 
 project.extra["PluginName"] = "Zalcano"
-project.extra["PluginDescription"] = "Highlights Zalcano AoE attacks and useful stuff"
+project.extra["PluginDescription"] = "Assistance for the Zalcano fight"
 
 tasks {
     jar {

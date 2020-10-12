@@ -30,6 +30,7 @@ import com.google.inject.Provides;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import javax.inject.Inject;
 import lombok.AccessLevel;
@@ -210,6 +211,7 @@ public class XpDropPlugin extends Plugin
 		final IntStream spriteIDs =
 			Arrays.stream(children)
 				.skip(1)
+				.filter(Objects::nonNull)
 				.mapToInt(Widget::getSpriteId);
 
 		int color = 0;

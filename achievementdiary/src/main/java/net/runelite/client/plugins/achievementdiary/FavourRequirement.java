@@ -27,6 +27,7 @@ package net.runelite.client.plugins.achievementdiary;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.runelite.api.Client;
 import net.runelite.api.Favour;
 
 @RequiredArgsConstructor
@@ -40,5 +41,11 @@ public class FavourRequirement implements Requirement
 	public String toString()
 	{
 		return percent + "% " + house.getName() + " favour";
+	}
+
+	public boolean satisfiesRequirement(Client client)
+	{
+		int realFavour = client.getVar(house.getVarbit());
+		return (realFavour / 10) >= percent;
 	}
 }

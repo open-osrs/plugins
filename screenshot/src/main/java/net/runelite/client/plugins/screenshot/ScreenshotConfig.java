@@ -232,10 +232,21 @@ public interface ScreenshotConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "baHighGamble",
+		name = "Screenshot BA high gambles",
+		description = "Take a screenshot of your reward from a high gamble at Barbarian Assault.",
+		position = 18
+	)
+	default boolean screenshotHighGamble()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "secondTradeScreen",
 		name = "Screenshot 2nd Trade Screen",
 		description = "Configures whether screenshots are taken on the second trade screen.",
-		position = 18
+		position = 19
 	)
 	default boolean screenshotSecondTradeScreen()
 	{
@@ -246,7 +257,7 @@ public interface ScreenshotConfig extends Config
 		keyName = "hotkey",
 		name = "Screenshot hotkey",
 		description = "When you press this key a screenshot will be taken",
-		position = 19
+		position = 20
 	)
 	default Keybind hotkey()
 	{

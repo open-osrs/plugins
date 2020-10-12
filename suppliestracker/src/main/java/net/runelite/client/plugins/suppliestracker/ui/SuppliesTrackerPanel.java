@@ -71,18 +71,17 @@ public class SuppliesTrackerPanel extends PluginPanel
 	private final JLabel overallSuppliesUsedLabel = new JLabel();
 	private final JLabel overallCostLabel = new JLabel();
 	private final JLabel overallIcon = new JLabel();
-	private UpdatePanel updatePanel;
-	@Getter(AccessLevel.PACKAGE)
-	private JButton info;
 	private int overallSuppliesUsed;
 	private int overallCost;
+	private final SuppliesTrackerPlugin plugin;
+	public JButton switchTrack;
 
 	public SuppliesTrackerPanel(final ItemManager itemManager, SuppliesTrackerPlugin plugin, SuppliesTrackerConfig config)
 	{
+		this.plugin = plugin;
 		setBorder(new EmptyBorder(6, 6, 6, 6));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
 		setLayout(new BorderLayout());
-		updatePanel = new UpdatePanel(this);
 
 		// Create layout panel for wrapping
 		final JPanel layoutPanel = new JPanel();
@@ -119,15 +118,8 @@ public class SuppliesTrackerPanel extends PluginPanel
 		final JMenuItem reset = new JMenuItem("Reset All");
 		reset.addActionListener(e ->
 		{
-			overallSuppliesUsed = 0;
-			overallCost = 0;
-			plugin.clearSupplies();
-			for (SuppliesBox box : boxList)
-			{
-				box.clearAll();
-			}
-			updateOverall();
-			logsContainer.repaint();
+			resetAll();
+			this.plugin.clearSupplies();
 		});
 
 		// Create popup menu
@@ -141,39 +133,22 @@ public class SuppliesTrackerPanel extends PluginPanel
 		layoutPanel.add(overallPanel);
 		layoutPanel.add(logsContainer);
 
-		add(updatePanel);
-		updatePanel.setVisible(false);
 		overallPanel.setVisible(false);
 		logsContainer.setVisible(true);
 
-		info = new JButton("Info");
-		info.addActionListener(e ->
+		switchTrack = new JButton("Switch Tracking");
+		switchTrack.createToolTip().setTipText("Switches between current session and all");
+		switchTrack.addActionListener(e ->
 		{
-			overallPanel.setVisible(false);
-			logsContainer.setVisible(false);
-
-			remove(updatePanel);
-			updatePanel = new UpdatePanel(this);
-			add(updatePanel);
-
-			updatePanel.setVisible(true);
-			info.setVisible(false);
+			plugin.switchTracking();
 		});
 
-		layoutPanel.add(info);
+		layoutPanel.add(switchTrack);
+
 
 		errorPanel.setContent("Supply trackers", "You have not used any supplies yet.");
-		if (!config.infoBox())
-		{
-			logsContainer.setVisible(false);
-			updatePanel.setVisible(true);
-			info.setVisible(false);
-		}
-		else
-		{
-			info.setVisible(true);
-			add(errorPanel);
-		}
+		add(errorPanel);
+
 	}
 
 	/**
@@ -219,6 +194,18 @@ public class SuppliesTrackerPanel extends PluginPanel
 		updateOverall();
 	}
 
+	public void resetAll()
+	{
+		this.overallSuppliesUsed = 0;
+		this.overallCost = 0;
+		for (SuppliesBox box : boxList)
+		{
+			box.clearAll();
+		}
+		updateOverall();
+		this.logsContainer.repaint();
+	}
+
 	/**
 	 * Updates overall stats to calculate overall used and overall cost from
 	 * the info in each box
@@ -250,10 +237,7 @@ public class SuppliesTrackerPanel extends PluginPanel
 		else
 		{
 			remove(errorPanel);
-			if (!updatePanel.isVisible())
-			{
-				overallPanel.setVisible(true);
-			}
+			overallPanel.setVisible(true);
 		}
 	}
 }

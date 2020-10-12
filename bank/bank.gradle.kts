@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.9"
+version = "0.0.10"
 
 project.extra["PluginName"] = "Bank"
 project.extra["PluginDescription"] = "Modifications to the banking interface"

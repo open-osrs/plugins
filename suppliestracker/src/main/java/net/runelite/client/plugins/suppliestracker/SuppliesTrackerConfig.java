@@ -78,11 +78,11 @@ public interface SuppliesTrackerConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "infoBox",
-		name = "Disable info box on startup?",
-		description = "Only shows info box when the info button is pressed"
+			keyName = "vorkathsHead",
+			name = "Attached Vorkath's head?",
+			description = "Whether or not you attached a Vorkath's head to your Ranging cape for Assembler effect."
 	)
-	default boolean infoBox()
+	default boolean vorkathsHead()
 	{
 		return false;
 	}

@@ -33,15 +33,15 @@ import lombok.Getter;
 class ThievingSession
 {
 	@Getter(AccessLevel.PACKAGE)
-	private Instant lastTheivingAction;
+	private Instant lastThievingAction;
 	@Getter(AccessLevel.PACKAGE)
 	private int successful;
 	@Getter(AccessLevel.PACKAGE)
 	private int failed;
 
-	void updateLastThevingAction()
+	void updateLastThievingAction()
 	{
-		this.lastTheivingAction = Instant.now();
+		this.lastThievingAction = Instant.now();
 	}
 
 	void hasSucceeded()

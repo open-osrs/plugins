@@ -49,6 +49,7 @@ import net.runelite.api.Point;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import static net.runelite.client.plugins.grounditems.GroundItemsPlugin.*;
 import static net.runelite.client.plugins.grounditems.config.ItemHighlightMode.MENU;
 import net.runelite.client.plugins.grounditems.config.PriceDisplayMode;
 import net.runelite.client.plugins.grounditems.config.TimerDisplayMode;
@@ -68,9 +69,6 @@ public class GroundItemsOverlay extends Overlay
 	// We must offset the text on the z-axis such that
 	// it doesn't obscure the ground items below it.
 	private static final int OFFSET_Z = 20;
-	// The game won't send anything higher than this value to the plugin -
-	// so we replace any item quantity higher with "Lots" instead.
-	private static final int MAX_QUANTITY = 65535;
 	// The 15 pixel gap between each drawn ground item.
 	private static final int STRING_GAP = 15;
 	// Size of the hidden/highlight boxes

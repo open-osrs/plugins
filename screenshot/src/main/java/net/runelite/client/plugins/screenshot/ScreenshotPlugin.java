@@ -63,19 +63,10 @@ import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
-import static net.runelite.api.widgets.WidgetID.BARROWS_REWARD_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.CHAMBERS_OF_XERIC_REWARD_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.CHATBOX_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.CLUE_SCROLL_REWARD_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.DIALOG_SPRITE_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.KINGDOM_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.LEVEL_UP_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.PLAYER_TRADE_CONFIRM_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
-import static net.runelite.api.widgets.WidgetID.THEATRE_OF_BLOOD_REWARD_GROUP_ID;
+import static net.runelite.api.widgets.WidgetID.*;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
-import static net.runelite.client.RuneLite.SCREENSHOT_DIR;
+import static net.runelite.client.RuneLite.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.PlayerLootReceived;
@@ -125,6 +116,7 @@ public class ScreenshotPlugin extends Plugin
 	private static final List<String> PET_MESSAGES = List.of("You have a funny feeling like you're being followed",
 		"You feel something weird sneaking into your backpack",
 		"You have a funny feeling like you would have been followed");
+	private static final Pattern BA_HIGH_GAMBLE_REWARD_PATTERN = Pattern.compile("(?<reward>.+)!<br>High level gamble count: <col=7f0000>(?<gambleCount>.+)</col>");
 
 	private static String format(Date date)
 	{
@@ -275,8 +267,23 @@ public class ScreenshotPlugin extends Plugin
 		}
 		else if (client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT) != null)
 		{
-			fileName = parseLevelUpWidget(client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT));
-			screenshotSubDir = "Levels";
+			String text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT).getText();
+			if (Text.removeTags(text).contains("High level gamble"))
+			{
+				if (config.screenshotHighGamble())
+				{
+					fileName = parseBAHighGambleWidget(text);
+					screenshotSubDir = "BA High Gambles";
+				}
+			}
+			else
+			{
+				if (config.screenshotLevels())
+				{
+					fileName = parseLevelUpWidget(client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT));
+					screenshotSubDir = "Levels";
+				}
+			}
 		}
 		else if (client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT) != null)
 		{
@@ -513,9 +520,14 @@ public class ScreenshotPlugin extends Plugin
 				}
 				break;
 			case LEVEL_UP_GROUP_ID:
-			case DIALOG_SPRITE_GROUP_ID:
 			case CHATBOX_GROUP_ID:
 				if (!config.screenshotLevels())
+				{
+					return;
+				}
+				break;
+			case DIALOG_SPRITE_GROUP_ID:
+				if (!(config.screenshotLevels() || config.screenshotHighGamble()))
 				{
 					return;
 				}
@@ -700,6 +712,25 @@ public class ScreenshotPlugin extends Plugin
 	}
 
 	/**
+	 * Parses the Barbarian Assault high gamble reward dialog text into a shortened string for filename usage.
+	 *
+	 * @param text The {@link Widget#getText() text} of the {@link WidgetInfo#DIALOG_SPRITE_TEXT} widget.
+	 * @return Shortened string in the format "High Gamble(100)"
+	 */
+	@VisibleForTesting
+	static String parseBAHighGambleWidget(final String text)
+	{
+		final Matcher highGambleMatch = BA_HIGH_GAMBLE_REWARD_PATTERN.matcher(text);
+		if (highGambleMatch.find())
+		{
+			String gambleCount = highGambleMatch.group("gambleCount");
+			return String.format("High Gamble(%s)", gambleCount);
+		}
+
+		return "High Gamble(count not found)";
+	}
+
+	/**
 	 * Saves a screenshot of the client window to the screenshot folder as a PNG,
 	 * and optionally uploads it to an image-hosting service.
 	 *
@@ -816,7 +847,7 @@ public class ScreenshotPlugin extends Plugin
 		return this.client.isInInstancedRegion()
 			&& this.client.getMapRegions().length > 0
 			&& (this.client.getMapRegions()[0] == GAUNTLET_REGION
-			|| this.client.getMapRegions()[0] == CORRUPTED_GAUNTLET_REGION);
+					|| this.client.getMapRegions()[0] == CORRUPTED_GAUNTLET_REGION);
 	}
 
 	@VisibleForTesting
