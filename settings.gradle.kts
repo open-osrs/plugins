@@ -24,7 +24,7 @@
  */
 
 rootProject.name = "OpenOSRS Plugins"
-/*
+
 include(":achievementdiary")
 include(":agility")
 include(":ammo")
@@ -148,6 +148,7 @@ include(":screenshot")
 include(":shayzieninfirmary")
 include(":skillcalculator")
 include(":skybox")
+include(":slayer")
 include(":slayermusiq")
 include(":smelting")
 include(":spawntimer")
@@ -175,11 +176,9 @@ include(":woodcutting")
 include(":worldhopper")
 include(":worldmap")
 include(":xpglobes")
+include(":xptracker")
 include(":xpupdater")
 include(":zalcano")
- */
-include(":slayer")
-include(":xptracker")
 
 for (project in rootProject.children) {
     project.apply {
