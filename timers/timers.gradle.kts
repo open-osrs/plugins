@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.1.0"
+version = "0.1.1"
 
 project.extra["PluginName"] = "Timers"
 project.extra["PluginDescription"] = "Show various timers in an infobox"

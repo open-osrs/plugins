@@ -216,6 +216,7 @@ enum Task
 	SKELETAL_WYVERNS("Skeletal wyverns", ItemID.SKELETAL_WYVERN),
 	SKELETONS("Skeletons", ItemID.SKELETON_GUARD),
 	SMOKE_DEVILS("Smoke devils", ItemID.SMOKE_DEVIL),
+	SOURHOGS("Sourhogs", ItemID.SOURHOG_FOOT),
 	SPIDERS("Spiders", ItemID.HUGE_SPIDER,
 		singletonList("Venenatis"), emptyList()),
 	SPIRITUAL_CREATURES("Spiritual creatures", ItemID.DRAGON_BOOTS,

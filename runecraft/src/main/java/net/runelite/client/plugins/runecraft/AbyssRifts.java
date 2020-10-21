@@ -26,32 +26,38 @@ package net.runelite.client.plugins.runecraft;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import static net.runelite.api.ItemID.*;
 import net.runelite.api.ObjectID;
 
-public enum AbyssRifts
+@AllArgsConstructor
+enum AbyssRifts
 {
-	AIR_RIFT(ObjectID.AIR_RIFT, AIR_RUNE),
-	BLOOD_RIFT(ObjectID.BLOOD_RIFT, BLOOD_RUNE),
-	BODY_RIFT(ObjectID.BODY_RIFT, BODY_RUNE),
-	CHAOS_RIFT(ObjectID.CHAOS_RIFT, CHAOS_RUNE),
-	COSMIC_RIFT(ObjectID.COSMIC_RIFT, COSMIC_RUNE),
-	DEATH_RIFT(ObjectID.DEATH_RIFT, DEATH_RUNE),
-	EARTH_RIFT(ObjectID.EARTH_RIFT, EARTH_RUNE),
-	FIRE_RIFT(ObjectID.FIRE_RIFT, FIRE_RUNE),
-	LAW_RIFT(ObjectID.LAW_RIFT, LAW_RUNE),
-	MIND_RIFT(ObjectID.MIND_RIFT, MIND_RUNE),
-	NATURE_RIFT(ObjectID.NATURE_RIFT, NATURE_RUNE),
-	SOUL_RIFT(ObjectID.SOUL_RIFT, SOUL_RUNE),
-	WATER_RIFT(ObjectID.WATER_RIFT, WATER_RUNE);
+	AIR_RIFT(ObjectID.AIR_RIFT, AIR_RUNE, RunecraftConfig::showAir),
+	BLOOD_RIFT(ObjectID.BLOOD_RIFT, BLOOD_RUNE, RunecraftConfig::showBlood),
+	BODY_RIFT(ObjectID.BODY_RIFT, BODY_RUNE, RunecraftConfig::showBody),
+	CHAOS_RIFT(ObjectID.CHAOS_RIFT, CHAOS_RUNE, RunecraftConfig::showChaos),
+	COSMIC_RIFT(ObjectID.COSMIC_RIFT, COSMIC_RUNE, RunecraftConfig::showCosmic),
+	DEATH_RIFT(ObjectID.DEATH_RIFT, DEATH_RUNE, RunecraftConfig::showDeath),
+	EARTH_RIFT(ObjectID.EARTH_RIFT, EARTH_RUNE, RunecraftConfig::showEarth),
+	FIRE_RIFT(ObjectID.FIRE_RIFT, FIRE_RUNE, RunecraftConfig::showFire),
+	LAW_RIFT(ObjectID.LAW_RIFT, LAW_RUNE, RunecraftConfig::showLaw),
+	MIND_RIFT(ObjectID.MIND_RIFT, MIND_RUNE, RunecraftConfig::showMind),
+	NATURE_RIFT(ObjectID.NATURE_RIFT, NATURE_RUNE, RunecraftConfig::showNature),
+	SOUL_RIFT(ObjectID.SOUL_RIFT, SOUL_RUNE, RunecraftConfig::showSoul),
+	WATER_RIFT(ObjectID.WATER_RIFT, WATER_RUNE, RunecraftConfig::showWater);
 
 	@Getter(AccessLevel.PACKAGE)
 	private final int objectId;
 
 	@Getter(AccessLevel.PACKAGE)
 	private final int itemId;
+
+	@Getter(AccessLevel.PACKAGE)
+	private final Predicate<RunecraftConfig> configEnabled;
 
 	private static final Map<Integer, AbyssRifts> rifts = new HashMap<>();
 
@@ -63,13 +69,7 @@ public enum AbyssRifts
 		}
 	}
 
-	AbyssRifts(final int objectId, final int itemId)
-	{
-		this.objectId = objectId;
-		this.itemId = itemId;
-	}
-
-	public static AbyssRifts getRift(int id)
+	static AbyssRifts getRift(int id)
 	{
 		return rifts.get(id);
 	}
