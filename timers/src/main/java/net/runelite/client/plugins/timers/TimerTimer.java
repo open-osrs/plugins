@@ -53,4 +53,10 @@ class TimerTimer extends Timer
 	{
 		return timer;
 	}
+
+	@Override
+	public String getName()
+	{
+		return timer.name();
+	}
 }

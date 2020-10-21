@@ -191,7 +191,7 @@ public class LootTrackerPlugin extends Plugin
 	private static final Pattern LARRAN_LOOTED_PATTERN = Pattern.compile("You have opened Larran's (big|small) chest .*");
 	private static final String STONE_CHEST_LOOTED_MESSAGE = "You steal some loot from the chest.";
 	private static final String DORGESH_KAAN_CHEST_LOOTED_MESSAGE = "You find treasure inside!";
-	private static final String GRUBBY_CHEST_LOOTED_MESSAGE = "You unlock the chest with your key.";
+	private static final String GRUBBY_CHEST_LOOTED_MESSAGE = "You have opened the Grubby Chest";
 	private static final Pattern HAM_CHEST_LOOTED_PATTERN = Pattern.compile("Your (?<key>[a-z]+) key breaks in the lock.*");
 	private static final int HAM_STOREROOM_REGION = 10321;
 	private static final Map<Integer, String> CHEST_EVENT_TYPES = Map.of(
@@ -265,6 +265,19 @@ public class LootTrackerPlugin extends Plugin
 	private static final String BIRDNEST_EVENT = "Bird nest";
 	private static final Set<Integer> BIRDNEST_IDS = Set.of(ItemID.BIRD_NEST, ItemID.BIRD_NEST_5071, ItemID.BIRD_NEST_5072, ItemID.BIRD_NEST_5073, ItemID.BIRD_NEST_5074, ItemID.BIRD_NEST_7413, ItemID.BIRD_NEST_13653, ItemID.BIRD_NEST_22798, ItemID.BIRD_NEST_22800);
 
+	// Birdhouses
+	private static final Pattern BIRDHOUSE_PATTERN = Pattern.compile("You dismantle and discard the trap, retrieving (?:(?:a|\\d{1,2}) nests?, )?10 dead birds, \\d{1,3} feathers and (\\d,?\\d{1,3}) Hunter XP\\.");
+	private static final Map<Integer, String> BIRDHOUSE_XP_TO_TYPE = new ImmutableMap.Builder<Integer, String>().
+		put(280, "Regular Bird House").
+		put(420, "Oak Bird House").
+		put(560, "Willow Bird House").
+		put(700, "Teak Bird House").
+		put(820, "Maple Bird House").
+		put(960, "Mahogany Bird House").
+		put(1020, "Yew Bird House").
+		put(1140, "Magic Bird House").
+		put(1200, "Redwood Bird House").
+		build();
 
 	/*
 	 * This map is used when a pickpocket target has a different name in the chat message than their in-game name.
@@ -309,9 +322,6 @@ public class LootTrackerPlugin extends Plugin
 	@Inject
 	private EventBus eventBus;
 
-	@Inject
-	private OkHttpClient okHttpClient;
-
 	private LootTrackerPanel panel;
 	private NavigationButton navButton;
 	private String eventType;
@@ -324,6 +334,7 @@ public class LootTrackerPlugin extends Plugin
 	private List<String> ignoredEvents = new ArrayList<>();
 	private Multiset<Integer> inventorySnapshot;
 	@Getter(AccessLevel.PACKAGE)
+	@Inject
 	private LootTrackerClient lootTrackerClient;
 	private final List<LootRecord> queuedLoots = new ArrayList<>();
 
@@ -370,6 +381,12 @@ public class LootTrackerPlugin extends Plugin
 	}
 
 	@Provides
+	LootTrackerClient provideLootTrackerClient(OkHttpClient okHttpClient)
+	{
+		return new LootTrackerClient(okHttpClient);
+	}
+
+	@Provides
 	LootTrackerConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(LootTrackerConfig.class);
@@ -381,11 +398,11 @@ public class LootTrackerPlugin extends Plugin
 		AccountSession accountSession = sessionManager.getAccountSession();
 		if (accountSession.getUuid() != null)
 		{
-			lootTrackerClient = new LootTrackerClient(okHttpClient, accountSession.getUuid());
+			lootTrackerClient.setUuid(accountSession.getUuid());
 		}
 		else
 		{
-			lootTrackerClient = null;
+			lootTrackerClient.setUuid(null);
 		}
 	}
 
@@ -393,7 +410,7 @@ public class LootTrackerPlugin extends Plugin
 	private void onSessionClose(SessionClose sessionClose)
 	{
 		submitLoot();
-		lootTrackerClient = null;
+		lootTrackerClient.setUuid(null);
 	}
 
 	@Subscribe
@@ -470,12 +487,10 @@ public class LootTrackerPlugin extends Plugin
 
 						executor.submit(() ->
 						{
-							if (config.syncPanel() && lootTrackerClient != null)
+							if (accountSession != null && config.syncPanel() && lootTrackerClient != null)
 							{
-								if (accountSession != null)
-								{
-									lootTrackerClient = new LootTrackerClient(okHttpClient, accountSession.getUuid());
-								}
+								lootTrackerClient.setUuid(accountSession.getUuid());
+
 								try
 								{
 									lootRecords = lootTrackerClient.get();
@@ -564,7 +579,7 @@ public class LootTrackerPlugin extends Plugin
 		submitLoot();
 
 		clientToolbar.removeNavigation(navButton);
-		lootTrackerClient = null;
+		lootTrackerClient.setUuid(null);
 		lootRecords = new ArrayList<>();
 		chestLooted = false;
 	}
@@ -910,7 +925,7 @@ public class LootTrackerPlugin extends Plugin
 		}
 
 		if (message.equals(CHEST_LOOTED_MESSAGE) || message.equals(STONE_CHEST_LOOTED_MESSAGE)
-			|| message.equals(DORGESH_KAAN_CHEST_LOOTED_MESSAGE) || message.equals(GRUBBY_CHEST_LOOTED_MESSAGE)
+			|| message.equals(DORGESH_KAAN_CHEST_LOOTED_MESSAGE) || message.startsWith(GRUBBY_CHEST_LOOTED_MESSAGE)
 			|| LARRAN_LOOTED_PATTERN.matcher(message).matches())
 		{
 			final int regionID = client.getLocalPlayer().getWorldLocation().getRegionID();
@@ -1087,6 +1102,25 @@ public class LootTrackerPlugin extends Plugin
 			// Player didn't have the key they needed.
 			eventType = null;
 			lootRecordType = null;
+			return;
+		}
+
+		// Check if message is a birdhouse type
+		final Matcher matcher = BIRDHOUSE_PATTERN.matcher(message);
+		if (matcher.matches())
+		{
+			final int xp = Integer.parseInt(matcher.group(1));
+			final String type = BIRDHOUSE_XP_TO_TYPE.get(xp);
+			if (type == null)
+			{
+				log.debug("Unknown bird house type {}", xp);
+				return;
+			}
+
+			eventType = type;
+			lootRecordType = LootRecordType.EVENT;
+
+			takeInventorySnapshot();
 		}
 	}
 
@@ -1160,6 +1194,7 @@ public class LootTrackerPlugin extends Plugin
 			|| SEEDPACK_EVENT.equals(eventType)
 			|| CASKET_EVENT.equals(eventType)
 			|| BIRDNEST_EVENT.equals(eventType)
+			|| eventType.endsWith("Bird House")
 			|| eventType.startsWith("H.A.M. chest")
 			|| GAUNTLET_EVENT.equals(eventType)
 			|| WINTERTODT_EVENT.equals(eventType)
@@ -1296,7 +1331,7 @@ public class LootTrackerPlugin extends Plugin
 			queuedLoots.clear();
 		}
 
-		if (lootTrackerClient == null || !config.saveLoot())
+		if (!config.saveLoot())
 		{
 			return null;
 		}

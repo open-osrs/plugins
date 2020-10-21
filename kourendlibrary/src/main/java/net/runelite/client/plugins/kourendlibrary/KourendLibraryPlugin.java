@@ -47,6 +47,8 @@ import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
+import net.runelite.api.Quest;
+import net.runelite.api.QuestState;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -117,17 +119,10 @@ public class KourendLibraryPlugin extends Plugin
 	private WorldPoint lastBookcaseClick = null;
 	private WorldPoint lastBookcaseAnimatedOn = null;
 	private EnumSet<Book> playerBooks = null;
+	private QuestState depthsOfDespairState = QuestState.FINISHED;
 
 	@Getter(AccessLevel.PACKAGE)
 	private final Set<NPC> npcsToMark = new HashSet<>();
-
-	private boolean hideButton;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean hideDuplicateBook;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean hideVarlamoreEnvoy;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean showTutorialOverlay;
 
 	@Provides
 	KourendLibraryConfig provideConfig(ConfigManager configManager)
@@ -138,12 +133,6 @@ public class KourendLibraryPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
-		hideButton = config.hideButton();
-		hideDuplicateBook = config.hideDuplicateBook();
-		hideVarlamoreEnvoy = config.hideVarlamoreEnvoy();
-		showTutorialOverlay = config.showTutorialOverlay();
-
 		Book.fillImages(itemManager);
 
 		panel = injector.getInstance(KourendLibraryPanel.class);
@@ -163,7 +152,7 @@ public class KourendLibraryPlugin extends Plugin
 
 		updatePlayerBooks();
 
-		if (!this.hideButton)
+		if (!config.hideButton())
 		{
 			clientToolbar.addNavigation(navButton);
 		}
@@ -208,6 +197,7 @@ public class KourendLibraryPlugin extends Plugin
 					boolean inRegion = lp != null && lp.getWorldLocation().getRegionID() == REGION;
 					if (inRegion)
 					{
+						panel.reload();
 						clientToolbar.addNavigation(navButton);
 					}
 					else
@@ -274,7 +264,7 @@ public class KourendLibraryPlugin extends Plugin
 	public void onGameTick(GameTick tick)
 	{
 		boolean inRegion = client.getLocalPlayer().getWorldLocation().getRegionID() == REGION;
-		if (this.hideButton && inRegion != buttonAttached)
+		if (config.hideButton() && inRegion != buttonAttached)
 		{
 			SwingUtilities.invokeLater(() ->
 			{
@@ -294,6 +284,8 @@ public class KourendLibraryPlugin extends Plugin
 		{
 			return;
 		}
+
+		depthsOfDespairState = Quest.THE_DEPTHS_OF_DESPAIR.getState(client);
 
 		if (lastBookcaseAnimatedOn != null)
 		{
@@ -428,6 +420,11 @@ public class KourendLibraryPlugin extends Plugin
 				}
 			}
 		}
+	}
+
+	boolean showVarlamoreEnvoy()
+	{
+		return config.alwaysShowVarlamoreEnvoy() || depthsOfDespairState == QuestState.IN_PROGRESS;
 	}
 
 	static boolean isLibraryCustomer(int npcId)

@@ -36,25 +36,22 @@ import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.ColorUtil;
 
 @Singleton
-class MotherlodeSackOverlay extends Overlay
+class MotherlodeSackOverlay extends OverlayPanel
 {
 	private static final Color DANGER = new Color(150, 0, 0, 150);
 	private final Client client;
 	private final MotherlodePlugin plugin;
 	private final MotherlodeConfig config;
-
-	private final PanelComponent panelComponent = new PanelComponent();
 
 	@Inject
 	MotherlodeSackOverlay(final Client client, final MotherlodePlugin plugin, final MotherlodeConfig config)
@@ -77,7 +74,6 @@ class MotherlodeSackOverlay extends Overlay
 
 		Widget sack = client.getWidget(WidgetInfo.MOTHERLODE_MINE);
 
-		panelComponent.getChildren().clear();
 		panelComponent.setBackgroundColor(ComponentConstants.STANDARD_BACKGROUND_COLOR);
 
 		TableComponent tableComponent = new TableComponent();
@@ -120,6 +116,6 @@ class MotherlodeSackOverlay extends Overlay
 
 		panelComponent.getChildren().add(tableComponent);
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

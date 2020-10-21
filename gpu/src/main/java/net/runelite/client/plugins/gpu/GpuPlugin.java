@@ -37,6 +37,7 @@ import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLFBODrawable;
 import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.math.Matrix4;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -167,7 +168,6 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 
 	static final Shader PROGRAM = new Shader()
 		.add(GL4.GL_VERTEX_SHADER, "vert.glsl")
-		.add(GL4.GL_GEOMETRY_SHADER, "geom.glsl")
 		.add(GL4.GL_FRAGMENT_SHADER, "frag.glsl");
 
 	static final Shader COMPUTE_PROGRAM = new Shader()
@@ -792,26 +792,6 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 		}
 	}
 
-	private void createProjectionMatrix(float left, float right, float bottom, float top, float near, float far)
-	{
-		// create a standard orthographic projection
-		float tx = -((right + left) / (right - left));
-		float ty = -((top + bottom) / (top - bottom));
-		float tz = -((far + near) / (far - near));
-
-		gl.glUseProgram(glProgram);
-
-		float[] matrix = new float[]{
-			2 / (right - left), 0, 0, 0,
-			0, 2 / (top - bottom), 0, 0,
-			0, 0, -2 / (far - near), 0,
-			tx, ty, tz, 1
-		};
-		gl.glUniformMatrix4fv(uniProjectionMatrix, 1, false, matrix, 0);
-
-		gl.glUseProgram(0);
-	}
-
 	@Override
 	public void drawScene(int cameraX, int cameraY, int cameraZ, int cameraPitch, int cameraYaw, int plane)
 	{
@@ -903,14 +883,6 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 
 	private void resize(int canvasWidth, int canvasHeight, int viewportWidth, int viewportHeight)
 	{
-		// If the viewport has changed, update the projection matrix
-		if (viewportWidth > 0 && viewportHeight > 0 && (viewportWidth != lastViewportWidth || viewportHeight != lastViewportHeight))
-		{
-			lastViewportWidth = viewportWidth;
-			lastViewportHeight = viewportHeight;
-			createProjectionMatrix(0, viewportWidth, viewportHeight, 0, 0, Constants.SCENE_SIZE * Perspective.LOCAL_TILE_SIZE);
-		}
-
 		if (canvasWidth != lastCanvasWidth || canvasHeight != lastCanvasHeight)
 		{
 			lastCanvasWidth = canvasWidth;
@@ -1180,6 +1152,15 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 			gl.glUniform1f(uniBrightness, (float) textureProvider.getBrightness());
 			gl.glUniform1f(uniSmoothBanding, config.smoothBanding() ? 0f : 1f);
 
+			// Calculate projection matrix
+			Matrix4 projectionMatrix = new Matrix4();
+			projectionMatrix.scale(client.getScale(), client.getScale(), 1);
+			projectionMatrix.multMatrix(makeProjectionMatrix(viewportWidth, viewportHeight, 50));
+			projectionMatrix.rotate((float) (Math.PI - pitch * Perspective.UNIT), -1, 0, 0);
+			projectionMatrix.rotate((float) (yaw * Perspective.UNIT), 0, 1, 0);
+			projectionMatrix.translate(-client.getCameraX2(), -client.getCameraY2(), -client.getCameraZ2());
+			gl.glUniformMatrix4fv(uniProjectionMatrix, 1, false, projectionMatrix.getMatrix(), 0);
+
 			for (int id = 0; id < textures.length; ++id)
 			{
 				Texture texture = textures[id];
@@ -1257,6 +1238,17 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 		glDrawable.swapBuffers();
 
 		drawManager.processDrawComplete(this::screenshot);
+	}
+
+	private float[] makeProjectionMatrix(float w, float h, float n)
+	{
+		return new float[]
+			{
+				2 / w, 0, 0, 0,
+				0, 2 / h, 0, 0,
+				0, 0, -1, -1,
+				0, 0, -2 * n, 0
+			};
 	}
 
 	private void drawUi(final int canvasHeight, final int canvasWidth)
@@ -1394,6 +1386,15 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 			Dimension dim = client.getStretchedDimensions();
 			width = dim.width;
 			height = dim.height;
+		}
+
+		if (OSType.getOSType() != OSType.MacOS)
+		{
+			final Graphics2D graphics = (Graphics2D) canvas.getGraphics();
+			final AffineTransform t = graphics.getTransform();
+			width = getScaledValue(t.getScaleX(), width);
+			height = getScaledValue(t.getScaleY(), height);
+			graphics.dispose();
 		}
 
 		ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4)
@@ -1721,12 +1722,14 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 		}
 		else
 		{
-			final AffineTransform t = ((Graphics2D) canvas.getGraphics()).getTransform();
+			final Graphics2D graphics = (Graphics2D) canvas.getGraphics();
+			final AffineTransform t = graphics.getTransform();
 			gl.glViewport(
 				getScaledValue(t.getScaleX(), x),
 				getScaledValue(t.getScaleY(), y),
 				getScaledValue(t.getScaleX(), width),
 				getScaledValue(t.getScaleY(), height));
+			graphics.dispose();
 		}
 	}
 

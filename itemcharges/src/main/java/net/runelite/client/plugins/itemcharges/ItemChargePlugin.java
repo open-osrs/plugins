@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
@@ -51,10 +52,13 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.SpotAnimationChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -73,20 +77,21 @@ import org.pf4j.Extension;
 	tags = {"inventory", "notifications", "overlay"},
 	type = PluginType.UTILITY
 )
+@Slf4j
 public class ItemChargePlugin extends Plugin
 {
 	private static final Pattern DODGY_CHECK_PATTERN = Pattern.compile(
 		"Your dodgy necklace has (\\d+) charges? left\\.");
 	private static final String CHAT_BRACELET_SLAUGHTER = "Your bracelet of slaughter prevents your slayer";
 	private static final Pattern CHAT_BRACELET_SLAUGHTER_REGEX = Pattern.compile(
-		"Your bracelet of slaughter prevents your slayer count from decreasing. It has (\\d{1,2}) charge[s]? left.");
+		"Your bracelet of slaughter prevents your slayer count from decreasing. It has (\\d{1,2}) charges? left\\.");
 	private static final String CHAT_BRACELET_EXPEDITIOUS = "Your expeditious bracelet helps you progress your";
 	private static final Pattern CHAT_BRACELET_EXPEDITIOUS_REGEX = Pattern.compile(
-		"Your expeditious bracelet helps you progress your slayer (?:task )?faster. It has (\\d{1,2}) charge[s]? left.");
+		"Your expeditious bracelet helps you progress your slayer (?:task )?faster. It has (\\d{1,2}) charges? left\\.");
 	private static final Pattern CHAT_BRACELET_SLAUGHTER_CHARGE_REGEX = Pattern.compile(
-		"Your bracelet of slaughter has (\\d{1,2}) charge[s]? left.");
+		"Your bracelet of slaughter has (\\d{1,2}) charges? left\\.");
 	private static final Pattern CHAT_BRACELET_EXPEDITIOUS_CHARGE_REGEX = Pattern.compile(
-		"Your expeditious bracelet has (\\d{1,2}) charge[s]? left.");
+		"Your expeditious bracelet has (\\d{1,2}) charges? left\\.");
 	private static final Pattern DODGY_PROTECT_PATTERN = Pattern.compile(
 		"Your dodgy necklace protects you\\..*It has (\\d+) charges? left\\.");
 	private static final Pattern DODGY_BREAK_PATTERN = Pattern.compile(
@@ -126,7 +131,7 @@ public class ItemChargePlugin extends Plugin
 	private static final Pattern CHRONICLE_OUT_OF_CHARGES_PATTERN = Pattern.compile(
 		"Your book has run out of charges\\.");
 	private static final Pattern RING_OF_FORGING_CHECK_PATTERN = Pattern.compile(
-		"You can smelt ([0-9+]+|one) more pieces? of iron ore before a ring melts\\.");
+		"You can smelt ([0-9]+|one) more pieces? of iron ore before a ring melts\\.");
 	private static final String RING_OF_FORGING_USED_TEXT = "You retrieve a bar of iron.";
 	private static final String RING_OF_FORGING_BREAK_TEXT = "<col=7f007f>Your Ring of Forging has melted.</col>";
 	private static final Pattern AMULET_OF_CHEMISTRY_CHECK_PATTERN = Pattern.compile(
@@ -167,6 +172,9 @@ public class ItemChargePlugin extends Plugin
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientThread clientThread;
 
 	@Inject
 	private OverlayManager overlayManager;
@@ -665,6 +673,36 @@ public class ItemChargePlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
+	{
+		if (widgetLoaded.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID)
+		{
+			clientThread.invokeLater(() ->
+			{
+				Widget sprite = client.getWidget(WidgetInfo.DIALOG_SPRITE_SPRITE);
+				if (sprite != null)
+				{
+					switch (sprite.getItemId())
+					{
+						case ItemID.DODGY_NECKLACE:
+							log.debug("Reset dodgy necklace");
+							updateDodgyNecklaceCharges(MAX_DODGY_CHARGES);
+							break;
+						case ItemID.RING_OF_FORGING:
+							log.debug("Reset ring of forging");
+							updateRingOfForgingCharges(MAX_RING_OF_FORGING_CHARGES);
+							break;
+						case ItemID.AMULET_OF_CHEMISTRY:
+							log.debug("Reset amulet of chemistry");
+							updateAmuletOfChemistryCharges(MAX_AMULET_OF_CHEMISTRY_CHARGES);
+							break;
+					}
+				}
+			});
+		}
+	}
+
 	private void updateDodgyNecklaceCharges(final int value)
 	{
 		config.dodgyNecklace(value);
@@ -815,20 +853,10 @@ public class ItemChargePlugin extends Plugin
 			return;
 		}
 
-		switch (widgetDestroyItemName.getText())
+		if (widgetDestroyItemName.getText().equals("Binding necklace"))
 		{
-			case "Binding necklace":
-				updateBindingNecklaceCharges(MAX_BINDING_CHARGES);
-				break;
-			case "Dodgy necklace":
-				updateDodgyNecklaceCharges(MAX_DODGY_CHARGES);
-				break;
-			case "Ring of forging":
-				updateRingOfForgingCharges(MAX_RING_OF_FORGING_CHARGES);
-				break;
-			case "Amulet of chemistry":
-				updateAmuletOfChemistryCharges(MAX_AMULET_OF_CHEMISTRY_CHARGES);
-				break;
+			log.debug("Reset binding necklace");
+			updateBindingNecklaceCharges(MAX_BINDING_CHARGES);
 		}
 	}
 
