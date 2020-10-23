@@ -135,83 +135,80 @@ public class EquipmentInspectorPlugin extends Plugin
 			return;
 		}
 
-		executor.execute(() ->
+		try
 		{
-			try
+			SwingUtilities.invokeAndWait(() ->
 			{
-				SwingUtilities.invokeAndWait(() ->
+				if (!navButton.isSelected())
 				{
-					if (!navButton.isSelected())
-					{
-						navButton.getOnSelect().run();
-					}
-				});
-			}
-			catch (InterruptedException | InvocationTargetException e)
-			{
-				throw new RuntimeException(e);
-			}
-
-			String playerName = Text.removeTags(event.getMenuTarget()).replace('\u00A0', ' ');
-			final PlayerContainer player = playerManager.getPlayer(playerName);
-			final Map<KitType, ItemDefinition> playerEquipment = new HashMap<>();
-
-			if (player == null)
-			{
-				return;
-			}
-
-			for (KitType kitType : KitType.values())
-			{
-				if (kitType == KitType.RING || kitType == KitType.AMMUNITION ||
-					player.getPlayer().getPlayerAppearance() == null)
-				{
-					continue;
+					navButton.getOnSelect().run();
 				}
+			});
+		}
+		catch (InterruptedException | InvocationTargetException e)
+		{
+			throw new RuntimeException(e);
+		}
 
-				final int itemId = player.getPlayer().getPlayerAppearance().getEquipmentId(kitType);
+		String playerName = Text.removeTags(event.getMenuTarget()).replace('\u00A0', ' ');
+		final PlayerContainer player = playerManager.getPlayer(playerName);
+		final Map<KitType, ItemDefinition> playerEquipment = new HashMap<>();
 
-				if (itemId != -1)
-				{
-					ItemDefinition itemComposition = client.getItemDefinition(itemId);
-					playerEquipment.put(kitType, itemComposition);
-				}
+		if (player == null)
+		{
+			return;
+		}
+
+		for (KitType kitType : KitType.values())
+		{
+			if (kitType == KitType.RING || kitType == KitType.AMMUNITION ||
+				player.getPlayer().getPlayerAppearance() == null)
+			{
+				continue;
 			}
 
-			if (config.showValue())
+			final int itemId = player.getPlayer().getPlayerAppearance().getEquipmentId(kitType);
+
+			if (itemId != -1)
 			{
-				final LinkedHashMap<Integer, Integer> gear = new LinkedHashMap<>(player.getGear());
-				removeEntries(gear, config.protectedItems());
-
-				int risk = 0;
-				for (int value : gear.values())
-				{
-					risk += value;
-				}
-
-				String price;
-
-				if (!config.exactValue())
-				{
-					price = QuantityFormatter.quantityToRSDecimalStack(risk);
-				}
-				else
-				{
-					price = NumberFormat.getIntegerInstance().format(risk);
-				}
-
-				chatMessageManager.queue(QueuedMessage.builder()
-					.type(ChatMessageType.CONSOLE)
-					.runeLiteFormattedMessage(new ChatMessageBuilder()
-						.append(ChatColorType.HIGHLIGHT)
-						.append("Risked Value: ")
-						.append(ChatColorType.NORMAL)
-						.append(price)
-						.build())
-					.build());
+				ItemDefinition itemComposition = client.getItemDefinition(itemId);
+				playerEquipment.put(kitType, itemComposition);
 			}
-			equipmentInspectorPanel.update(playerEquipment, playerName);
-		});
+		}
+
+		if (config.showValue())
+		{
+			final LinkedHashMap<Integer, Integer> gear = new LinkedHashMap<>(player.getGear());
+			removeEntries(gear, config.protectedItems());
+
+			int risk = 0;
+			for (int value : gear.values())
+			{
+				risk += value;
+			}
+
+			String price;
+
+			if (!config.exactValue())
+			{
+				price = QuantityFormatter.quantityToRSDecimalStack(risk);
+			}
+			else
+			{
+				price = NumberFormat.getIntegerInstance().format(risk);
+			}
+
+			chatMessageManager.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(new ChatMessageBuilder()
+					.append(ChatColorType.HIGHLIGHT)
+					.append("Risked Value: ")
+					.append(ChatColorType.NORMAL)
+					.append(price)
+					.build())
+				.build());
+		}
+		equipmentInspectorPanel.update(playerEquipment, playerName);
 	}
 
 	private static void removeEntries(LinkedHashMap<Integer, Integer> map, int quantity)
