@@ -35,6 +35,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
@@ -44,6 +45,8 @@ class RaidsPanel extends PluginPanel
 {
 	@Inject
 	private Client client;
+	@Inject
+	private ClientThread clientThread;
 	@Inject
 	private RaidsPlugin raidsPlugin;
 
@@ -77,18 +80,24 @@ class RaidsPanel extends PluginPanel
 
 		reloadButton.addActionListener((ActionEvent e) ->
 		{
-			if ((client.getGameState() == GameState.LOGGED_IN))
+			clientThread.invoke(() ->
 			{
-				client.setGameState(GameState.CONNECTION_LOST);
-			}
+				if ((client.getGameState() == GameState.LOGGED_IN))
+				{
+					client.setGameState(GameState.CONNECTION_LOST);
+				}
+			});
 		});
 
 		reloadScouter.addActionListener((ActionEvent e) ->
 		{
-			if ((client.getGameState() == GameState.LOGGED_IN))
+			clientThread.invoke(() ->
 			{
-				raidsPlugin.checkRaidPresence(true);
-			}
+				if ((client.getGameState() == GameState.LOGGED_IN))
+				{
+					raidsPlugin.checkRaidPresence(true);
+				}
+			});
 		});
 
 		buttonPanel.add(reloadButton);
