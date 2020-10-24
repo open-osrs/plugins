@@ -276,6 +276,11 @@ class ProfilesPanel extends PluginPanel
 			{
 				return;
 			}
+			if (labelText.contains(":") || loginText.contains(":"))
+			{
+				JOptionPane.showMessageDialog(null, "You may not use colons in your label or login name", "Account Switcher", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 			String data;
 			if (profilesConfig.rememberPassword() && txtPasswordLogin.getPassword() != null)
 			{

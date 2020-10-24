@@ -67,7 +67,7 @@ class ProfilePanel extends JPanel
 
 	ProfilePanel(final Client client, final String data, final ProfilesConfig config, final ProfilesPanel parent)
 	{
-		String[] parts = data.split(":");
+		String[] parts = data.split(":", 3);
 		this.loginText = parts[1];
 		if (parts.length == 3)
 		{
