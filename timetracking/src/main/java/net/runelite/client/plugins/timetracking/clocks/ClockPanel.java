@@ -40,7 +40,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.components.FlatTextField;
@@ -67,7 +66,7 @@ abstract class ClockPanel extends JPanel
 	private final JToggleButton startPauseButton;
 	protected final FlatTextField displayInput;
 
-	@Getter(AccessLevel.PACKAGE)
+	@Getter
 	private final Clock clock;
 
 	private final String clockType;
@@ -236,7 +235,7 @@ abstract class ClockPanel extends JPanel
 		}
 	}
 
-	private void updateActivityStatus()
+	void updateActivityStatus()
 	{
 		boolean isActive = clock.isActive();
 
@@ -250,7 +249,7 @@ abstract class ClockPanel extends JPanel
 			displayInput.getTextField().setForeground(ColorScheme.PROGRESS_ERROR_COLOR.darker());
 		}
 	}
-	
+
 	protected Color getColor()
 	{
 		return clock.isActive() ? ACTIVE_CLOCK_COLOR : INACTIVE_CLOCK_COLOR;

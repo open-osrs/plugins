@@ -24,13 +24,12 @@
  */
 package net.runelite.client.plugins.timetracking;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.ItemID;
 
 @RequiredArgsConstructor
-@Getter(AccessLevel.PACKAGE)
+@Getter
 public enum Tab
 {
 	OVERVIEW("Overview", ItemID.OLD_NOTES),

@@ -50,7 +50,7 @@ public class BirdHouseTracker
 	// average time taken to harvest 10 birds, in seconds
 	static final int BIRD_HOUSE_DURATION = (int) Duration.ofMinutes(50).getSeconds();
 
-	private static final Set<Integer> FOSSIL_ISLAND_REGIONS = Set.of(14650, 14651, 14652, 14906, 14907, 15162, 15163);
+	private static Set<Integer> FOSSIL_ISLAND_REGIONS = Set.of(14650, 14651, 14652, 14906, 14907, 15162, 15163);
 
 	private final Client client;
 	private final ItemManager itemManager;
@@ -61,19 +61,19 @@ public class BirdHouseTracker
 	@Getter(AccessLevel.PACKAGE)
 	private final ConcurrentMap<BirdHouseSpace, BirdHouseData> birdHouseData = new ConcurrentHashMap<>();
 
-	@Getter(AccessLevel.PUBLIC)
+	@Getter
 	private SummaryState summary = SummaryState.UNKNOWN;
 
 	/**
 	 * The time at which all the bird houses will be ready to be dismantled,
 	 * or {@code -1} if we have no data about any of the bird house spaces.
 	 */
-	@Getter(AccessLevel.PUBLIC)
+	@Getter
 	private long completionTime = -1;
 
 	@Inject
 	private BirdHouseTracker(Client client, ItemManager itemManager, ConfigManager configManager,
-							TimeTrackingConfig config, Notifier notifier)
+		TimeTrackingConfig config, Notifier notifier)
 	{
 		this.client = client;
 		this.itemManager = itemManager;
@@ -195,7 +195,6 @@ public class BirdHouseTracker
 
 	/**
 	 * Updates the overall completion time of the bird houses.
-	 *
 	 * @see #completionTime
 	 */
 	private void updateCompletionTime()

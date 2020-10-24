@@ -25,13 +25,12 @@
 package net.runelite.client.plugins.timetracking.hunter;
 
 import javax.annotation.Nullable;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.ItemID;
 
 @AllArgsConstructor
-@Getter(AccessLevel.PACKAGE)
+@Getter
 enum BirdHouse
 {
 	NORMAL("Bird House", ItemID.BIRD_HOUSE),

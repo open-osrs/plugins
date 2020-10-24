@@ -25,13 +25,12 @@
 package net.runelite.client.plugins.timetracking.farming;
 
 import javax.annotation.Nullable;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.client.plugins.timetracking.Tab;
 
 @RequiredArgsConstructor
-@Getter(AccessLevel.PACKAGE)
+@Getter
 public enum PatchImplementation
 {
 	BELLADONNA(Tab.SPECIAL, "")
