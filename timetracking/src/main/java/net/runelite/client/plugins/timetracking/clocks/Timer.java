@@ -30,8 +30,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter(AccessLevel.PACKAGE)
-@Setter(AccessLevel.PACKAGE)
+@Getter
+@Setter
 @AllArgsConstructor
 class Timer extends Clock
 {
@@ -40,11 +40,11 @@ class Timer extends Clock
 
 	// the number of seconds remaining on the timer, as of last updated time
 	private long remaining;
-	
+
 	// whether this timer is in the 'warning' state or not
 	@Getter(AccessLevel.NONE)
 	private transient boolean warning;
-	
+
 	// whether this timer should loop or not
 	private boolean loop;
 
@@ -106,7 +106,7 @@ class Timer extends Clock
 		remaining = duration;
 		lastUpdate = Instant.now().getEpochSecond();
 	}
-	
+
 	boolean isWarning()
 	{
 		return warning && (remaining > 0);

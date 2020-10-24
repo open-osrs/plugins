@@ -57,7 +57,7 @@ class OverviewItemPanel extends JPanel
 
 	static
 	{
-		ARROW_RIGHT_ICON = new ImageIcon(ImageUtil.getResourceStreamFromClass(TimeTrackingPlugin.class, "/net/runelite/client/plugins/timetracking/arrow_right.png"));
+		ARROW_RIGHT_ICON = new ImageIcon(ImageUtil.getResourceStreamFromClass(TimeTrackingPlugin.class, "/util/arrow_right.png"));
 	}
 
 	OverviewItemPanel(ItemManager itemManager, TimeTrackingPanel pluginPanel, Tab tab, String title)
@@ -68,6 +68,7 @@ class OverviewItemPanel extends JPanel
 	OverviewItemPanel(ItemManager itemManager, Runnable onTabSwitched, BooleanSupplier isSelectable, int iconItemID, String title)
 	{
 		this.isSelectable = isSelectable;
+
 		setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(7, 7, 7, 7));
@@ -123,7 +124,6 @@ class OverviewItemPanel extends JPanel
 		textContainer.add(statusLabel);
 
 		add(textContainer, BorderLayout.CENTER);
-
 
 		arrowLabel = new JLabel(ARROW_RIGHT_ICON);
 		arrowLabel.setVisible(isSelectable.getAsBoolean());

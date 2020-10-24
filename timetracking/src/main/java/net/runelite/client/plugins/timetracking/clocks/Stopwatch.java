@@ -27,13 +27,12 @@ package net.runelite.client.plugins.timetracking.clocks;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter(AccessLevel.PACKAGE)
-@Setter(AccessLevel.PACKAGE)
+@Getter
+@Setter
 @AllArgsConstructor
 class Stopwatch extends Clock
 {
