@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.5"
 
 project.extra["PluginName"] = "Status Bars"
 project.extra["PluginDescription"] = "Draws HP/Pray/Stamina/Spec status bars next to inventory"

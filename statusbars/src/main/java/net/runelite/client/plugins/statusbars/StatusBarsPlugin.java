@@ -28,12 +28,8 @@ import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import javax.inject.Inject;
-import lombok.AccessLevel;
-import lombok.Getter;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -46,64 +42,49 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.itemstats.ItemStatPlugin;
-import net.runelite.client.plugins.statusbars.config.BarMode;
-import net.runelite.client.plugins.statusbars.renderer.BarRenderer;
-import net.runelite.client.plugins.statusbars.renderer.EnergyRenderer;
-import net.runelite.client.plugins.statusbars.renderer.HitPointsRenderer;
-import net.runelite.client.plugins.statusbars.renderer.PrayerRenderer;
-import net.runelite.client.plugins.statusbars.renderer.SpecialAttackRenderer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
 	name = "Status Bars",
+	description = "Draws status bars next to players inventory showing current HP & Prayer and healing amounts",
 	enabledByDefault = false,
-	description = "Draws status bars next to players inventory showing currentValue and restore amounts",
 	type = PluginType.UTILITY
 )
 @PluginDependency(ItemStatPlugin.class)
 public class StatusBarsPlugin extends Plugin
 {
 	@Inject
-	private StatusBarsOverlay overlay;
-
-	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private HitPointsRenderer hitPointsRenderer;
-
-	@Inject
-	private PrayerRenderer prayerRenderer;
-
-	@Inject
-	private EnergyRenderer energyRenderer;
-
-	@Inject
-	private SpecialAttackRenderer specialAttackRenderer;
-
-	@Getter(AccessLevel.PACKAGE)
-	private final Map<BarMode, BarRenderer> barRenderers = new EnumMap<>(BarMode.class);
-
-	@Inject
 	private Client client;
 
 	@Inject
 	private StatusBarsConfig config;
 
-	@Getter(AccessLevel.PACKAGE)
+	@Inject
+	private StatusBarsOverlay overlay;
+
+	@Inject
+	private OverlayManager overlayManager;
+
 	private Instant lastCombatAction;
 
 	@Override
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
-		barRenderers.put(BarMode.DISABLED, null);
-		barRenderers.put(BarMode.HITPOINTS, hitPointsRenderer);
-		barRenderers.put(BarMode.PRAYER, prayerRenderer);
-		barRenderers.put(BarMode.RUN_ENERGY, energyRenderer);
-		barRenderers.put(BarMode.SPECIAL_ATTACK, specialAttackRenderer);
+	}
+
+	@Override
+	protected void shutDown()
+	{
+		overlayManager.remove(overlay);
+	}
+
+	@Provides
+	StatusBarsConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(StatusBarsConfig.class);
 	}
 
 	private void updateLastCombatAction()
@@ -141,22 +122,9 @@ public class StatusBarsPlugin extends Plugin
 				overlayManager.add(overlay);
 			}
 		}
-		else if (lastCombatAction == null || Duration.between(getLastCombatAction(), Instant.now()).getSeconds() > combatTimeout)
+		else if (lastCombatAction == null || Duration.between(lastCombatAction, Instant.now()).getSeconds() > combatTimeout)
 		{
 			overlayManager.remove(overlay);
 		}
-	}
-
-	@Override
-	protected void shutDown()
-	{
-		overlayManager.remove(overlay);
-		barRenderers.clear();
-	}
-
-	@Provides
-	StatusBarsConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(StatusBarsConfig.class);
 	}
 }

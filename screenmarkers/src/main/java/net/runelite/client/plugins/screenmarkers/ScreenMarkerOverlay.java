@@ -52,6 +52,7 @@ public class ScreenMarkerOverlay extends Overlay
 		setLayer(OverlayLayer.ALWAYS_ON_TOP);
 		setPriority(OverlayPriority.HIGH);
 		setResizable(true);
+		setMinimumSize(16);
 		setResettable(false);
 	}
 
