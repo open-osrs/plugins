@@ -179,13 +179,6 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 	@Subscribe
 	private void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
-		if (client.getIndexScripts().isOverlayOutdated())
-		{
-			// if any cache overlay fails to load then assume at least one of the zoom scripts is outdated
-			// and prevent zoom extending entirely.
-			return;
-		}
-
 		int[] intStack = client.getIntStack();
 		int intStackSize = client.getIntStackSize();
 
