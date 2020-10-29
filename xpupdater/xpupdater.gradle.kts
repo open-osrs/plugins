@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.5"
 
 project.extra["PluginName"] = "XP Updater"
 project.extra["PluginDescription"] = "Automatically updates your stats on external xptrackers when you log out"

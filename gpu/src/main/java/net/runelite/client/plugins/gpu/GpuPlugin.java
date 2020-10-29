@@ -253,8 +253,6 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 	 */
 	private int tempUvOffset;
 
-	private int lastViewportWidth;
-	private int lastViewportHeight;
 	private int lastCanvasWidth;
 	private int lastCanvasHeight;
 	private int lastStretchedCanvasWidth;
@@ -404,7 +402,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 				// force rebuild of main buffer provider to enable alpha channel
 				client.resizeCanvas();
 
-				lastViewportWidth = lastViewportHeight = lastCanvasWidth = lastCanvasHeight = -1;
+				lastCanvasWidth = lastCanvasHeight = -1;
 				lastStretchedCanvasWidth = lastStretchedCanvasHeight = -1;
 				lastAntiAliasingMode = null;
 
@@ -510,6 +508,8 @@ public class GpuPlugin extends Plugin implements DrawCallbacks, MouseListener
 			modelBufferSmall = null;
 			modelBuffer = null;
 			modelBufferUnordered = null;
+
+			lastAnisotropicFilteringLevel = -1;
 
 			// force main buffer provider rebuild to turn off alpha channel
 			client.resizeCanvas();

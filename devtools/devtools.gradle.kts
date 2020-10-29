@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.26"
+version = "0.0.27"
 
 project.extra["PluginName"] = "Developer Tools"
 project.extra["PluginDescription"] = "Enables the developer tools"
