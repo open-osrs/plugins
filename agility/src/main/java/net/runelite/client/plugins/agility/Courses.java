@@ -32,23 +32,23 @@ import net.runelite.api.coords.WorldPoint;
 
 enum Courses
 {
-	GNOME(86.5, 46, 9781),
-	DRAYNOR(120.0, 79, 12338),
+	GNOME(86.5, 46, 9781, new WorldPoint(2484, 3437, 0), new WorldPoint(2487, 3437, 0)),
+	DRAYNOR(120.0, 79, 12338, new WorldPoint(3103, 3261, 0)),
 	AL_KHARID(180.0, 0, 13105, new WorldPoint(3299, 3194, 0)),
 	PYRAMID(722.0, 0, 13356, new WorldPoint(3364, 2830, 0)),
-	VARROCK(238.0, 125, 12853),
-	PENGUIN(540.0, 65, 10559),
-	BARBARIAN(139.5, 60, 10039),
-	CANIFIS(240.0, 175, 13878),
-	APE_ATOLL(580.0, 300, 11050),
-	FALADOR(440, 180, 12084),
-	WILDERNESS(571.0, 499, 11837),
-	WEREWOLF(730.0, 380, 14234),
-	SEERS(570.0, 435, 10806),
-	POLLNIVNEACH(890.0, 540, 13358),
-	RELLEKA(780.0, 475, 10553),
-	PRIFDDINAS(1337.0, 1037, 12895),
-	ARDOUGNE(793.0, 529, 10547);
+	VARROCK(238.0, 125, 12853, new WorldPoint(3236, 3417, 0)),
+	PENGUIN(540.0, 65, 10559, new WorldPoint(2657, 4038, 1)),
+	BARBARIAN(139.5, 60, 10039, new WorldPoint(2543, 3553, 0)),
+	CANIFIS(240.0, 175, 13878, new WorldPoint(3510, 3485, 0)),
+	APE_ATOLL(580.0, 300, 11050, new WorldPoint(2770, 2747, 0)),
+	FALADOR(440, 180, 12084, new WorldPoint(3029, 3332, 0), new WorldPoint(3029, 3333, 0), new WorldPoint(3029, 3334, 0)),
+	WILDERNESS(571.0, 499, 11837, new WorldPoint(2993, 3933, 0), new WorldPoint(2994, 3933, 0), new WorldPoint(2995, 3933, 0)),
+	WEREWOLF(730.0, 380, 14234, new WorldPoint(3528, 9873, 0)),
+	SEERS(570.0, 435, 10806, new WorldPoint(2704, 3464, 0)),
+	POLLNIVNEACH(890.0, 540, 13358, new WorldPoint(3363, 2998, 0)),
+	RELLEKA(780.0, 475, 10553, new WorldPoint(2652, 3676, 0)),
+	PRIFDDINAS(1337.0, 1037, 12895, new WorldPoint(3240, 6109, 0)),
+	ARDOUGNE(793.0, 529, 10547, new WorldPoint(2667, 3297, 0));
 
 	private final static Map<Integer, Courses> coursesByRegion;
 
