@@ -30,42 +30,24 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Shape;
 import java.util.List;
-import java.util.Set;
 import javax.inject.Inject;
-import net.runelite.api.Client;
 import net.runelite.api.NPC;
-import net.runelite.api.NPCDefinition;
-import net.runelite.api.Perspective;
-import net.runelite.api.Point;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldArea;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.util.Text;
-import net.runelite.client.graphics.ModelOutlineRenderer;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
 public class TargetClickboxOverlay extends Overlay
 {
-	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
-
-	private final Client client;
-	private final SlayerPlugin plugin;
 	private final SlayerConfig config;
-	private final ModelOutlineRenderer modelOutliner;
+	private final SlayerPlugin plugin;
 
 	@Inject
-	TargetClickboxOverlay(final Client client, final SlayerPlugin plugin, final SlayerConfig config, final ModelOutlineRenderer modelOutlineRenderer)
+	TargetClickboxOverlay(SlayerConfig config, SlayerPlugin plugin)
 	{
-		this.client = client;
-		this.plugin = plugin;
 		this.config = config;
-		this.modelOutliner = modelOutlineRenderer;
+		this.plugin = plugin;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
@@ -73,146 +55,30 @@ public class TargetClickboxOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (config.highlightTargets())
+		if (!config.highlightTargets())
 		{
-			Set<NPC> targets = plugin.getHighlightedTargets();
-			for (NPC target : targets)
-			{
-				if (target == null || target.getName() == null)
-				{
-					continue;
-				}
+			return null;
+		}
 
-				Color coloration = config.getTargetColor();
-
-				if (plugin.isSuperior(target.getName()))
-				{
-					coloration = config.getSuperiorColor();
-				}
-
-				renderNpcOverlay(graphics, target, coloration);
-			}
+		List<NPC> targets = plugin.getHighlightedTargets();
+		for (NPC target : targets)
+		{
+			renderTargetOverlay(graphics, target, config.getTargetColor());
 		}
 
 		return null;
 	}
 
-	private void renderNpcOverlay(Graphics2D graphics, NPC actor, Color color)
+	private void renderTargetOverlay(Graphics2D graphics, NPC actor, Color color)
 	{
-		switch (config.renderStyle())
+		Shape objectClickbox = actor.getConvexHull();
+		if (objectClickbox != null)
 		{
-			case SOUTH_WEST_TILE:
-				LocalPoint lp1 = LocalPoint.fromWorld(client, actor.getWorldLocation());
-
-				if (lp1 == null)
-				{
-					return;
-				}
-
-				Polygon tilePoly1 = Perspective.getCanvasTilePoly(client, lp1);
-
-				OverlayUtil.renderPolygon(graphics, tilePoly1, color);
-				break;
-
-			case TILE:
-				int size = 1;
-				NPCDefinition composition = actor.getTransformedDefinition();
-
-				if (composition != null)
-				{
-					size = composition.getSize();
-				}
-
-				LocalPoint lp = actor.getLocalLocation();
-				Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
-
-				OverlayUtil.renderPolygon(graphics, tilePoly, color);
-				break;
-
-			case HULL:
-				Shape objectClickbox = actor.getConvexHull();
-
-				if (objectClickbox == null)
-				{
-					return;
-				}
-
-				OverlayUtil.renderPolygon(graphics, objectClickbox, color);
-				break;
-			case THIN_OUTLINE:
-				modelOutliner.drawOutline(actor, 1, color);
-				break;
-
-			case OUTLINE:
-				modelOutliner.drawOutline(actor, 2, color);
-				break;
-
-			case THIN_GLOW:
-				modelOutliner.drawOutline(actor, 4, color, TRANSPARENT);
-				break;
-
-			case GLOW:
-				modelOutliner.drawOutline(actor, 8, color, TRANSPARENT);
-				break;
-			case TRUE_LOCATIONS:
-				size = 1;
-				composition = actor.getTransformedDefinition();
-
-				if (composition != null)
-				{
-					size = composition.getSize();
-				}
-
-				WorldPoint wp = actor.getWorldLocation();
-				getSquare(wp, size).forEach(square ->
-					drawTile(graphics, square, color, 1, 255, 50));
-				break;
+			graphics.setColor(color);
+			graphics.setStroke(new BasicStroke(2));
+			graphics.draw(objectClickbox);
+			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+			graphics.fill(objectClickbox);
 		}
-
-		if (config.drawNames())
-		{
-			String npcName = Text.removeTags(actor.getName());
-			Point textLocation = actor.getCanvasTextLocation(graphics, npcName, actor.getLogicalHeight() + 40);
-
-			if (textLocation != null)
-			{
-				OverlayUtil.renderTextLocation(graphics, textLocation, npcName, color);
-			}
-		}
-	}
-
-	private List<WorldPoint> getSquare(WorldPoint npcLoc, int npcSize)
-	{
-		return new WorldArea(npcLoc.getX(), npcLoc.getY(), npcSize, npcSize, npcLoc.getPlane()).toWorldPointList();
-	}
-
-	private void drawTile(Graphics2D graphics, WorldPoint point, Color color, int strokeWidth, int outlineAlpha, int fillAlpha)
-	{
-		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
-
-		if (point.distanceTo(playerLocation) >= 32)
-		{
-			return;
-		}
-
-		LocalPoint lp = LocalPoint.fromWorld(client, point);
-
-		if (lp == null)
-		{
-			return;
-		}
-
-		Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-
-		if (poly == null)
-		{
-			return;
-		}
-
-		graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), outlineAlpha));
-		graphics.setStroke(new BasicStroke(strokeWidth));
-		graphics.draw(poly);
-		graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), fillAlpha));
-		graphics.fill(poly);
 	}
 }

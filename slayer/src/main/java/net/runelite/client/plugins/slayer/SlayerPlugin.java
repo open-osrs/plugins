@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2017, Tyler <https://github.com/tylerthardy>
  * Copyright (c) 2018, Shaun Dreclin <shaundreclin@gmail.com>
- * Copyright (c) 2018, Robin Withes <https://github.com/robinwithes>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,19 +30,17 @@ import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import static java.lang.Integer.max;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import joptsimple.internal.Strings;
 import lombok.AccessLevel;
@@ -60,21 +57,15 @@ import net.runelite.api.MessageNode;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCDefinition;
 import static net.runelite.api.Skill.SLAYER;
-import net.runelite.api.SpriteID;
-import net.runelite.api.Varbits;
-import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
-import net.runelite.api.events.InteractingChanged;
-import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.util.Text;
 import net.runelite.api.vars.SlayerUnlock;
 import net.runelite.api.widgets.Widget;
@@ -90,20 +81,12 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ChatInput;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
-import net.runelite.client.task.Schedule;
-import net.runelite.client.ui.ClientToolbar;
-import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
-import net.runelite.client.util.AsyncBufferedImage;
 import net.runelite.client.util.ColorUtil;
-import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.chat.ChatClient;
 import org.pf4j.Extension;
 
@@ -114,7 +97,6 @@ import org.pf4j.Extension;
 	tags = {"combat", "notifications", "overlay", "tasks"},
 	type = PluginType.SKILLING
 )
-@PluginDependency(XpTrackerPlugin.class)
 @Slf4j
 public class SlayerPlugin extends Plugin
 {
@@ -126,13 +108,15 @@ public class SlayerPlugin extends Plugin
 	private static final String CHAT_CANCEL_MESSAGE_JAD = "You no longer have a slayer task as you left the fight cave.";
 	private static final String CHAT_CANCEL_MESSAGE_ZUK = "You no longer have a slayer task as you left the Inferno.";
 	private static final String CHAT_SUPERIOR_MESSAGE = "A superior foe has appeared...";
-	private static final String CHAT_SLAYER_TASKDONE_NOTIFICATION = "You have completed your slayer task.";
-	private static final String CHAT_SLAYER_STREAK_NOTIFICATION = "Your next task will earn you more points, it is recommended to do it with the highest level slayer master you can access.";
-	private static final Pattern COMBAT_BRACELET_TASK_UPDATE_MESSAGE = Pattern.compile("^You still need to kill (\\d+) monsters to complete your current Slayer assignment");
-
 	private static final String CHAT_BRACELET_SLAUGHTER = "Your bracelet of slaughter prevents your slayer";
+	private static final Pattern CHAT_BRACELET_SLAUGHTER_REGEX = Pattern.compile("Your bracelet of slaughter prevents your slayer count from decreasing. It has (\\d{1,2}) charges? left\\.");
 	private static final String CHAT_BRACELET_EXPEDITIOUS = "Your expeditious bracelet helps you progress your";
-
+	private static final Pattern CHAT_BRACELET_EXPEDITIOUS_REGEX = Pattern.compile("Your expeditious bracelet helps you progress your slayer (?:task )?faster. It has (\\d{1,2}) charges? left\\.");
+	private static final String CHAT_BRACELET_SLAUGHTER_CHARGE = "Your bracelet of slaughter has ";
+	private static final Pattern CHAT_BRACELET_SLAUGHTER_CHARGE_REGEX = Pattern.compile("Your bracelet of slaughter has (\\d{1,2}) charges? left\\.");
+	private static final String CHAT_BRACELET_EXPEDITIOUS_CHARGE = "Your expeditious bracelet has ";
+	private static final Pattern CHAT_BRACELET_EXPEDITIOUS_CHARGE_REGEX = Pattern.compile("Your expeditious bracelet has (\\d{1,2}) charges? left\\.");
+	private static final Pattern COMBAT_BRACELET_TASK_UPDATE_MESSAGE = Pattern.compile("^You still need to kill (\\d+) monsters to complete your current Slayer assignment");
 
 	//NPC messages
 	private static final Pattern NPC_ASSIGN_MESSAGE = Pattern.compile(".*(?:Your new task is to kill|You are to bring balance to)\\s*(?<amount>\\d+) (?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>.+))?\\.");
@@ -140,51 +124,18 @@ public class SlayerPlugin extends Plugin
 	private static final Pattern NPC_ASSIGN_FIRST_MESSAGE = Pattern.compile("^We'll start you off (?:hunting|bringing balance to) (.*), you'll need to kill (\\d*) of them\\.$");
 	private static final Pattern NPC_CURRENT_MESSAGE = Pattern.compile("^You're (?:still(?: meant to be)?|currently assigned to) (?:hunting|bringing balance to|kill|bring balance to|slaying) (?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>.+))?(?:, with|; (?:you have|only)) (?<amount>\\d+)(?: more)? to go\\..*");
 
+	//Reward UI
+	private static final Pattern REWARD_POINTS = Pattern.compile("Reward points: ((?:\\d+,)*\\d+)");
+
 	private static final int GROTESQUE_GUARDIANS_REGION = 6727;
 
-	private static final Set<Task> weaknessTasks = Set.of(Task.LIZARDS, Task.GARGOYLES,
-		Task.GROTESQUE_GUARDIANS, Task.MUTATED_ZYGOMITES, Task.ROCKSLUGS);
+	private static final int EXPEDITIOUS_CHARGE = 30;
+	private static final int SLAUGHTER_CHARGE = 30;
 
 	// Chat Command
 	private static final String TASK_COMMAND_STRING = "!task";
 	private static final Pattern TASK_STRING_VALIDATION = Pattern.compile("[^a-zA-Z0-9' -]");
 	private static final int TASK_STRING_MAX_LENGTH = 50;
-	private static final String POINTS_COMMAND_STRING = "!points";
-
-	private static final double DMM_MULTIPLIER_RATIO = 5;
-
-	// Superiors
-	@VisibleForTesting
-	static final List<String> SUPERIOR_SLAYER_MONSTERS = Arrays.asList(
-		"crushing hand",
-		"chasm crawler",
-		"screaming banshee",
-		"screaming twisted banshee",
-		"giant rockslug",
-		"cockathrice",
-		"flaming pyrelord",
-		"monstrous basilisk",
-		"malevolent mage",
-		"insatiable bloodveld",
-		"insatiable mutated bloodveld",
-		"vitreous jelly",
-		"vitreous warped jelly",
-		"cave abomination",
-		"abhorrent spectre",
-		"repugnant spectre",
-		"choke devil",
-		"king kurask",
-		"marble gargoyle",
-		"nechryarch",
-		"greater abyssal demon",
-		"night beast",
-		"nuclear smoke devil");
-
-	@Inject
-	private ClientToolbar clientToolbar;
-
-	@Inject
-	private SpriteManager spriteManager;
 
 	@Inject
 	private Client client;
@@ -232,104 +183,79 @@ public class SlayerPlugin extends Plugin
 	private ChatClient chatClient;
 
 	@Getter(AccessLevel.PACKAGE)
-	private final Set<NPC> highlightedTargets = new HashSet<>();
-
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
-	private TaskData currentTask = new TaskData(0, 0, 0, 0, 0, 0, null, null, true);
-
-	@Getter(AccessLevel.PACKAGE)
-	private int streak;
-
-	@Getter(AccessLevel.PACKAGE)
-	private int points;
-
-	@Getter(AccessLevel.PACKAGE)
-	private Task weaknessTask = null;
-
-	private TaskCounter counter;
-	private int cachedXp = -1;
-	private int cachedPoints;
-	private Instant infoTimer;
-	private List<String> targetNames = new ArrayList<>();
-	private final List<Integer> targetIds = new ArrayList<>();
-	private boolean checkAsTokens = true;
+	private List<NPC> highlightedTargets = new ArrayList<>();
 
 	private final Set<NPC> taggedNpcs = new HashSet<>();
 	private int taggedNpcsDiedPrevTick;
 	private int taggedNpcsDiedThisTick;
 
-	private final List<NPCPresence> lingeringPresences = new ArrayList<>();
-	private SlayerXpDropLookup slayerXpDropLookup = null;
+	@Getter(AccessLevel.PACKAGE)
+	@Setter(AccessLevel.PACKAGE)
+	private int amount;
 
-	private SlayerTaskPanel panel;
-	private NavigationButton navButton;
-	private long lastTickMillis = 0;
+	@Getter(AccessLevel.PACKAGE)
+	@Setter(AccessLevel.PACKAGE)
+	private int initialAmount;
 
-	private void clearTrackedNPCs()
-	{
-		highlightedTargets.clear();
-		lingeringPresences.clear();
-	}
+	@Getter(AccessLevel.PACKAGE)
+	@Setter(AccessLevel.PACKAGE)
+	private String taskLocation;
 
-	private boolean weaknessOverlayAttached;
+	@Getter(AccessLevel.PACKAGE)
+	@Setter(AccessLevel.PACKAGE)
+	private int expeditiousChargeCount;
+
+	@Getter(AccessLevel.PACKAGE)
+	@Setter(AccessLevel.PACKAGE)
+	private int slaughterChargeCount;
+
+	@Getter(AccessLevel.PACKAGE)
+	@Setter(AccessLevel.PACKAGE)
+	private String taskName;
+
+	private TaskCounter counter;
+	private int cachedXp = -1;
+	private Instant infoTimer;
+	private boolean loginFlag;
+	private List<String> targetNames = new ArrayList<>();
 
 	@Override
-	protected void startUp()
+	protected void startUp() throws Exception
 	{
-		weaknessOverlayAttached = false;
-
 		overlayManager.add(overlay);
 		overlayManager.add(targetClickboxOverlay);
+		overlayManager.add(targetWeaknessOverlay);
 		overlayManager.add(targetMinimapOverlay);
-
-		if (slayerXpDropLookup == null)
-		{
-			// create this in startup since it needs to pull files during creation
-			slayerXpDropLookup = new SlayerXpDropLookup();
-		}
-
-		panel = new SlayerTaskPanel(this);
-
-		spriteManager.getSpriteAsync(SpriteID.SKILL_SLAYER, 0, panel::loadHeaderIcon);
-
-		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
-
-		navButton = NavigationButton.builder()
-			.tooltip("Slayer Tracker")
-			.icon(icon)
-			.priority(6)
-			.panel(panel)
-			.build();
-
-		clientToolbar.addNavigation(navButton);
 
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
 			cachedXp = client.getSkillExperience(SLAYER);
+
+			if (config.amount() != -1
+				&& !config.taskName().isEmpty())
+			{
+				setExpeditiousChargeCount(config.expeditious());
+				setSlaughterChargeCount(config.slaughter());
+				clientThread.invoke(() -> setTask(config.taskName(), config.amount(), config.initialAmount(), config.taskLocation(), false));
+			}
 		}
 
 		chatCommandManager.registerCommandAsync(TASK_COMMAND_STRING, this::taskLookup, this::taskSubmit);
-
-		chatCommandManager.registerCommandAsync(POINTS_COMMAND_STRING, this::pointsLookup); //here
 	}
 
 	@Override
-	protected void shutDown()
+	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(overlay);
 		overlayManager.remove(targetClickboxOverlay);
 		overlayManager.remove(targetWeaknessOverlay);
 		overlayManager.remove(targetMinimapOverlay);
 		removeCounter();
-		clearTrackedNPCs();
-
-		chatCommandManager.unregisterCommand(TASK_COMMAND_STRING);
-		chatCommandManager.unregisterCommand(POINTS_COMMAND_STRING);
-		clientToolbar.removeNavigation(navButton);
-
+		highlightedTargets.clear();
 		taggedNpcs.clear();
 		cachedXp = -1;
+
+		chatCommandManager.unregisterCommand(TASK_COMMAND_STRING);
 	}
 
 	@Provides
@@ -339,205 +265,66 @@ public class SlayerPlugin extends Plugin
 	}
 
 	@Subscribe
-	void onGameStateChanged(GameStateChanged event)
+	public void onGameStateChanged(GameStateChanged event)
 	{
 		switch (event.getGameState())
 		{
 			case HOPPING:
 			case LOGGING_IN:
 				cachedXp = -1;
-				cachedPoints = 0;
+				taskName = "";
+				amount = 0;
+				loginFlag = true;
+				highlightedTargets.clear();
 				taggedNpcs.clear();
-				clearTrackedNPCs();
-				break;
-			case LOGIN_SCREEN:
-				currentTask.setPaused(true);
 				break;
 			case LOGGED_IN:
-				if (config.amount() != -1 && !config.taskName().isEmpty() && currentTask.getTaskName() == null)
+				if (config.amount() != -1
+					&& !config.taskName().isEmpty()
+					&& loginFlag)
 				{
-					setTask(config.taskName(), config.amount(), config.initialAmount(), true, config.taskLocation(), config.lastCertainAmount(), false);
+					setExpeditiousChargeCount(config.expeditious());
+					setSlaughterChargeCount(config.slaughter());
+					setTask(config.taskName(), config.amount(), config.initialAmount(), config.taskLocation(), false);
+					loginFlag = false;
 				}
+				break;
 		}
 	}
 
 	private void save()
 	{
-		config.amount(currentTask.getAmount());
-		config.initialAmount(currentTask.getInitialAmount());
-		config.taskName(currentTask.getTaskName());
-		config.taskLocation(currentTask.getTaskLocation());
-		config.lastCertainAmount(currentTask.getLastCertainAmount());
-		config.streak(streak);
+		config.amount(amount);
+		config.initialAmount(initialAmount);
+		config.taskName(taskName);
+		config.taskLocation(taskLocation);
+		config.expeditious(expeditiousChargeCount);
+		config.slaughter(slaughterChargeCount);
 	}
 
 	@Subscribe
-	private void onNpcSpawned(NpcSpawned npcSpawned)
+	public void onNpcSpawned(NpcSpawned npcSpawned)
 	{
 		NPC npc = npcSpawned.getNpc();
-		if (isTarget(npc, targetNames))
+		if (isTarget(npc))
 		{
 			highlightedTargets.add(npc);
 		}
 	}
 
 	@Subscribe
-	private void onNpcDefinitionChanged(NpcDefinitionChanged event)
-	{
-		NPC npc = event.getNpc();
-
-		if (isTarget(npc, targetNames))
-		{
-			highlightedTargets.add(npc);
-		}
-	}
-
-	@Subscribe
-	private void onNpcDespawned(NpcDespawned npcDespawned)
+	public void onNpcDespawned(NpcDespawned npcDespawned)
 	{
 		NPC npc = npcDespawned.getNpc();
 		taggedNpcs.remove(npc);
-		boolean contained = highlightedTargets.remove(npc);
-		if (contained)
-		{
-			NPCPresence lingeringPresence = NPCPresence.buildPresence(npc);
-			lingeringPresences.add(lingeringPresence);
-		}
+		highlightedTargets.remove(npc);
 	}
-
-	@Subscribe
-	public void onVarbitChanged(VarbitChanged event)
-	{
-		if (client.getVar(Varbits.SLAYER_REWARD_POINTS) == cachedPoints)
-		{
-			return;
-		}
-
-		setPoints(client.getVar(Varbits.SLAYER_REWARD_POINTS));
-
-		if (!config.showInfobox())
-		{
-			return;
-		}
-
-		addCounter();
-
-		if (counter != null)
-		{
-			counter.setCount(currentTask.getAmount());
-		}
-	}
-
-	private int estimateKillCount(List<NPCPresence> potentialKills, int gains)
-	{
-		// failsafe to avoid calculating kill count if there were no slayer monsters around that could be killed on task
-		// this failsafe *WILL FAIL* if someone decides to lamp their slayer in the middle of a task next to on task creatures
-		// but will prevent any other kind of slayer xp from triggering the kill count going down
-		// the main problem this causes is a genie random event during a slayer task and the player pops the lamp
-		// this will think that some of the monsters around were slain - e.g. lvl 50 slayer pops lamp for 500 xp around a
-		// 70 xp per kill slayer monster and now the slayer plugin thinks that 7 more kill count were completed (at 99 slayer
-		// the 990 xp drop would really mess with the kc tracker in a noticeable way)
-		if (potentialKills.size() < 1)
-		{
-			return 0;
-		}
-
-		//StringBuilder debugString = new StringBuilder();
-		//for (NPCPresence presence : potentialKills)
-		//{
-		//	debugString.append(presence.toString());
-		//	debugString.append(", ");
-		//}
-		// log.debug("Estimating kc of xp drop " + gains + " for presences {" + debugString.toString() + "}");
-
-		// first determine potential xp drops given by all npcs that died this tick by grabbing the slayer xp
-		// info from the map made out of the data in slayer_xp.json
-		List<Double> potentialXpDrops = new ArrayList<>();
-		for (NPCPresence potentialDead : potentialKills)
-		{
-			double xp = slayerXpDropLookup.findXpForNpc(potentialDead);
-
-			// DeadMan mode has an XP modifier
-			if (client.getWorldType().contains(WorldType.DEADMAN))
-			{
-				xp = xp * DMM_MULTIPLIER_RATIO;
-			}
-
-			if (xp > 0)
-			{
-				potentialXpDrops.add(xp);
-			}
-		}
-
-		//debugString = new StringBuilder();
-		//for (Double drop : potentialXpDrops)
-		//{
-		//	debugString.append(drop);
-		//	debugString.append(", ");
-		//}
-		// log.debug("Determined xp drop " + gains + " can be made of {" + debugString.toString() + "}");
-
-		// we can attempt to determine exactly how many npcs died to give this amount of xp
-		// by using a solver for the knapsack problem
-
-		// add one to max gains allowed for knapsack optimization
-		// since xp is only sent to us as integers but is stored on servers
-		// (and therefore gained as) a double
-		int fudgedGains = gains + 1;
-
-		// scale the problem up by a factor of 10 since knapsack problem is solved better with integers
-		// and xp drops can have a single number after the decimal point
-		int tenFudgedGains = fudgedGains * 10;
-		List<Integer> potentialXpDropsAsInts = potentialXpDrops.stream()
-			.map(xpDrop -> (int) (xpDrop * 10))
-			.collect(Collectors.toCollection(ArrayList::new));
-
-		KnapsackSolver solver = new KnapsackSolver();
-
-		int estimatedCount = solver.howMuchFitsInSack(potentialXpDropsAsInts, tenFudgedGains);
-
-		if (estimatedCount > potentialXpDrops.size())
-		{
-			estimatedCount = potentialXpDrops.size();
-		}
-		if (estimatedCount < 1)
-		{
-			estimatedCount = 1;
-		}
-		return estimatedCount;
-	}
-
-	// b/c dialog can stay up on screen for multiple ticks in a row we want to make sure we only set a task once
-	// for the dialog that appears so we need to basically do a rising edge detection that only allows for a dialog
-	// check to be performed if in the previous ticks there was a period of no dialog
-	// i.e. once a dialog has been matched dialog cannot be matched again until npc dialog goes away for a tick
-	// this will work because in order for a new slayer task to happen the player either has to go complete the assignment
-	// (and close npc dialog) or go into the rewards screen which also closes npc dialog
-	private boolean canMatchDialog = true;
-
-	// rising edge detection isn't enough for some reason (don't know why) so in addition to a rising edge rather than
-	// instantly allowing for another assignment we'll do a 2 tick refractory period
-	private static final int FORCED_WAIT = 2;
-	private int forcedWait = -1;
 
 	@Subscribe
 	public void onGameTick(GameTick tick)
 	{
-		// update the lingering presence of npcs in the slayer xp consideration list
-		Iterator<NPCPresence> presenceIterator = lingeringPresences.iterator();
-		while (presenceIterator.hasNext())
-		{
-			NPCPresence presence = presenceIterator.next();
-			presence.tickExistence();
-			if (!presence.shouldExist())
-			{
-				// log.debug("Lingering presence of " + presence.toString() + " expired");
-				presenceIterator.remove();
-			}
-		}
-
 		Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
-		if (npcDialog != null && canMatchDialog)
+		if (npcDialog != null)
 		{
 			String npcText = Text.sanitizeMultilineText(npcDialog.getText()); //remove color and linebreaks
 			final Matcher mAssign = NPC_ASSIGN_MESSAGE.matcher(npcText); // amount, name, (location)
@@ -550,54 +337,70 @@ public class SlayerPlugin extends Plugin
 				String name = mAssign.group("name");
 				int amount = Integer.parseInt(mAssign.group("amount"));
 				String location = mAssign.group("location");
-				setTask(name, amount, amount, true, location, 0);
-				canMatchDialog = false;
-				forcedWait = FORCED_WAIT;
+				setTask(name, amount, amount, location);
 			}
 			else if (mAssignFirst.find())
 			{
 				int amount = Integer.parseInt(mAssignFirst.group(2));
-				setTask(mAssignFirst.group(1), amount, amount, true, 0);
-				canMatchDialog = false;
-				forcedWait = FORCED_WAIT;
+				setTask(mAssignFirst.group(1), amount, amount);
 			}
 			else if (mAssignBoss.find())
 			{
 				int amount = Integer.parseInt(mAssignBoss.group(2));
-				setTask(mAssignBoss.group(1), amount, amount, true, 0);
-				canMatchDialog = false;
-				forcedWait = FORCED_WAIT;
-				points = Integer.parseInt(mAssignBoss.group(3).replaceAll(",", ""));
+				setTask(mAssignBoss.group(1), amount, amount);
+				int points = Integer.parseInt(mAssignBoss.group(3).replaceAll(",", ""));
+				config.points(points);
 			}
 			else if (mCurrent.find())
 			{
 				String name = mCurrent.group("name");
 				int amount = Integer.parseInt(mCurrent.group("amount"));
 				String location = mCurrent.group("location");
-				setTask(name, amount, currentTask.getInitialAmount(), false, location, 0);
-				canMatchDialog = false;
-				forcedWait = FORCED_WAIT;
+				setTask(name, amount, initialAmount, location);
 			}
 		}
-		else if (npcDialog == null)
+
+		Widget braceletBreakWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+		if (braceletBreakWidget != null)
 		{
-			if (forcedWait <= 0)
+			String braceletText = Text.removeTags(braceletBreakWidget.getText()); //remove color and linebreaks
+			if (braceletText.contains("bracelet of slaughter"))
 			{
-				canMatchDialog = true;
+				slaughterChargeCount = SLAUGHTER_CHARGE;
+				config.slaughter(slaughterChargeCount);
 			}
-			forcedWait--;
+			else if (braceletText.contains("expeditious bracelet"))
+			{
+				expeditiousChargeCount = EXPEDITIOUS_CHARGE;
+				config.expeditious(expeditiousChargeCount);
+			}
 		}
 
-
-		// If a timeout is configured for showing slayer stats
-		if (config.statTimeout() != 0)
+		Widget rewardsBarWidget = client.getWidget(WidgetInfo.SLAYER_REWARDS_TOPBAR);
+		if (rewardsBarWidget != null)
 		{
-			// If the timer has not started, start it now
-			if (infoTimer == null)
+			for (Widget w : rewardsBarWidget.getDynamicChildren())
 			{
-				infoTimer = Instant.now();
-			}
+				Matcher mPoints = REWARD_POINTS.matcher(w.getText());
+				if (mPoints.find())
+				{
+					final int prevPoints = config.points();
+					int points = Integer.parseInt(mPoints.group(1).replaceAll(",", ""));
 
+					if (prevPoints != points)
+					{
+						config.points(points);
+						removeCounter();
+						addCounter();
+					}
+
+					break;
+				}
+			}
+		}
+
+		if (infoTimer != null && config.statTimeout() != 0)
+		{
 			Duration timeSinceInfobox = Duration.between(infoTimer, Instant.now());
 			Duration statTimeout = Duration.ofMinutes(config.statTimeout());
 
@@ -621,7 +424,49 @@ public class SlayerPlugin extends Plugin
 
 		String chatMsg = Text.removeTags(event.getMessage()); //remove color and linebreaks
 
-		if (chatMsg.endsWith("; return to a Slayer master."))
+		if (chatMsg.startsWith(CHAT_BRACELET_SLAUGHTER))
+		{
+			Matcher mSlaughter = CHAT_BRACELET_SLAUGHTER_REGEX.matcher(chatMsg);
+
+			amount++;
+			slaughterChargeCount = mSlaughter.find() ? Integer.parseInt(mSlaughter.group(1)) : SLAUGHTER_CHARGE;
+			config.slaughter(slaughterChargeCount);
+		}
+
+		if (chatMsg.startsWith(CHAT_BRACELET_EXPEDITIOUS))
+		{
+			Matcher mExpeditious = CHAT_BRACELET_EXPEDITIOUS_REGEX.matcher(chatMsg);
+
+			amount--;
+			expeditiousChargeCount = mExpeditious.find() ? Integer.parseInt(mExpeditious.group(1)) : EXPEDITIOUS_CHARGE;
+			config.expeditious(expeditiousChargeCount);
+		}
+
+		if (chatMsg.startsWith(CHAT_BRACELET_EXPEDITIOUS_CHARGE))
+		{
+			Matcher mExpeditious = CHAT_BRACELET_EXPEDITIOUS_CHARGE_REGEX.matcher(chatMsg);
+
+			if (!mExpeditious.find())
+			{
+				return;
+			}
+
+			expeditiousChargeCount = Integer.parseInt(mExpeditious.group(1));
+			config.expeditious(expeditiousChargeCount);
+		}
+		if (chatMsg.startsWith(CHAT_BRACELET_SLAUGHTER_CHARGE))
+		{
+			Matcher mSlaughter = CHAT_BRACELET_SLAUGHTER_CHARGE_REGEX.matcher(chatMsg);
+			if (!mSlaughter.find())
+			{
+				return;
+			}
+
+			slaughterChargeCount = Integer.parseInt(mSlaughter.group(1));
+			config.slaughter(slaughterChargeCount);
+		}
+
+		if (chatMsg.startsWith("You've completed") && (chatMsg.contains("Slayer master") || chatMsg.contains("Slayer Master")))
 		{
 			Matcher mComplete = CHAT_COMPLETE_MESSAGE.matcher(chatMsg);
 
@@ -631,41 +476,38 @@ public class SlayerPlugin extends Plugin
 				matches.add(mComplete.group(0).replaceAll(",", ""));
 			}
 
+			int streak = -1, points = -1;
 			switch (matches.size())
 			{
 				case 0:
 					streak = 1;
 					break;
 				case 1:
+					streak = Integer.parseInt(matches.get(0));
+					break;
 				case 3:
 					streak = Integer.parseInt(matches.get(0));
+					points = Integer.parseInt(matches.get(2));
 					break;
 				default:
 					log.warn("Unreachable default case for message ending in '; return to Slayer master'");
 			}
-
-			log.debug("Slayer task completed with " + currentTask.getAmount() + " remaining");
-			log.debug("Last certain amount was " + currentTask.getLastCertainAmount() +
-				" so error rate is " + currentTask.getAmount() + " in " + currentTask.getLastCertainAmount());
-
-			setTask("", 0, 0, true, 0);
-
-			if (config.maximumPointsNotification() && streak % 10 == 9)
+			if (streak != -1)
 			{
-				notifier.notify(CHAT_SLAYER_STREAK_NOTIFICATION);
+				config.streak(streak);
+			}
+			if (points != -1)
+			{
+				config.points(points);
 			}
 
-			if (config.taskDoneNotification())
-			{
-				notifier.notify(CHAT_SLAYER_TASKDONE_NOTIFICATION);
-			}
-
+			setTask("", 0, 0);
 			return;
 		}
 
 		if (chatMsg.equals(CHAT_GEM_COMPLETE_MESSAGE) || chatMsg.equals(CHAT_CANCEL_MESSAGE) || chatMsg.equals(CHAT_CANCEL_MESSAGE_JAD) || chatMsg.equals(CHAT_CANCEL_MESSAGE_ZUK))
 		{
-			setTask("", 0, 0, true, 0);
+			setTask("", 0, 0);
 			return;
 		}
 
@@ -682,7 +524,7 @@ public class SlayerPlugin extends Plugin
 			String name = mProgress.group("name");
 			int gemAmount = Integer.parseInt(mProgress.group("amount"));
 			String location = mProgress.group("location");
-			setTask(name, gemAmount, currentTask.getInitialAmount(), false, location, gemAmount);
+			setTask(name, gemAmount, initialAmount, location);
 			return;
 		}
 
@@ -691,20 +533,10 @@ public class SlayerPlugin extends Plugin
 		if (bracerProgress.find())
 		{
 			final int taskAmount = Integer.parseInt(bracerProgress.group(1));
-			setTask(currentTask.getTaskName(), taskAmount, currentTask.getInitialAmount(), false, taskAmount);
+			setTask(taskName, taskAmount, initialAmount);
 
 			// Avoid race condition (combat brace message goes through first before XP drop)
-			currentTask.setAmount(currentTask.getAmount() + 1);
-		}
-
-		if (chatMsg.startsWith(CHAT_BRACELET_SLAUGHTER))
-		{
-			currentTask.setAmount(currentTask.getAmount() + 1);
-		}
-
-		if (chatMsg.startsWith(CHAT_BRACELET_EXPEDITIOUS))
-		{
-			currentTask.setAmount(currentTask.getAmount() - 1);
+			amount++;
 		}
 	}
 
@@ -735,20 +567,20 @@ public class SlayerPlugin extends Plugin
 
 		log.debug("Slayer xp change delta: {}, killed npcs: {}", delta, taggedNpcsDiedPrevTick);
 
-		final Task task = Task.getTask(currentTask.getTaskName());
+		final Task task = Task.getTask(taskName);
 		if (task != null && task.getExpectedKillExp() > 0)
 		{
 			// Only decrement a kill if the xp drop matches the expected drop. This is just for Tzhaar tasks.
 			if (task.getExpectedKillExp() == delta)
 			{
-				killed(1, delta);
+				killed(1);
 			}
 		}
 		else
 		{
 			// This is at least one kill, but if we observe multiple tagged NPCs dieing on the previous tick, count them
 			// instead.
-			killed(Math.max(taggedNpcsDiedPrevTick, 1), delta);
+			killed(max(taggedNpcsDiedPrevTick, 1));
 		}
 	}
 
@@ -776,82 +608,39 @@ public class SlayerPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onInteractingChanged(InteractingChanged event)
-	{
-		if (client.getLocalPlayer() == null)
-		{
-			return;
-		}
-		final Actor interacting = client.getLocalPlayer().getInteracting();
-		weaknessTask = null;
-
-		if (!(interacting instanceof NPC))
-		{
-			return;
-		}
-
-		final NPC npc = (NPC) interacting;
-
-		for (Task task : weaknessTasks)
-		{
-			if (isTarget(npc, buildTargetNames(task)))
-			{
-				weaknessTask = task;
-				return;
-			}
-		}
-	}
-
-	boolean isSuperior(String name)
-	{
-		return SUPERIOR_SLAYER_MONSTERS.contains(name.toLowerCase());
-	}
-
-	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
-		if (!event.getGroup().equals("slayer"))
+		if (!event.getGroup().equals("slayer") || !event.getKey().equals("infobox"))
 		{
 			return;
 		}
 
-		if (event.getKey().equals("infobox"))
+		if (config.showInfobox())
 		{
-			if (config.showInfobox())
-			{
-				clientThread.invoke(this::addCounter);
-			}
-			else
-			{
-				removeCounter();
-			}
+			clientThread.invoke(this::addCounter);
+		}
+		else
+		{
+			removeCounter();
 		}
 	}
 
 	@VisibleForTesting
-	private void killed(int amt, int xp)
+	void killed(int amt)
 	{
-		if (currentTask == null || currentTask.getAmount() == 0)
+		if (amount == 0)
 		{
 			return;
 		}
 
-		currentTask.setAmount(currentTask.getAmount() - amt);
-		currentTask.setElapsedKills(currentTask.getElapsedKills() + amt);
-		currentTask.setElapsedXp(currentTask.getElapsedXp() + xp);
+		amount -= amt;
 		if (doubleTroubleExtraKill())
 		{
 			assert amt == 1;
-			currentTask.setAmount(currentTask.getAmount() - 1);
-			currentTask.setElapsedKills(currentTask.getElapsedKills() + 1);
+			amount--;
 		}
 
-		config.amount(currentTask.getAmount()); // save changed value
-		currentTask.setPaused(false); // no longer paused since xp is gained
-		if (panel != null)
-		{
-			panel.updateCurrentTask(true, currentTask.isPaused(), currentTask, false);
-		}
+		config.amount(amount); // save changed value
 
 		if (!config.showInfobox())
 		{
@@ -860,59 +649,19 @@ public class SlayerPlugin extends Plugin
 
 		// add and update counter, set timer
 		addCounter();
-		counter.setCount(currentTask.getAmount());
+		counter.setCount(amount);
 		infoTimer = Instant.now();
 	}
 
 	private boolean doubleTroubleExtraKill()
 	{
-		if (client.getLocalPlayer() == null)
-		{
-			return false;
-		}
-		final WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
-		final int playerRegionID = worldPoint == null ? 0 : worldPoint.getRegionID();
-		return playerRegionID == GROTESQUE_GUARDIANS_REGION && SlayerUnlock.GROTESQUE_GUARDIAN_DOUBLE_COUNT.isEnabled(client);
+		return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == GROTESQUE_GUARDIANS_REGION &&
+			SlayerUnlock.GROTESQUE_GUARDIAN_DOUBLE_COUNT.isEnabled(client);
 	}
 
-	// checks if any contiguous subsequence of seq0 exactly matches the String toMatch
-	private boolean contiguousSubsequenceMatches(String[] seq0, String toMatch)
+	private boolean isTarget(NPC npc)
 	{
-		for (int i = 0; i < seq0.length; i++)
-		{
-			for (int j = i; j < seq0.length; j++)
-			{
-				StringBuilder sub0Builder = new StringBuilder();
-				for (int k = i; k <= j; k++)
-				{
-					sub0Builder.append(seq0[k]).append(" ");
-				}
-				String sub0 = sub0Builder.toString();
-				sub0 = sub0.substring(0, sub0.length() - 1); // remove extra space
-				if (sub0.equals(toMatch))
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean isValidComposition(NPCDefinition composition)
-	{
-		if (composition != null)
-		{
-			List<String> actions = Arrays.asList(composition.getActions());
-			//Pick action is for zygomite-fungi
-			return actions.contains("Attack") || actions.contains("Pick") || actions.contains("Poke");
-		}
-
-		return false;
-	}
-
-	private boolean isTarget(NPC npc, List<String> names)
-	{
-		if (names.isEmpty() && targetIds.isEmpty())
+		if (targetNames.isEmpty())
 		{
 			return false;
 		}
@@ -925,84 +674,36 @@ public class SlayerPlugin extends Plugin
 
 		name = name.toLowerCase();
 
-		// in order to avoid issues like pirates being highlighted on a rats task
-		// rather than checking if the name contains any of the targets we do a complete
-		// token check which is where we tokenize the name on the space character
-		// then we check if any contiguous subsequence (of at least length 1) from the name matches
-		// the target.
-
-		// we have a boolean flag that also allows the behavior of just doing a contains check to happen
-		// this is done specifically for the tzhaar task because it's much easier to just check if the enemy
-		// contains "Tz-" then listing the many many many types of tzhaar.
-
-		for (String target : names)
+		for (String target : targetNames)
 		{
-			if (!checkAsTokens)
+			if (name.contains(target))
 			{
-				if (name.contains(target) && isValidComposition(npc.getTransformedDefinition()))
+				NPCDefinition composition = npc.getTransformedDefinition();
+
+				if (composition != null)
 				{
-					return true;
-				}
-			}
-			else
-			{
-				String[] nameTokens = name.split(" ");
-				if (contiguousSubsequenceMatches(nameTokens, target) && isValidComposition(npc.getTransformedDefinition()))
-				{
-					return true;
+					List<String> actions = Arrays.asList(composition.getActions());
+					if (actions.contains("Attack") || actions.contains("Pick")) //Pick action is for zygomite-fungi
+					{
+						return true;
+					}
 				}
 			}
 		}
-
-		int id = npc.getId();
-		if (id <= 0)
-		{
-			return false;
-		}
-
-		for (int target : targetIds)
-		{
-			if (id == target && isValidComposition(npc.getTransformedDefinition()))
-			{
-				return true;
-			}
-		}
-
 		return false;
 	}
 
-	private List<String> buildTargetNames(Task task)
+	private void rebuildTargetNames(Task task)
 	{
-		List<String> names = new ArrayList<>();
+		targetNames.clear();
 
 		if (task != null)
 		{
-			task.getTargetNames().stream()
+			Arrays.stream(task.getTargetNames())
 				.map(String::toLowerCase)
-				.forEach(names::add);
+				.forEach(targetNames::add);
 
-			//TODO
-			names.add(task.getName().toLowerCase().replaceAll("s$", ""));
-		}
-
-		return names;
-	}
-
-	private void rebuildTargetIds(Task task)
-	{
-		targetIds.clear();
-
-		if (task != null)
-		{
-			targetIds.addAll(task.getNpcIds());
-		}
-	}
-
-	private void rebuildCheckAsTokens(Task task)
-	{
-		if (task != null)
-		{
-			checkAsTokens = task.isCheckAsTokens();
+			targetNames.add(taskName.toLowerCase().replaceAll("s$", ""));
 		}
 	}
 
@@ -1012,38 +713,29 @@ public class SlayerPlugin extends Plugin
 
 		for (NPC npc : client.getNpcs())
 		{
-			if (isTarget(npc, targetNames))
+			if (isTarget(npc))
 			{
 				highlightedTargets.add(npc);
 			}
 		}
 	}
 
-	public void setTask(String name, int amt, int initAmt, boolean isNewAssignment, int lastCertainAmt)
+	private void setTask(String name, int amt, int initAmt)
 	{
-		setTask(name, amt, initAmt, isNewAssignment, null, lastCertainAmt);
+		setTask(name, amt, initAmt, null);
 	}
 
-	private void setTask(String name, int amt, int initAmt, boolean isNewAssignment, String location, int lastCertainAmt)
+	private void setTask(String name, int amt, int initAmt, String location)
 	{
-		setTask(name, amt, initAmt, isNewAssignment, location, lastCertainAmt, true);
+		setTask(name, amt, initAmt, location, true);
 	}
 
-	private void setTask(String name, int amt, int initAmt, boolean isNewAssignment, String location, int lastCertainAmt, boolean addCounter)
+	private void setTask(String name, int amt, int initAmt, String location, boolean addCounter)
 	{
-		initAmt = Math.max(amt, initAmt);
-
-		currentTask = new TaskData(isNewAssignment ? 0 : currentTask.getElapsedTime(),
-			isNewAssignment ? 0 : currentTask.getElapsedKills(),
-			isNewAssignment ? 0 : currentTask.getElapsedXp(),
-			amt, initAmt, lastCertainAmt, location, name,
-			isNewAssignment || currentTask.isPaused());
-
-		if (panel != null)
-		{
-			panel.updateCurrentTask(true, currentTask.isPaused(), currentTask, isNewAssignment);
-		}
-
+		taskName = name;
+		amount = amt;
+		initialAmount = Math.max(amt, initAmt);
+		taskLocation = location;
 		save();
 		removeCounter();
 
@@ -1054,53 +746,30 @@ public class SlayerPlugin extends Plugin
 		}
 
 		Task task = Task.getTask(name);
-		targetNames.clear();
-		targetNames = buildTargetNames(task);
-		rebuildTargetIds(task);
-		rebuildCheckAsTokens(task);
+		rebuildTargetNames(task);
 		rebuildTargetList();
+	}
 
-		if (task == null)
+	private void addCounter()
+	{
+		if (!config.showInfobox() || counter != null || Strings.isNullOrEmpty(taskName))
 		{
 			return;
 		}
 
-		if (!weaknessOverlayAttached && task.getWeaknessItem() != -1 && task.getWeaknessThreshold() != -1)
-		{
-			overlayManager.add(targetWeaknessOverlay);
-			weaknessOverlayAttached = true;
-		}
-		else if (weaknessOverlayAttached && task.getWeaknessItem() == -1 && task.getWeaknessThreshold() == -1)
-		{
-			overlayManager.remove(targetWeaknessOverlay);
-			weaknessOverlayAttached = false;
-		}
-	}
-
-	AsyncBufferedImage getImageForTask(Task task)
-	{
+		Task task = Task.getTask(taskName);
 		int itemSpriteId = ItemID.ENCHANTED_GEM;
 		if (task != null)
 		{
 			itemSpriteId = task.getItemSpriteId();
 		}
-		return itemManager.getImage(itemSpriteId);
-	}
 
-	private void addCounter()
-	{
-		if (!config.showInfobox() || counter != null || currentTask == null || Strings.isNullOrEmpty(currentTask.getTaskName()))
-		{
-			return;
-		}
-
-		Task task = Task.getTask(currentTask.getTaskName());
-		AsyncBufferedImage taskImg = getImageForTask(task);
+		BufferedImage taskImg = itemManager.getImage(itemSpriteId);
 		String taskTooltip = ColorUtil.wrapWithColorTag("%s", new Color(255, 119, 0)) + "</br>";
 
-		if (currentTask.getTaskLocation() != null && !currentTask.getTaskLocation().isEmpty())
+		if (taskLocation != null && !taskLocation.isEmpty())
 		{
-			taskTooltip += currentTask.getTaskLocation() + "</br>";
+			taskTooltip += taskLocation + "</br>";
 		}
 
 		taskTooltip += ColorUtil.wrapWithColorTag("Pts:", Color.YELLOW)
@@ -1108,15 +777,15 @@ public class SlayerPlugin extends Plugin
 			+ ColorUtil.wrapWithColorTag("Streak:", Color.YELLOW)
 			+ " %s";
 
-		if (currentTask.getInitialAmount() > 0)
+		if (initialAmount > 0)
 		{
 			taskTooltip += "</br>"
 				+ ColorUtil.wrapWithColorTag("Start:", Color.YELLOW)
-				+ " " + currentTask.getInitialAmount();
+				+ " " + initialAmount;
 		}
 
-		counter = new TaskCounter(taskImg, this, currentTask.getAmount());
-		counter.setTooltip(String.format(taskTooltip, capsString(currentTask.getTaskName()), points, streak));
+		counter = new TaskCounter(taskImg, this, amount);
+		counter.setTooltip(String.format(taskTooltip, capsString(taskName), config.points(), config.streak()));
 
 		infoBoxManager.addInfoBox(counter);
 	}
@@ -1163,11 +832,6 @@ public class SlayerPlugin extends Plugin
 			return;
 		}
 
-		if (task == null)
-		{
-			return;
-		}
-
 		if (TASK_STRING_VALIDATION.matcher(task.getTask()).find() || task.getTask().length() > TASK_STRING_MAX_LENGTH ||
 			TASK_STRING_VALIDATION.matcher(task.getLocation()).find() || task.getLocation().length() > TASK_STRING_MAX_LENGTH ||
 			Task.getTask(task.getTask()) == null || !Task.LOCATIONS.contains(task.getLocation()))
@@ -1207,62 +871,9 @@ public class SlayerPlugin extends Plugin
 		client.refreshChat();
 	}
 
-	private void pointsLookup(ChatMessage chatMessage, String message)
-	{
-		if (!config.pointsCommand())
-		{
-			return;
-		}
-
-		String response = new ChatMessageBuilder()
-			.append(ChatColorType.NORMAL)
-			.append("Slayer Points: ")
-			.append(ChatColorType.HIGHLIGHT)
-			.append(Integer.toString(getPoints()))
-			.build();
-
-		final MessageNode messageNode = chatMessage.getMessageNode();
-		messageNode.setRuneLiteFormatMessage(response);
-		chatMessageManager.update(messageNode);
-		client.refreshChat();
-	}
-
-	/* package access method for changing the pause state of the time tracker for the current task */
-	void setPaused(boolean paused)
-	{
-		currentTask.setPaused(paused);
-		panel.updateCurrentTask(false, currentTask.isPaused(), currentTask, false);
-	}
-
-	@Schedule(
-		period = 1,
-		unit = ChronoUnit.SECONDS
-	)
-	public void tickTaskTimes()
-	{
-		if (lastTickMillis == 0)
-		{
-			lastTickMillis = System.currentTimeMillis();
-			return;
-		}
-
-		final long nowMillis = System.currentTimeMillis();
-		final long tickDelta = nowMillis - lastTickMillis;
-		lastTickMillis = nowMillis;
-
-
-		if (currentTask == null)
-		{
-			return;
-		}
-		currentTask.tick(tickDelta);
-
-		panel.updateCurrentTask(false, currentTask.isPaused(), currentTask, false);
-	}
-
 	private boolean taskSubmit(ChatInput chatInput, String value)
 	{
-		if (Strings.isNullOrEmpty(currentTask.getTaskName()))
+		if (Strings.isNullOrEmpty(taskName))
 		{
 			return false;
 		}
@@ -1273,7 +884,7 @@ public class SlayerPlugin extends Plugin
 		{
 			try
 			{
-				chatClient.submitTask(playerName, capsString(currentTask.getTaskName()), currentTask.getAmount(), currentTask.getInitialAmount(), currentTask.getTaskLocation());
+				chatClient.submitTask(playerName, capsString(taskName), amount, initialAmount, taskLocation);
 			}
 			catch (Exception ex)
 			{
@@ -1289,14 +900,8 @@ public class SlayerPlugin extends Plugin
 	}
 
 	//Utils
-	private static String capsString(String str)
+	private String capsString(String str)
 	{
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
-	}
-
-	private void setPoints(int points)
-	{
-		this.points = points;
-		this.cachedPoints = points;
 	}
 }
