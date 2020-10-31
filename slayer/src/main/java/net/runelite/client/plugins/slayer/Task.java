@@ -27,200 +27,136 @@ package net.runelite.client.plugins.slayer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import java.util.ArrayList;
-import static java.util.Arrays.asList;
-import static java.util.Collections.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.annotation.Nullable;
-import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ItemID;
 
-@Getter(AccessLevel.PACKAGE)
+@Getter
 enum Task
 {
-
-	/*
-	 * format for enum is that the name of the task is first
-	 * second is the item id image we use to represent the task graphically
-	 * third is the list of names of monsters that can be killed on task (note that he task name is already handled
-	 * so that is why for a task like ankou there is no need to include this list)
-	 * fourth is the list of ids of monsters that can be killed on task (main reason for this is weird cases like baby dragons and the elf mourner)
-	 */
-
 	//<editor-fold desc="Enums">
-	ABERRANT_SPECTRES("Aberrant spectres", ItemID.ABERRANT_SPECTRE,
-		asList("Abhorrent spectre", "Deviant spectre", "Repugnant spectre"), emptyList()),
-	ABYSSAL_DEMONS("Abyssal demons", ItemID.ABYSSAL_DEMON,
-		singletonList("Abyssal Sire"), emptyList()),
+	ABERRANT_SPECTRES("Aberrant spectres", ItemID.ABERRANT_SPECTRE, "Spectre"),
+	ABYSSAL_DEMONS("Abyssal demons", ItemID.ABYSSAL_DEMON),
 	ABYSSAL_SIRE("Abyssal Sire", ItemID.ABYSSAL_ORPHAN),
 	ADAMANT_DRAGONS("Adamant dragons", ItemID.ADAMANT_DRAGON_MASK),
 	ALCHEMICAL_HYDRA("Alchemical Hydra", ItemID.IKKLE_HYDRA),
 	ANKOU("Ankou", ItemID.ANKOU_MASK),
-	AVIANSIES("Aviansies", ItemID.ENSOULED_AVIANSIE_HEAD,
-		singletonList("Kree'arra"), emptyList()),
-	BANDITS("Bandits", ItemID.BANDIT),
+	AVIANSIES("Aviansies", ItemID.ENSOULED_AVIANSIE_HEAD),
+	BANDITS("Bandits", ItemID.BANDIT, "Bandit"),
 	BANSHEES("Banshees", ItemID.BANSHEE),
-	BARROWS_BROTHERS("Barrows Brothers", ItemID.KARILS_COIF,
-		asList("Ahrim the blighted", "Dharok the wretched", "Guthan the infested", "Karil the tainted", "Torag the corrupted", "Verac the defiled"), emptyList()),
+	BARROWS_BROTHERS("Barrows Brothers", ItemID.KARILS_COIF),
 	BASILISKS("Basilisks", ItemID.BASILISK),
 	BATS("Bats", ItemID.GIRAL_BAT_2),
-	BEARS("Bears", ItemID.ENSOULED_BEAR_HEAD,
-		singletonList("Callisto"), emptyList()),
-	BIRDS("Birds", ItemID.FEATHER,
-		asList("Chicken", "Rooster", "Terrorbird", "Seagull", "Chompy bird", "Jubbly bird", "Oomlie bird", "Vulture"), emptyList()),
-	BLACK_DEMONS("Black demons", ItemID.BLACK_DEMON_MASK,
-		asList("Demonic gorilla", "Balfrug kreeyath", "Skotizo"), emptyList()),
-	BLACK_DRAGONS("Black dragons", ItemID.BLACK_DRAGON_MASK,
-		singletonList("Baby black dragon"), emptyList()),
-	BLACK_KNIGHTS("Black Knights", ItemID.BLACK_FULL_HELM,
-		singletonList("Black Knight"), emptyList()),
+	BEARS("Bears", ItemID.ENSOULED_BEAR_HEAD),
+	BIRDS("Birds", ItemID.FEATHER, "Chicken", "Rooster", "Terrorbird", "Seagull"),
+	BLACK_DEMONS("Black demons", ItemID.BLACK_DEMON_MASK),
+	BLACK_DRAGONS("Black dragons", ItemID.BLACK_DRAGON_MASK, "Baby black dragon"),
+	BLACK_KNIGHTS("Black Knights", ItemID.BLACK_FULL_HELM, "Black Knight"),
 	BLOODVELD("Bloodveld", ItemID.BLOODVELD),
-	BLUE_DRAGONS("Blue dragons", ItemID.BLUE_DRAGON_MASK,
-		asList("Vorkath", "Baby blue dragon"), emptyList()),
+	BLUE_DRAGONS("Blue dragons", ItemID.BLUE_DRAGON_MASK, "Baby blue dragon"),
 	BRINE_RATS("Brine rats", ItemID.BRINE_RAT),
 	BRONZE_DRAGONS("Bronze dragons", ItemID.BRONZE_DRAGON_MASK),
 	CALLISTO("Callisto", ItemID.CALLISTO_CUB),
 	CATABLEPON("Catablepon", ItemID.LEFT_SKULL_HALF),
 	CAVE_BUGS("Cave bugs", ItemID.SWAMP_CAVE_BUG),
-	CAVE_CRAWLERS("Cave crawlers", ItemID.CAVE_CRAWLER,
-		singletonList("Chasm crawler"), emptyList()),
-	CAVE_HORRORS("Cave horrors", ItemID.CAVE_HORROR,
-		singletonList("Cave abomination"), emptyList()),
-	CAVE_KRAKEN("Cave kraken", ItemID.CAVE_KRAKEN,
-		singletonList("Kraken"), emptyList()),
+	CAVE_CRAWLERS("Cave crawlers", ItemID.CAVE_CRAWLER, "Chasm crawler"),
+	CAVE_HORRORS("Cave horrors", ItemID.CAVE_HORROR, "Cave abomination"),
+	CAVE_KRAKEN("Cave kraken", ItemID.CAVE_KRAKEN),
 	CAVE_SLIMES("Cave slimes", ItemID.SWAMP_CAVE_SLIME),
 	CERBERUS("Cerberus", ItemID.HELLPUPPY),
-	CHAOS_DRUIDS("Chaos druids", ItemID.ELDER_CHAOS_HOOD),
+	CHAOS_DRUIDS("Chaos druids", ItemID.ELDER_CHAOS_HOOD, "Elder Chaos druid", "Chaos druid"),
 	CHAOS_ELEMENTAL("Chaos Elemental", ItemID.PET_CHAOS_ELEMENTAL),
 	CHAOS_FANATIC("Chaos Fanatic", ItemID.ANCIENT_STAFF),
-	COCKATRICE("Cockatrice", ItemID.COCKATRICE,
-		singletonList("Cockathrice"), emptyList()),
+	COCKATRICE("Cockatrice", ItemID.COCKATRICE, "Cockathrice"),
 	COWS("Cows", ItemID.COW_MASK),
-	CRAWLING_HANDS("Crawling hands", ItemID.CRAWLING_HAND,
-		singletonList("Crushing hand"), emptyList()),
-	CRAZY_ARCHAEOLOGIST("Crazy Archaeologist", ItemID.FEDORA),
+	CRAWLING_HANDS("Crawling hands", ItemID.CRAWLING_HAND, "Crushing hand"),
+	CRAZY_ARCHAEOLOGIST("Crazy Archaeologists", ItemID.FEDORA, "Crazy Archaeologist"),
 	CROCODILES("Crocodiles", ItemID.SWAMP_LIZARD),
-	DAGANNOTH("Dagannoth", ItemID.DAGANNOTH,
-		asList("Dagannoth Rex", "Dagannoth Prime", "Dagannoth Supreme"), emptyList()),
-	DAGANNOTH_KINGS("Dagannoth Kings", ItemID.PET_DAGANNOTH_PRIME,
-		asList("Dagannoth Rex", "Dagannoth Prime", "Dagannoth Supreme"), emptyList()),
-	DARK_BEASTS("Dark beasts", ItemID.DARK_BEAST,
-		singletonList("Night beast"), emptyList()),
-	DARK_WARRIORS("Dark warriors", ItemID.BLACK_MED_HELM),
+	DAGANNOTH("Dagannoth", ItemID.DAGANNOTH),
+	DAGANNOTH_KINGS("Dagannoth Kings", ItemID.PET_DAGANNOTH_PRIME),
+	DARK_BEASTS("Dark beasts", ItemID.DARK_BEAST, "Night beast"),
+	DARK_WARRIORS("Dark warriors", ItemID.BLACK_MED_HELM, "Dark warrior"),
 	DERANGED_ARCHAEOLOGIST("Deranged Archaeologist", ItemID.ARCHAEOLOGISTS_DIARY),
-	DOGS("Dogs", ItemID.GUARD_DOG,
-		singletonList("Jackal"), emptyList()),
+	DOGS("Dogs", ItemID.GUARD_DOG, "Jackal"),
 	DRAKES("Drakes", ItemID.DRAKE),
-	DUST_DEVILS("Dust devils", ItemID.DUST_DEVIL,
-		singletonList("Choke devil"), emptyList()),
-	DWARVES("Dwarves", ItemID.DWARVEN_HELMET,
-		asList("Dwarf", "Black guard"), emptyList()),
+	DUST_DEVILS("Dust devils", ItemID.DUST_DEVIL, "Choke devil"),
+	DWARVES("Dwarves", ItemID.DWARVEN_HELMET, "Dwarf"),
 	EARTH_WARRIORS("Earth warriors", ItemID.BRONZE_FULL_HELM_T),
-	ELVES("Elves", ItemID.ELF,
-		asList("Elf", "Iorwerth Warrior"), emptyList()),
-	ENTS("Ents", ItemID.ENTS_ROOTS),
+	ELVES("Elves", ItemID.ELF, "Elf", "Iorwerth Warrior"),
+	ENTS("Ents", ItemID.NICE_TREE, "Ent"),
 	FEVER_SPIDERS("Fever spiders", ItemID.FEVER_SPIDER),
 	FIRE_GIANTS("Fire giants", ItemID.FIRE_BATTLESTAFF),
-	FLESH_CRAWLERS("Flesh crawlers", ItemID.ENSOULED_SCORPION_HEAD),
-	FOSSIL_ISLAND_WYVERNS("Fossil island wyverns", ItemID.FOSSIL_ISLAND_WYVERN,
-		asList("Ancient wyvern", "Long-tailed wyvern", "Spitting wyvern", "Taloned wyvern"), emptyList()),
-	GARGOYLES("Gargoyles", ItemID.GARGOYLE,
-		asList("Dusk", "Dawn"), emptyList(), 9, ItemID.ROCK_HAMMER),
+	FLESH_CRAWLERS("Fleshcrawlers", ItemID.ENSOULED_SCORPION_HEAD, "Flesh crawler"),
+	FOSSIL_ISLAND_WYVERNS("Fossil island wyverns", ItemID.FOSSIL_ISLAND_WYVERN, "Ancient wyvern", "Long-tailed wyvern", "Spitting wyvern", "Taloned wyvern"),
+	GARGOYLES("Gargoyles", ItemID.GARGOYLE, 9, ItemID.ROCK_HAMMER),
 	GENERAL_GRAARDOR("General Graardor", ItemID.PET_GENERAL_GRAARDOR),
-	GHOSTS("Ghosts", ItemID.GHOSTSPEAK_AMULET,
-		singletonList("Tortured soul"), emptyList()),
+	GHOSTS("Ghosts", ItemID.GHOSTSPEAK_AMULET, "Tortured soul"),
 	GHOULS("Ghouls", ItemID.ZOMBIE_HEAD),
 	GIANT_MOLE("Giant Mole", ItemID.BABY_MOLE),
 	GOBLINS("Goblins", ItemID.ENSOULED_GOBLIN_HEAD),
-	GREATER_DEMONS("Greater demons", ItemID.GREATER_DEMON_MASK,
-		asList("K'ril Tsutsaroth", "Tstanon Karlak", "Skotizo"), emptyList()),
-	GREEN_DRAGONS("Green dragons", ItemID.GREEN_DRAGON_MASK,
-		singletonList("Baby green dragon"), emptyList()),
-	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.MIDNIGHT,
-		asList("Dusk", "Dawn"), emptyList(), 0, ItemID.ROCK_HAMMER),
+	GREATER_DEMONS("Greater demons", ItemID.GREATER_DEMON_MASK),
+	GREEN_DRAGONS("Green dragons", ItemID.GREEN_DRAGON_MASK, "Baby green dragon"),
+	GROTESQUE_GUARDIANS("Grotesque Guardians", ItemID.MIDNIGHT, 0, ItemID.ROCK_HAMMER, "Dusk", "Dawn"),
 	HARPIE_BUG_SWARMS("Harpie bug swarms", ItemID.SWARM),
-	HELLHOUNDS("Hellhounds", ItemID.HELLHOUND,
-		singletonList("Cerberus"), emptyList()),
-	HILL_GIANTS("Hill giants", ItemID.ENSOULED_GIANT_HEAD,
-		singletonList("Cyclops"), emptyList()),
+	HELLHOUNDS("Hellhounds", ItemID.HELLHOUND),
+	HILL_GIANTS("Hill giants", ItemID.ENSOULED_GIANT_HEAD),
 	HOBGOBLINS("Hobgoblins", ItemID.HOBGOBLIN_GUARD),
 	HYDRAS("Hydras", ItemID.HYDRA),
 	ICEFIENDS("Icefiends", ItemID.ICE_DIAMOND),
 	ICE_GIANTS("Ice giants", ItemID.ICE_DIAMOND),
 	ICE_WARRIORS("Ice warriors", ItemID.MITHRIL_FULL_HELM_T),
-	INFERNAL_MAGES("Infernal mages", ItemID.INFERNAL_MAGE,
-		singletonList("Malevolent mage"), emptyList()),
+	INFERNAL_MAGES("Infernal mages", ItemID.INFERNAL_MAGE, "Malevolent mage"),
 	IRON_DRAGONS("Iron dragons", ItemID.IRON_DRAGON_MASK),
 	JAD("TzTok-Jad", ItemID.TZREKJAD, 25250),
-	JELLIES("Jellies", ItemID.JELLY,
-		singletonList("Jelly"), emptyList()),
+	JELLIES("Jellies", ItemID.JELLY, "Jelly"),
 	JUNGLE_HORROR("Jungle horrors", ItemID.ENSOULED_HORROR_HEAD),
 	KALPHITE("Kalphite", ItemID.KALPHITE_SOLDIER),
 	KALPHITE_QUEEN("Kalphite Queen", ItemID.KALPHITE_PRINCESS),
 	KILLERWATTS("Killerwatts", ItemID.KILLERWATT),
 	KING_BLACK_DRAGON("King Black Dragon", ItemID.PRINCE_BLACK_DRAGON),
-	KRAKEN("Cave Kraken Boss", ItemID.PET_KRAKEN,
-		singletonList("Kraken"), emptyList()),
+	KRAKEN("Cave Kraken Boss", ItemID.PET_KRAKEN, "Kraken"),
 	KREEARRA("Kree'arra", ItemID.PET_KREEARRA),
 	KRIL_TSUTSAROTH("K'ril Tsutsaroth", ItemID.PET_KRIL_TSUTSAROTH),
 	KURASK("Kurask", ItemID.KURASK),
-	LAVA_DRAGONS("Lava Dragons", ItemID.LAVA_SCALE),
+	LAVA_DRAGONS("Lava Dragons", ItemID.LAVA_SCALE, "Lava dragon"),
 	LESSER_DEMONS("Lesser demons", ItemID.LESSER_DEMON_MASK),
-	LIZARDMEN("Lizardmen", ItemID.LIZARDMAN_FANG,
-		singletonList("Lizardman"), emptyList()),
-	LIZARDS("Lizards", ItemID.DESERT_LIZARD,
-		asList("Desert lizard", "Sulphur lizard", "Small lizard", "Lizard"), emptyList(), 4, ItemID.ICE_COOLER),
-	MAGIC_AXES("Magic axes", ItemID.IRON_BATTLEAXE),
-	MAMMOTHS("Mammoths", ItemID.ATTACKER_HORN,
-		singletonList("Mammoth"), emptyList()),
-	MINIONS_OF_SCABARAS("Minions of scabaras", ItemID.GOLDEN_SCARAB,
-		asList("Scarab swarm", "Locust rider", "Scarab mage"), emptyList()),
+	LIZARDMEN("Lizardmen", ItemID.LIZARDMAN_FANG, "Lizardman"),
+	LIZARDS("Lizards", ItemID.DESERT_LIZARD, "Desert lizard", "Sulphur lizard", "Small lizard", "Lizard"),
+	MAGIC_AXES("Magic axes", ItemID.IRON_BATTLEAXE, "Magic axe"),
+	MAMMOTHS("Mammoths", ItemID.ATTACKER_HORN, "Mammoth"),
+	MINIONS_OF_SCABARAS("Minions of scabaras", ItemID.GOLDEN_SCARAB, "Scarab swarm", "Locust rider", "Scarab mage"),
 	MINOTAURS("Minotaurs", ItemID.ENSOULED_MINOTAUR_HEAD),
 	MITHRIL_DRAGONS("Mithril dragons", ItemID.MITHRIL_DRAGON_MASK),
 	MOGRES("Mogres", ItemID.MOGRE),
 	MOLANISKS("Molanisks", ItemID.MOLANISK),
 	MONKEYS("Monkeys", ItemID.ENSOULED_MONKEY_HEAD),
-	MOSS_GIANTS("Moss giants", ItemID.HILL_GIANT_CLUB,
-		singletonList("Bryophyta"), emptyList()),
-	MUTATED_ZYGOMITES("Mutated zygomites", ItemID.MUTATED_ZYGOMITE,
-		singletonList("Zygomite"), emptyList(), 7, ItemID.FUNGICIDE_SPRAY_0),
-	NECHRYAEL("Nechryael", ItemID.NECHRYAEL,
-		singletonList("Nechryarch"), emptyList()),
-	OGRES("Ogres", ItemID.ENSOULED_OGRE_HEAD,
-		singletonList("Enclave guard"), emptyList()),
+	MOSS_GIANTS("Moss giants", ItemID.HILL_GIANT_CLUB),
+	MUTATED_ZYGOMITES("Mutated zygomites", ItemID.MUTATED_ZYGOMITE, 7, ItemID.FUNGICIDE_SPRAY_0, "Zygomite", "Fungi"),
+	NECHRYAEL("Nechryael", ItemID.NECHRYAEL, "Nechryarch"),
+	OGRES("Ogres", ItemID.ENSOULED_OGRE_HEAD),
 	OTHERWORLDLY_BEING("Otherworldly beings", ItemID.GHOSTLY_HOOD),
-	PIRATES("Pirates", ItemID.PIRATE_HAT,
-		singletonList("Pirate"), emptyList()),
-	PYREFIENDS("Pyrefiends", ItemID.PYREFIEND,
-		singletonList("Flaming pyrelord"), emptyList()),
+	PIRATES("Pirates", ItemID.PIRATE_HAT, "Pirate"),
+	PYREFIENDS("Pyrefiends", ItemID.PYREFIEND, "Flaming pyrelord"),
 	RATS("Rats", ItemID.RATS_TAIL),
-	RED_DRAGONS("Red dragons", ItemID.BABY_RED_DRAGON,
-		singletonList("Baby red dragon"), emptyList()),
-	REVENANTS("Revenants", ItemID.REVENANT_ETHER,
-		asList("Revenant imp", "Revenant goblin", "Revenant pyrefiend", "Revenant hobgoblin", "Revenant cyclops", "Revenant hellhound", "Revenant demon", "Revenant ork", "Revenant dark beast", "Revenant knight", "Revenant dragon"), emptyList()),
+	RED_DRAGONS("Red dragons", ItemID.BABY_RED_DRAGON, "Baby red dragon"),
+	REVENANTS("Revenants", ItemID.BRACELET_OF_ETHEREUM, "Revenant imp", "Revenant goblin", "Revenant pyrefiend", "Revenant hobgoblin", "Revenant cyclops", "Revenant hellhound", "Revenant demon", "Revenant ork", "Revenant dark beast", "Revenant knight", "Revenant dragon"),
 	ROCKSLUGS("Rockslugs", ItemID.ROCKSLUG, 4, ItemID.BAG_OF_SALT),
-	ROGUES("Rogues", ItemID.ROGUE_MASK,
-		singletonList("Rogue"), emptyList()),
+	ROGUES("Rogues", ItemID.ROGUE_MASK, "Rogue"),
 	RUNE_DRAGONS("Rune dragons", ItemID.RUNE_DRAGON_MASK),
 	SARACHNIS("Sarachnis", ItemID.SRARACHA),
 	SCORPIA("Scorpia", ItemID.SCORPIAS_OFFSPRING),
-	SCORPIONS("Scorpions", ItemID.ENSOULED_SCORPION_HEAD,
-		singletonList("Scorpia"), emptyList()),
+	SCORPIONS("Scorpions", ItemID.ENSOULED_SCORPION_HEAD),
 	SEA_SNAKES("Sea snakes", ItemID.SNAKE_CORPSE),
-	SHADES("Shades", ItemID.SHADE_ROBE_TOP,
-		asList("Loar Shadow", "Loar Shade", "Phrin Shadow", "Phrin Shade", "Riyl Shadow", "Riyl Shade", "Asyn Shadow", "Asyn Shade", "Fiyr Shadow", "Fiyr Shade"), emptyList()),
+	SHADES("Shades", ItemID.SHADE_ROBE_TOP, "Loar Shadow", "Loar Shade", "Phrin Shadow", "Phrin Shade", "Riyl Shadow", "Riyl Shade", "Asyn Shadow", "Asyn Shade", "Fiyr Shadow", "Fiyr Shade"),
 	SHADOW_WARRIORS("Shadow warriors", ItemID.BLACK_FULL_HELM),
 	SKELETAL_WYVERNS("Skeletal wyverns", ItemID.SKELETAL_WYVERN),
 	SKELETONS("Skeletons", ItemID.SKELETON_GUARD),
 	SMOKE_DEVILS("Smoke devils", ItemID.SMOKE_DEVIL),
 	SOURHOGS("Sourhogs", ItemID.SOURHOG_FOOT),
-	SPIDERS("Spiders", ItemID.HUGE_SPIDER,
-		singletonList("Venenatis"), emptyList()),
-	SPIRITUAL_CREATURES("Spiritual creatures", ItemID.DRAGON_BOOTS,
-		asList("Spiritual ranger", "Spiritual mage", "Spiritual warrior"), emptyList()),
+	SPIDERS("Spiders", ItemID.HUGE_SPIDER),
+	SPIRITUAL_CREATURES("Spiritual creatures", ItemID.DRAGON_BOOTS, "Spiritual ranger", "Spiritual mage", "Spiritual warrior"),
 	STEEL_DRAGONS("Steel dragons", ItemID.STEEL_DRAGON),
 	SULPHUR_LIZARDS("Sulphur Lizards", ItemID.SULPHUR_LIZARD),
 	SUQAHS("Suqahs", ItemID.SUQAH_TOOTH),
@@ -229,30 +165,25 @@ enum Task
 	THERMONUCLEAR_SMOKE_DEVIL("Thermonuclear Smoke Devil", ItemID.PET_SMOKE_DEVIL),
 	TROLLS("Trolls", ItemID.TROLL_GUARD),
 	TUROTH("Turoth", ItemID.TUROTH),
-	TZHAAR("Tzhaar", ItemID.ENSOULED_TZHAAR_HEAD,
-		singletonList("Tz-"), emptyList(), false),
+	TZHAAR("Tzhaar", ItemID.ENSOULED_TZHAAR_HEAD),
 	UNDEAD_DRUIDS("Undead Druids", ItemID.MASK_OF_RANUL),
-	VAMPIRES("Vampires", ItemID.STAKE,
-		asList("Vampyre", "Vyrewatch", "Vampire"), emptyList()),
+	VAMPYRES("Vampyres", ItemID.STAKE, "Vyrewatch", "Vampire"),
 	VENENATIS("Venenatis", ItemID.VENENATIS_SPIDERLING),
 	VETION("Vet'ion", ItemID.VETION_JR),
 	VORKATH("Vorkath", ItemID.VORKI),
 	WALL_BEASTS("Wall beasts", ItemID.SWAMP_WALLBEAST),
 	WATERFIENDS("Waterfiends", ItemID.WATER_ORB),
-	WEREWOLVES("Werewolves", ItemID.WOLFBANE,
-		singletonList("Werewolf"), emptyList()),
-	WOLVES("Wolves", ItemID.GREY_WOLF_FUR,
-		singletonList("Wolf"), emptyList()),
+	WEREWOLVES("Werewolves", ItemID.WOLFBANE, "Werewolf"),
+	WOLVES("Wolves", ItemID.GREY_WOLF_FUR, "Wolf"),
 	WYRMS("Wyrms", ItemID.WYRM),
-	ZILYANA("Zilyana", ItemID.PET_ZILYANA),
-	ZOMBIES("Zombies", ItemID.ZOMBIE_HEAD,
-		singletonList("Undead"), emptyList()),
+	ZILYANA("Commander Zilyana", ItemID.PET_ZILYANA),
+	ZOMBIES("Zombies", ItemID.ZOMBIE_HEAD, "Undead"),
 	ZUK("TzKal-Zuk", ItemID.TZREKZUK, 101890),
 	ZULRAH("Zulrah", ItemID.PET_SNAKELING);
 	//</editor-fold>
 
 	private static final Map<String, Task> tasks;
-	static final List<String> LOCATIONS = List.of(
+	static final List<String> LOCATIONS = java.util.List.of(
 		"", // no location is a valid location
 		"Abyss",
 		"Ancient Cavern",
@@ -301,10 +232,7 @@ enum Task
 
 	private final String name;
 	private final int itemSpriteId;
-
-	private final List<String> targetNames;
-	private final List<Integer> npcIds;
-	private final boolean checkAsTokens;
+	private final String[] targetNames;
 	private final int weaknessThreshold;
 	private final int weaknessItem;
 	private final int expectedKillExp;
@@ -321,42 +249,25 @@ enum Task
 		tasks = builder.build();
 	}
 
-	Task(String name, int itemSpriteId)
+	Task(String name, int itemSpriteId, String... targetNames)
 	{
 		Preconditions.checkArgument(itemSpriteId >= 0);
 		this.name = name;
 		this.itemSpriteId = itemSpriteId;
 		this.weaknessThreshold = -1;
 		this.weaknessItem = -1;
-		this.targetNames = new ArrayList<>();
-		this.npcIds = new ArrayList<>();
-		this.checkAsTokens = true;
+		this.targetNames = targetNames;
 		this.expectedKillExp = 0;
 	}
 
-	Task(String name, int itemSpriteId, int weaknessThreshold, int weaknessItem)
+	Task(String name, int itemSpriteId, int weaknessThreshold, int weaknessItem, String... targetNames)
 	{
 		Preconditions.checkArgument(itemSpriteId >= 0);
 		this.name = name;
 		this.itemSpriteId = itemSpriteId;
 		this.weaknessThreshold = weaknessThreshold;
 		this.weaknessItem = weaknessItem;
-		this.targetNames = new ArrayList<>();
-		this.npcIds = new ArrayList<>();
-		this.checkAsTokens = true;
-		this.expectedKillExp = 0;
-	}
-
-	Task(String name, int itemSpriteId, boolean checkAsTokens)
-	{
-		Preconditions.checkArgument(itemSpriteId >= 0);
-		this.name = name;
-		this.itemSpriteId = itemSpriteId;
-		this.weaknessThreshold = -1;
-		this.weaknessItem = -1;
-		this.targetNames = new ArrayList<>();
-		this.npcIds = new ArrayList<>();
-		this.checkAsTokens = checkAsTokens;
+		this.targetNames = targetNames;
 		this.expectedKillExp = 0;
 	}
 
@@ -367,54 +278,13 @@ enum Task
 		this.itemSpriteId = itemSpriteId;
 		this.weaknessThreshold = -1;
 		this.weaknessItem = -1;
-		this.targetNames = new ArrayList<>();
-		this.npcIds = new ArrayList<>();
-		this.checkAsTokens = true;
+		this.targetNames = new String[0];
 		this.expectedKillExp = expectedKillExp;
-	}
-
-	Task(String name, int itemSpriteId, List<String> targetNames, List<Integer> npcIds)
-	{
-		Preconditions.checkArgument(itemSpriteId >= 0);
-		this.name = name;
-		this.itemSpriteId = itemSpriteId;
-		this.weaknessThreshold = -1;
-		this.weaknessItem = -1;
-		this.targetNames = targetNames;
-		this.npcIds = npcIds;
-		this.checkAsTokens = true;
-		this.expectedKillExp = 0;
-	}
-
-	Task(String name, int itemSpriteId, List<String> targetNames, List<Integer> npcIds, int weaknessThreshold, int weaknessItem)
-	{
-		Preconditions.checkArgument(itemSpriteId >= 0);
-		this.name = name;
-		this.itemSpriteId = itemSpriteId;
-		this.weaknessThreshold = weaknessThreshold;
-		this.weaknessItem = weaknessItem;
-		this.targetNames = targetNames;
-		this.npcIds = npcIds;
-		this.checkAsTokens = true;
-		this.expectedKillExp = 0;
-	}
-
-	Task(String name, int itemSpriteId, List<String> targetNames, List<Integer> npcIds, boolean checkAsTokens)
-	{
-		Preconditions.checkArgument(itemSpriteId >= 0);
-		this.name = name;
-		this.itemSpriteId = itemSpriteId;
-		this.weaknessThreshold = -1;
-		this.weaknessItem = -1;
-		this.targetNames = targetNames;
-		this.npcIds = npcIds;
-		this.checkAsTokens = checkAsTokens;
-		this.expectedKillExp = 0;
 	}
 
 	@Nullable
 	static Task getTask(String taskName)
 	{
-		return Optional.ofNullable(tasks.get(taskName.toLowerCase())).orElse(null);
+		return tasks.get(taskName.toLowerCase());
 	}
 }
