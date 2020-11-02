@@ -274,11 +274,11 @@ public class QuestHelperPlugin extends Plugin
 	{
 		if (event.getMenuOpcode() == MenuOpcode.RUNELITE)
 		{
-			switch (event.getMenuOpcode().name())
+			switch (event.getOption())
 			{
 				case MENUOP_STARTHELPER:
 					event.consume();
-					String quest = Text.removeTags(event.getMenuOpcode().name());
+					String quest = Text.removeTags(event.getTarget());
 					startUpQuest(quests.get(quest));
 					break;
 				case MENUOP_STOPHELPER:
