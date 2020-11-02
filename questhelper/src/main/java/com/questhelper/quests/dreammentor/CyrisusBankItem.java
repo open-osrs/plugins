@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.quests.dreammentor;
 
-version = "0.0.4"
+import lombok.Getter;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+enum CyrisusBankItem
+{
+	DRAGON_CHAINBODY("Dragon chainbody", 3140, 1),
+	AHRIM_ROBETOP("Ahrim's robetop", 2, 4712),
+	KARILS_TOP("Karil's leathertop", 3, 4736),
+	DRAGON_MED_HELM("Dragon med helm", 15, 1149),
+	SPLITBARK_HELM("Splitbark helm", 16, 3385),
+	ROBIN_HOOD("Robin hood hat", 17, 2581),
+	ABYSSAL_WHIP("Abyssal whip", 19, 4151),
+	ANCIENT_STAFF("Ancient staff", 20, 4675),
+	MAGIC_SHORTBOW("Magic shortbown", 21, 861),
+	TORAG_LEG("Torag's platelegs", 26, 4970),
+	AHRIM_SKIRT("Ahrim's robeskirt", 27, 4714),
+	BLACK_CHAPS("Black d'hide chaps", 28, 2497),
+	INFINITY_BOOTS("Infinity boots", 29, 6920),
+	RANGER_BOOTS("Ranger boots", 30, 2577),
+	ADAMANT_BOOTS("Adamant boots", 31, 4129);
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+
+	@Getter
+	private final String name;
+
+	@Getter
+	private final int varbitID;
+
+	@Getter
+	private final int widgetID;
+
+
+	CyrisusBankItem(String name, int varbitID, int widgetID)
+	{
+		this.name = name;
+		this.varbitID = varbitID;
+		this.widgetID = widgetID;
+	}
 }
+

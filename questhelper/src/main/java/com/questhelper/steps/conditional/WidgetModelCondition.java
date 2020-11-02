@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,67 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.steps.conditional;
 
-version = "0.0.4"
+import lombok.Getter;
+import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class WidgetModelCondition extends ConditionForStep
+{
+	@Getter
+	private final int groupId;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private final int childId;
+	private final int id;
+	private int childChildId = -1;
+
+	public WidgetModelCondition(int groupId, int childId, int childChildId, int id)
+	{
+		this.groupId = groupId;
+		this.childId = childId;
+		this.childChildId = childChildId;
+		this.id = id;
+	}
+
+	public WidgetModelCondition(int groupId, int childId, int id)
+	{
+		this.groupId = groupId;
+		this.childId = childId;
+		this.id = id;
+	}
+
+	@Override
+	public boolean checkCondition(Client client)
+	{
+		if (onlyNeedToPassOnce && hasPassed)
+		{
+			return true;
+		}
+		return checkWidget(client);
+	}
+
+	public boolean checkWidget(Client client)
+	{
+		Widget widget = client.getWidget(groupId, childId);
+		if (widget == null)
+		{
+			return false;
+		}
+		if (childChildId != -1)
+		{
+			widget = widget.getChild(childChildId);
+		}
+		if (widget != null)
+		{
+			return widget.getModelId() == id;
+		}
+		return false;
+	}
+
+	public void checkWidgetText(Client client)
+	{
+		hasPassed = hasPassed || checkWidget(client);
+	}
 }
+

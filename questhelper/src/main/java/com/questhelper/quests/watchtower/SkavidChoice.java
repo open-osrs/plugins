@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.quests.watchtower;
 
-version = "0.0.4"
+import com.questhelper.questhelpers.QuestHelper;
+import com.questhelper.steps.NpcStep;
+import com.questhelper.steps.choice.DialogChoiceSteps;
+import net.runelite.api.NpcID;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.eventbus.Subscribe;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class SkavidChoice extends NpcStep
+{
+	public SkavidChoice(QuestHelper questHelper)
+	{
+		super(questHelper, NpcID.MAD_SKAVID, new WorldPoint(2526, 9413, 0), "Talk to the mad skavid.");
+	}
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		updateCorrectChoice();
+	}
+
+	private void updateCorrectChoice()
+	{
+		Widget widget = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+		if (widget == null)
+		{
+			return;
+		}
+
+		switch (widget.getText())
+		{
+			case "Bidith ig...":
+				choices = new DialogChoiceSteps();
+				addDialogStep("Cur.");
+				break;
+			case "Ar cur...":
+				choices = new DialogChoiceSteps();
+				addDialogStep("Gor.");
+				break;
+			case "Gor nod...":
+				choices = new DialogChoiceSteps();
+				addDialogStep("Tanath.");
+				break;
+			case "Cur tanath...":
+				choices = new DialogChoiceSteps();
+				addDialogStep("Bidith.");
+				break;
+		}
+	}
 }

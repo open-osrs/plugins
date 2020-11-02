@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.requirements;
 
-version = "0.0.4"
+import java.awt.Color;
+import java.util.ArrayList;
+import net.runelite.api.Client;
+import net.runelite.client.ui.overlay.components.LineComponent;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class SpellbookRequirement extends Requirement
+{
+	Spellbook spellBook;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	public SpellbookRequirement(Spellbook spellBook)
+	{
+		this.spellBook = spellBook;
+	}
+
+	@Override
+	public boolean check(Client client)
+	{
+		int currentSpellbook = client.getVarbitValue(4070);
+		return currentSpellbook == spellBook.getId();
+	}
+
+	@Override
+	public ArrayList<LineComponent> getDisplayText(Client client)
+	{
+		ArrayList<LineComponent> lines = new ArrayList<>();
+
+		String text = "You must be on the " + spellBook.getName() + " spellbook.";
+		Color color = Color.RED;
+		if (check(client))
+		{
+			color = Color.GREEN;
+		}
+
+		lines.add(LineComponent.builder()
+			.left(text)
+			.leftColor(color)
+			.build());
+
+		return lines;
+	}
 }

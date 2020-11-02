@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.steps.conditional;
 
-version = "0.0.4"
+import java.util.ArrayList;
+import lombok.Getter;
+import lombok.Setter;
+import net.runelite.api.Client;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public abstract class ConditionForStep
+{
+	@Setter
+	@Getter
+	protected boolean hasPassed;
+	protected boolean onlyNeedToPassOnce;
+	protected LogicType logicType;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Getter
+	protected ArrayList<ConditionForStep> conditions;
+
+	abstract public boolean checkCondition(Client client);
+
+	public void initialize(Client client)
+	{
+	}
+
+	public void loadingHandler()
+	{
+	}
 }
