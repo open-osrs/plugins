@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.steps.choice;
 
-version = "0.0.4"
+import java.util.ArrayList;
+import java.util.Collections;
+import lombok.Getter;
+import net.runelite.api.Client;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class DialogChoiceSteps
+{
+	@Getter
+	final private ArrayList<DialogChoiceStep> choices = new ArrayList<>();
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	public DialogChoiceSteps(DialogChoiceStep... choices)
+	{
+		Collections.addAll(this.choices, choices);
+	}
+
+	public void addChoice(DialogChoiceStep choice)
+	{
+		choices.add(choice);
+	}
+
+	public void checkChoices(Client client)
+	{
+		if (choices.size() == 0)
+		{
+			return;
+		}
+
+		for (DialogChoiceStep currentChoice : choices)
+		{
+			currentChoice.highlightChoice(client);
+		}
+	}
 }

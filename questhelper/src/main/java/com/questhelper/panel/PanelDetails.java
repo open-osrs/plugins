@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,63 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.panel;
 
-version = "0.0.4"
+import com.questhelper.requirements.ItemRequirement;
+import com.questhelper.steps.QuestStep;
+import java.util.ArrayList;
+import java.util.Arrays;
+import lombok.Getter;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class PanelDetails
+{
+	@Getter
+	String header;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Getter
+	private ArrayList<QuestStep> steps;
+
+	@Getter
+	private QuestStep lockingQuestSteps;
+
+	@Getter
+	private ArrayList<ItemRequirement> itemRequirements;
+
+	@Getter
+	private ArrayList<Integer> vars;
+
+	public PanelDetails(String header)
+	{
+		this.header = header;
+		this.steps = new ArrayList<>();
+	}
+
+	public PanelDetails(String header, QuestStep... steps)
+	{
+		this.header = header;
+		this.steps = new ArrayList<>(Arrays.asList(steps));
+		this.itemRequirements = new ArrayList<>();
+	}
+
+	public PanelDetails(String header, ArrayList<QuestStep> steps, ItemRequirement... itemRequirements)
+	{
+		this.header = header;
+		this.steps = steps;
+		this.itemRequirements = new ArrayList<>(Arrays.asList(itemRequirements));
+	}
+
+	public void setVars(Integer... vars)
+	{
+		this.vars = new ArrayList<>(Arrays.asList(vars));
+	}
+
+	public void setLockingStep(QuestStep lockingStep)
+	{
+		this.lockingQuestSteps = lockingStep;
+	}
+
+	public void addSteps(QuestStep... steps)
+	{
+		this.steps.addAll(Arrays.asList(steps));
+	}
 }

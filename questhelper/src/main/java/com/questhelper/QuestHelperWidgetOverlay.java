@@ -1,5 +1,9 @@
+package com.questhelper;
+
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2019, Trevor <https://github.com/Trevor159>
+ * Copyright (c) 2020 Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,21 +27,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+import com.questhelper.questhelpers.QuestHelper;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import javax.inject.Inject;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayPriority;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class QuestHelperWidgetOverlay extends Overlay
+{
+	private final QuestHelperPlugin plugin;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Inject
+	public QuestHelperWidgetOverlay(QuestHelperPlugin plugin)
+	{
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.ALWAYS_ON_TOP);
+		setPriority(OverlayPriority.HIGH);
+		this.plugin = plugin;
+	}
+
+	@Override
+	public Dimension render(Graphics2D graphics)
+	{
+		QuestHelper quest = plugin.getSelectedQuest();
+
+		if (quest != null && quest.getCurrentStep() != null && quest.getCurrentStep().getActiveStep() != null)
+		{
+			quest.getCurrentStep().getActiveStep().makeWidgetOverlayHint(graphics, plugin);
+		}
+
+		return null;
+	}
 }

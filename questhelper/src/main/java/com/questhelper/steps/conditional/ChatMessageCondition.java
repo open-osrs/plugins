@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.steps.conditional;
 
-version = "0.0.4"
+import java.util.ArrayList;
+import java.util.Arrays;
+import lombok.Setter;
+import net.runelite.api.Client;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class ChatMessageCondition extends ConditionForStep
+{
+	@Setter
+	private boolean hasReceivedChatMessage = false;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private ConditionForStep condition;
+
+	private ArrayList<String> messages;
+
+	public ChatMessageCondition(String... message)
+	{
+		this.messages = new ArrayList<>(Arrays.asList(message));
+	}
+
+	public ChatMessageCondition(ConditionForStep condition, String... message)
+	{
+		this.condition = condition;
+		this.messages = new ArrayList<>(Arrays.asList(message));
+	}
+
+	@Override
+	public boolean checkCondition(Client client)
+	{
+		return hasReceivedChatMessage;
+	}
+
+	public void validateCondition(Client client, String chatMessage)
+	{
+		if (!hasReceivedChatMessage)
+		{
+			if (messages.contains(chatMessage))
+			{
+				if (condition == null || condition.checkCondition(client))
+				{
+					hasReceivedChatMessage = true;
+				}
+			}
+		}
+	}
 }

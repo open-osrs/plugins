@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,55 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.quests.coldwar;
 
-version = "0.0.4"
+import com.questhelper.questhelpers.QuestHelper;
+import com.questhelper.steps.WidgetDetails;
+import com.questhelper.steps.WidgetStep;
+import java.util.ArrayList;
+import java.util.Collections;
+import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.eventbus.Subscribe;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class PenguinEmote extends WidgetStep
+{
+	public PenguinEmote(QuestHelper questHelper)
+	{
+		super(questHelper, "Perform the 3 emotes the penguins performed in the bird hide cutscene.");
+	}
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Override
+	public void startUp()
+	{
+		super.startUp();
+		updateWidgets();
+	}
+
+	@Subscribe
+	@Override
+	public void onVarbitChanged(VarbitChanged varbitChanged)
+	{
+		super.onVarbitChanged(varbitChanged);
+		updateWidgets();
+	}
+
+	public void updateWidgets()
+	{
+		int currentEmoteStep = client.getVarbitValue(3307);
+		int currentEmoteID = 0;
+		if (currentEmoteStep == 0)
+		{
+			currentEmoteID = 8 + client.getVarbitValue(3300);
+		}
+		else if (currentEmoteStep == 1)
+		{
+			currentEmoteID = 8 + client.getVarbitValue(3301);
+		}
+		else if (currentEmoteStep == 2)
+		{
+			currentEmoteID = 8 + client.getVarbitValue(3302);
+		}
+		this.setWidgetDetails(new ArrayList<>(Collections.singletonList(new WidgetDetails(223, currentEmoteID, -1))));
+	}
 }
+

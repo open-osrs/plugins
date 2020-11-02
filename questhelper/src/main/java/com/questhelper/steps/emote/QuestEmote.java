@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.steps.emote;
 
-version = "0.0.4"
+import lombok.Getter;
+import static net.runelite.api.SpriteID.EMOTE_BLOW_KISS;
+import static net.runelite.api.SpriteID.EMOTE_BOW;
+import static net.runelite.api.SpriteID.EMOTE_CRY;
+import static net.runelite.api.SpriteID.EMOTE_DANCE;
+import static net.runelite.api.SpriteID.EMOTE_GOBLIN_BOW;
+import static net.runelite.api.SpriteID.EMOTE_THINK;
+import static net.runelite.api.SpriteID.EMOTE_WAVE;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+@Getter
+public enum QuestEmote
+{
+	CRY("Cry", EMOTE_CRY),
+	BOW("Bow", EMOTE_BOW),
+	DANCE("Dance", EMOTE_DANCE),
+	WAVE("Wave", EMOTE_WAVE),
+	THINK("Think", EMOTE_THINK),
+	GOBLIN_BOW("Goblin bow", EMOTE_GOBLIN_BOW),
+	BLOW_KISS("Blow Kiss", EMOTE_BLOW_KISS);
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private String name;
+	private int spriteId;
+
+	QuestEmote(String name, int spriteId)
+	{
+		this.name = name;
+		this.spriteId = spriteId;
+	}
 }

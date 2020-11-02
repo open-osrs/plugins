@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,65 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.requirements;
 
-version = "0.0.4"
+import com.questhelper.steps.conditional.Operation;
+import java.awt.Color;
+import java.util.ArrayList;
+import net.runelite.api.Client;
+import net.runelite.client.ui.overlay.components.LineComponent;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class WeightRequirement extends Requirement
+{
+	int weight;
+	String text;
+	Operation operation;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	public WeightRequirement(String text, int weight, Operation operation)
+	{
+		this.weight = weight;
+		this.text = text;
+		this.operation = operation;
+	}
+
+	@Override
+	public boolean check(Client client)
+	{
+		if (operation == Operation.EQUAL)
+		{
+			return client.getWeight() == weight;
+		}
+		else if (operation == Operation.NOT_EQUAL)
+		{
+			return client.getWeight() != weight;
+		}
+		else if (operation == Operation.LESS_EQUAL)
+		{
+			return client.getWeight() <= weight;
+		}
+		else if (operation == Operation.GREATER_EQUAL)
+		{
+			return client.getWeight() >= weight;
+		}
+		return false;
+	}
+
+	@Override
+	public ArrayList<LineComponent> getDisplayText(Client client)
+	{
+		ArrayList<LineComponent> lines = new ArrayList<>();
+
+		Color color = Color.RED;
+		if (check(client))
+		{
+			color = Color.GREEN;
+		}
+
+		lines.add(LineComponent.builder()
+			.left(text)
+			.leftColor(color)
+			.build());
+
+		return lines;
+	}
 }

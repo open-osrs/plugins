@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
+ * Copyright (c) 2019, Jordan Atwood <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +23,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.quests.enchantedkey;
 
-version = "0.0.4"
+import com.google.common.collect.Sets;
+import java.util.Set;
+import javax.annotation.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+@AllArgsConstructor
+@Getter
+public enum EnchantedKeyTemperature
+{
+	FREEZING("It's freezing", 500, 5000),
+	COLD("It's cold", 120, 499),
+	WARM("It's warm", 60, 119),
+	VERY_HOT("It's very hot", 30, 59),
+	BURNING("Ouch! It's burning hot", 5, 29),
+	STEAMING("The key is steaming.", 0, 4);
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	public static final Set<EnchantedKeyTemperature> temperatureSet = Sets.immutableEnumSet(
+		FREEZING,
+		COLD,
+		WARM,
+		VERY_HOT,
+		BURNING,
+		STEAMING
+	);
+
+	private final String text;
+	private final int minDistance;
+	private final int maxDistance;
+
+	@Nullable
+	public static EnchantedKeyTemperature getFromTemperatureSet(final String message)
+	{
+		for (final EnchantedKeyTemperature temperature : temperatureSet)
+		{
+			if (message.contains(temperature.getText()))
+			{
+				return temperature;
+			}
+		}
+
+		return null;
+	}
 }

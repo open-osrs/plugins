@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2019, Trevor <https://github.com/Trevor159>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +23,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper;
 
-version = "0.0.4"
+import com.questhelper.questhelpers.QuestHelper;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import javax.inject.Inject;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class QuestHelperWorldOverlay extends Overlay
+{
+	public static final int IMAGE_Z_OFFSET = 30;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	public static final Color CLICKBOX_BORDER_COLOR = Color.CYAN;
+	public static final Color CLICKBOX_HOVER_BORDER_COLOR = CLICKBOX_BORDER_COLOR.darker();
+	public static final Color CLICKBOX_FILL_COLOR = new Color(0, 255, 255, 20);
+
+	private final QuestHelperPlugin plugin;
+
+	@Inject
+	public QuestHelperWorldOverlay(QuestHelperPlugin plugin)
+	{
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.ABOVE_SCENE);
+		this.plugin = plugin;
+	}
+
+	@Override
+	public Dimension render(Graphics2D graphics)
+	{
+		QuestHelper quest = plugin.getSelectedQuest();
+
+		if (quest != null && quest.getCurrentStep() != null)
+		{
+			quest.getCurrentStep().makeWorldOverlayHint(graphics, plugin);
+		}
+
+		return null;
+	}
 }

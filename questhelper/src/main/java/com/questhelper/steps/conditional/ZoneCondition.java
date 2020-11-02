@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Zoinkwiz <https://github.com/Zoinkwiz>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper.steps.conditional;
 
-version = "0.0.4"
+import com.questhelper.Zone;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import net.runelite.api.Client;
+import net.runelite.api.Player;
+import net.runelite.api.coords.WorldPoint;
 
-project.extra["PluginName"] = "Quest Helper"
-project.extra["PluginDescription"] = "An in-game interactive guide for quests"
+public class ZoneCondition extends ConditionForStep
+{
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private final List<Zone> zones;
+	private final boolean checkInZone;
+
+	public ZoneCondition(Zone... zone)
+	{
+		this.zones = new ArrayList<>();
+		Collections.addAll(this.zones, zone);
+		this.checkInZone = true;
+	}
+
+	public ZoneCondition(boolean checkInZone, Zone... zone)
+	{
+		this.zones = new ArrayList<>();
+		Collections.addAll(this.zones, zone);
+		this.checkInZone = checkInZone;
+	}
+
+	@Override
+	public boolean checkCondition(Client client)
+	{
+		Player player = client.getLocalPlayer();
+		if (player != null)
+		{
+			WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
+
+			for (Zone zone : zones)
+			{
+				if (zone.contains(worldPoint))
+				{
+					// Check succeeded if check is to see if in zone, failed if not
+					return checkInZone;
+				}
+			}
+		}
+		return !checkInZone;
+	}
 }
