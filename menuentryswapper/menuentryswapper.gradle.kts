@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.27"
+version = "0.0.28"
 
 project.extra["PluginName"] = "Menu Entry Swapper"
 project.extra["PluginDescription"] = "Change the default option that is displayed when hovering over objects"
