@@ -465,7 +465,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			MenuEntry[] menuEntries = client.getMenuEntries();
 			MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
-			menuEntry.setOpcode(MenuOpcode.WALK.getId() + MENU_ACTION_DEPRIORITIZE_OFFSET);
+			menuEntry.setOpcode(menuEntry.getOpcode() + MENU_ACTION_DEPRIORITIZE_OFFSET);
 			client.setMenuEntries(menuEntries);
 		}
 
@@ -1263,7 +1263,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(EMPTY_LARGE);
 		menuManager.removePriorityEntry(EMPTY_GIANT);
 		menuManager.removePriorityEntry(config.swapHomePortalMode().toString(), "Portal");
-		menuManager.removePriorityEntry(config.swapHouseAdMode().toString(), "House Advertisement");
+		Arrays.stream(HouseAdvertisementMode.values()).forEach(value -> menuManager.removePriorityEntry(value.toString(), "House Advertisement"));
 		for (String jewellerybox : jewelleryBox)
 		{
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");
