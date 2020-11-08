@@ -29,7 +29,7 @@ project.extra["PluginName"] = "Loottracker"
 project.extra["PluginDescription"] = "Tracks loot from monsters and minigames"
 
 dependencies {
-    compileOnly(group = "org.jooq", name = "jooq", version = "3.14.0")
+    compileOnly(group = "org.jooq", name = "jooq", version = "3.14.1")
 }
 
 tasks {
