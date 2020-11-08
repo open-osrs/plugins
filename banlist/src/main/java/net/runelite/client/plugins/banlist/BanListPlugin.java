@@ -32,7 +32,6 @@ import com.google.inject.Provides;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +79,6 @@ import org.pf4j.Extension;
 public class BanListPlugin extends Plugin
 {
 	private final Set<String> wdrScamSet = new HashSet<>();
-	private final Set<String> wdrToxicSet = new HashSet<>();
 	private final Set<String> runeWatchSet = new HashSet<>();
 	private final Set<String> manualBans = new HashSet<>();
 
@@ -115,9 +113,7 @@ public class BanListPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-
 		wdrScamSet.clear();
-		wdrToxicSet.clear();
 		runeWatchSet.clear();
 		manualBans.clear();
 	}
@@ -166,20 +162,10 @@ public class BanListPlugin extends Plugin
 		String memberUsername = Text.standardize(member.getName().toLowerCase());
 
 		ListType scamList = checkScamList(memberUsername);
-		ListType toxicList = checkToxicList(memberUsername);
 
 		if (scamList != null)
 		{
 			sendWarning(memberUsername, scamList);
-			if (config.highlightInClan())
-			{
-				highlightRedInCC();
-			}
-		}
-
-		if (toxicList != null)
-		{
-			sendWarning(memberUsername, toxicList);
 			if (config.highlightInClan())
 			{
 				highlightRedInCC();
@@ -203,10 +189,6 @@ public class BanListPlugin extends Plugin
 				if (checkScamList(name) != null)
 				{
 					tradingWith.setText(tradingWith.getText().replaceAll(name, "<col=ff0000>" + name + " (Scammer)" + "</col>"));
-				}
-				if (checkToxicList(name) != null)
-				{
-					tradingWith.setText(tradingWith.getText().replaceAll(name, "<col=ff6400>" + name + " (Toxic)" + "</col>"));
 				}
 			});
 		}
@@ -244,13 +226,6 @@ public class BanListPlugin extends Plugin
 				{
 					sendWarning(name, scamList);
 				}
-
-				ListType toxicList = checkToxicList(stdName);
-
-				if (toxicList != null)
-				{
-					sendWarning(name, toxicList);
-				}
 			}
 		}
 	}
@@ -278,16 +253,6 @@ public class BanListPlugin extends Plugin
 		return null;
 	}
 
-	private ListType checkToxicList(String nameToBeChecked)
-	{
-		if (config.enableWDRToxic() && wdrToxicSet.contains(nameToBeChecked))
-		{
-			return ListType.WEDORAIDSTOXIC_LIST;
-		}
-
-		return null;
-	}
-
 	/**
 	 * Sends a warning to our player, notifying them that a player is on a ban list
 	 */
@@ -305,19 +270,6 @@ public class BanListPlugin extends Plugin
 					QueuedMessage.builder()
 						.type(ChatMessageType.CONSOLE)
 						.runeLiteFormattedMessage(wdr__scam_message)
-						.build());
-				break;
-
-			case WEDORAIDSTOXIC_LIST:
-				final String wdr__toxic_message = new ChatMessageBuilder()
-					.append(ChatColorType.HIGHLIGHT)
-					.append("Warning! " + playerName + " is on WeDoRaids' toxic list!")
-					.build();
-
-				chatMessageManager.queue(
-					QueuedMessage.builder()
-						.type(ChatMessageType.CONSOLE)
-						.runeLiteFormattedMessage(wdr__toxic_message)
 						.build());
 				break;
 
@@ -349,22 +301,16 @@ public class BanListPlugin extends Plugin
 	}
 
 	/**
-	 * Pulls data from wdr and runewatch to build a list of blacklisted usernames
+	 * Pulls data from ThatGamerBlue's rehost of the RW and WDR mixed banlist to build a list of blacklisted usernames
+	 * We use the rehost to avoid hammering the RuneWatch servers
 	 */
 	private void fetchFromWebsites()
 	{
 		Request request = new Request.Builder()
-			.url("https://wdrdev.github.io/index")
-			.build();
-
-		fetchAndParseWdr(request, wdrScamSet);
-
-
-		Request secondRequest = new Request.Builder()
 			.url("https://thatgamerblue.com/runewatch.json")
 			.build();
 
-		RuneLiteAPI.CLIENT.newCall(secondRequest).enqueue(new Callback()
+		RuneLiteAPI.CLIENT.newCall(request).enqueue(new Callback()
 		{
 			@Override
 			public void onFailure(@NotNull Call call, @NotNull IOException e)
@@ -376,51 +322,31 @@ public class BanListPlugin extends Plugin
 			{
 				try
 				{
+					wdrScamSet.clear();
 					runeWatchSet.clear();
 					Gson gson = new Gson();
-					List<String> names = gson.fromJson(response.body().string(), new TypeToken<List<String>>()
+					//@formatter:off
+					List<MixedListCase> cases = gson.fromJson(response.body().string(), new TypeToken<List<MixedListCase>>() {}.getType());
+					//@formatter:on
+					for (MixedListCase aCase : cases)
 					{
-					}.getType());
-					runeWatchSet.addAll(names);
+						switch (aCase.getSource())
+						{
+							case "RW":
+								runeWatchSet.add(aCase.getRsn());
+								break;
+							case "WDR":
+								wdrScamSet.add(aCase.getRsn());
+								break;
+							default:
+								log.warn("Unknown case source {}", aCase.getSource());
+								break;
+						}
+					}
 				}
 				catch (Exception e)
 				{
-					log.error("Error parsing runewatch json.", e);
-				}
-			}
-		});
-
-		Request thirdRequest = new Request.Builder()
-			.url("https://wdrdev.github.io/toxic")
-			.build();
-
-		fetchAndParseWdr(thirdRequest, wdrToxicSet);
-	}
-
-	private void fetchAndParseWdr(Request req, Set<String> tgtSet)
-	{
-		RuneLiteAPI.CLIENT.newCall(req).enqueue(new Callback()
-		{
-			@Override
-			public void onFailure(@NotNull Call call, @NotNull IOException e)
-			{
-			}
-
-			@Override
-			public void onResponse(@NotNull Call call, @NotNull Response response)
-			{
-				try
-				{
-					String text = Objects.requireNonNull(response.body()).string();
-					text = text.substring(text.indexOf("<p>") + 3, text.indexOf("</p>"));
-					text = text.replace("/", ",");
-					text = text.replace(", $", "");
-
-					Text.fromCSV(text).forEach(str -> tgtSet.add(Text.standardize(str)));
-				}
-				catch (Exception e)
-				{
-					log.error("Error parsing WDR page", e);
+					log.error("Error parsing json", e);
 				}
 			}
 		});
@@ -441,10 +367,6 @@ public class BanListPlugin extends Plugin
 				if (checkScamList(lc) != null)
 				{
 					widgetChild.setText("<col=ff0000>" + text + "</col>");
-				}
-				else if (checkToxicList(lc) != null)
-				{
-					widgetChild.setText("<col=ff6400>" + text + "</col>");
 				}
 			}
 		});
