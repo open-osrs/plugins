@@ -29,7 +29,7 @@ project.extra["PluginName"] = "TMorph"
 project.extra["PluginDescription"] = "Want to wear a infernal cape? well now you can!"
 
 dependencies {
-    compileOnly(group = "org.jooq", name = "jooq", version = "3.14.0")
+    compileOnly(group = "org.jooq", name = "jooq", version = "3.14.1")
 }
 
 tasks {
