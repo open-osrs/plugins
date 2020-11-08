@@ -27,7 +27,6 @@ package net.runelite.client.plugins.loottracker;
 import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.runelite.api.events.Event;
 import net.runelite.client.game.ItemStack;
 import net.runelite.http.api.loottracker.LootRecordType;
 
@@ -36,7 +35,7 @@ import net.runelite.http.api.loottracker.LootRecordType;
  */
 @Data
 @AllArgsConstructor
-public class LootReceived implements Event
+public class LootReceived
 {
 	private String name;
 	private int combatLevel;
