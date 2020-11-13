@@ -316,8 +316,10 @@ public class NpcIndicatorsPlugin extends Plugin
 			boolean matchesList = highlights.stream()
 				.filter(highlight -> !highlight.equalsIgnoreCase(npcName))
 				.anyMatch(highlight -> WildcardMatcher.matches(highlight, npcName));
-
-			if (matchesList)
+			
+			// Only add Untag-All option to npcs not highlighted by a wildcard entry, because untag-all will not remove wildcards
+			// Fixes Missing Tag-All menu item
+			if (!matchesList)
 			{
 				client.insertMenuItem(
 					highlights.stream().anyMatch(npcName::equalsIgnoreCase) ? UNTAG_ALL : TAG_ALL,
