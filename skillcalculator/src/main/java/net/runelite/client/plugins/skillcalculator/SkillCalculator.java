@@ -46,6 +46,7 @@ import net.runelite.api.Client;
 import net.runelite.api.Experience;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
+import net.runelite.api.Varbits;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.skillcalculator.beans.SkillData;
@@ -137,6 +138,25 @@ class SkillCalculator extends JPanel
 
 			// Reset the XP factor, removing bonuses.
 			xpFactor = 1.0f;
+
+			// Adds league relic xp modifiers.
+			// TODO:: Change if statement for 6th relic once 6th constant gets added.
+			if (client.getVarbitValue(Varbits.TWISTED_LEAGUE_RELIC_1.getId()) != 0)
+			{
+				xpFactor = 5.0f;
+				if (client.getVarbitValue(11696) != 0)
+				{
+					xpFactor = 16.0f;
+				}
+				else if (client.getVarbitValue(Varbits.TWISTED_LEAGUE_RELIC_4.getId()) != 0)
+				{
+					xpFactor = 12.0f;
+				}
+				else if (client.getVarbitValue(Varbits.TWISTED_LEAGUE_RELIC_2.getId()) != 0)
+				{
+					xpFactor = 8.0f;
+				}
+			}
 
 			VarPlayer endGoalVarp = endGoalVarpForSkill(calculatorType.getSkill());
 			int endGoal = client.getVar(endGoalVarp);
