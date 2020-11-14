@@ -217,7 +217,7 @@ public class FarmingTracker
 			doneEstimate = ((stages - 1 - stage) + tickTime) * tickrate + (5 * 60);
 			// If Botanist relic active, sets new rates, tested with Seaweed and Maple tree.
 			// TODO:: Remove after Leagues II.
-			if (client.getVarbitValue(10053) == 1)
+			if (client.getVarbitValue(Varbits.TWISTED_LEAGUE_RELIC_5.getId()) == 1)
 			{
 				tickrate = (state.getTickRate() / 5) * 60;
 				tickNow = (unixNow) / tickrate;
