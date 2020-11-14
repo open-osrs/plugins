@@ -34,11 +34,13 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.Getter;
 import net.runelite.api.Experience;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -165,6 +167,21 @@ public class XpGlobesPlugin extends Plugin
 	{
 		xpGlobes.clear();
 		globeCache = new XpGlobe[Skill.values().length - 1];
+	}
+
+	@Subscribe
+	public void onOverlayMenuClicked(final OverlayMenuClicked event)
+	{
+		if (!(event.getEntry().getMenuOpcode() == MenuOpcode.RUNELITE_OVERLAY
+			&& event.getOverlay() == overlay))
+		{
+			return;
+		}
+
+		if (event.getEntry().getOption().equals(XpGlobesOverlay.FLIP_ACTION))
+		{
+			config.setAlignOrbsVertically(!config.alignOrbsVertically());
+		}
 	}
 
 	@Subscribe

@@ -156,6 +156,17 @@ public interface ChatCommandsConfig extends Config
 	}
 
 	@ConfigItem(
+		position = 11,
+		keyName = "lp",
+		name = "LP Command",
+		description = "Configures whether the League Points command is enabled<br> !lp"
+	)
+	default boolean lp()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		position = 12,
 		keyName = "clearSingleWord",
 		name = "Clear Single Word",

@@ -94,6 +94,7 @@ public class NightmareZonePlugin extends Plugin
 		overlayManager.add(overlay);
 		overlay.removeAbsorptionCounter();
 
+		absorptionNotificationSend = true;
 		overloadNotificationSend = false;
 	}
 
@@ -144,6 +145,8 @@ public class NightmareZonePlugin extends Plugin
 			{
 				resetPointsPerHour();
 			}
+
+			overloadNotificationSend = false;
 
 			return;
 		}

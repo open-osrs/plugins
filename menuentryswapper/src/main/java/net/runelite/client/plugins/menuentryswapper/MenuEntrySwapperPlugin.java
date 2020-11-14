@@ -82,6 +82,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.menuentryswapper.comparables.GrimyHerbComparableEntry;
+import net.runelite.client.plugins.menuentryswapper.util.HouseAdvertisementMode;
 import net.runelite.client.util.HotkeyListener;
 import static net.runelite.client.util.MenuUtil.swap;
 import org.pf4j.Extension;
@@ -465,7 +466,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			MenuEntry[] menuEntries = client.getMenuEntries();
 			MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
-			menuEntry.setOpcode(MenuOpcode.WALK.getId() + MENU_ACTION_DEPRIORITIZE_OFFSET);
+			menuEntry.setOpcode(menuEntry.getOpcode() + MENU_ACTION_DEPRIORITIZE_OFFSET);
 			client.setMenuEntries(menuEntries);
 		}
 
@@ -1263,7 +1264,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 		menuManager.removePriorityEntry(EMPTY_LARGE);
 		menuManager.removePriorityEntry(EMPTY_GIANT);
 		menuManager.removePriorityEntry(config.swapHomePortalMode().toString(), "Portal");
-		menuManager.removePriorityEntry(config.swapHouseAdMode().toString(), "House Advertisement");
+		Arrays.stream(HouseAdvertisementMode.values()).forEach(value -> menuManager.removePriorityEntry(value.toString(), "House Advertisement"));
 		for (String jewellerybox : jewelleryBox)
 		{
 			menuManager.removePriorityEntry(jewellerybox, "basic jewellery box");

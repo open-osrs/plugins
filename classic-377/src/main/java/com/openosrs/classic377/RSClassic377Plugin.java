@@ -55,7 +55,6 @@ public class RSClassic377Plugin extends Plugin
 			JOptionPane.showMessageDialog(null, "Your config acts like a token, and can be transferred. And should be protected if it contains this config. If you reset or lose the config without a backup, your account will be lost forever!");
 			JOptionPane.showMessageDialog(null, "Please use a different username, and a different password if you override the generator!");
 			JOptionPane.showMessageDialog(null, "There will NEVER be account recovery! So don't come crying to us when you didnt backup your config.");
-			JOptionPane.showMessageDialog(null, "Our server is powered by Apollo - You can join their Discord here at : https://discord.gg/Fuft67P");
 			JOptionPane.showMessageDialog(null, "To use this plugin, enable the confirm config option. Set a NEW username while you are at it, and restart this plugin.");
 			return;
 		}

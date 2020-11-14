@@ -24,13 +24,12 @@
  */
 package net.runelite.client.plugins.statusbars;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.Point;
 import net.runelite.api.widgets.WidgetInfo;
 
-@Getter(AccessLevel.PACKAGE)
+@Getter
 @AllArgsConstructor
 enum Viewport
 {
@@ -39,6 +38,8 @@ enum Viewport
 	RESIZED_BOTTOM(WidgetInfo.RESIZABLE_VIEWPORT_BOTTOM_LINE, WidgetInfo.RESIZABLE_VIEWPORT_BOTTOM_LINE_INTERFACE_CONTAINER,
 		new Point(61, 8), new Point(35, -12)),
 	FIXED(WidgetInfo.FIXED_VIEWPORT, WidgetInfo.FIXED_VIEWPORT_INTERFACE_CONTAINER,
+		new Point(20, -4), new Point(0, -4)),
+	FIXED_BANK(WidgetInfo.BANK_CONTAINER, WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER,
 		new Point(20, -4), new Point(0, -4));
 
 	private WidgetInfo container;

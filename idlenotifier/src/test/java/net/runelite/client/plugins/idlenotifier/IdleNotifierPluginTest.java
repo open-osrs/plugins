@@ -49,6 +49,7 @@ import net.runelite.client.Notifier;
 import net.runelite.client.config.OpenOSRSConfig;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.game.SoundManager;
+import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +93,10 @@ public class IdleNotifierPluginTest
 	@Mock
 	@Bind
 	private RuneLiteConfig runeLiteConfig;
+
+	@Mock
+	@Bind
+	private InfoBoxManager infoBoxManager;
 
 	@Inject
 	private IdleNotifierPlugin plugin;

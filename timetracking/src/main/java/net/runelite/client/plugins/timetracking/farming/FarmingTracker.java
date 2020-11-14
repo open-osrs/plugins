@@ -59,7 +59,8 @@ public class FarmingTracker
 	private final Map<Tab, Long> completionTimes = new EnumMap<>(Tab.class);
 
 	@Inject
-	private FarmingTracker(Client client, ItemManager itemManager, ConfigManager configManager, TimeTrackingConfig config, FarmingWorld farmingWorld)
+	private FarmingTracker(Client client, ItemManager itemManager, ConfigManager configManager,
+		TimeTrackingConfig config, FarmingWorld farmingWorld)
 	{
 		this.client = client;
 		this.itemManager = itemManager;
@@ -91,9 +92,13 @@ public class FarmingTracker
 			}
 		}
 
-		FarmingRegion region = farmingWorld.getRegions().get(location.getRegionID());
-		if (region != null && region.isInBounds(location))
+		for (FarmingRegion region : farmingWorld.getRegions().get(location.getRegionID()))
 		{
+			if (!region.isInBounds(location))
+			{
+				continue;
+			}
+
 			// Write config with new varbits
 			// timetracking.<login-username>.<regionID>.<VarbitID>=<varbitValue>:<unix time>
 			String group = TimeTrackingConfig.CONFIG_GROUP + "." + client.getUsername() + "." + region.getRegionID();
@@ -173,7 +178,7 @@ public class FarmingTracker
 					value = Integer.parseInt(parts[0]);
 					unixTime = Long.parseLong(parts[1]);
 				}
-				catch (NumberFormatException ignored)
+				catch (NumberFormatException e)
 				{
 				}
 			}

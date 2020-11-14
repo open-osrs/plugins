@@ -26,14 +26,10 @@ package net.runelite.client.plugins.timetracking.farming;
 
 import java.util.HashMap;
 import java.util.Map;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.notNullValue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import static org.hamcrest.Matchers.*;
 
 public class PatchImplementationTest
 {
@@ -56,7 +52,7 @@ public class PatchImplementationTest
 					collector.checkThat(pfx + ": produce", s.getProduce(), notNullValue());
 					collector.checkThat(pfx + ": negative stage", s.getStage(), greaterThanOrEqualTo(0));
 					int stages = s.getProduce().getStages();
-					if (s.getCropState() == CropState.HARVESTABLE)
+					if (s.getCropState() == CropState.HARVESTABLE || s.getCropState() == CropState.FILLING)
 					{
 						stages = s.getProduce().getHarvestStages();
 					}
@@ -67,7 +63,8 @@ public class PatchImplementationTest
 					}
 					if (s.getCropState() == CropState.GROWING && s.getProduce() != Produce.WEEDS && s.getStage() < stages)
 					{
-						harvestStages.computeIfAbsent(s.getProduce(), k -> new boolean[s.getProduce().getStages()])[s.getStage()] = true;
+						final int realStages = stages;
+						harvestStages.computeIfAbsent(s.getProduce(), k -> new boolean[realStages])[s.getStage()] = true;
 					}
 				}
 			}

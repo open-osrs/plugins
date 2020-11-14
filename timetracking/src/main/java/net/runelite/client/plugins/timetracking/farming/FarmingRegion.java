@@ -24,12 +24,11 @@
  */
 package net.runelite.client.plugins.timetracking.farming;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 
-@Getter(AccessLevel.PACKAGE)
+@Getter
 public class FarmingRegion
 {
 	private final String name;

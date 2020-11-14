@@ -28,7 +28,6 @@ import com.google.common.collect.Comparators;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Singleton;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -36,16 +35,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import joptsimple.internal.Strings;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.timetracking.SortOrder;
 import net.runelite.client.plugins.timetracking.TimeTrackingConfig;
 
 @Singleton
-@Slf4j
 public class ClockManager
 {
 	@Inject
@@ -57,26 +53,14 @@ public class ClockManager
 	@Inject
 	private Notifier notifier;
 
-	@Getter(AccessLevel.PUBLIC)
+	@Getter
 	private final List<Timer> timers = new CopyOnWriteArrayList<>();
 
-	@Getter(AccessLevel.PUBLIC)
+	@Getter
 	private final List<Stopwatch> stopwatches = new ArrayList<>();
 
-	@Getter(AccessLevel.PUBLIC)
-	private ClockTabPanel clockTabPanel;
-
-	ClockManager()
-	{
-		try
-		{
-			SwingUtilities.invokeAndWait(() -> clockTabPanel = new ClockTabPanel(this));
-		}
-		catch (InterruptedException | InvocationTargetException e)
-		{
-			log.error("Error constructing ClockManager", e);
-		}
-	}
+	@Getter
+	private ClockTabPanel clockTabPanel = new ClockTabPanel(this);
 
 	void addTimer()
 	{
@@ -138,7 +122,7 @@ public class ClockManager
 				{
 					notifier.notify("[" + timer.getName() + "] has finished counting down.");
 				}
-				
+
 				if (timer.isLoop())
 				{
 					timer.start();
@@ -154,7 +138,7 @@ public class ClockManager
 
 		return changed;
 	}
-	
+
 	/**
 	 * Checks to ensure the timers are in the correct order.
 	 * If they are not, sort them and rebuild the clock panel
@@ -200,7 +184,9 @@ public class ClockManager
 		if (!Strings.isNullOrEmpty(timersJson))
 		{
 			final Gson gson = new Gson();
-			final List<Timer> timers = gson.fromJson(timersJson, new TypeToken<ArrayList<Timer>>() {}.getType());
+			final List<Timer> timers = gson.fromJson(timersJson, new TypeToken<ArrayList<Timer>>()
+			{
+			}.getType());
 
 			this.timers.clear();
 			this.timers.addAll(timers);
@@ -215,7 +201,9 @@ public class ClockManager
 		if (!Strings.isNullOrEmpty(stopwatchesJson))
 		{
 			final Gson gson = new Gson();
-			final List<Stopwatch> stopwatches = gson.fromJson(stopwatchesJson, new TypeToken<ArrayList<Stopwatch>>() {}.getType());
+			final List<Stopwatch> stopwatches = gson.fromJson(stopwatchesJson, new TypeToken<ArrayList<Stopwatch>>()
+			{
+			}.getType());
 
 			this.stopwatches.clear();
 			this.stopwatches.addAll(stopwatches);

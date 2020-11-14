@@ -33,11 +33,11 @@ import net.runelite.client.util.SwingUtil;
 class TimerPanel extends ClockPanel
 {
 	private static final Color WARNING_COLOR = new Color(220, 138, 0);
-	
+
 	TimerPanel(ClockManager clockManager, Timer timer)
 	{
 		super(clockManager, timer, "timer", true);
-		
+
 		JToggleButton loopButton = new JToggleButton(ClockTabPanel.LOOP_ICON);
 		loopButton.setRolloverIcon(ClockTabPanel.LOOP_ICON_HOVER);
 		loopButton.setSelectedIcon(ClockTabPanel.LOOP_SELECTED_ICON);
@@ -57,7 +57,7 @@ class TimerPanel extends ClockPanel
 		deleteButton.addActionListener(e -> clockManager.removeTimer(timer));
 		rightActions.add(deleteButton);
 	}
-	
+
 	@Override
 	void updateDisplayInput()
 	{

@@ -55,8 +55,8 @@ class OverviewTabPanel extends TabContentPanel
 	private final OverviewItemPanel farmingContractOverview;
 
 	OverviewTabPanel(ItemManager itemManager, TimeTrackingConfig config, TimeTrackingPanel pluginPanel,
-					FarmingTracker farmingTracker, BirdHouseTracker birdHouseTracker, ClockManager clockManager,
-					FarmingContractManager farmingContractManager)
+		FarmingTracker farmingTracker, BirdHouseTracker birdHouseTracker, ClockManager clockManager,
+		FarmingContractManager farmingContractManager)
 	{
 		this.config = config;
 		this.farmingTracker = farmingTracker;
@@ -128,7 +128,8 @@ class OverviewTabPanel extends TabContentPanel
 
 		updateItemPanel(birdHouseOverview, birdHouseTracker.getSummary(), birdHouseTracker.getCompletionTime(), null);
 		updateItemPanel(farmingContractOverview, farmingContractManager.getSummary(), farmingContractManager.getCompletionTime(),
-			farmingContractManager.getContractName());	}
+			farmingContractManager.getContractName());
+	}
 
 	private void updateItemPanel(OverviewItemPanel panel, SummaryState summary, long completionTime, @Nullable String farmingContract)
 	{
@@ -147,7 +148,6 @@ class OverviewTabPanel extends TabContentPanel
 				{
 					panel.updateStatus("Ready " + getFormattedEstimate(duration, config.timeFormatMode()), Color.GRAY);
 				}
-
 				break;
 			}
 			case EMPTY:

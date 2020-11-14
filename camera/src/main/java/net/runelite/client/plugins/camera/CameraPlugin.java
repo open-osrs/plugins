@@ -31,7 +31,9 @@ import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.SwingUtilities;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
@@ -64,6 +66,7 @@ import org.pf4j.Extension;
 	tags = {"zoom", "limit", "vertical", "click", "mouse"},
 	type = PluginType.MISCELLANEOUS
 )
+@Slf4j
 public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 {
 	private static final int DEFAULT_ZOOM_INCREMENT = 25;
@@ -79,6 +82,16 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 	// flags used to store the mousedown states
 	private boolean rightClick;
 	private boolean middleClick;
+	List<String> outdatedScripts;
+
+	private String[] scriptDependencies = new String[]
+		{
+			"ScrollWheelZoomHandler",
+			"OptionsPanelRebuilder",
+			"OptionsPanelZoomMouseListener",
+			"OptionsPanelZoomUpdater",
+			"ZoomHandler"
+	};
 
 	/**
 	 * Whether or not the current menu has any non-ignored menu entries
@@ -179,12 +192,19 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 	@Subscribe
 	private void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
-		if (client.getIndexScripts().isOverlayOutdated())
+		outdatedScripts = client.getOutdatedScripts();
+		boolean foundOutdatedScripts = false;
+		for (String s : scriptDependencies)
 		{
-			// if any cache overlay fails to load then assume at least one of the zoom scripts is outdated
-			// and prevent zoom extending entirely.
-			return;
+			if (outdatedScripts.contains(s))
+			{
+				log.error("Script " + s + " is outdated, and CameraPlugin will not work as intended!");
+				foundOutdatedScripts = true;
+			}
 		}
+
+		if (foundOutdatedScripts)
+			return;
 
 		int[] intStack = client.getIntStack();
 		int intStackSize = client.getIntStackSize();

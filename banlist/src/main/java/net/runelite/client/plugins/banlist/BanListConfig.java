@@ -54,18 +54,6 @@ public interface BanListConfig extends Config
 
 	@ConfigItem(
 		position = 3,
-		keyName = "enableWDRToxic",
-		name = "Enable WDR Toxic List",
-		description = "Incorporate WDR Toxic list",
-		titleSection = "listsTitle"
-	)
-	default boolean enableWDRToxic()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 4,
 		keyName = "enableRuneWatch",
 		name = "Enable RuneWatch List",
 		description = "Incorporate RuneWatch potential scammer list",
@@ -80,7 +68,7 @@ public interface BanListConfig extends Config
 		keyName = "highlightTitle",
 		name = "Highlight",
 		description = "",
-		position = 5
+		position = 4
 	)
 	default Title highlightTitle()
 	{
@@ -88,7 +76,7 @@ public interface BanListConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 6,
+		position = 5,
 		keyName = "highlightInClan",
 		name = "Highlight red in Clan Chat",
 		description = "Highlights Scammer\'s name in your current clan chat.",
@@ -100,7 +88,7 @@ public interface BanListConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
+		position = 6,
 		keyName = "highlightInTrade",
 		name = "Highlight red in trade screen",
 		description = "Highlights Scammer\'s name in your trade window",

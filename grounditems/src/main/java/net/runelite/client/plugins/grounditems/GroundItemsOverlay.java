@@ -247,7 +247,7 @@ public class GroundItemsOverlay extends Overlay
 
 			if (config.highlightTiles())
 			{
-				final Polygon poly = Perspective.getCanvasTilePoly(client, groundPoint);
+				final Polygon poly = Perspective.getCanvasTilePoly(client, groundPoint, item.getHeight());
 
 				if (poly != null)
 				{

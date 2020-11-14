@@ -29,7 +29,7 @@ package net.runelite.client.plugins.slayer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.util.Set;
+import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.NPC;
 import net.runelite.api.Point;
@@ -40,15 +40,14 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 
 public class TargetMinimapOverlay extends Overlay
 {
-	private final SlayerPlugin plugin;
 	private final SlayerConfig config;
+	private final SlayerPlugin plugin;
 
 	@Inject
-	TargetMinimapOverlay(final SlayerPlugin plugin, final SlayerConfig config)
+	TargetMinimapOverlay(SlayerConfig config, SlayerPlugin plugin)
 	{
-		this.plugin = plugin;
 		this.config = config;
-
+		this.plugin = plugin;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 	}
@@ -61,38 +60,21 @@ public class TargetMinimapOverlay extends Overlay
 			return null;
 		}
 
-		Set<NPC> targets = plugin.getHighlightedTargets();
+		List<NPC> targets = plugin.getHighlightedTargets();
 		for (NPC target : targets)
 		{
-			if (target == null || target.getName() == null)
-			{
-				continue;
-			}
-
-			Color coloration = config.getTargetColor();
-
-			if (plugin.isSuperior(target.getName()))
-			{
-				coloration = config.getSuperiorColor();
-			}
-
-			renderTargetOverlay(graphics, target, target.getName(), coloration);
+			renderTargetOverlay(graphics, target, config.getTargetColor());
 		}
 
 		return null;
 	}
 
-	private void renderTargetOverlay(Graphics2D graphics, NPC actor, String name, Color color)
+	private void renderTargetOverlay(Graphics2D graphics, NPC actor, Color color)
 	{
 		Point minimapLocation = actor.getMinimapLocation();
 		if (minimapLocation != null)
 		{
 			OverlayUtil.renderMinimapLocation(graphics, minimapLocation, color);
-
-			if (config.drawMinimapNames())
-			{
-				OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
-			}
 		}
 	}
 }

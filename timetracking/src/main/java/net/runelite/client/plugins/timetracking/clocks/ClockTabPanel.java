@@ -80,7 +80,6 @@ public class ClockTabPanel extends TabContentPanel
 		BufferedImage loopIcon = ImageUtil.getResourceStreamFromClass(TimeTrackingPlugin.class, "loop_icon.png");
 		BufferedImage loopSelectedIcon = ImageUtil.getResourceStreamFromClass(TimeTrackingPlugin.class, "loop_selected_icon.png");
 
-
 		DELETE_ICON = new ImageIcon(deleteIcon);
 		DELETE_ICON_HOVER = new ImageIcon(ImageUtil.luminanceOffset(deleteIcon, -80));
 		LAP_ICON = new ImageIcon(lapIcon);

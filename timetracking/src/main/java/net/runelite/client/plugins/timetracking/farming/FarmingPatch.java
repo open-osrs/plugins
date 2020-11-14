@@ -33,7 +33,7 @@ import net.runelite.api.Varbits;
 @RequiredArgsConstructor(
 	access = AccessLevel.PACKAGE
 )
-@Getter(AccessLevel.PACKAGE)
+@Getter
 class FarmingPatch
 {
 	@Setter(AccessLevel.PACKAGE)

@@ -93,7 +93,7 @@ public interface TimeTrackingConfig extends Config
 	{
 		return 5;
 	}
-	
+
 	@ConfigItem(
 		keyName = "sortOrder",
 		name = "Sort Order",
@@ -109,7 +109,7 @@ public interface TimeTrackingConfig extends Config
 		keyName = "timerWarningThreshold",
 		name = "Timer Warning Threshold",
 		description = "The time at which to change the timer color to the warning color",
-		position = 7
+		position = 6
 	)
 	@Units(Units.SECONDS)
 	default int timerWarningThreshold()

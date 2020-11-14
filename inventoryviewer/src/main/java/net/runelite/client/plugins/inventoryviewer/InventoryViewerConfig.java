@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Davis Cook <daviscook447@gmail.com>
+ * Copyright (c) 2020, Matthew C <Chapman.L.Matthew@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,58 +22,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.slayer;
+package net.runelite.client.plugins.inventoryviewer;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Singleton;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Keybind;
 
-@Singleton
-class KnapsackSolver
+@ConfigGroup(InventoryViewerConfig.GROUP)
+public interface InventoryViewerConfig extends Config
 {
-	private List<Integer> reconstructItemsInSack(int[][] sackMatrix, List<Integer> items, int i, int w)
+	String GROUP = "inventoryViewer";
+
+	@ConfigItem(
+		keyName = "toggleKeybind",
+		name = "Toggle Overlay",
+		description = "Binds a key (combination) to toggle the overlay.",
+		position = 0
+	)
+	default Keybind toggleKeybind()
 	{
-		if (i == 0)
-		{
-			return new ArrayList<>();
-		}
-		if (sackMatrix[i][w] > sackMatrix[i - 1][w])
-		{
-			List<Integer> list = reconstructItemsInSack(sackMatrix, items,
-				i - 1, w - items.get(i - 1));
-			list.add(items.get(i - 1));
-			return list;
-		}
-		else
-		{
-			return reconstructItemsInSack(sackMatrix, items, i - 1, w);
-		}
+		return Keybind.NOT_SET;
 	}
 
-	int howMuchFitsInSack(List<Integer> items, int maxWeight)
+	@ConfigItem(
+		keyName = "hiddenDefault",
+		name = "Hidden by default",
+		description = "Whether or not the overlay is hidden by default.",
+		position = 1
+	)
+	default boolean hiddenDefault()
 	{
-		int itemCount = items.size();
-
-		int[][] sackMatrix = new int[itemCount + 1][maxWeight + 1];
-		for (int i = 1; i <= itemCount; i++)
-		{
-			for (int j = 0; j <= maxWeight; j++)
-			{
-				if (items.get(i - 1) > j)
-				{
-					sackMatrix[i][j] = sackMatrix[i - 1][j];
-				}
-				else
-				{
-					sackMatrix[i][j] = Math.max(
-						sackMatrix[i - 1][j],
-						sackMatrix[i - 1][j - items.get(i - 1)] + items.get(i - 1)
-					);
-				}
-			}
-		}
-
-		return reconstructItemsInSack(sackMatrix, items, itemCount, maxWeight).size();
+		return false;
 	}
-
 }

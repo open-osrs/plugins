@@ -128,6 +128,7 @@ public class TimersPlugin extends Plugin
 	private static final Pattern DIVINE_POTION_PATTERN = Pattern.compile("You drink some of your divine (.+) potion\\.");
 	private static final int FIGHT_CAVES_REGION_ID = 9551;
 	private static final int INFERNO_REGION_ID = 9043;
+	private static final int NMZ_MAP_REGION_ID = 9033;
 	private static final Pattern TZHAAR_WAVE_MESSAGE = Pattern.compile("Wave: (\\d+)");
 	private static final String TZHAAR_DEFEATED_MESSAGE = "You have been defeated!";
 	private static final Pattern TZHAAR_COMPLETE_MESSAGE = Pattern.compile("Your (TzTok-Jad|TzKal-Zuk) kill count is:");
@@ -539,7 +540,8 @@ public class TimersPlugin extends Plugin
 
 		if (config.showCannon() && (event.getMessage().equals(CANNON_FURNACE_MESSAGE) || event.getMessage().contains(CANNON_REPAIR_MESSAGE)))
 		{
-			createGameTimer(CANNON);
+			TimerTimer cannonTimer = createGameTimer(CANNON);
+			cannonTimer.setTooltip(cannonTimer.getTooltip() + " - World " + client.getWorld());
 		}
 
 		if (config.showCannon() && event.getMessage().equals(CANNON_PICKUP_MESSAGE))
@@ -735,6 +737,11 @@ public class TimersPlugin extends Plugin
 		return client.getMapRegions() != null && ArrayUtils.contains(client.getMapRegions(), INFERNO_REGION_ID);
 	}
 
+	private boolean isInNightmareZone()
+	{
+		return client.getLocalPlayer() != null && client.getLocalPlayer().getWorldLocation().getPlane() > 0 && ArrayUtils.contains(client.getMapRegions(), NMZ_MAP_REGION_ID);
+	}
+
 	private void createTzhaarTimer()
 	{
 		removeTzhaarTimer();
@@ -819,6 +826,11 @@ public class TimersPlugin extends Plugin
 		switch (gameStateChanged.getGameState())
 		{
 			case LOADING:
+				if (!isInNightmareZone())
+				{
+					removeGameTimer(OVERLOAD);
+				}
+
 				if (tzhaarTimer != null && !isInFightCaves() && !isInInferno())
 				{
 					removeTzhaarTimer();

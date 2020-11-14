@@ -56,13 +56,15 @@ class KourendLibraryOverlay extends Overlay
 	private static final int MAXIMUM_DISTANCE = 24;
 	private final Library library;
 	private final Client client;
+	private final KourendLibraryConfig config;
 	private final KourendLibraryPlugin plugin;
 
 	@Inject
-	private KourendLibraryOverlay(final Library library, final Client client, final KourendLibraryPlugin plugin)
+	private KourendLibraryOverlay(Library library, Client client, KourendLibraryConfig config, KourendLibraryPlugin plugin)
 	{
 		this.library = library;
 		this.client = client;
+		this.config = config;
 		this.plugin = plugin;
 
 		setPosition(OverlayPosition.DYNAMIC);
@@ -127,7 +129,8 @@ class KourendLibraryOverlay extends Overlay
 					bookIsKnown = true;
 				}
 
-				if (book == Book.VARLAMORE_ENVOY && plugin.isHideVarlamoreEnvoy())
+				if ((book == Book.VARLAMORE_ENVOY && !plugin.showVarlamoreEnvoy())
+					|| (book != null && book.isDarkManuscript() && config.hideDarkManuscript()))
 				{
 					continue;
 				}
@@ -237,7 +240,7 @@ class KourendLibraryOverlay extends Overlay
 
 	private boolean shouldShowOverlayIfDuplicateBook(@Nullable Book book)
 	{
-		return !plugin.isHideDuplicateBook()
+		return !config.hideDuplicateBook()
 			|| book == null
 			|| book.isDarkManuscript()
 			|| !plugin.doesPlayerContainBook(book);

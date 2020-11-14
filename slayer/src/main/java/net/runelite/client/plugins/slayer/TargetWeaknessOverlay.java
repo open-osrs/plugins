@@ -27,6 +27,7 @@ package net.runelite.client.plugins.slayer;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -43,17 +44,17 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 class TargetWeaknessOverlay extends Overlay
 {
 	private final Client client;
-	private final SlayerPlugin plugin;
 	private final SlayerConfig config;
+	private final SlayerPlugin plugin;
 	private final ItemManager itemManager;
 	private final NPCManager npcManager;
 
 	@Inject
-	private TargetWeaknessOverlay(final Client client, final SlayerPlugin plugin, final SlayerConfig config, final ItemManager itemManager, final NPCManager npcManager)
+	private TargetWeaknessOverlay(Client client, SlayerConfig config, SlayerPlugin plugin, ItemManager itemManager, NPCManager npcManager)
 	{
 		this.client = client;
-		this.plugin = plugin;
 		this.config = config;
+		this.plugin = plugin;
 		this.itemManager = itemManager;
 		this.npcManager = npcManager;
 		setPosition(OverlayPosition.DYNAMIC);
@@ -63,26 +64,35 @@ class TargetWeaknessOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!config.weaknessPrompt())
+		final List<NPC> targets = plugin.getHighlightedTargets();
+
+		if (targets.isEmpty() || !config.weaknessPrompt())
 		{
 			return null;
 		}
 
-		final Task npcTask = plugin.getWeaknessTask();
-
-		if (npcTask == null)
+		final Task curTask = Task.getTask(plugin.getTaskName());
+		if (curTask == null || curTask.getWeaknessThreshold() < 0 || curTask.getWeaknessItem() < 0)
 		{
 			return null;
 		}
 
-		final NPC npc = (NPC) client.getLocalPlayer().getInteracting();
-		final int threshold = npcTask.getWeaknessThreshold();
-		final BufferedImage image = itemManager.getImage(npcTask.getWeaknessItem());
-		final int currentHealth = calculateHealth(npc);
+		final int threshold = curTask.getWeaknessThreshold();
+		final BufferedImage image = itemManager.getImage(curTask.getWeaknessItem());
 
-		if (currentHealth >= 0 && currentHealth <= threshold)
+		if (image == null)
 		{
-			renderTargetItem(graphics, npc, image);
+			return null;
+		}
+
+		for (NPC target : targets)
+		{
+			final int currentHealth = calculateHealth(target);
+
+			if (currentHealth >= 0 && currentHealth <= threshold)
+			{
+				renderTargetItem(graphics, target, image);
+			}
 		}
 
 		return null;
@@ -98,14 +108,14 @@ class TargetWeaknessOverlay extends Overlay
 
 		final int healthScale = target.getHealthScale();
 		final int healthRatio = target.getHealthRatio();
-		final int maxHealth = npcManager.getHealth(target.getId());
+		final Integer maxHealth = npcManager.getHealth(target.getId());
 
-		if (healthRatio < 0 || healthScale <= 0 || maxHealth == -1)
+		if (healthRatio < 0 || healthScale <= 0 || maxHealth == null)
 		{
 			return -1;
 		}
 
-		return (int) ((maxHealth * healthRatio / healthScale) + 0.5f);
+		return (int)((maxHealth * healthRatio / healthScale) + 0.5f);
 	}
 
 	private void renderTargetItem(Graphics2D graphics, NPC actor, BufferedImage image)

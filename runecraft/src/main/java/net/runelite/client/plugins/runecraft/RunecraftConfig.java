@@ -31,9 +31,11 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Title;
 
-@ConfigGroup("runecraft")
+@ConfigGroup(RunecraftConfig.GROUP)
 public interface RunecraftConfig extends Config
 {
+	String GROUP = "runecraft";
+
 	@ConfigTitleSection(
 		keyName = "utilTitle",
 		name = "Utility",

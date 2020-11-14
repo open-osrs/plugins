@@ -127,7 +127,7 @@ class XpState
 	 * @param npc       currently interacted NPC
 	 * @param npcHealth health of currently interacted NPC
 	 */
-	void updateNpcExperience(Skill skill, NPC npc, int npcHealth)
+	void updateNpcExperience(Skill skill, NPC npc, Integer npcHealth, int xpModifier)
 	{
 		if (npc == null || npc.getCombatLevel() <= 0 || npcHealth == -1)
 		{
@@ -135,7 +135,7 @@ class XpState
 		}
 
 		final XpStateSingle state = getSkill(skill);
-		final int actionExp = (int) (npcHealth * getCombatXPModifier(skill));
+		final int actionExp = (int) (npcHealth * getCombatXPModifier(skill) * xpModifier);
 		final XpAction action = state.getXpAction(XpActionType.ACTOR_HEALTH);
 
 		if (action.isActionsHistoryInitialized())
