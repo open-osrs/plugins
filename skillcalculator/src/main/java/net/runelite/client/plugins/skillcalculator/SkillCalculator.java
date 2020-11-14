@@ -44,6 +44,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
+import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
@@ -140,10 +141,11 @@ class SkillCalculator extends JPanel
 			xpFactor = 1.0f;
 
 			// Adds league relic xp modifiers.
-			// TODO:: Change if statement for 6th relic once 6th constant gets added.
-			if (client.getVarbitValue(Varbits.TWISTED_LEAGUE_RELIC_1.getId()) != 0)
+			if (client.getGameState() == GameState.LOGGED_IN && client.getVarbitValue(Varbits.TWISTED_LEAGUE_RELIC_1.getId()) != 0)
 			{
 				xpFactor = 5.0f;
+
+				// TODO:: Change this if statement for 6th relic once constant gets added.
 				if (client.getVarbitValue(11696) != 0)
 				{
 					xpFactor = 16.0f;
