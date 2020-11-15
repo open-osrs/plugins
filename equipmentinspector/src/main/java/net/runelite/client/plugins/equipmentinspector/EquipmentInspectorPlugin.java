@@ -32,11 +32,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ItemDefinition;
+import net.runelite.api.Player;
 import net.runelite.api.events.PlayerMenuOptionClicked;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.util.Text;
@@ -64,6 +66,8 @@ import org.pf4j.Extension;
 	enabledByDefault = false,
 	type = PluginType.PVP
 )
+
+@Slf4j
 public class EquipmentInspectorPlugin extends Plugin
 {
 	private static final String INSPECT_EQUIPMENT = "Gear";
@@ -151,12 +155,29 @@ public class EquipmentInspectorPlugin extends Plugin
 		}
 
 		String playerName = Text.removeTags(event.getMenuTarget()).replace('\u00A0', ' ');
-		final PlayerContainer player = playerManager.getPlayer(playerName);
+		PlayerContainer player = playerManager.getPlayer(playerName);
+
 		final Map<KitType, ItemDefinition> playerEquipment = new HashMap<>();
 
 		if (player == null)
 		{
-			return;
+			//If playerManager couldn't get the player add it to the list manually
+			//Assuming the player is still rendered by the client.
+			for (Player p : client.getPlayers())
+			{
+				if (p.getName().equals(playerName))
+				{
+					playerManager.addPlayerContainer(p);
+					player = playerManager.getPlayer(playerName);
+					break;
+				}
+			}
+			if (player == null)
+			{
+				log.info("PlayerContainer is still null. no luck");
+				return;
+			}
+
 		}
 
 		for (KitType kitType : KitType.values())
