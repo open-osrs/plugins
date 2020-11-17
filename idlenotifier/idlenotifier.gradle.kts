@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.10"
+version = "0.0.11"
 
 project.extra["PluginName"] = "Idle Notifier"
 project.extra["PluginDescription"] = "Send a notification when going idle, or when HP/Prayer reaches a threshold"

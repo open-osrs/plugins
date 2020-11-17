@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.1.2"
+version = "0.1.3"
 
 project.extra["PluginName"] = "Mining"
 project.extra["PluginDescription"] = "Show ore respawn timers and coal bag overlay"

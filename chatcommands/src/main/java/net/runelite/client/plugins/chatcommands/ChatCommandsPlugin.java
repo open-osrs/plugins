@@ -194,19 +194,23 @@ public class ChatCommandsPlugin extends Plugin
 	{
 		if (name.contains(IconID.IRONMAN.toString()))
 		{
-			return toEndPoint(AccountType.IRONMAN);
+			return HiscoreEndpoint.IRONMAN;
 		}
 		else if (name.contains(IconID.ULTIMATE_IRONMAN.toString()))
 		{
-			return toEndPoint(AccountType.ULTIMATE_IRONMAN);
+			return HiscoreEndpoint.ULTIMATE_IRONMAN;
 		}
 		else if (name.contains(IconID.HARDCORE_IRONMAN.toString()))
 		{
-			return toEndPoint(AccountType.HARDCORE_IRONMAN);
+			return HiscoreEndpoint.HARDCORE_IRONMAN;
+		}
+		else if (name.contains(IconID.LEAGUE.toString()))
+		{
+			return HiscoreEndpoint.LEAGUE;
 		}
 		else
 		{
-			return toEndPoint(AccountType.NORMAL);
+			return HiscoreEndpoint.NORMAL;
 		}
 	}
 
@@ -1666,7 +1670,7 @@ public class ChatCommandsPlugin extends Plugin
 				.append(minigame.getName())
 				.append(" Score: ")
 				.append(ChatColorType.HIGHLIGHT)
-				.append(Integer.toString(score));
+				.append(String.format("%,d", score));
 
 			int rank = hiscoreSkill.getRank();
 			if (rank != -1)
@@ -1812,7 +1816,7 @@ public class ChatCommandsPlugin extends Plugin
 			}
 		}
 
-		// Get ironman status from their icon in chat
+		// Get ironman status from their icon in chat, this handles leagues too
 		HiscoreEndpoint endpoint = getHiscoreEndpointByName(chatMessage.getName());
 		return new HiscoreLookup(player, endpoint);
 	}

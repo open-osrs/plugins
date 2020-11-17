@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.10"
+version = "0.0.11"
 
 project.extra["PluginName"] = "World Hopper"
 project.extra["PluginDescription"] = "Allows you to quickly hop worlds"
