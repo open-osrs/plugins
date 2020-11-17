@@ -33,6 +33,7 @@ import net.runelite.client.config.Title;
 import static net.runelite.client.plugins.gpu.GpuPlugin.MAX_DISTANCE;
 import static net.runelite.client.plugins.gpu.GpuPlugin.MAX_FOG_DEPTH;
 import net.runelite.client.plugins.gpu.config.AntiAliasingMode;
+import net.runelite.client.plugins.gpu.config.ColorBlindMode;
 import net.runelite.client.plugins.gpu.config.UIScalingMode;
 import net.runelite.client.plugins.gpu.config.WindowsScalingMode;
 
@@ -126,10 +127,21 @@ public interface GpuPluginConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "colorBlindMode",
+		name = "Colorblindness Correction",
+		description = "Adjusts colors to account for colorblindness",
+		position = 7
+	)
+	default ColorBlindMode colorBlindMode()
+	{
+		return ColorBlindMode.NONE;
+	}
+
+	@ConfigItem(
 		keyName = "antiAliasingMode",
 		name = "Anti Aliasing",
 		description = "Configures the anti-aliasing mode",
-		position = 7,
+		position = 8,
 		titleSection = "ppTitle"
 	)
 	default AntiAliasingMode antiAliasingMode()
@@ -145,7 +157,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "anisotropicFilteringLevel",
 		name = "Anisotropic Filtering",
 		description = "Configures the anisotropic filtering level.",
-		position = 8,
+		position = 9,
 		titleSection = "ppTitle"
 	)
 	default int anisotropicFilteringLevel()
@@ -157,7 +169,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogTitle",
 		name = "Fog",
 		description = "",
-		position = 9
+		position = 10
 	)
 	default Title fogTitle()
 	{
@@ -171,7 +183,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogDepth",
 		name = "Depth",
 		description = "Distance from the scene edge the fog starts",
-		position = 10,
+		position = 11,
 		titleSection = "fogTitle"
 	)
 	default int fogDepth()
@@ -186,7 +198,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogCircularity",
 		name = "Roundness",
 		description = "Fog circularity in %",
-		position = 11,
+		position = 12,
 		titleSection = "fogTitle"
 	)
 	default int fogCornerRadius()
@@ -201,7 +213,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "fogDensity",
 		name = "Density",
 		description = "Relative fog thickness",
-		position = 12,
+		position = 13,
 		titleSection = "fogTitle"
 	)
 	default int fogDensity()
@@ -213,7 +225,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "mirrorTitle",
 		name = "Mirror",
 		description = "",
-		position = 13
+		position = 14
 	)
 	default Title mirrorTitle()
 	{
@@ -228,7 +240,7 @@ public interface GpuPluginConfig extends Config
 		keyName = "windowsScale",
 		name = "Windows Scale",
 		description = "Set this to the scale you use in Windows if mirror comes out incorrectly.",
-		position = 14,
+		position = 15,
 		titleSection = "mirrorTitle"
 	)
 	default WindowsScalingMode windowsScale()

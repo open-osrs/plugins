@@ -412,6 +412,7 @@ public class WintertodtPlugin extends Plugin
 			case WOODCUTTING_INFERNAL:
 			case WOODCUTTING_3A_AXE:
 			case WOODCUTTING_CRYSTAL:
+			case WOODCUTTING_TRAILBLAZER:
 				setActivity(WintertodtActivity.WOODCUTTING);
 				break;
 
