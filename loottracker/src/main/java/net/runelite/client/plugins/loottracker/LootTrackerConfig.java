@@ -85,11 +85,22 @@ public interface LootTrackerConfig extends Config
 	@ConfigItem(
 		keyName = "saveLoot",
 		name = "Submit loot tracker data",
-		description = "Submit loot tracker data"
+		description = "Submit loot tracker data",
+		hidden = true
 	)
 	default boolean saveLoot()
 	{
-		return true;
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "saveLoot",
+		name = "Submit loot tracker data",
+		description = "Submit loot tracker data",
+		hidden = true
+	)
+	default void saveLoot(boolean val)
+	{
 	}
 
 	@ConfigItem(
