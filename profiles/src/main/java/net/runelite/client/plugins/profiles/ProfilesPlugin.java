@@ -29,9 +29,11 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.ScheduledExecutorService;
 import java.security.GeneralSecurityException;
 import javax.inject.Inject;
+import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -39,6 +41,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
@@ -59,6 +62,9 @@ public class ProfilesPlugin extends Plugin
 
 	@Inject
 	private ProfilesConfig config;
+
+	@Inject
+	private ClientThread clientThread;
 
 	@Inject
 	private ScheduledExecutorService executorService;
@@ -85,7 +91,6 @@ public class ProfilesPlugin extends Plugin
 			.icon(icon)
 			.priority(8)
 			.panel(panel)
-			.onReady(() -> executorService.submit(() -> OpenPanel(true)))
 			.build();
 
 		clientToolbar.addNavigation(navButton);
@@ -108,7 +113,7 @@ public class ProfilesPlugin extends Plugin
 		{
 			if (!navButton.isSelected())
 			{
-				OpenPanel(true);
+				openPanel();
 			}
 		}
 	}
@@ -136,13 +141,25 @@ public class ProfilesPlugin extends Plugin
 		}
 	}
 
-	private void OpenPanel(boolean openPanel)
+	private void openPanel()
 	{
-		if (openPanel && config.switchPanel())
+		if (config.switchPanel())
 		{
-			// If we haven't seen the latest feed item,
-			// open the feed panel.
-			navButton.getOnSelect().run();
+			clientThread.invokeLater(() ->
+			{
+				if (!ClientUI.getFrame().isVisible())
+				{
+					return false;
+				}
+
+				if (navButton.isSelected())
+				{
+					return true;
+				}
+
+				SwingUtilities.invokeLater(() -> executorService.submit(() -> navButton.getOnSelect().run()));
+				return true;
+			});
 		}
 	}
 
