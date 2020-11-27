@@ -451,6 +451,9 @@ public class LootTrackerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		// Never submit loot to the tracker, it'll always fail anyway.
+		config.saveLoot(false);
+
 		ignoredItems = Text.fromCSV(config.getIgnoredItems());
 		ignoredNPCs = Text.fromCSV(config.getIgnoredNPCs());
 		ignoredEvents = Text.fromCSV(config.getIgnoredEvents());
