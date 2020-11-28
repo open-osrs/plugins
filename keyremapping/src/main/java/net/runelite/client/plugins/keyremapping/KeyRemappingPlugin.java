@@ -234,6 +234,14 @@ public class KeyRemappingPlugin extends Plugin
 		{
 			String newText = text.substring(0, idx) + ": " + input;
 			widget.setText(newText);
+			return;
+		}
+
+		if (!config.hideDisplayName())
+		{
+			assert client.getLocalPlayer() != null;
+			String newText = client.getLocalPlayer().getName() + ": " + input;
+			widget.setText(newText);
 		}
 	}
 }
