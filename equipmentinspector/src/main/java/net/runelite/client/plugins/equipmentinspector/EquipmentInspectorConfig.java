@@ -44,7 +44,7 @@ public interface EquipmentInspectorConfig extends Config
 	}
 
 	@Range(
-		min = 1,
+		min = 0,
 		max = 4
 	)
 	@ConfigItem(
