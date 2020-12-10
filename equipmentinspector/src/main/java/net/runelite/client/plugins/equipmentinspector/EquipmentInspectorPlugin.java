@@ -104,10 +104,7 @@ public class EquipmentInspectorPlugin extends Plugin
 		equipmentInspectorPanel = injector.getInstance(EquipmentInspectorPanel.class);
 		if (client != null)
 		{
-			if (!client.isComparingAppearance())
-			{
-				client.setComparingAppearance(true);
-			}
+			client.setComparingAppearance(true);
 			menuManager.addPlayerMenuItem(INSPECT_EQUIPMENT);
 		}
 
@@ -129,10 +126,7 @@ public class EquipmentInspectorPlugin extends Plugin
 	{
 		menuManager.removePlayerMenuItem(INSPECT_EQUIPMENT);
 		pluginToolbar.removeNavigation(navButton);
-		if (client.isComparingAppearance())
-		{
-			client.setComparingAppearance(false);
-		}
+		client.setComparingAppearance(false);
 	}
 
 	@Subscribe
