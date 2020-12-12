@@ -170,13 +170,13 @@ public class MetronomePlugin extends Plugin
 		{
 			// As playSoundEffect only uses the volume argument when the in-game volume isn't muted, sound effect volume
 			// needs to be set to the value desired for ticks or tocks and afterwards reset to the previous value.
-			int previousVolume = client.getSoundEffectVolume();
+			int previousVolume = client.getPreferences().getSoundEffectsVolume();
 
 			if ((config.tockVolume() > 0 && config.tockNumber() > 0) && ++tockCounter % config.tockNumber() == 0)
 			{
 				if (tockClip == null)
 				{
-					client.setSoundEffectVolume(config.tockVolume());
+					client.getPreferences().setClientMusicVolume(config.tockVolume());
 					client.playSoundEffect(SoundEffectID.GE_DECREMENT_PLOP, config.tockVolume());
 				}
 				else
@@ -193,7 +193,7 @@ public class MetronomePlugin extends Plugin
 			{
 				if (tickClip == null)
 				{
-					client.setSoundEffectVolume(config.tickVolume());
+					client.getPreferences().setSoundEffectsVolume(config.tickVolume());
 					client.playSoundEffect(SoundEffectID.GE_INCREMENT_PLOP, config.tickVolume());
 				}
 				else
@@ -207,7 +207,7 @@ public class MetronomePlugin extends Plugin
 				}
 			}
 
-			client.setSoundEffectVolume(previousVolume);
+			client.getPreferences().setSoundEffectsVolume(previousVolume);
 		}
 	}
 }

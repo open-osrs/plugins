@@ -275,19 +275,19 @@ public class MusicPlugin extends Plugin
 		int musicVolume = musicConfig.getMusicVolume();
 		if (musicVolume > 0)
 		{
-			client.setMusicVolume(musicVolume - 1);
+			client.getPreferences().setClientMusicVolume(musicVolume - 1);
 		}
 
 		int soundEffectVolume = musicConfig.getSoundEffectVolume();
 		if (soundEffectVolume > 0)
 		{
-			client.setSoundEffectVolume(soundEffectVolume - 1);
+			client.getPreferences().setClientMusicVolume(soundEffectVolume - 1);
 		}
 
 		int areaSoundEffectVolume = musicConfig.getAreaSoundEffectVolume();
 		if (areaSoundEffectVolume > 0)
 		{
-			client.setAreaSoundEffectVolume(areaSoundEffectVolume - 1);
+			client.getPreferences().setClientMusicVolume(areaSoundEffectVolume - 1);
 		}
 
 		updateMusicOptions();
