@@ -278,7 +278,7 @@ public class MusicPlugin extends Plugin
 		int musicVolume = musicConfig.getMusicVolume();
 		if (musicVolume > 0)
 		{
-			preferences.setMusicVolume(musicVolume - 1);
+			preferences.setClientMusicVolume(musicVolume - 1);
 		}
 
 		int soundEffectVolume = musicConfig.getSoundEffectVolume();
@@ -425,7 +425,7 @@ public class MusicPlugin extends Plugin
 	@Getter
 	private enum MusicSlider
 	{
-		MUSIC("Music", WidgetInfo.OPTIONS_MUSIC_SLIDER, VarPlayer.MUSIC_VOLUME, MusicConfig::getMusicVolume, MusicConfig::setMusicVolume, 255),
+		MUSIC("Music", WidgetInfo.OPTIONS_MUSIC_SLIDER, VarPlayer.MUSIC_VOLUME, MusicConfig::getMusicVolume, MusicConfig::setClientMusicVolume, 255),
 		AREA("Area Sounds", WidgetInfo.OPTIONS_AREA_SOUND_SLIDER, VarPlayer.AREA_EFFECT_VOLUME, MusicConfig::getAreaSoundEffectVolume, MusicConfig::setAreaSoundEffectVolume, 127),
 		EFFECT("Sound Effects", WidgetInfo.OPTIONS_SOUND_EFFECT_SLIDER, VarPlayer.SOUND_EFFECT_VOLUME, MusicConfig::getSoundEffectVolume, MusicConfig::setSoundEffectVolume, 127);
 
