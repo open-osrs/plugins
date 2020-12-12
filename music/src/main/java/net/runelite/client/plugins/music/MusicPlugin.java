@@ -44,6 +44,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
+import net.runelite.api.Preferences;
 import net.runelite.api.ScriptID;
 import net.runelite.api.SoundEffectID;
 import net.runelite.api.SpriteID;
@@ -272,22 +273,24 @@ public class MusicPlugin extends Plugin
 
 	private void applyMusicVolumeConfig()
 	{
+		Preferences preferences = client.getPreferences();
+
 		int musicVolume = musicConfig.getMusicVolume();
 		if (musicVolume > 0)
 		{
-			client.setMusicVolume(musicVolume - 1);
+			preferences.setMusicVolume(musicVolume - 1);
 		}
 
 		int soundEffectVolume = musicConfig.getSoundEffectVolume();
 		if (soundEffectVolume > 0)
 		{
-			client.setSoundEffectVolume(soundEffectVolume - 1);
+			preferences.setSoundEffectsVolume(soundEffectVolume - 1);
 		}
 
 		int areaSoundEffectVolume = musicConfig.getAreaSoundEffectVolume();
 		if (areaSoundEffectVolume > 0)
 		{
-			client.setAreaSoundEffectVolume(areaSoundEffectVolume - 1);
+			preferences.setAreaSoundEffectsVolume(areaSoundEffectVolume - 1);
 		}
 
 		updateMusicOptions();
