@@ -118,7 +118,6 @@ public class EquipmentInspectorPlugin extends Plugin
 			.build();
 
 		pluginToolbar.addNavigation(navButton);
-
 	}
 
 	@Override
