@@ -51,6 +51,7 @@ import net.runelite.api.events.ProjectileMoved;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -58,7 +59,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Zalcano",
 	description = "Assistance for the Zalcano fight",
-	enabledByDefault = false
+	enabledByDefault = false,
+	type = PluginType.MINIGAME
 )
 public class ZalcanoPlugin extends Plugin
 {
