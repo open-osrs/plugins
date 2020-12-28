@@ -395,7 +395,7 @@ public class PlayerIndicatorsPlugin extends Plugin
 		{
 			for (FriendsChatMember clanMember : clanMemberManager.getMembers())
 			{
-				if (clanMember.getRank().getValue() > config.callerRank().getValue())
+				if (clanMember.getRank().getValue() >= config.callerRank().getValue())
 				{
 					callers.add(Text.standardize(clanMember.getName()));
 				}
