@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.9"
+version = "0.1.0"
 
 project.extra["PluginName"] = "Player Indicators"
 project.extra["PluginDescription"] = "Highlight players on-screen and/or on the minimap"
