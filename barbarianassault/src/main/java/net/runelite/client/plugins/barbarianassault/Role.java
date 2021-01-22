@@ -39,27 +39,17 @@ import net.runelite.api.widgets.WidgetInfo;
 @AllArgsConstructor
 enum Role
 {
-	ATTACKER(WidgetInfo.BA_ATK_WAVE_TEXT, WidgetInfo.BA_ATK_LISTEN_TOP_TEXT, WidgetInfo.BA_ATK_HORN_LISTEN_TEXT,
-		WidgetInfo.BA_ATK_CALL_TEXT, WidgetInfo.BA_COLL_HORN_LISTEN_TEXT, WidgetInfo.BA_ATK_ROLE_TEXT,
+	ATTACKER(WidgetInfo.BA_ATK_HORN_LISTEN_TEXT, WidgetInfo.BA_COLL_HORN_LISTEN_TEXT, WidgetInfo.BA_ATK_ROLE_TEXT,
 		WidgetInfo.BA_ATK_ROLE_SPRITE),
-	DEFENDER(WidgetInfo.BA_DEF_WAVE_TEXT, WidgetInfo.BA_DEF_LISTEN_TEXT, WidgetInfo.BA_DEF_HORN_LISTEN_TEXT,
-		WidgetInfo.BA_DEF_CALL_TEXT, WidgetInfo.BA_HEAL_HORN_LISTEN_TEXT, WidgetInfo.BA_DEF_ROLE_TEXT,
+	DEFENDER(WidgetInfo.BA_DEF_HORN_LISTEN_TEXT, WidgetInfo.BA_HEAL_HORN_LISTEN_TEXT, WidgetInfo.BA_DEF_ROLE_TEXT,
 		WidgetInfo.BA_DEF_ROLE_SPRITE),
-	COLLECTOR(WidgetInfo.BA_COLL_WAVE_TEXT, WidgetInfo.BA_COLL_LISTEN_TEXT, WidgetInfo.BA_COLL_HORN_LISTEN_TEXT,
-		WidgetInfo.BA_COLL_CALL_TEXT, WidgetInfo.BA_ATK_HORN_LISTEN_TEXT, WidgetInfo.BA_COLL_ROLE_TEXT,
+	COLLECTOR(WidgetInfo.BA_COLL_HORN_LISTEN_TEXT, WidgetInfo.BA_ATK_HORN_LISTEN_TEXT, WidgetInfo.BA_COLL_ROLE_TEXT,
 		WidgetInfo.BA_COLL_ROLE_SPRITE),
-	HEALER(WidgetInfo.BA_HEAL_WAVE_TEXT, WidgetInfo.BA_HEAL_LISTEN_TEXT, WidgetInfo.BA_DEF_HORN_LISTEN_TEXT,
-		WidgetInfo.BA_HEAL_CALL_TEXT, WidgetInfo.BA_DEF_HORN_LISTEN_TEXT, WidgetInfo.BA_HEAL_ROLE_TEXT,
+	HEALER(WidgetInfo.BA_DEF_HORN_LISTEN_TEXT, WidgetInfo.BA_DEF_HORN_LISTEN_TEXT, WidgetInfo.BA_HEAL_ROLE_TEXT,
 		WidgetInfo.BA_HEAL_ROLE_SPRITE);
 
 	@Getter(AccessLevel.PACKAGE)
-	private final WidgetInfo wave;
-	@Getter(AccessLevel.PACKAGE)
-	private final WidgetInfo listen;
-	@Getter(AccessLevel.PACKAGE)
 	private final WidgetInfo gloryListen;
-	@Getter(AccessLevel.PACKAGE)
-	private final WidgetInfo call;
 	@Getter(AccessLevel.PACKAGE)
 	private final WidgetInfo gloryCall;
 	@Getter(AccessLevel.PACKAGE)
@@ -147,12 +137,6 @@ enum Role
 			return GLORY_CALLS.get(callWidget.getText());
 		}
 
-		callWidget = client.getWidget(getCall());
-		if (callWidget != null)
-		{
-			return callWidget.getText();
-		}
-
 		return null;
 	}
 
@@ -163,12 +147,6 @@ enum Role
 		if (listenWidget != null)
 		{
 			return GLORY_CALLS.get(listenWidget.getText());
-		}
-
-		listenWidget = client.getWidget(getListen());
-		if (listenWidget != null)
-		{
-			return listenWidget.getText();
 		}
 
 		return null;

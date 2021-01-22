@@ -671,7 +671,7 @@ public class BarbarianAssaultPlugin extends Plugin implements KeyListener
 		Widget callWidget = getRole() == null ? null : client.getWidget(getRole().getGloryCall());
 		if (callWidget == null)
 		{
-			callWidget = getRole() == null ? null : client.getWidget(getRole().getCall());
+			callWidget = getRole() == null ? null : client.getWidget(getRole().getRoleText());
 		}
 
 		String newCallText = getRole() == null ? lastCallText : getRole().getCall(client);
@@ -680,7 +680,7 @@ public class BarbarianAssaultPlugin extends Plugin implements KeyListener
 		Widget listenWidget = getRole() == null ? null : client.getWidget(getRole().getGloryListen());
 		if (listenWidget == null)
 		{
-			listenWidget = getRole() == null ? null : client.getWidget(getRole().getListen());
+			listenWidget = getRole() == null ? null : client.getWidget(getRole().getRoleText());
 			usingGloryHorn = false;
 		}
 		else
@@ -726,7 +726,7 @@ public class BarbarianAssaultPlugin extends Plugin implements KeyListener
 					if (getRole() == Role.ATTACKER)
 					{
 						listenWidget.setText(newListenText);
-						client.getWidget(WidgetInfo.BA_ATK_LISTEN_BOTTOM_TEXT).setText(Role.getMissingListen(newListenText));
+						client.getWidget(WidgetInfo.BA_ATK_ROLE_TEXT).setText(Role.getMissingListen(newListenText));
 					}
 					else
 					{
@@ -1212,13 +1212,6 @@ public class BarbarianAssaultPlugin extends Plugin implements KeyListener
 
 			usingGloryHorn = client.getWidget(role.getGloryListen()) != null;
 
-			Widget stage = client.getWidget(role.getWave());
-
-			if (stage != null)
-			{
-				this.stage = Integer.parseInt(StringUtils.substringAfter(stage.getText(), " "));
-			}
-
 			lastCallText = role.getCall(client);
 			lastListenText = role.getListen(client);
 
@@ -1243,7 +1236,7 @@ public class BarbarianAssaultPlugin extends Plugin implements KeyListener
 			Widget callWidget = getRole() == null ? null : client.getWidget(getRole().getGloryCall());
 			if (callWidget == null)
 			{
-				callWidget = getRole() == null ? null : client.getWidget(getRole().getCall());
+				callWidget = getRole() == null ? null : client.getWidget(getRole().getRoleText());
 			}
 
 			int newCallColor = callWidget == null ? lastCallColor : callWidget.getTextColor();
