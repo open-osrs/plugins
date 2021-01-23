@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2019, 7ate9 <https://github.com/se7enAte9>
- * Copyright (c) 2019, https://openosrs.com
+ * Copyright (c) 2018, Jacob M <https://github.com/jacoblairm>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,23 +24,52 @@
  */
 package net.runelite.client.plugins.barbarianassault;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import static net.runelite.client.util.RSTimeUnit.GAME_TICKS;
 
-public enum DeathTimesMode
+class GameTimer
 {
-	BOTH("Both"),
-	CHAT_BOX("Chat Box"),
-	INFO_BOX("Info Box");
+	final private Instant startTime = Instant.now();
+	private Instant prevWave = startTime;
 
-	private final String name;
-
-	DeathTimesMode(String name)
+	String getTime(boolean waveTime)
 	{
-		this.name = name;
+		final Instant now = Instant.now();
+		final Duration elapsed;
+
+		if (waveTime)
+		{
+			elapsed = Duration.between(prevWave, now);
+		}
+		else
+		{
+			elapsed = Duration.between(startTime, now).minus(Duration.of(1, GAME_TICKS));
+		}
+
+		return formatTime(LocalTime.ofSecondOfDay(elapsed.getSeconds()));
 	}
 
-	@Override
-	public String toString()
+	void setWaveStartTime()
 	{
-		return name;
+		prevWave = Instant.now();
+	}
+
+	private static String formatTime(LocalTime time)
+	{
+		if (time.getHour() > 0)
+		{
+			return time.format(DateTimeFormatter.ofPattern("HH:mm"));
+		}
+		else if (time.getMinute() > 9)
+		{
+			return time.format(DateTimeFormatter.ofPattern("mm:ss"));
+		}
+		else
+		{
+			return time.format(DateTimeFormatter.ofPattern("m:ss"));
+		}
 	}
 }
