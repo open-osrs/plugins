@@ -30,6 +30,7 @@ public enum RenderStyle
 	TILE,
 	THIN_TILE,
 	HULL,
+	FILL,
 	SOUTH_WEST_TILE,
 	THIN_OUTLINE,
 	OUTLINE,

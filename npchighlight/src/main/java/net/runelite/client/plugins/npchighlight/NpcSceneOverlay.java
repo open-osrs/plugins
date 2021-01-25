@@ -205,6 +205,13 @@ public class NpcSceneOverlay extends Overlay
 					graphics.draw(objectClickbox);
 				}
 				break;
+			case FILL:
+				final Shape actorHull = actor.getConvexHull();
+				if (actorHull != null)
+				{
+					OverlayUtil.renderFilledPolygon(graphics, actorConvexHull, color);
+				}
+				break;
 			case THIN_OUTLINE:
 				modelOutliner.drawOutline(actor, 1, color);
 				break;
