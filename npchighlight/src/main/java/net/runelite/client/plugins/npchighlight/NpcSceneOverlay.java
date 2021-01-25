@@ -209,7 +209,7 @@ public class NpcSceneOverlay extends Overlay
 				final Shape actorHull = actor.getConvexHull();
 				if (actorHull != null)
 				{
-					OverlayUtil.renderFilledPolygon(graphics, actorConvexHull, color);
+					OverlayUtil.renderFilledPolygon(graphics, actorHull, color);
 				}
 				break;
 			case THIN_OUTLINE:
