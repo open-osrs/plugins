@@ -29,5 +29,6 @@ public enum RenderStyle
 {
 	CLICKBOX,
 	HULL,
+	FILL,
 	OUTLINE
 }

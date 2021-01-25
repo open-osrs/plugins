@@ -30,6 +30,10 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import static java.lang.Math.floor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.DecorativeObject;
@@ -109,38 +113,29 @@ class ObjectIndicatorsOverlay extends Overlay
 					}
 					break;
 				case HULL:
-					final Shape polygon;
-					Shape polygon2 = null;
-
-					if (object instanceof GameObject)
+				{
+					final Collection<Shape> hullPolygons = getObjectHullPolygons(object);
+					for (Shape polygon : hullPolygons)
 					{
-						polygon = ((GameObject) object).getConvexHull();
-					}
-					else if (object instanceof WallObject)
-					{
-						polygon = ((WallObject) object).getConvexHull();
-						polygon2 = ((WallObject) object).getConvexHull2();
-					}
-					else if (object instanceof DecorativeObject)
-					{
-						polygon = ((DecorativeObject) object).getConvexHull();
-						polygon2 = ((DecorativeObject) object).getConvexHull2();
-					}
-					else
-					{
-						polygon = object.getCanvasTilePoly();
-					}
-
-					if (polygon != null)
-					{
-						OverlayUtil.renderPolygon(graphics, polygon, objectColor);
-					}
-
-					if (polygon2 != null)
-					{
-						OverlayUtil.renderPolygon(graphics, polygon2, objectColor);
+						if (polygon != null)
+						{
+							OverlayUtil.renderPolygon(graphics, polygon, objectColor);
+						}
 					}
 					break;
+				}
+				case FILL:
+				{
+					final Collection<Shape> hullPolygons = getObjectHullPolygons(object);
+					for (Shape polygon : hullPolygons)
+					{
+						if (polygon != null)
+						{
+							OverlayUtil.renderFilledPolygon(graphics, polygon, objectColor);
+						}
+					}
+					break;
+				}
 				case CLICKBOX:
 					Shape clickbox = object.getClickbox();
 					if (clickbox != null)
@@ -152,5 +147,29 @@ class ObjectIndicatorsOverlay extends Overlay
 		}
 
 		return null;
+	}
+
+	private Collection<Shape> getObjectHullPolygons(TileObject object)
+	{
+		final List<Shape> polygons = new ArrayList<>();
+		if (object instanceof GameObject)
+		{
+			polygons.add(((GameObject) object).getConvexHull());
+		}
+		else if (object instanceof WallObject)
+		{
+			polygons.add(((WallObject) object).getConvexHull());
+			polygons.add(((WallObject) object).getConvexHull2());
+		}
+		else if (object instanceof DecorativeObject)
+		{
+			polygons.add(((DecorativeObject) object).getConvexHull());
+			polygons.add(((DecorativeObject) object).getConvexHull2());
+		}
+		else
+		{
+			polygons.add(object.getCanvasTilePoly());
+		}
+		return polygons;
 	}
 }
