@@ -36,49 +36,30 @@ import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
+import net.runelite.client.config.Title;
 
 @ConfigGroup("baMinigame")
 public interface BaMinigameConfig extends Config
 {
-	@ConfigItem(
-		keyName = "enableGameChatColors",
-		name = "Chat colors",
-		description = "Enable game chat colors on messages announced by this plugin",
-		position = 1
+	@ConfigTitleSection(
+		keyName = "inGameSection",
+		name = "In-game",
+		description = "",
+		position = 0
 	)
-	default boolean enableGameChatColors()
+	default Title inGameSection()
 	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "swapQuickStart",
-		name = "Swap lobby ladder",
-		description = "Swap Climb-down with Quick-start on lobby ladders",
-		position = 2
-	)
-	default boolean swapQuickStart()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "swapGetRewards",
-		name = "Swap Commander Connad",
-		description = "Swap Talk-to with Get-rewards for the Commander Connad",
-		position = 3
-	)
-	default boolean swapGetRewards()
-	{
-		return true;
+		return new Title();
 	}
 
 	@ConfigItem(
 		keyName = "showTimer",
 		name = "Call change timer",
 		description = "Shows time to next call change",
-		position = 0
+		titleSection = "inGameSection",
+		position = 1
 	)
 	default boolean showTimer()
 	{
@@ -90,7 +71,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "callChangeFlashColor",
 		name = "Call change flash color",
 		description = "Select the color to flash the call change",
-		position = 1
+		titleSection = "inGameSection",
+		position = 2
 	)
 	default Color callChangeFlashColor()
 	{
@@ -101,7 +83,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "deathTimesMode",
 		name = "Death times",
 		description = "Shows the time all penance monsters of a certain type are killed in an info box, the chat, or both",
-		position = 2
+		titleSection = "inGameSection",
+		position = 3
 	)
 	default DeathTimesMode deathTimesMode()
 	{
@@ -112,7 +95,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "showEggsOnHopper",
 		name = "Eggs loaded on hoppers",
 		description = "Displays the amount of loaded eggs on cannon hoppers",
-		position = 3
+		titleSection = "inGameSection",
+		position = 4
 	)
 	default boolean showEggsOnHopper()
 	{
@@ -123,7 +107,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "inventoryHighlightMode",
 		name = "Inventory highlight",
 		description = "Define the mode of all inventory highlights",
-		position = 4
+		titleSection = "inGameSection",
+		position = 5
 	)
 	default InventoryHighlightMode inventoryHighlightMode()
 	{
@@ -134,7 +119,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "showGroundItemHighlights",
 		name = "Ground items highlight",
 		description = "Show ground item highlights",
-		position = 5
+		titleSection = "inGameSection",
+		position = 6
 	)
 	default boolean showGroundItemHighlights()
 	{
@@ -145,18 +131,32 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightGroundTiles",
 		name = "Ground tiles highlight",
 		description = "Configures whether or not to highlight tiles containing ground items",
-		position = 6
+		titleSection = "inGameSection",
+		position = 7
 	)
 	default boolean highlightGroundTiles()
 	{
 		return false;
 	}
 
+	@ConfigTitleSection(
+		keyName = "attackerSection",
+		name = "Attacker",
+		description = "",
+		position = 8
+	)
+	default Title attackerSection()
+	{
+		return new Title();
+	}
+
+
 	@ConfigItem(
 		keyName = "highlightArrows",
 		name = "Highlight arrows",
 		description = "Highlights arrows called by your teammate",
-		position = 0
+		position = 9,
+		titleSection = "attackerSection"
 	)
 	default boolean highlightArrows()
 	{
@@ -168,7 +168,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightArrowColor",
 		name = "Highlight arrow color",
 		description = "Configures the color to highlight the called arrows",
-		position = 1
+		position = 10,
+		titleSection = "attackerSection"
 	)
 	default Color highlightArrowColor()
 	{
@@ -179,7 +180,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightAttackStyle",
 		name = "Highlight attack style",
 		description = "Highlights the attack style called by your teammate",
-		position = 2
+		position = 11,
+		titleSection = "attackerSection"
 	)
 	default boolean highlightAttackStyle()
 	{
@@ -190,7 +192,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightAttackStyleColor",
 		name = "Highlight attack style color",
 		description = "Configures the color to highlight the attack style",
-		position = 3
+		position = 12,
+		titleSection = "attackerSection"
 	)
 	default Color highlightAttackStyleColor()
 	{
@@ -201,18 +204,33 @@ public interface BaMinigameConfig extends Config
 		keyName = "showRunnerTickTimerAttacker",
 		name = "Show runner tick timer",
 		description = "Shows the current cycle tick of runners",
-		position = 4
+		position = 13,
+		titleSection = "attackerSection"
 	)
 	default boolean showRunnerTickTimerAttacker()
 	{
 		return false;
 	}
 
+	@ConfigTitleSection(
+		keyName = "defenderSection",
+		name = "Defender",
+		description = "",
+		position = 14
+	)
+	default Title defenderSection()
+	{
+		return new Title();
+	}
+
+
+
 	@ConfigItem(
 		keyName = "highlightBait",
 		name = "Highlight called bait",
 		description = "Highlights bait called by your teammate",
-		position = 0
+		position = 15,
+		titleSection = "defenderSection"
 	)
 	default boolean highlightBait()
 	{
@@ -224,7 +242,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightBaitColor",
 		name = "Called bait color",
 		description = "Color to highlight the bait called by your teammate",
-		position = 1
+		position = 16,
+		titleSection = "defenderSection"
 	)
 	default Color highlightBaitColor()
 	{
@@ -235,7 +254,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightGroundBait",
 		name = "Highlight ground bait",
 		description = "Highlight bait dropped on the ground",
-		position = 2
+		position = 17,
+		titleSection = "defenderSection"
 	)
 	default boolean highlightGroundBait()
 	{
@@ -246,7 +266,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightGroundBaitColor",
 		name = "Ground bait color",
 		description = "Color to highlight the bait dropped on the ground",
-		position = 3
+		position = 18,
+		titleSection = "defenderSection"
 	)
 	default Color highlightGroundBaitColor()
 	{
@@ -257,7 +278,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightGroundLogsHammer",
 		name = "Highlight ground logs/hammer",
 		description = "Highlight logs and hammer on the ground",
-		position = 4
+		position = 19,
+		titleSection = "defenderSection"
 	)
 	default boolean highlightGroundLogsHammer()
 	{
@@ -268,7 +290,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightGroundLogsHammerColor",
 		name = "Ground logs/hammer color",
 		description = "Color to highlight the logs and hammer on the ground",
-		position = 5
+		position = 20,
+		titleSection = "defenderSection"
 	)
 	default Color highlightGroundLogsHammerColor()
 	{
@@ -279,18 +302,32 @@ public interface BaMinigameConfig extends Config
 		keyName = "showRunnerTickTimerDefender",
 		name = "Show runner tick timer",
 		description = "Shows the current cycle tick of runners",
-		position = 6
+		position = 21,
+		titleSection = "defenderSection"
 	)
 	default boolean showRunnerTickTimerDefender()
 	{
 		return true;
 	}
 
+
+	@ConfigTitleSection(
+		keyName = "collectorSection",
+		name = "Collector",
+		description = "",
+		position = 22
+	)
+	default Title collectorSection()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "showEggCountOverlay",
 		name = "Show number of eggs collected",
 		description = "Displays current number of eggs collected",
-		position = 0
+		position = 23,
+		titleSection = "collectorSection"
 	)
 	default boolean showEggCountOverlay()
 	{
@@ -301,7 +338,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightGroundEggsMode",
 		name = "Highlight eggs",
 		description = "Highlight egg colors on the ground",
-		position = 1
+		position = 24,
+		titleSection = "collectorSection"
 	)
 	default GroundEggsMode highlightGroundEggsMode()
 	{
@@ -312,7 +350,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "menuHighlightMode",
 		name = "Menu highlight mode",
 		description = "Configures what to highlight in right-click menu",
-		position = 2
+		titleSection = "collectorSection",
+		position = 25
 	)
 	default MenuHighlightMode menuHighlightMode()
 	{
@@ -323,7 +362,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "swapCollectionBag",
 		name = "Swap collection bag",
 		description = "Swap Look-in with Empty on the collection bag",
-		position = 3
+		position = 26,
+		titleSection = "collectorSection"
 	)
 	default boolean swapCollectionBag()
 	{
@@ -334,7 +374,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "swapCollectorHorn",
 		name = "Swap collector horn",
 		description = "Swap Use with Tell-defensive on the collector horn",
-		position = 4
+		position = 27,
+		titleSection = "collectorSection"
 	)
 	default boolean swapCollectorHorn()
 	{
@@ -345,18 +386,32 @@ public interface BaMinigameConfig extends Config
 		keyName = "swapDestroyEggs",
 		name = "Swap collector eggs",
 		description = "Swap Use with Destroy on red/green/blue eggs",
-		position = 5
+		position = 28,
+		titleSection = "collectorSection"
 	)
 	default boolean swapDestroyEggs()
 	{
 		return false;
 	}
 
+
+	@ConfigTitleSection(
+		keyName = "healerSection",
+		name = "Healer",
+		description = "",
+		position = 29
+	)
+	default Title healerSection()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "highlightPoison",
 		name = "Highlight called poison",
 		description = "Highlights poison food called by your teammate",
-		position = 0
+		position = 30,
+		titleSection = "healerSection"
 	)
 	default boolean highlightPoison()
 	{
@@ -368,7 +423,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightPoisonColor",
 		name = "Called poison color",
 		description = "Configures the color to highlight the correct poison food",
-		position = 1
+		position = 31,
+		titleSection = "healerSection"
 	)
 	default Color highlightPoisonColor()
 	{
@@ -379,7 +435,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightNotification",
 		name = "Highlight incorrect notification",
 		description = "Highlights incorrect poison chat notification",
-		position = 2
+		position = 32,
+		titleSection = "healerSection"
 	)
 	default boolean highlightNotification()
 	{
@@ -390,7 +447,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "highlightNotificationColor",
 		name = "Notification color",
 		description = "Configures the color to highlight the notification text",
-		position = 3
+		position = 33,
+		titleSection = "healerSection"
 	)
 	default Color highlightNotificationColor()
 	{
@@ -401,7 +459,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "showHpCountOverlay",
 		name = "Show number of hitpoints healed",
 		description = "Displays current number of hitpoints healed",
-		position = 4
+		position = 34,
+		titleSection = "healerSection"
 	)
 	default boolean showHpCountOverlay()
 	{
@@ -412,7 +471,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "showTeammateHealthBars",
 		name = "Show teammate health bars",
 		description = "Displays a health bar where a teammate's remaining health is located",
-		position = 5
+		position = 35,
+		titleSection = "healerSection"
 	)
 	default boolean showTeammateHealthBars()
 	{
@@ -424,18 +484,32 @@ public interface BaMinigameConfig extends Config
 		keyName = "teammateHealthBarTransparency",
 		name = "Health bar transparency",
 		description = "Configures the amount of transparency on the teammate health bar",
-		position = 6
+		position = 36,
+		titleSection = "healerSection"
 	)
 	default int teammateHealthBarTransparency()
 	{
 		return 200;
 	}
 
+
+	@ConfigTitleSection(
+		keyName = "postGameSection",
+		name = "Post-game",
+		description = "",
+		position = 37
+	)
+	default Title postGameSection()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "showDurationMode",
 		name = "Duration",
 		description = "Displays duration after each wave and/or round",
-		position = 0
+		titleSection = "postGameSection",
+		position = 38
 	)
 	default DurationMode showDurationMode()
 	{
@@ -446,7 +520,8 @@ public interface BaMinigameConfig extends Config
 		keyName = "showRewardPointsMode",
 		name = "Reward points",
 		description = "Gives summary of reward points in the chat after each wave and/or round",
-		position = 1
+		titleSection = "postGameSection",
+		position = 39
 	)
 	default PointsMode showRewardPointsMode()
 	{
@@ -457,11 +532,59 @@ public interface BaMinigameConfig extends Config
 		keyName = "showRewardsBreakdownMode",
 		name = "Rewards breakdown",
 		description = "Gives summary of advanced points breakdown in the chat after each wave and/or round",
-		position = 2
+		titleSection = "postGameSection",
+		position = 40
 	)
 	default RewardsBreakdownMode showRewardsBreakdownMode()
 	{
 		return RewardsBreakdownMode.ROUND;
+	}
+
+	@ConfigTitleSection(
+		keyName = "miscSection",
+		name = "Misc",
+		description = "",
+		position = 41
+	)
+	default Title miscSection()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "enableGameChatColors",
+		name = "Chat colors",
+		description = "Enable game chat colors on messages announced by this plugin",
+		titleSection = "miscSection",
+		position = 42
+	)
+	default boolean enableGameChatColors()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "swapQuickStart",
+		name = "Swap lobby ladder",
+		description = "Swap Climb-down with Quick-start on lobby ladders",
+		titleSection = "miscSection",
+		position = 43
+	)
+	default boolean swapQuickStart()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "swapGetRewards",
+		name = "Swap Commander Connad",
+		description = "Swap Talk-to with Get-rewards for the Commander Connad",
+		titleSection = "miscSection",
+		position = 44
+	)
+	default boolean swapGetRewards()
+	{
+		return true;
 	}
 
 	@ConfigItem(
