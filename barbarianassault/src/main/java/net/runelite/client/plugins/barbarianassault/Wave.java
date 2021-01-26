@@ -33,39 +33,38 @@ import lombok.Data;
 import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatMessageBuilder;
 
 @Data
 public class Wave
 {
 	@Getter(AccessLevel.NONE)
-	private static final List<WidgetInfo> WIDGETS = List.of(
-		WidgetInfo.BA_FAILED_ATTACKER_ATTACKS,
-		WidgetInfo.BA_RUNNERS_PASSED,
-		WidgetInfo.BA_EGGS_COLLECTED,
-		WidgetInfo.BA_HITPOINTS_REPLENISHED,
-		WidgetInfo.BA_WRONG_POISON_PACKS,
-		WidgetInfo.BA_HONOUR_POINTS_REWARD
+	private static final List<BaWidgetInfo> WIDGETS = List.of(
+		BaWidgetInfo.BA_FAILED_ATTACKS,
+		BaWidgetInfo.BA_RUNNERS_PASSED,
+		BaWidgetInfo.BA_EGGS_COLLECTED,
+		BaWidgetInfo.BA_HITPOINTS_REPLENISHED,
+		BaWidgetInfo.BA_WRONG_POISON_PACKS,
+		BaWidgetInfo.BA_REWARD_TEXT
 	);
 
 	@Getter(AccessLevel.NONE)
-	private static final List<WidgetInfo> POINTSWIDGETS = List.of(
+	private static final List<BaWidgetInfo> POINTSWIDGETS = List.of(
 		//Base
-		WidgetInfo.BA_BASE_POINTS,
+		BaWidgetInfo.BA_BASE_POINTS,
 		//Attacker
-		WidgetInfo.BA_FAILED_ATTACKER_ATTACKS_POINTS,
-		WidgetInfo.BA_RANGERS_KILLED,
-		WidgetInfo.BA_FIGHTERS_KILLED,
+		BaWidgetInfo.BA_FAILED_ATTACKS,
+		BaWidgetInfo.BA_RANGERS_KILLED,
+		BaWidgetInfo.BA_FIGHTERS_KILLED,
 		//Defender
-		WidgetInfo.BA_RUNNERS_PASSED_POINTS,
-		WidgetInfo.BA_RUNNERS_KILLED,
+		BaWidgetInfo.BA_RUNNERS_PASSED_POINTS,
+		BaWidgetInfo.BA_RUNNERS_KILLED,
 		//Collector
-		WidgetInfo.BA_EGGS_COLLECTED_POINTS,
+		BaWidgetInfo.BA_EGGS_COLLECTED_POINTS,
 		//Healer
-		WidgetInfo.BA_HEALERS_KILLED,
-		WidgetInfo.BA_HITPOINTS_REPLENISHED_POINTS,
-		WidgetInfo.BA_WRONG_POISON_PACKS_POINTS
+		BaWidgetInfo.BA_HEALERS_KILLED,
+		BaWidgetInfo.BA_HITPOINTS_REPLENISHED_POINTS,
+		BaWidgetInfo.BA_WRONG_POISON_PACKS_POINTS
 	);
 
 	@Getter(AccessLevel.NONE)
@@ -115,7 +114,7 @@ public class Wave
 	{
 		for (int i = 0; i < WIDGETS.size(); i++)
 		{
-			Widget w = client.getWidget(WIDGETS.get(i));
+			Widget w = client.getWidget(WIDGETS.get(i).getGroupId(), WIDGETS.get(i).getChildId());
 			if (w != null)
 			{
 				amounts[i] = Integer.parseInt(w.getText());
@@ -127,7 +126,7 @@ public class Wave
 	{
 		for (int i = 0; i < POINTSWIDGETS.size(); i++)
 		{
-			Widget w = client.getWidget(POINTSWIDGETS.get(i));
+			Widget w = client.getWidget(POINTSWIDGETS.get(i).getGroupId(), POINTSWIDGETS.get(i).getChildId());
 			allPointsList[i] = Integer.parseInt(w.getText());
 			switch (i)
 			{
@@ -155,7 +154,7 @@ public class Wave
 		}
 		for (int i = 0; i < POINTSWIDGETS.size(); i++)
 		{
-			Widget w = client.getWidget(POINTSWIDGETS.get(i));
+			Widget w = client.getWidget(POINTSWIDGETS.get(i).getGroupId(), POINTSWIDGETS.get(i).getChildId());
 			switch (i)
 			{
 				case 0:
