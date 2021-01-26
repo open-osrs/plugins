@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, BegOsrs <https://github.com/begosrs>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package begosrs.barbarianassault.timer;
 
-version = "0.0.9"
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-project.extra["PluginName"] = "Barbarian Assault (BegOsrs)"
-project.extra["PluginDescription"] = "BegOsrs's Barbarian Assault helper"
+@Getter
+@RequiredArgsConstructor
+public enum DurationMode
+{
+	WAVE("Wave"),
+	ROUND("Round"),
+	WAVE_ROUND("Wave/Round"),
+	DISABLED("Disable");
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("attackstyles"),
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	private final String name;
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

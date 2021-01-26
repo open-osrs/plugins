@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2020, BegOsrs <https://github.com/begosrs>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +23,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package begosrs.barbarianassault.api;
 
-version = "0.0.9"
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.runelite.api.VarPlayer;
 
-project.extra["PluginName"] = "Barbarian Assault (BegOsrs)"
-project.extra["PluginDescription"] = "BegOsrs's Barbarian Assault helper"
+/**
+ * Server controlled "content-developer" integers.
+ *
+ * @see VarPlayer
+ * <p>
+ * These differ from a {@link VarPlayer} in that VarBits can be
+ * less than 32 bits. One or more VarBits can be assigned to a
+ * backing VarPlayer, each with a static range of bits that it is
+ * allowed to access. This allows a more compact representation
+ * of small values, like booleans
+ */
+@AllArgsConstructor
+@Getter
+public enum BaVarbits
+{
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("attackstyles"),
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	BA_CANNON_GREEN_EGGS(3257),
+	BA_CANNON_RED_EGGS(3258),
+	BA_CANNON_BLUE_EGGS(3259),
+	BA_CANNON_OMEGA_EGGS(3266);
+
+	/**
+	 * The raw varbit ID.
+	 */
+	private final int id;
 }
