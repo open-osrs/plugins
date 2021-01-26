@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2020, BegOsrs <https://github.com/begosrs>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +23,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package begosrs.barbarianassault.grounditems;
 
-version = "0.0.9"
+import java.time.Instant;
+import javax.annotation.Nullable;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Value;
+import net.runelite.api.coords.WorldPoint;
 
-project.extra["PluginName"] = "Barbarian Assault (BegOsrs)"
-project.extra["PluginDescription"] = "BegOsrs's Barbarian Assault helper"
+@Data
+@Builder
+public class GroundItem
+{
+	private int id;
+	private int itemId;
+	private String name;
+	private int quantity;
+	private WorldPoint location;
+	private int height;
+	private int offset;
+	@Nullable
+	private Instant spawnTime;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("attackstyles"),
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	@Value
+	public static class Key
+	{
+		int itemId;
+		WorldPoint location;
+	}
 }

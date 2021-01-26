@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, BegOsrs <https://github.com/begosrs>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package begosrs.barbarianassault.ticktimer;
 
-version = "0.0.9"
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
-project.extra["PluginName"] = "Barbarian Assault (BegOsrs)"
-project.extra["PluginDescription"] = "BegOsrs's Barbarian Assault helper"
+@Slf4j
+@Data
+public class RunnerTickTimer
+{
+	private int count;
+	private boolean displaying;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("attackstyles"),
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	public RunnerTickTimer()
+	{
+		this.count = 1;
+		this.displaying = true;
+	}
+
+	public void incrementCount()
+	{
+		count++;
+		if (count > 10)
+		{
+			resetCount();
+		}
+	}
+
+	public void resetCount()
+	{
+		count = 1;
+	}
+
+	public String getText()
+	{
+		return count < 1 ? "" : String.valueOf(count);
+	}
 }
