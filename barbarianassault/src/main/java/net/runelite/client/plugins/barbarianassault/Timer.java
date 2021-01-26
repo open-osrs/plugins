@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, https://openosrs.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,27 +22,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.barbarianassault;
 
-version = "0.0.7"
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import lombok.AccessLevel;
+import lombok.Getter;
 
-project.extra["PluginName"] = "Barbarian Assault"
-project.extra["PluginDescription"] = "Custom barbarian assault plugin, use along with BA Tools"
+class Timer
+{
+	@Getter(AccessLevel.PACKAGE)
+	private final Instant startTime;
 
-dependencies {
-    compileOnly(project(":attackstyles"))
-}
+	Timer()
+	{
+		this.startTime = Instant.now();
+	}
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("attackstyles"),
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	long getElapsedTime()
+	{
+		return Duration.between(startTime, Instant.now()).getSeconds();
+	}
+
+	String getElapsedTimeFormatted()
+	{
+		return formatTime(LocalTime.ofSecondOfDay(getElapsedTime()));
+	}
+
+	private static String formatTime(LocalTime time)
+	{
+		if (time.getHour() > 0)
+		{
+			return time.format(DateTimeFormatter.ofPattern("HH:mm"));
+		}
+		else if (time.getMinute() > 9)
+		{
+			return time.format(DateTimeFormatter.ofPattern("mm:ss"));
+		}
+		else
+		{
+			return time.format(DateTimeFormatter.ofPattern("m:ss"));
+		}
+	}
 }

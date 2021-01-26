@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2018, Cameron <https://github.com/noremac201>
+ * Copyright (c) 2019, 7ate9 <https://github.com/se7enAte9>
+ * Copyright (c) 2019, https://openosrs.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,25 +26,211 @@
  */
 package net.runelite.client.plugins.barbarianassault;
 
+import com.google.common.collect.ImmutableMap;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.Client;
+import net.runelite.api.ItemID;
+import net.runelite.api.widgets.Widget;
+
 
 @AllArgsConstructor
-@Getter
 enum Role
 {
-	ATTACKER(WidgetInfo.BA_ATK_ROLE_TEXT, WidgetInfo.BA_ATK_ROLE_SPRITE),
-	DEFENDER(WidgetInfo.BA_DEF_ROLE_TEXT, WidgetInfo.BA_DEF_ROLE_SPRITE),
-	COLLECTOR(WidgetInfo.BA_COLL_ROLE_TEXT, WidgetInfo.BA_COLL_ROLE_SPRITE),
-	HEALER(WidgetInfo.BA_HEAL_ROLE_TEXT, WidgetInfo.BA_HEAL_ROLE_SPRITE);
+	ATTACKER(BaWidgetInfo.BA_ATTACKER_WAVE_TEXT, BaWidgetInfo.BA_ATTACKER_LISTEN_TOP_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_ATTACKER_LISTEN_TEXT,
+		BaWidgetInfo.BA_ATTACKER_CALL_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_COLLECTOR_LISTEN_TEXT, BaWidgetInfo.BA_ATTACKER_ROLE_TEXT,
+		BaWidgetInfo.BA_ATTACKER_ROLE_SPRITE),
+	DEFENDER(BaWidgetInfo.BA_DEFENDER_WAVE_TEXT, BaWidgetInfo.BA_DEFENDER_LISTEN_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_DEFENDER_LISTEN_TEXT,
+		BaWidgetInfo.BA_DEFENDER_CALL_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_HEALER_LISTEN_TEXT, BaWidgetInfo.BA_DEFENDER_ROLE_TEXT,
+		BaWidgetInfo.BA_DEFENDER_ROLE_SPRITE),
+	COLLECTOR(BaWidgetInfo.BA_COLLECTOR_WAVE_TEXT, BaWidgetInfo.BA_COLLECTOR_LISTEN_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_COLLECTOR_LISTEN_TEXT,
+		BaWidgetInfo.BA_COLLECTOR_CALL_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_ATTACKER_LISTEN_TEXT, BaWidgetInfo.BA_COLLECTOR_ROLE_TEXT,
+		BaWidgetInfo.BA_COLLECTOR_ROLE_SPRITE),
+	HEALER(BaWidgetInfo.BA_HEALER_WAVE_TEXT, BaWidgetInfo.BA_HEALER_LISTEN_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_HEALER_LISTEN_TEXT,
+		BaWidgetInfo.BA_HEALER_CALL_TEXT, BaWidgetInfo.BA_HORN_OF_GLORY_DEFENDER_LISTEN_TEXT, BaWidgetInfo.BA_HEALER_ROLE_TEXT,
+		BaWidgetInfo.BA_HEALER_ROLE_SPRITE);
 
-	private final WidgetInfo roleText;
-	private final WidgetInfo roleSprite;
+	@Getter(AccessLevel.PACKAGE)
+	private final BaWidgetInfo wave;
+	@Getter(AccessLevel.PACKAGE)
+	private final BaWidgetInfo listen;
+	@Getter(AccessLevel.PACKAGE)
+	private final BaWidgetInfo gloryListen;
+	@Getter(AccessLevel.PACKAGE)
+	private final BaWidgetInfo call;
+	@Getter(AccessLevel.PACKAGE)
+	private final BaWidgetInfo gloryCall;
+	@Getter(AccessLevel.PACKAGE)
+	private final BaWidgetInfo roleText;
+	@Getter(AccessLevel.PACKAGE)
+	private final BaWidgetInfo roleSprite;
 
-	@Override
-	public String toString()
+	// Duplicate* entries are to catch instances where the horn of glory has
+	// text different than the normal horn
+	private static final ImmutableMap<String, String> TELLS = ImmutableMap.<String, String>builder()
+		.put("Red egg", "Tell-red")
+		.put("Green egg", "Tell-green")
+		.put("Blue egg", "Tell-blue")
+		.put("Controlled/Bullet/Wind", "Tell-controlled")
+		.put("Accurate/Field/Water", "Tell-accurate")
+		.put("Aggressive/Blunt/Earth", "Tell-aggressive")
+		.put("Defensive/Barbed/Fire", "Tell-defensive")
+		.put("Tofu", "Tell-tofu")
+		.put("Crackers", "Tell-crackers")
+		.put("Worms", "Tell-worms")
+		.put("Poison Worms", "Tell-worms")
+		.put("Pois. Worms", "Tell-worms")
+		.put("Poison Tofu", "Tell-tofu")
+		.put("Pois. Tofu", "Tell-tofu")
+		.put("Poison Meat", "Tell-meat")
+		.put("Pois. Meat", "Tell-meat")
+		.build();
+	private static final ImmutableMap<String, String> GLORY_CALLS = ImmutableMap.<String, String>builder()
+		.put("Controlled/Bullet/Wind", "Controlled/")
+		.put("Accurate/Field/Water", "Accurate/")
+		.put("Aggressive/Blunt/Earth", "Aggressive/")
+		.put("Defensive/Barbed/Fire", "Defensive/")
+		.put("Tofu", "Tofu")
+		.put("Crackers", "Crackers")
+		.put("Worms", "Worms")
+		.put("Poison worms", "Pois. Worms")
+		.put("Poison tofu", "Pois. Tofu")
+		.put("Poison meat", "Pois. Meat")
+		.put("Red egg", "Red egg")
+		.put("Green egg", "Green egg")
+		.put("Blue egg", "Blue egg")
+		.build();
+	private static final ImmutableMap<String, Integer> ITEMS = ImmutableMap.<String, Integer>builder()
+		.put("Tofu", ItemID.TOFU)
+		.put("Crackers", ItemID.CRACKERS)
+		.put("Worms", ItemID.WORMS)
+		.put("Pois. Worms", ItemID.POISONED_WORMS)
+		.put("Pois. Tofu", ItemID.POISONED_TOFU)
+		.put("Pois. Meat", ItemID.POISONED_MEAT)
+		.put("Defensive/", ItemID.BARBED_ARROW)
+		.put("Aggressive/", ItemID.BLUNT_ARROW)
+		.put("Accurate/", ItemID.FIELD_ARROW)
+		.put("Controlled/", ItemID.BULLET_ARROW)
+		.build();
+	private static final ImmutableMap<String, String> SPLIT_LISTENS = ImmutableMap.<String, String>builder()
+		.put("Controlled/", "Bullet/Wind")
+		.put("Bullet/Wind", "Controlled/")
+		.put("Accurate/", "Field/Water")
+		.put("Field/Water", "Accurate/")
+		.put("Aggressive/", "Blunt/Earth")
+		.put("Blunt/Earth", "Aggressive/")
+		.put("Defensive/", "Barbed/Fire")
+		.put("Barbed/Fire", "Defensive/")
+		.build();
+
+
+	int getListenItem(String listen)
 	{
-		return name();
+		return ITEMS.getOrDefault(listen, -1);
+	}
+
+	String getTell(String call)
+	{
+		return TELLS.getOrDefault(call, "");
+	}
+
+	String getCall(Client client)
+	{
+		// Do not reverse these if statements to be more efficient
+		// The normal widgets are no longer null/hidden after you
+		// click one time in the horn, and the values are incorrect
+		Widget callWidget = client.getWidget(getGloryCall().getGroupId(), getGloryCall().getChildId());
+		if (callWidget != null)
+		{
+			return GLORY_CALLS.get(callWidget.getText());
+		}
+
+		callWidget = client.getWidget(getCall().getGroupId(), getCall().getChildId());
+		if (callWidget != null)
+		{
+			return callWidget.getText();
+		}
+
+		return null;
+	}
+
+	String getListen(Client client)
+	{
+		// See the comment in getCall(Client client), before editing
+		Widget listenWidget = client.getWidget(getGloryListen().getGroupId(), getGloryListen().getChildId());
+		if (listenWidget != null)
+		{
+			return GLORY_CALLS.get(listenWidget.getText());
+		}
+
+		listenWidget = client.getWidget(getListen().getGroupId(), getListen().getChildId());
+		if (listenWidget != null)
+		{
+			return listenWidget.getText();
+		}
+
+		return null;
+	}
+
+	static String getMissingListen(String listen)
+	{
+		return SPLIT_LISTENS.getOrDefault(listen, "- - -");
+	}
+
+	// I call it "Switchception" :wutwedoin:
+	// Should probably switch to using an interface instead of an enum at this point
+	String getCallFromTell(String listen)
+	{
+		switch (this)
+		{
+			case COLLECTOR:
+				switch (listen)
+				{
+					case "Tell-controlled":
+						return "Controlled/";
+					case "Tell-accurate":
+						return "Accurate/";
+					case "Tell-aggressive":
+						return "Aggressive/";
+					case "Tell-defensive":
+						return "Defensive/";
+				}
+				break;
+			case ATTACKER:
+				switch (listen)
+				{
+					case "Tell-red":
+						return "Red egg";
+					case "Tell-green":
+						return "Green egg";
+					case "Tell-blue":
+						return "Blue egg";
+				}
+				break;
+			case HEALER:
+				switch (listen)
+				{
+					case "Tell-tofu":
+						return "Tofu";
+					case "Tell-crackers":
+						return "Crackers";
+					case "Tell-worms":
+						return "Worms";
+				}
+				break;
+			case DEFENDER:
+				switch (listen)
+				{
+					case "Tell-meat":
+						return "Pois. Meat";
+					case "Tell-tofu":
+						return "Pois. Tofu";
+					case "Tell-worms":
+						return "Pois. Worms";
+				}
+				break;
+		}
+		return null;
 	}
 }
