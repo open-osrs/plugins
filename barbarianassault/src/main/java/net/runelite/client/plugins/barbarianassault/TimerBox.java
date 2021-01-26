@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2018, Cameron <https://github.com/noremac201>
+ * Copyright (c) 2019, 7ate9 <https://github.com/se7enAte9>
+ * Copyright (c) 2019, https://openosrs.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,41 +25,66 @@
  */
 package net.runelite.client.plugins.barbarianassault;
 
-import java.time.Duration;
-import java.time.Instant;
-import javax.inject.Inject;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import static net.runelite.client.util.RSTimeUnit.GAME_TICKS;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.ui.overlay.infobox.InfoBox;
 
-class Round
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class TimerBox extends InfoBox
 {
-	private final Instant roundStartTime;
-	@Getter
-	private final Role roundRole;
-	@Getter
-	@Setter
-	private boolean runnersKilled;
-	@Getter
-	@Setter
-	private boolean rangersKilled;
-	@Getter
-	@Setter
-	private boolean healersKilled;
-	@Getter
-	@Setter
-	private boolean fightersKilled;
+	private int count;
 
-	@Inject
-	public Round(@NonNull Role role)
+	private boolean inSync = true;
+
+	private boolean tooltipEnabled = false;
+
+	TimerBox(BufferedImage image, Plugin plugin, int count)
 	{
-		this.roundRole = role;
-		this.roundStartTime = Instant.now().plus(Duration.of(2, GAME_TICKS));
+		super(image, plugin);
+		this.count = count;
 	}
 
-	public int getTimeToChange()
+	@Override
+	public String getText()
 	{
-		return 30 + ((int) Duration.between(Instant.now(), roundStartTime).getSeconds() % 30);
+		if (count == -1)
+		{
+			return "";
+		}
+		return Integer.toString(getCount());
+	}
+
+	@Override
+	public Color getTextColor()
+	{
+		if (inSync)
+		{
+			return Color.WHITE;
+		}
+		else
+		{
+			return Color.RED;
+		}
+	}
+
+	@Override
+	public String getTooltip()
+	{
+		if (!tooltipEnabled)
+		{
+			return "";
+		}
+		else if (inSync)
+		{
+			return "<col=00FF00>Valid";
+		}
+		else
+		{
+			return "<col=FF0000>Invalid";
+		}
 	}
 }
