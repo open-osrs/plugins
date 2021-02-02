@@ -300,6 +300,7 @@ class DevToolsOverlay extends Overlay
 		{
 			toolTipManager.add(new Tooltip("World Location: " + tile.getWorldLocation().getX() + ", " + tile.getWorldLocation().getY() + ", " + client.getPlane()));
 			toolTipManager.add(new Tooltip("Local Location: " + tile.getLocalLocation().getX() + ", " + tile.getLocalLocation().getY() + ", " + client.getPlane()));
+			toolTipManager.add(new Tooltip("Region Location: " + tile.getWorldLocation().getRegionX() + ", " + tile.getWorldLocation().getRegionY() + ", " +  tile.getWorldLocation().getRegionID()));
 			OverlayUtil.renderPolygon(graphics, poly, GREEN);
 		}
 	}
