@@ -340,11 +340,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		{
 			String option = Text.removeTags(entry.getOption()).toLowerCase();
 
-			if (option.contains("examine") && config.hideExamine())
-			{
-				continue;
-			}
-
 			if (option.contains("net") && config.hideNet())
 			{
 				continue;

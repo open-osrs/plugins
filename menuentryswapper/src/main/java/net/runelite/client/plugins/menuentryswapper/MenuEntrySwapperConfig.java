@@ -1439,18 +1439,6 @@ public interface MenuEntrySwapperConfig extends Config
 	//------------------------------------------------------------//
 
 	@ConfigItem(
-		keyName = "hideExamine",
-		name = "Examine",
-		description = "Hides the 'Examine' option from the right click menu.",
-		position = 0,
-		section = "rightClickOptionsSection"
-	)
-	default boolean hideExamine()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		keyName = "hideNet",
 		name = "Net",
 		description = "Hides the 'Net' option from the right click menu.",
