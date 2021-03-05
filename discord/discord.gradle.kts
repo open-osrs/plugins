@@ -29,7 +29,7 @@ project.extra["PluginName"] = "Discord"
 project.extra["PluginDescription"] = "Show your status and activity in the Discord user panel"
 
 dependencies {
-    compileOnly(group = "net.runelite", name = "discord", version = "1.2")
+    compileOnly(group = "net.runelite", name = "discord", version = "1.4")
 }
 
 tasks {

@@ -29,7 +29,7 @@ project.extra["PluginName"] = "Highscore"
 project.extra["PluginDescription"] = "Enable the highscore panel and an optional Lookup option on players"
 
 dependencies {
-    testCompileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.0")
+    testCompileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1")
 }
 
 tasks {
