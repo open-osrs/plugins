@@ -57,7 +57,6 @@ import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.util.Text;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.FriendChatManager;
@@ -116,10 +115,9 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin
 	@Inject
 	@Getter(AccessLevel.NONE)
 	private FriendChatManager friendChatManager;
-
+	
 	@Inject
-	@Getter(AccessLevel.NONE)
-	private EventBus eventBus;
+	private FriendTaggingPlugin friendTaggingPlugin
 
 
 	@Provides
@@ -179,7 +177,7 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
-		if (!event.getGroup().equals("playerindicators"))
+		if (!event.getGroup().equals("playerindicatorsextended"))
 		{
 			return;
 		}
