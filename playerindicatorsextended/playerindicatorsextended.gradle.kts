@@ -25,14 +25,10 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "5.0.2"
+version = "5.0.3"
 
 project.extra["PluginName"] = "Player Indicators Extended"
 project.extra["PluginDescription"] = "Highlight players on-screen and/or on the minimap"
-
-dependencies {
-    compileOnly(project(":friendtagging"))
-}
 
 tasks {
 	jar {

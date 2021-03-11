@@ -34,7 +34,6 @@ import javax.inject.Inject;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.SkullIcon;
-import net.runelite.client.plugins.friendtagging.FriendTaggingPlugin;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -74,14 +73,6 @@ public class PlayerIndicatorsExtendedMinimapOverlay extends Overlay
 		if (indicationLocations.contains(PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.MINIMAP))
 		{
 			String name = actor.getName().replace('\u00A0', ' ');
-			String tag = "";
-			String prefix = "tag_";
-			if (FriendTaggingPlugin.taggedFriends.containsKey(prefix + name.trim().toLowerCase()))
-			{
-				tag = " [" + FriendTaggingPlugin.taggedFriends.get(prefix + name.trim().toLowerCase()) + "] ";
-			}
-
-			name += tag;
 
 			net.runelite.api.Point minimapLocation = actor.getMinimapLocation();
 

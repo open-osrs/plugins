@@ -61,9 +61,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.FriendChatManager;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.friendtagging.FriendTaggingPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.PvPUtil;
@@ -74,12 +72,11 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "Player Indicators",
+	name = "Player Indicators Extended",
 	description = "Highlight players on-screen and/or on the minimap",
 	tags = {"highlight", "minimap", "overlay", "players", "pklite"}
 )
 @Getter(AccessLevel.PACKAGE)
-@PluginDependency(FriendTaggingPlugin.class)
 public class PlayerIndicatorsExtendedPlugin extends Plugin
 {
 	private static final HiscoreClient HISCORE_CLIENT = new HiscoreClient(RuneLiteAPI.CLIENT);
@@ -115,10 +112,6 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin
 	@Inject
 	@Getter(AccessLevel.NONE)
 	private FriendChatManager friendChatManager;
-	
-	@Inject
-	private FriendTaggingPlugin friendTaggingPlugin;
-
 
 	@Provides
 	PlayerIndicatorsExtendedConfig provideConfig(ConfigManager configManager)

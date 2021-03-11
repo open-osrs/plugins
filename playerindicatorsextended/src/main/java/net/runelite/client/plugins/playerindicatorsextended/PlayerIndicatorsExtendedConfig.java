@@ -33,7 +33,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.ConfigTitle;
 
-@ConfigGroup("playerindicators")
+@ConfigGroup("playerindicatorsextended")
 public interface PlayerIndicatorsExtendedConfig extends Config
 {
 	EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> defaultPlayerIndicatorMode = EnumSet.complementOf(EnumSet.of(PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.HULL));
