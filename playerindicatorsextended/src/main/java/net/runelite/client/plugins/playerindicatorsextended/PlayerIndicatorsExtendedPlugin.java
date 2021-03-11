@@ -117,7 +117,7 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin
 	private FriendChatManager friendChatManager;
 	
 	@Inject
-	private FriendTaggingPlugin friendTaggingPlugin
+	private FriendTaggingPlugin friendTaggingPlugin;
 
 
 	@Provides
