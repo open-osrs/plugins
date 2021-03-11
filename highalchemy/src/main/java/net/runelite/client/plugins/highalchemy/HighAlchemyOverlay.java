@@ -34,7 +34,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import net.runelite.api.ItemDefinition;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
@@ -106,7 +106,7 @@ public class HighAlchemyOverlay extends WidgetItemOverlay
 			return 0;
 		}
 
-		return itemManager.getAlchValue(id);
+		return itemManager.getAlchValue(itemManager.getItemComposition(id));
 	}
 
 	private int getHAProfit(int haPrice, int gePrice, int alchCost)
@@ -118,7 +118,7 @@ public class HighAlchemyOverlay extends WidgetItemOverlay
 	private int getNotedId(int id)
 	{
 		int noteID = id;
-		ItemDefinition itemComposition = itemManager.getItemDefinition(noteID);
+		ItemComposition itemComposition = itemManager.getItemComposition(noteID);
 		if (itemComposition.getNote() != -1)
 		{
 			noteID = itemComposition.getLinkedNoteId();

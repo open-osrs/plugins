@@ -31,31 +31,27 @@ import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
-import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("thieving")
 public interface ThievingConfig extends Config
 {
-	@ConfigTitleSection(
+	@ConfigSection(
 		keyName = "sessionTitle",
 		name = "Session",
 		description = "",
 		position = 1
 	)
-	default Title sessionTitle()
-	{
-		return new Title();
-	}
+	String sessionTitle = "Session";
 
 	@ConfigItem(
 		position = 2,
 		keyName = "statTimeout",
 		name = "Reset stats",
 		description = "Change the time until the thieving session is reset and the overlay is hidden",
-		titleSection = "sessionTitle"
+		section = sessionTitle
 	)
 	@Units(Units.MINUTES)
 	default int statTimeout()
@@ -63,23 +59,20 @@ public interface ThievingConfig extends Config
 		return 5;
 	}
 
-	@ConfigTitleSection(
+	@ConfigSection(
 		name = "Chest",
 		description = "",
 		position = 2,
 		keyName = "chestTitle"
 	)
-	default boolean chestTitle()
-	{
-		return false;
-	}
+	String chestTitle = "Chest";
 
 	@Alpha
 	@ConfigItem(
 		keyName = "respawnColor",
 		name = "Respawn timer color",
 		description = "Configures the color of the respawn timer",
-		titleSection = "chestTitle"
+		section = chestTitle
 	)
 	default Color respawnColor()
 	{
@@ -90,7 +83,7 @@ public interface ThievingConfig extends Config
 		keyName = "respawnPieInverted",
 		name = "Invert respawn timer",
 		description = "Configures whether the respawn timer goes from empty to full or the other way around",
-		titleSection = "chestTitle"
+		section = chestTitle
 	)
 	default boolean respawnPieInverted()
 	{
@@ -105,7 +98,7 @@ public interface ThievingConfig extends Config
 		keyName = "respawnPieDiameter",
 		name = "Respawn pie diameter",
 		description = "Configures how big the respawn timer pie is",
-		titleSection = "chestTitle"
+		section = chestTitle
 	)
 	default int respawnPieDiameter()
 	{

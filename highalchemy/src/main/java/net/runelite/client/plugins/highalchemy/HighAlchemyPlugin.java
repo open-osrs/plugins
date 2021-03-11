@@ -47,7 +47,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -56,8 +55,7 @@ import org.pf4j.Extension;
 	name = "High Alchemy",
 	enabledByDefault = false,
 	description = "Highlights items that yield a profit from casting the High Alchemy spell.",
-	tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"},
-	type = PluginType.UTILITY
+	tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"}
 )
 public class HighAlchemyPlugin extends Plugin
 {

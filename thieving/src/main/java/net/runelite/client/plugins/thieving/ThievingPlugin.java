@@ -48,7 +48,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
@@ -58,8 +57,7 @@ import org.pf4j.Extension;
 	name = "Thieving",
 	enabledByDefault = false,
 	description = "Show thieving overlay",
-	tags = {"overlay", "skilling", "thieving", "pickpocketing"},
-	type = PluginType.SKILLING
+	tags = {"overlay", "skilling", "thieving", "pickpocketing"}
 )
 @PluginDependency(XpTrackerPlugin.class)
 public class ThievingPlugin extends Plugin

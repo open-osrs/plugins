@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2019 Ahmad Issa
  * Copyright (c) 2019 Owain		<https://github.com/sdburns1998>
- * Copyright (c) 2019 Kyle 		<https://github.com/Kyleeld>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

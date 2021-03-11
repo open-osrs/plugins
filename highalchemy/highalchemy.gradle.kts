@@ -1,3 +1,5 @@
+import ProjectVersions.rlVersion
+
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -23,21 +25,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "4.0.0"
 
 project.extra["PluginName"] = "High Alchemy"
 project.extra["PluginDescription"] = "Highlights items that yield a profit from casting the High Alchemy spell"
 
 tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+	jar {
+		manifest {
+			attributes(mapOf(
+					"Plugin-Version" to project.version,
+					"Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+					"Plugin-Provider" to project.extra["PluginProvider"],
+					"Plugin-Description" to project.extra["PluginDescription"],
+					"Plugin-License" to project.extra["PluginLicense"]
+			))
+		}
+	}
 }

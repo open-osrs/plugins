@@ -43,7 +43,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.task.Schedule;
 import org.pf4j.Extension;
 
@@ -52,8 +51,7 @@ import org.pf4j.Extension;
 	name = "Reminders",
 	enabledByDefault = false,
 	description = "various reminders",
-	tags = {"session", "reminder", "hydrate", "hydration"},
-	type = PluginType.MISCELLANEOUS
+	tags = {"session", "reminder", "hydrate", "hydration"}
 )
 @Slf4j
 public class RemindersPlugin extends Plugin

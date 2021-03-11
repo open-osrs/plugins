@@ -26,15 +26,14 @@
  */
 package net.runelite.client.plugins.thieving;
 
+import com.openosrs.client.ui.overlay.components.table.TableAlignment;
+import com.openosrs.client.ui.overlay.components.table.TableComponent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.text.DecimalFormat;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import static net.runelite.api.AnimationID.BLOCK_UNARMED;
-import static net.runelite.api.AnimationID.PICKPOCKET_SUCCESS;
-import static net.runelite.api.AnimationID.THIEVING_STALL;
 import net.runelite.api.Client;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.xptracker.XpTrackerService;
@@ -42,8 +41,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
-import net.runelite.client.ui.overlay.components.table.TableAlignment;
-import net.runelite.client.ui.overlay.components.table.TableComponent;
 
 @Singleton
 public class ThievingOverlay extends Overlay
@@ -54,6 +51,9 @@ public class ThievingOverlay extends Overlay
 	private final ThievingPlugin plugin;
 	private final XpTrackerService xpTrackerService;
 	private final PanelComponent panelComponent = new PanelComponent();
+	public static final int PICKPOCKET_FAIL = 424;
+	public static final int THIEVING_STALL = 832;
+	public static final int PICKPOCKET_SUCCESS = 881;
 
 	@Inject
 	private ThievingOverlay(final Client client, final ThievingPlugin plugin, final XpTrackerService xpTrackerService)
@@ -133,6 +133,6 @@ public class ThievingOverlay extends Overlay
 			return false;
 		}
 
-		return client.getLocalPlayer().getAnimation() == BLOCK_UNARMED;
+		return client.getLocalPlayer().getAnimation() == PICKPOCKET_FAIL;
 	}
 }

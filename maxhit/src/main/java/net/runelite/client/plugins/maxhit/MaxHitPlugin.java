@@ -37,7 +37,6 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.maxhit.calculators.MagicMaxHitCalculator;
 import net.runelite.client.plugins.maxhit.calculators.MeleeMaxHitCalculator;
 import net.runelite.client.plugins.maxhit.calculators.RangeMaxHitCalculator;
@@ -47,8 +46,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Max Hit",
 	enabledByDefault = false,
-	description = "Adds the max hit of the equipped weapon to the equipment and stats widget",
-	type = PluginType.UTILITY
+	description = "Adds the max hit of the equipped weapon to the equipment and stats widget"
 )
 @Singleton
 public class MaxHitPlugin extends Plugin

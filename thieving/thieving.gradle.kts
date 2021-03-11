@@ -1,3 +1,5 @@
+import ProjectVersions.rlVersion
+
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -23,14 +25,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.8"
+version = "4.0.0"
 
 project.extra["PluginName"] = "Thieving"
-project.extra["PluginDescription"] = "Show thieving overlay"
-
-dependencies {
-    compileOnly(project(":xptracker"))
-}
+project.extra["PluginDescription"] = ""
 
 tasks {
     jar {
@@ -39,7 +37,6 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("xptracker"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

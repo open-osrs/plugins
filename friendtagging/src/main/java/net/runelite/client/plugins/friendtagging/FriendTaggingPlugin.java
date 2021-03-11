@@ -21,10 +21,9 @@ import lombok.NonNull;
 import net.runelite.api.Client;
 import net.runelite.api.Friend;
 import net.runelite.api.Ignore;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Nameable;
 import net.runelite.api.NameableContainer;
-import net.runelite.api.events.FriendRemoved;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NameableNameChanged;
@@ -39,7 +38,6 @@ import net.runelite.client.menus.MenuManager;
 import net.runelite.client.menus.WidgetMenuOption;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
@@ -48,8 +46,7 @@ import org.pf4j.Extension;
 	name = "Friend Tagging",
 	enabledByDefault = false,
 	description = "Tag people on your friends list.",
-	tags = {"PVP", "friend", "finder", "pk", "pklite"},
-	type = PluginType.UTILITY
+	tags = {"PVP", "friend", "finder", "pk", "pklite"}
 )
 public class FriendTaggingPlugin extends Plugin
 {
@@ -114,7 +111,7 @@ public class FriendTaggingPlugin extends Plugin
 			client.insertMenuItem(
 				friendName == null || getTag(friendName) == null ? ADD_TAG : DELETE_TAG,
 				event.getTarget(),
-				MenuOpcode.RUNELITE.getId(),
+				MenuAction.RUNELITE.getId(),
 				0,
 				event.getParam0(),
 				event.getParam1(),
@@ -123,13 +120,6 @@ public class FriendTaggingPlugin extends Plugin
 			// Add menu entry
 			// jk it is already added
 		}
-	}
-
-	@Subscribe
-	private void onFriendRemoved(FriendRemoved event)
-	{
-		final String displayName = event.getName().trim().toLowerCase();
-		deleteTag(displayName);
 	}
 
 	@Subscribe
@@ -161,16 +151,16 @@ public class FriendTaggingPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (WidgetInfo.TO_GROUP(event.getParam1()) == WidgetInfo.FRIENDS_LIST.getGroupId())
+		if (WidgetInfo.TO_GROUP(event.getWidgetId()) == WidgetInfo.FRIENDS_LIST.getGroupId())
 		{
-			if (Strings.isNullOrEmpty(event.getTarget()))
+			if (Strings.isNullOrEmpty(event.getMenuTarget()))
 			{
 				return;
 			}
 
-			final String sanitizedTarget = Text.removeTags(event.getTarget());
+			final String sanitizedTarget = Text.removeTags(event.getMenuTarget());
 
-			if (event.getOption().equals(ADD_TAG))
+			if (event.getMenuOption().equals(ADD_TAG))
 			{
 				event.consume();
 				final ChatboxTextInput build = chatboxPanelManager.openTextInput("Enter the tag").value("")
@@ -184,7 +174,7 @@ public class FriendTaggingPlugin extends Plugin
 						setTag(sanitizedTarget, content);
 					}).build();
 			}
-			if (event.getOption().equals(DELETE_TAG))
+			if (event.getMenuOption().equals(DELETE_TAG))
 			{
 				event.consume();
 				client.getLogger().info(sanitizedTarget);

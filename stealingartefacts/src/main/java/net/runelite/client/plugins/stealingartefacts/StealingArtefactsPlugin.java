@@ -59,7 +59,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 import org.pf4j.Extension;
@@ -69,8 +68,7 @@ import org.pf4j.Extension;
 	name = "Stealing Artefacts",
 	enabledByDefault = false,
 	description = "A plugin for the Stealing Artefacts minigame.",
-	tags = {"stealing", "artefacts", "artifacts", "thieving", "minigame", "zeah"},
-	type = PluginType.MINIGAME
+	tags = {"stealing", "artefacts", "artifacts", "thieving", "minigame", "zeah"}
 )
 @Slf4j
 @Singleton
