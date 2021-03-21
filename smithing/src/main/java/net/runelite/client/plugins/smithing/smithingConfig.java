@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2020, Macweese <https://github.com/Macweese>
+ *  Macweese#1169, macweese@pm.me
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,27 +23,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.smithing;
 
-rootProject.name = "OpenOSRS Plugins"
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-include(":betterantidrag")
-include(":betterprofiles")
-include(":friendtagging")
-include(":highalchemy")
-include(":maxhit")
-include(":playerindicatorsextended")
-include(":reminders")
-include(":shayzieninfirmary")
-include(":stealingartefacts")
-include(":thieving")
-include(":smithing")
+@ConfigGroup("smithing")
+public interface smithingConfig extends Config
+{
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	@ConfigItem(
+		keyName = "ez",
+		name = "Easy mode",
+		description = "Haha me potato",
+		position = 69
+	)
+	default boolean easy()
+	{
+		return false;
+	}
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@ConfigItem(
+		keyName = "item",
+		name = "Select item",
+		description = "Select the type of item you want to smith",
+		position = 99
+	)
+	default SmithingItem item()
+	{
+		return SmithingItem.PLATEBODY;
+	}
 }
