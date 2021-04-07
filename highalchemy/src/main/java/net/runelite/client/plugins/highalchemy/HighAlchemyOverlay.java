@@ -71,8 +71,8 @@ public class HighAlchemyOverlay extends WidgetItemOverlay
 			return;
 		}
 
-		final int natPrice = itemManager.getItemPrice(ItemID.NATURE_RUNE, true);
-		final int alchPriceNoStaff = natPrice + 5 * itemManager.getItemPrice(ItemID.FIRE_RUNE, true);
+		final int natPrice = itemManager.getItemPrice(ItemID.NATURE_RUNE);
+		final int alchPriceNoStaff = natPrice + 5 * itemManager.getItemPrice(ItemID.FIRE_RUNE);
 
 		final int id = getNotedId(itemId);
 		final int gePrice = getGEPrice(id);

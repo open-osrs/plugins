@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.0.0"
+version = "6.0.0"
 
 project.extra["PluginName"] = "High Alchemy"
 project.extra["PluginDescription"] = "Highlights items that yield a profit from casting the High Alchemy spell"
