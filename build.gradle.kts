@@ -7,9 +7,6 @@ buildscript {
 plugins {
     checkstyle
     java
-    id("com.github.ben-manes.versions") version "0.36.0"
-    id("se.patrikerdes.use-latest-versions") version "0.2.15"
-    id("com.simonharrer.modernizer") version "2.1.0-1" apply false
 }
 
 apply<BootstrapPlugin>()
@@ -22,7 +19,6 @@ allprojects {
 }
 
 subprojects {
-    var subprojectName = name
     group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "OpenOSRS"
@@ -62,9 +58,6 @@ subprojects {
 
     apply<JavaPlugin>()
     apply(plugin = "checkstyle")
-    apply(plugin = "com.github.ben-manes.versions")
-    apply(plugin = "se.patrikerdes.use-latest-versions")
-    apply(plugin = "com.simonharrer.modernizer")
 
     dependencies {
         annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.16")
@@ -134,24 +127,6 @@ subprojects {
             options.encoding = "UTF-8"
         }
 
-        withType<Jar> {
-            doLast {
-                copy {
-                    from("./build/libs/")
-                    into("../release/")
-                }
-
-                val externalManagerDirectory: String = project.findProperty("externalManagerDirectory")?.toString() ?: System.getProperty("user.home") + "/.runelite/externalmanager"
-                val releaseToExternalModules: List<String> = project.findProperty("releaseToExternalmanager")?.toString()?.split(",") ?: emptyList()
-                if (releaseToExternalModules.contains(subprojectName) || releaseToExternalModules.contains("all")) {
-                    copy {
-                        from("./build/libs/")
-                        into(externalManagerDirectory)
-                    }
-                }
-            }
-        }
-
         withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
@@ -167,45 +142,9 @@ subprojects {
             exclude("**/RoomType.java")
         }
 
-        named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates") {
-            checkForGradleUpdate = false
-
-            resolutionStrategy {
-                componentSelection {
-                    all {
-                        if (candidate.displayName.contains("fernflower") || isNonStable(candidate.version)) {
-                            reject("Non stable")
-                        }
-                    }
-                }
-            }
-        }
-
         register<Copy>("copyDeps") {
             into("./build/deps/")
             from(configurations["runtimeClasspath"])
         }
-    }
-}
-
-tasks {
-    named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates") {
-        checkForGradleUpdate = false
-
-        resolutionStrategy {
-            componentSelection {
-                all {
-                    if (candidate.displayName.contains("fernflower") || isNonStable(candidate.version)) {
-                        reject("Non stable")
-                    }
-                }
-            }
-        }
-    }
-}
-
-fun isNonStable(version: String): Boolean {
-    return listOf("ALPHA", "BETA", "RC").any {
-        version.toUpperCase().contains(it)
     }
 }
