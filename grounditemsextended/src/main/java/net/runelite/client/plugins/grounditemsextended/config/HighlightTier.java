@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,8 +22,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.grounditemsextended.config;
 
-object ProjectVersions {
-    const val openosrsVersion = "4.6.0"
-    const val apiVersion = "^1.0.0"
+import net.runelite.client.plugins.grounditemsextended.GroundItemsExtendedConfig;
+
+public enum HighlightTier
+{
+	OFF,
+	LOW,
+	MEDIUM,
+	HIGH,
+	INSANE;
+
+	public int getValueFromTier(GroundItemsExtendedConfig config)
+	{
+		switch (this)
+		{
+			case LOW:
+				return config.lowValuePrice();
+			case MEDIUM:
+				return config.mediumValuePrice();
+			case HIGH:
+				return config.highValuePrice();
+			case INSANE:
+				return config.insaneValuePrice();
+			default:
+				throw new UnsupportedOperationException();
+		}
+	}
 }

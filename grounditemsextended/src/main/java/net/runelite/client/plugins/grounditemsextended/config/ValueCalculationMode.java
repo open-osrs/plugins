@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, Abel Briggs <https://github.com/abelbriggs1>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-object ProjectVersions {
-    const val openosrsVersion = "4.6.0"
-    const val apiVersion = "^1.0.0"
+package net.runelite.client.plugins.grounditemsextended.config;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter(AccessLevel.PUBLIC)
+@RequiredArgsConstructor
+public enum ValueCalculationMode
+{
+	HA, // calc highlight by HA value
+	GE, // calc by GE
+	HIGHEST
 }

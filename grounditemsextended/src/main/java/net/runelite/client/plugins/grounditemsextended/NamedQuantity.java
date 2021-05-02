@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, dekvall <https://github.com/dekvall>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,8 +22,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.grounditemsextended;
 
-object ProjectVersions {
-    const val openosrsVersion = "4.6.0"
-    const val apiVersion = "^1.0.0"
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+
+@Value
+@RequiredArgsConstructor
+class NamedQuantity
+{
+	private final String name;
+	private final int quantity;
+
+	NamedQuantity(GroundItemExtended groundItemExtended)
+	{
+		this(groundItemExtended.getName(), groundItemExtended.getQuantity());
+	}
 }
