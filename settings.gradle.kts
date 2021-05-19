@@ -28,6 +28,7 @@ rootProject.name = "OpenOSRS Plugins"
 include(":betterantidrag")
 include(":betterprofiles")
 include(":friendtagging")
+include(":grounditemsextended")
 include(":highalchemy")
 include(":maxhit")
 include(":playerindicatorsextended")
