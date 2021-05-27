@@ -41,7 +41,7 @@ import net.runelite.api.Point;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import net.runelite.api.kit.KitType;
-import net.runelite.client.game.FriendChatManager;
+import net.runelite.client.game.ChatIconManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
@@ -69,7 +69,7 @@ public class PlayerIndicatorsExtendedOverlay extends Overlay
 	private Client client;
 
 	@Inject
-	private FriendChatManager friendChatManager;
+	private ChatIconManager chatIconManager;
 
 	@Inject
 	public PlayerIndicatorsExtendedOverlay(PlayerIndicatorsExtendedPlugin plugin, PlayerIndicatorsExtendedConfig config, PlayerIndicatorsExtendedService playerIndicatorsExtendedService)
@@ -125,9 +125,9 @@ public class PlayerIndicatorsExtendedOverlay extends Overlay
 
 			if (config.highlightClan() && actor.isFriendsChatMember() && config.showFriendsChatRanks() && relation == PlayerIndicatorsExtendedPlugin.PlayerRelation.CLAN)
 			{
-				if (friendChatManager.getRank(actor.getName()) != null)
+				if (plugin.getRank(actor.getName()) != null)
 				{
-					final BufferedImage clanRankImage = friendChatManager.getRankImage(friendChatManager.getRank(actor.getName()));
+					final BufferedImage clanRankImage = chatIconManager.getRankImage(plugin.getRank(actor.getName()));
 					if (clanRankImage != null)
 					{
 						renderActorTextAndImage(graphics, actor, builtString, color,
