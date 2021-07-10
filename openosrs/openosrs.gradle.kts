@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2020 ImNoOSRS <https://github.com/ImNoOSRS>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
+ *	list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ *	this list of conditions and the following disclaimer in the documentation
+ *	and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -23,28 +23,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-rootProject.name = "OpenOSRS Plugins"
+version = "0.0.1"
 
-include(":betterantidrag")
-include(":betterprofiles")
-include(":betterroguesden")
-include(":friendtagging")
-include(":grounditemsextended")
-include(":highalchemy")
-include(":maxhit")
-include(":playerindicatorsextended")
-include(":reminders")
-include(":shayzieninfirmary")
-include(":stealingartefacts")
-include(":thieving")
-include(":openosrs")
+project.extra["PluginName"] = "OpenOSRS"
+project.extra["PluginDescription"] = "Settings for OpenOSRS"
+project.extra["PluginProvider"] = "OpenOSRS"
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
-
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+tasks {
+	jar {
+		manifest {
+			attributes(mapOf(
+					"Plugin-Version" to project.version,
+					"Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+					"Plugin-Provider" to project.extra["PluginProvider"],
+					"Plugin-Description" to project.extra["PluginDescription"],
+					"Plugin-License" to project.extra["PluginLicense"]
+			))
+		}
+	}
 }
