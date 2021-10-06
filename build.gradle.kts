@@ -68,16 +68,15 @@ subprojects {
         compileOnly(group = "com.openosrs", name = "runelite-client", version = ProjectVersions.openosrsVersion)
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.9")
-        compileOnly(group = "com.google.guava", name = "guava", version = "30.0-jre")
-        compileOnly(group = "com.google.inject", name = "guice", version = "4.2.3", classifier = "no_aop")
+        compileOnly(group = "com.google.guava", name = "guava", version = "30.1.1-jre")
+        compileOnly(group = "com.google.inject", name = "guice", version = "5.0.1")
         compileOnly(group = "com.google.code.gson", name = "gson", version = "2.8.6")
         compileOnly(group = "net.sf.jopt-simple", name = "jopt-simple", version = "5.0.4")
         compileOnly(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
         compileOnly(group = "org.projectlombok", name = "lombok", version = "1.18.16")
-        compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.0")
-        compileOnly(group = "org.pf4j", name = "pf4j", version = "3.5.0")
-        compileOnly(group = "io.reactivex.rxjava3", name = "rxjava", version = "3.0.7")
-        compileOnly(group = "org.pushing-pixels", name = "radiance-substance", version = "2.5.1")
+        compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1")
+        compileOnly(group = "org.pf4j", name = "pf4j", version = "3.6.0")
+        compileOnly(group = "io.reactivex.rxjava3", name = "rxjava", version = "3.1.1")
 
         testAnnotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.16")
 
@@ -94,7 +93,7 @@ subprojects {
         testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.6.0")
         testImplementation(group = "org.projectlombok", name = "lombok", version = "1.18.16")
         testImplementation(group = "org.hamcrest", name = "hamcrest-library", version = "2.2")
-        testImplementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.30")
+        testImplementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.32")
     }
 
     checkstyle {
