@@ -78,7 +78,7 @@ public class BetterInterfaceStylesPlugin extends Plugin
 	private SpritePixels[] defaultCrossSprites;
 
 	@Provides
-    BetterInterfaceStylesConfig provideConfig(ConfigManager configManager)
+	BetterInterfaceStylesConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(BetterInterfaceStylesConfig.class);
 	}
