@@ -139,7 +139,7 @@ class BetterProfilePanel extends JPanel
 			@Override
 			public void mousePressed(MouseEvent e)
 			{
-				if (SwingUtilities.isLeftMouseButton(e) && client.getGameState() == GameState.LOGIN_SCREEN)
+				if (SwingUtilities.isLeftMouseButton(e) && (client.getGameState() == GameState.LOGIN_SCREEN || client.getGameState() == GameState.LOGIN_SCREEN_AUTHENTICATOR))
 				{
 					client.setUsername(loginText);
 					if (config.rememberPassword() && password != null)
@@ -158,7 +158,7 @@ class BetterProfilePanel extends JPanel
 			@Override
 			public void mousePressed(MouseEvent e)
 			{
-				if (SwingUtilities.isLeftMouseButton(e) && client.getGameState() == GameState.LOGIN_SCREEN)
+				if (SwingUtilities.isLeftMouseButton(e) && (client.getGameState() == GameState.LOGIN_SCREEN || client.getGameState() == GameState.LOGIN_SCREEN_AUTHENTICATOR))
 				{
 					client.setUsername(loginText);
 					if (config.rememberPassword() && password != null)

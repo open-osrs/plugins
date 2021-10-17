@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.0.0"
+version = "4.0.1"
 
 project.extra["PluginName"] = "Better Profiles"
 project.extra["PluginDescription"] = "Allow for a allows you to easily switch between multiple OSRS Accounts"
