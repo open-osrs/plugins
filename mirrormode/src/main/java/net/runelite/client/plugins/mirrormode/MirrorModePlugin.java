@@ -27,7 +27,8 @@ import org.pf4j.Extension;
 	enabledByDefault = false,
 	conflicts = {"GPU", "117 HD (beta)"}
 )
-public class MirrorModePlugin extends Plugin {
+public class MirrorModePlugin extends Plugin
+{
 	@Inject
 	private Client client;
 	@Inject
@@ -39,31 +40,43 @@ public class MirrorModePlugin extends Plugin {
 	public static BufferedImage bufferedImage;
 
 	@Provides
-	MirrorModeConfig getConfig(ConfigManager configManager) {
-		return (MirrorModeConfig)configManager.getConfig(MirrorModeConfig.class);
+	MirrorModeConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(MirrorModeConfig.class);
 	}
 
-	public void updateTitle() {
-		this.clientThread.invokeLater(() -> {
-			if (this.client.getGameState() == GameState.LOGGED_IN) {
+	public void updateTitle()
+	{
+		this.clientThread.invokeLater(() ->
+		{
+			if (this.client.getGameState() == GameState.LOGGED_IN)
+			{
 				Player player = this.client.getLocalPlayer();
-				if (player == null) {
+				if (player == null)
+				{
 					return false;
 				}
 
 				String name = player.getName();
-				if (Strings.isNullOrEmpty(name)) {
+				if (Strings.isNullOrEmpty(name))
+				{
 					return false;
 				}
 
-				if (jframe != null) {
-					if (this.config.mirrorName()) {
+				if (jframe != null)
+				{
+					if (this.config.mirrorName())
+					{
 						jframe.setTitle("OpenOSRS Mirror - " + name);
-					} else {
+					}
+					else
+					{
 						jframe.setTitle("OpenOSRS Mirror");
 					}
 				}
-			} else if (jframe != null) {
+			}
+			else if (jframe != null)
+			{
 				jframe.setTitle("OpenOSRS Mirror");
 				return true;
 			}
@@ -72,8 +85,10 @@ public class MirrorModePlugin extends Plugin {
 		});
 	}
 
-	public void startUp() {
-		if (jframe == null) {
+	public void startUp()
+	{
+		if (jframe == null)
+		{
 			jframe = new JFrame("OpenOSRS Mirror");
 			jframe.setSize(1280, 720);
 			canvas.setSize(1280, 720);
@@ -81,14 +96,17 @@ public class MirrorModePlugin extends Plugin {
 		}
 
 		this.client.setMirrored(true);
-		if (!jframe.isVisible()) {
+		if (!jframe.isVisible())
+		{
 			jframe.setVisible(true);
 		}
 
 	}
 
-	public void shutDown() {
-		if (jframe != null) {
+	public void shutDown()
+	{
+		if (jframe != null)
+		{
 			jframe.dispose();
 			jframe = null;
 		}
@@ -97,12 +115,15 @@ public class MirrorModePlugin extends Plugin {
 	}
 
 	@Subscribe
-	private void onDrawFinished(DrawFinished event) {
-		if (!jframe.isVisible()) {
+	private void onDrawFinished(DrawFinished event)
+	{
+		if (!jframe.isVisible())
+		{
 			jframe.setVisible(true);
 		}
 
-		if (canvas.getWidth() != event.image.getWidth(canvas) + 15 || canvas.getHeight() != event.image.getHeight(canvas) + 40) {
+		if (canvas.getWidth() != event.image.getWidth(canvas) + 15 || canvas.getHeight() != event.image.getHeight(canvas) + 40)
+		{
 			canvas.setSize(event.image.getWidth(canvas) + 15, event.image.getHeight(canvas) + 40);
 			jframe.setSize(canvas.getSize());
 		}
@@ -111,17 +132,23 @@ public class MirrorModePlugin extends Plugin {
 	}
 
 	@Subscribe
-	private void onGameStateChanged(GameStateChanged event) {
-		if (event.getGameState() == GameState.LOGGED_IN) {
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() == GameState.LOGGED_IN)
+		{
 			this.updateTitle();
 		}
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged event) {
-		if (event.getGroup().equals("mirror")) {
-			SwingUtilities.invokeLater(() -> {
-				if (jframe != null) {
+	private void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getGroup().equals("mirror"))
+		{
+			SwingUtilities.invokeLater(() ->
+			{
+				if (jframe != null)
+				{
 					this.updateTitle();
 				}
 
@@ -129,7 +156,8 @@ public class MirrorModePlugin extends Plugin {
 		}
 	}
 
-	static {
+	static
+	{
 		canvas = new Canvas();
 	}
 }
