@@ -26,6 +26,7 @@ package net.runelite.client.plugins.playerindicatorsextended;
 
 import java.awt.Color;
 import java.util.EnumSet;
+import java.util.Set;
 import net.runelite.api.FriendsChatRank;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -36,7 +37,7 @@ import net.runelite.client.config.ConfigTitle;
 @ConfigGroup("playerindicatorsextended")
 public interface PlayerIndicatorsExtendedConfig extends Config
 {
-	EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> defaultPlayerIndicatorMode = EnumSet.complementOf(EnumSet.of(PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.HULL));
+	Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> defaultPlayerIndicatorMode = EnumSet.complementOf(EnumSet.of(PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.HULL));
 
 	@ConfigSection(
 		name = "Yourself",
@@ -134,7 +135,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		section = yourselfSection,
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> selfIndicatorModes()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> selfIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -172,7 +173,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> friendIndicatorMode()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> friendIndicatorMode()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -210,7 +211,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> friendsChatIndicatorModes()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> friendsChatIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -260,7 +261,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> teamIndicatorModes()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> teamIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -298,7 +299,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> targetsIndicatorModes()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> targetsIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -432,7 +433,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> otherIndicatorModes()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> otherIndicatorModes()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -530,7 +531,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		title = callerIndicators,
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> callerHighlightOptions()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> callerHighlightOptions()
 	{
 		return defaultPlayerIndicatorMode;
 	}
@@ -579,7 +580,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config
 		title = callerTargetIndicators,
 		enumClass = PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.class
 	)
-	default EnumSet<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> callerTargetHighlightOptions()
+	default Set<PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation> callerTargetHighlightOptions()
 	{
 		return defaultPlayerIndicatorMode;
 	}
