@@ -24,6 +24,6 @@
  */
 
 object ProjectVersions {
-    const val openosrsVersion = "4.15.5"
+    const val openosrsVersion = "4.15.6"
     const val apiVersion = "^1.0.0"
 }
