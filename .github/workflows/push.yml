@@ -308,7 +308,7 @@ jobs:
 
       - name: Commit bootstrap
         run: |
-          git add $(git ls-files -o --exclude-standard) plugins.json
+          git add .
           git diff-index --quiet HEAD \
           || git -c user.name="GitHub" -c user.email="noreply@github.com" commit \
             --author="github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>" \
