@@ -81,10 +81,10 @@ public class FriendTaggingPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		menuManager.addManagedCustomMenu(friendsTabMenuOption);
-		menuManager.addManagedCustomMenu(ignoreTabMenuOption);
-		menuManager.addManagedCustomMenu(friendTabResizableOption);
-		menuManager.addManagedCustomMenu(ignoreTabResizableOption);
+		menuManager.addManagedCustomMenu(friendsTabMenuOption, null);
+		menuManager.addManagedCustomMenu(ignoreTabMenuOption, null);
+		menuManager.addManagedCustomMenu(friendTabResizableOption, null);
+		menuManager.addManagedCustomMenu(ignoreTabResizableOption, null);
 		loadFriendTags();
 	}
 
@@ -100,7 +100,7 @@ public class FriendTaggingPlugin extends Plugin
 	@Subscribe
 	private void onMenuEntryAdded(MenuEntryAdded event)
 	{
-		final int groupId = WidgetInfo.TO_GROUP(event.getParam1());
+		final int groupId = WidgetInfo.TO_GROUP(event.getActionParam1());
 
 		if (groupId == WidgetInfo.FRIENDS_LIST.getGroupId() && event.getOption().equals("Message"))
 		{
@@ -113,8 +113,8 @@ public class FriendTaggingPlugin extends Plugin
 				event.getTarget(),
 				MenuAction.RUNELITE.getId(),
 				0,
-				event.getParam0(),
-				event.getParam1(),
+				event.getActionParam0(),
+				event.getActionParam1(),
 				false
 			);
 			// Add menu entry
