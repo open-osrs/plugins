@@ -29,7 +29,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -466,7 +465,7 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin
 			relationColorHashMap.put(PlayerRelation.SELF, config.getOwnPlayerColor());
 			if (config.selfIndicatorModes() != null)
 			{
-				locationHashMap.put(PlayerRelation.SELF, EnumSet.copyOf(config.selfIndicatorModes()).toArray());
+				locationHashMap.put(PlayerRelation.SELF, config.selfIndicatorModes().toArray());
 			}
 		}
 
@@ -502,7 +501,7 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin
 			relationColorHashMap.put(PlayerRelation.OTHER, config.getOtherColor());
 			if (config.otherIndicatorModes() != null)
 			{
-				locationHashMap.put(PlayerRelation.OTHER, EnumSet.copyOf(config.otherIndicatorModes()).toArray());
+				locationHashMap.put(PlayerRelation.OTHER, config.otherIndicatorModes().toArray());
 			}
 		}
 
