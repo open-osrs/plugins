@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "5.1.1"
+version = "5.1.2"
 
 project.extra["PluginName"] = "Player Indicators Extended"
 project.extra["PluginDescription"] = "Highlight players on-screen and/or on the minimap"
