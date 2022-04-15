@@ -71,7 +71,7 @@ public class MagicMaxHitCalculator extends MaxHitCalculator
 
 		if (spellBaseDamage == 0)
 		{
-			int autoCastSpellId = client.getVar(Varbits.AUTO_CAST_SPELL);
+			int autoCastSpellId = client.getVarbitValue(Varbits.AUTO_CAST_SPELL);
 			if (autoCastSpellId == 0)
 			{
 				return 0.0;

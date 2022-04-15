@@ -41,10 +41,10 @@ public enum PrayerBonusConfig
 	RIGOUR(MaxHitCalculator.CombatMethod.RANGE, Varbits.PRAYER_RIGOUR, 0.23);
 
 	private final MaxHitCalculator.CombatMethod combatMethod;
-	private final Varbits prayerVarbit;
+	private final int prayerVarbit;
 	private final double strengthBonus;
 
-	PrayerBonusConfig(MaxHitCalculator.CombatMethod combatMethod, Varbits prayerVarbit, double strengthBonus)
+	PrayerBonusConfig(MaxHitCalculator.CombatMethod combatMethod, int prayerVarbit, double strengthBonus)
 	{
 		this.combatMethod = combatMethod;
 		this.prayerVarbit = prayerVarbit;
@@ -56,7 +56,7 @@ public enum PrayerBonusConfig
 		return combatMethod;
 	}
 
-	public Varbits getPrayerVarbit()
+	public int getPrayerVarbit()
 	{
 		return prayerVarbit;
 	}

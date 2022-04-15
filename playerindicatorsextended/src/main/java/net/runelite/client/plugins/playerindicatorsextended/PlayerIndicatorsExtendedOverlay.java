@@ -225,7 +225,7 @@ public class PlayerIndicatorsExtendedOverlay extends Overlay
 
 	private boolean checkWildy()
 	{
-		return client.getVar(Varbits.IN_WILDERNESS) == 1 || WorldType.isAllPvpWorld(client.getWorldType());
+		return client.getVarbitValue(Varbits.IN_WILDERNESS) == 1 || WorldType.isAllPvpWorld(client.getWorldType());
 	}
 
 	public static void renderActorTextAndImage(Graphics2D graphics, Actor actor, String text, Color color, BufferedImage image, int yOffset, int xOffset)

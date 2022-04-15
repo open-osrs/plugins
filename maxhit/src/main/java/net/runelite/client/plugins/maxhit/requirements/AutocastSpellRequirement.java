@@ -42,7 +42,7 @@ public class AutocastSpellRequirement implements Requirement
 	@Override
 	public boolean meetsRequirements(Client client)
 	{
-		int autoCastSpellId = client.getVar(Varbits.AUTO_CAST_SPELL);
+		int autoCastSpellId = client.getVarbitValue(Varbits.AUTO_CAST_SPELL);
 
 		if (autoCastSpellId == 0)
 		{

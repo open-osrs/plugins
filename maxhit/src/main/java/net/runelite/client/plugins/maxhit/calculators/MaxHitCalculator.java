@@ -63,7 +63,7 @@ public abstract class MaxHitCalculator
 
 	AttackStyle getAttackStyle()
 	{
-		int equippedWeaponTypeId = client.getVar(Varbits.EQUIPPED_WEAPON_TYPE);
+		int equippedWeaponTypeId = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
 		int attackStyleId = client.getVar(VarPlayer.ATTACK_STYLE);
 
 		AttackStyle[] attackStyles = WeaponType.getWeaponType(equippedWeaponTypeId).getAttackStyles();
@@ -85,7 +85,7 @@ public abstract class MaxHitCalculator
 		double bonus = 1;
 		for (PrayerBonusConfig prayerBonus : PrayerBonusConfig.values())
 		{
-			boolean prayerActive = client.getVar(prayerBonus.getPrayerVarbit()) == 1;
+			boolean prayerActive = client.getVarbitValue(prayerBonus.getPrayerVarbit()) == 1;
 			boolean sameCombatMethod = prayerBonus.getCombatMethod() == this.combatMethod;
 			if (prayerActive && sameCombatMethod)
 			{
