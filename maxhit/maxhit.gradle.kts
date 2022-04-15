@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.0.1"
+version = "4.0.2"
 
 project.extra["PluginName"] = "Max Hit"
 project.extra["PluginDescription"] = "Adds the max hit of the equipped weapon to the equipment and stats widget"
